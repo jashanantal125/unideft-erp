@@ -24,7 +24,6 @@
   "intake_3",
   "campus",
   "application_fee",
-  "minimum_requirement",
   "column_break_ioqb",
   "ielts_score",
   "pte_score",
@@ -48,8 +47,7 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Course Name",
-   "reqd": 1,
-   "unique": 1
+   "reqd": 1
   },
   {
    "fieldname": "course_code",
@@ -134,7 +132,7 @@
    "fieldname": "duration_type",
    "fieldtype": "Select",
    "label": "Duration Type",
-   "options": "Months\nDays"
+   "options": "Hours\nMonth\nMonths\nWeeks\nYear\nYears"
   },
   {
    "fieldname": "application_fee",
@@ -145,11 +143,6 @@
    "fieldname": "program_link",
    "fieldtype": "Data",
    "label": "Program Link"
-  },
-  {
-   "fieldname": "minimum_requirement",
-   "fieldtype": "Data",
-   "label": "Minimum Requirement"
   },
   {
    "fieldname": "select_oghe",
@@ -201,7 +194,7 @@
  "icon": "fa fa-graduation-cap",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-18 12:31:22.220936",
+ "modified": "2026-01-18 13:55:40.556009",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Course",
