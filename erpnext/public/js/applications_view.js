@@ -176,7 +176,7 @@ function loadApplications() {
 			fields: [
 				'name',
 				'student',
-				'contact_number',
+				'student_contact_no',
 				'student_email',
 				'agent',
 				'destination_country',
@@ -419,7 +419,7 @@ function createApplicationCard(app) {
 					<div class="profile-info">
 						<h3 class="student-name">${escapeHtml(studentName)}</h3>
 						<div class="contact-details">
-							${app.contact_number ? `<span class="contact-item"><i class="fa fa-phone"></i> ${escapeHtml(app.contact_number)}</span>` : ''}
+							${app.student_contact_no ? `<span class="contact-item"><i class="fa fa-phone"></i> ${escapeHtml(app.student_contact_no)}</span>` : ''}
 							${app.student_email || (app.student_data && app.student_data.email) ? `<span class="contact-item"><i class="fa fa-envelope"></i> ${escapeHtml(app.student_email || app.student_data.email)}</span>` : ''}
 							<span class="contact-item"><i class="fa fa-calendar"></i> ${dobDate}</span>
 						</div>

@@ -241,7 +241,7 @@
    "fieldname": "toefl_type",
    "fieldtype": "Select",
    "label": "TOEFL Type",
-   "options": "\nIBT Center Based\nIBT Home Edition"
+   "options": "\nIBT Center Based\nIBT Home Edition Based"
   },
   {
    "depends_on": "eval:doc.test_type == 'TOEFL' && doc.toefl_type == 'IBT Center Based'",
@@ -320,12 +320,12 @@
    "default": "⚠️ Not Accepted - Needs Verification"
   },
   {
-   "depends_on": "eval:doc.test_type == 'TOEFL' && doc.toefl_type == 'IBT Home Edition'",
+   "depends_on": "eval:doc.test_type == 'TOEFL' && doc.toefl_type == 'IBT Home Edition Based'",
    "fieldname": "toefl_home_not_accepted",
    "fieldtype": "Text",
    "label": "Status",
    "read_only": 1,
-   "default": "❌ IBT Home Edition Not Accepted"
+   "default": "This test type is not accepted"
   }
  ],
  "istable": 1,

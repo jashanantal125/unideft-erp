@@ -64,8 +64,6 @@ class Agent(Document):
 		customer.country = self.country
 		customer.state = self.state
 		customer.city = self.city
-		customer.address_line1 = (self.address or "").split("\n")[0] if self.address else None
-
-		# Insert without requiring extra permissions
+		customer.address_line1 = (self.address or "").split("\n")[0] if self.address else None		# Insert without requiring extra permissions
 		customer.flags.ignore_permissions = True
 		customer.insert()

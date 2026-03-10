@@ -1,0 +1,38 @@
+{
+    "actions": [],
+    "creation": "2026-02-28 00:00:00.000000",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "document_type",
+        "write_details",
+        "upload_document"
+    ],
+    "fields": [
+        {
+            "fieldname": "document_type",
+            "fieldtype": "Select",
+            "label": "Document Type",
+            "options": "\n12th Admit card\nschool domain email id\ndigilocker id/password"
+        },
+        {
+            "depends_on": "eval:doc.document_type == 'school domain email id' || doc.document_type == 'digilocker id/password'",
+            "fieldname": "write_details",
+            "fieldtype": "Small Text",
+            "label": "Write Details"
+        },
+        {
+            "fieldname": "upload_document",
+            "fieldtype": "Attach",
+            "label": "Upload Document"
+        }
+    ],
+    "istable": 1,
+    "modified": "2026-02-28 00:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "CRM",
+    "name": "Application Documents 10th To 12th",
+    "owner": "Administrator",
+    "permissions": []
+}

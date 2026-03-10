@@ -63,8 +63,10 @@ class Application(Document):
 
 	if TYPE_CHECKING:
 		from erpnext.crm.doctype.application_course.application_course import ApplicationCourse
+		from erpnext.crm.doctype.application_documents_10th_to_12th.application_documents_10th_to_12th import ApplicationDocuments10thTo12th
 		from erpnext.crm.doctype.application_english_test.application_english_test import ApplicationEnglishTest
 		from erpnext.crm.doctype.application_offer_letter_condition.application_offer_letter_condition import ApplicationOfferLetterCondition
+		from erpnext.crm.doctype.enrollment_document.enrollment_document import EnrollmentDocument
 		from erpnext.crm.doctype.application_sponsor_complete.application_sponsor_complete import ApplicationSponsorComplete
 		from erpnext.crm.doctype.processing_agent_details.processing_agent_details import ProcessingAgentDetails
 		from erpnext.crm.doctype.student_documents.student_documents import studentdocuments
@@ -105,7 +107,10 @@ class Application(Document):
 		any_visa_refused: DF.Check
 		application_closed: DF.Check
 		application_filled_by: DF.Text | None
-		application_forms_upload: DF.Table[studentdocuments]
+		application_form_1_upload: DF.Attach | None
+		application_form_2_upload: DF.Attach | None
+		application_form_3_upload: DF.Attach | None
+		application_form_4_upload: DF.Attach | None
 		application_type: DF.Literal["B2B"]
 		asd: DF.Data | None
 		assigned_executive: DF.Link | None
@@ -120,7 +125,6 @@ class Application(Document):
 		convince_times: DF.Int
 		course_name: DF.Link | None
 		current_age: DF.Int
-		data_isfw: DF.Text | None
 		data_swym: DF.Text | None
 		defer_conditions_on_offer_letter: DF.TableMultiSelect[ApplicationOfferLetterCondition]
 		defer_course_name: DF.Link | None
@@ -140,10 +144,8 @@ class Application(Document):
 		defer_university_intake: DF.Date | None
 		defer_university_name: DF.Link | None
 		destination_country: DF.Link
-		digi_locker_id_optional: DF.Text | None
-		digi_locker_password: DF.Password | None
 		dob: DF.Date
-		documents_10th_to_12th: DF.Table[studentdocuments]
+		documents_10th_to_12th: DF.Table[ApplicationDocuments10thTo12th]
 		documents_10th_to_12thgraduation_copy: DF.Table[studentdocuments]
 		documents_not_accepted_alert: DF.Text | None
 		documents_passport_application_form_sop: DF.Table[studentdocuments]
@@ -155,7 +157,7 @@ class Application(Document):
 		english_requirement_details: DF.Text | None
 		english_requirement_documents: DF.Table[studentdocuments]
 		english_test_details: DF.Table[ApplicationEnglishTest]
-		enrollment_documents: DF.Table[studentdocuments]
+		enrollment_documents: DF.Table[EnrollmentDocument]
 		file_lodged_by: DF.Literal["", "Our Side", "Agent", "Student", "Vendor"]
 		file_lodged_status: DF.Check
 		financial_matrix_upload: DF.Attach | None
@@ -248,7 +250,7 @@ class Application(Document):
 		password: DF.Password | None
 		payable_fee: DF.Currency
 		pending_requirement_details: DF.Text | None
-		pending_requirements_completed: DF.Check
+		pending_requirements_completed: DF.Literal["", "Yes", "No"]
 		preferred_courses: DF.Table[ApplicationCourse]
 		preferred_university: DF.Link | None
 		process_other_country: DF.Check
@@ -272,7 +274,8 @@ class Application(Document):
 		send_offer_to_chat: DF.Check
 		shop_act_additional_document: DF.Attach
 		shop_act_uploaded: DF.Check
-		sop_upload: DF.Table[studentdocuments]
+		sop_upload: DF.Attach | None
+		sop_portal_or_vendor_upload: DF.Attach | None
 		sponsor_1_docs_pdf_upload: DF.Attach | None
 		sponsor_2_docs_pdf_upload: DF.Attach | None
 		sponsor_3_docs_pdf_upload: DF.Attach | None
@@ -295,6 +298,7 @@ class Application(Document):
 		status: DF.Literal["Pending", "Processing", "Offer Letter Received", "Financial", "GS Processing", "GS Approved", "Acceptance", "COE", "File Lodged", "Visa", "Enrollment", "On Shore College change", "Visa Refused", "Closed"]
 		student: DF.Link
 		student_affidavit_upload: DF.Attach | None
+		student_contact_no: DF.Phone | None
 		student_email: DF.Text | None
 		student_enrolled: DF.Check
 		student_enrolled_no_status: DF.Text | None

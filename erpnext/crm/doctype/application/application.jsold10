@@ -18,6 +18,8 @@ frappe.ui.form.on("Application", {
 	},
 
 	refresh(frm) {
+<<<<<<< HEAD
+=======
 		// Force Spouse Details and C. Sponsors tables to open in form/modal on Add Row
 		["spouse_details_list", "table_ihmq"].forEach((fieldname) => {
 			const control = frm.fields_dict[fieldname];
@@ -29,6 +31,7 @@ frappe.ui.form.on("Application", {
 			}
 		});
 
+>>>>>>> 45b373784b7731d65471f9c09c0827b086692f15
 		// Hide assigned fields for Agents (keep visible for System Manager, Team Lead, Executive)
 		if (frappe.user.has_role("Agent") || frappe.user.has_role("B2B Agent") || frappe.user.has_role("B2C Agent")) {
 			// Only hide if NOT a Team Lead or Executive (in case of multiple roles)
@@ -1991,6 +1994,4 @@ function createInterviewDeadlineReminder(frm, deadlineDate) {
 		}
 	});
 }
-
-
 

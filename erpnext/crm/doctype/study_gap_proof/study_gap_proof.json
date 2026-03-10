@@ -30,8 +30,17 @@
         "position",
         "duration",
         "employer_domain_id",
-        "salary_amount",
+        "work_attachments_sb",
+        "itr_upload",
+        "salary_slips_upload",
+        "experience_letter_upload",
+        "bank_statement_upload",
+        "work_verification_sb",
         "work_experience_verified",
+        "itr_verified",
+        "salary_slips_verified_6_months",
+        "bank_statement_verified",
+        "salary_amount",
         "work_experience_verified_attachment",
         "work_experience_not_verified_comment",
         "assessment_year",
@@ -47,8 +56,6 @@
         "dob_no_status",
         "name_matched_ac_pc",
         "name_no_status",
-        "itr_verified",
-        "itr_upload",
         "itr_not_verified_status",
         "other_details",
         "other_supporting_documents"
@@ -205,25 +212,82 @@
         },
         {
             "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+            "fieldname": "work_attachments_sb",
+            "fieldtype": "Section Break",
+            "label": "Attachments"
+        },
+        {
+            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+            "fieldname": "itr_upload",
+            "fieldtype": "Attach",
+            "label": "ITR"
+        },
+        {
+            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+            "fieldname": "salary_slips_upload",
+            "fieldtype": "Attach",
+            "label": "Salary Slips"
+        },
+        {
+            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+            "fieldname": "experience_letter_upload",
+            "fieldtype": "Attach",
+            "label": "Experience Letter"
+        },
+        {
+            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+            "fieldname": "bank_statement_upload",
+            "fieldtype": "Attach",
+            "label": "Bank Statement"
+        },
+        {
+            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+            "fieldname": "work_verification_sb",
+            "fieldtype": "Section Break",
+            "label": "Verification"
+        },
+        {
+            "default": "0",
+            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+            "fieldname": "work_experience_verified",
+            "fieldtype": "Check",
+            "label": "Work Experience Verified"
+        },
+        {
+            "default": "0",
+            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+            "fieldname": "itr_verified",
+            "fieldtype": "Check",
+            "label": "ITR Verified (as per Work Experience)"
+        },
+        {
+            "default": "0",
+            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+            "fieldname": "salary_slips_verified_6_months",
+            "fieldtype": "Check",
+            "label": "Salary Slips Verified (6 Months)"
+        },
+        {
+            "default": "0",
+            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+            "fieldname": "bank_statement_verified",
+            "fieldtype": "Check",
+            "label": "Bank Statement Verified"
+        },
+        {
+            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
             "fieldname": "salary_amount",
             "fieldtype": "Currency",
             "label": "Salary Amount"
         },
         {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "work_experience_verified",
-            "fieldtype": "Select",
-            "label": "Work Experience Letter Verified",
-            "options": "\nYes\nNo"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.work_experience_verified == 'Yes'",
+            "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.work_experience_verified == 1",
             "fieldname": "work_experience_verified_attachment",
             "fieldtype": "Attach",
             "label": "Work Experience Verified Attachment"
         },
         {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.work_experience_verified == 'No'",
+            "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.work_experience_verified == 0",
             "fieldname": "work_experience_not_verified_comment",
             "fieldtype": "Small Text",
             "label": "Comment - Why Not Verified"
@@ -325,19 +389,6 @@
             "fieldtype": "Small Text",
             "label": "Status",
             "read_only": 1
-        },
-        {
-            "default": "0",
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "itr_verified",
-            "fieldtype": "Check",
-            "label": "ITR Verified"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.itr_verified == 1",
-            "fieldname": "itr_upload",
-            "fieldtype": "Attach",
-            "label": "Upload ITR"
         },
         {
             "bold": 1,
