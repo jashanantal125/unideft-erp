@@ -1,0 +1,64 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-02-01 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "company_name",
+  "position",
+  "duration",
+  "employer_domain_id",
+  "salary_amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "company_name",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Company Name"
+  },
+  {
+   "fieldname": "position",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Position"
+  },
+  {
+   "fieldname": "duration",
+   "fieldtype": "Small Text",
+   "label": "Duration"
+  },
+  {
+   "fieldname": "employer_domain_id",
+   "fieldtype": "Small Text",
+   "label": "Employer Domain ID"
+  },
+  {
+   "fieldname": "salary_amount",
+   "fieldtype": "Currency",
+   "label": "Salary Amount"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "modified": "2026-02-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Study Gap Work Experience",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

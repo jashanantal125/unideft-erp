@@ -1,0 +1,162 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-02-01 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "assessment_year",
+  "itr_value",
+  "itr_value_matched_salary",
+  "other_income_source",
+  "other_income_yes_status",
+  "other_income_no_status",
+  "acknowledgement_no",
+  "company_details_computation",
+  "company_details_no_status",
+  "dob_matched_ac_pc",
+  "dob_no_status",
+  "name_matched_ac_pc",
+  "name_no_status",
+  "itr_verified",
+  "itr_upload",
+  "itr_not_verified_status"
+ ],
+ "fields": [
+  {
+   "fieldname": "assessment_year",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Assessment Year"
+  },
+  {
+   "fieldname": "itr_value",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "ITR Value"
+  },
+  {
+   "default": "0",
+   "fieldname": "itr_value_matched_salary",
+   "fieldtype": "Check",
+   "label": "ITR Value Matched with Salary"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.itr_value_matched_salary == 0",
+   "fieldname": "other_income_source",
+   "fieldtype": "Check",
+   "label": "Any Other Source of Income"
+  },
+  {
+   "bold": 1,
+   "default": "\u2713 Checked Accordingly",
+   "depends_on": "eval:doc.itr_value_matched_salary == 0 && doc.other_income_source == 1",
+   "fieldname": "other_income_yes_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "bold": 1,
+   "default": "\u26a0 Set Reminder to Revise ITR",
+   "depends_on": "eval:doc.itr_value_matched_salary == 0 && doc.other_income_source == 0",
+   "fieldname": "other_income_no_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "fieldname": "acknowledgement_no",
+   "fieldtype": "Small Text",
+   "label": "Acknowledgement No"
+  },
+  {
+   "default": "0",
+   "fieldname": "company_details_computation",
+   "fieldtype": "Check",
+   "label": "Company Details Mentioned on Computation"
+  },
+  {
+   "bold": 1,
+   "default": "\u26a0 Set Reminder to Correct Computation",
+   "depends_on": "eval:doc.company_details_computation == 0",
+   "fieldname": "company_details_no_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "dob_matched_ac_pc",
+   "fieldtype": "Check",
+   "label": "DOB on ITR Matched with AC & PC"
+  },
+  {
+   "bold": 1,
+   "default": "\u26a0 Need to Correct",
+   "depends_on": "eval:doc.dob_matched_ac_pc == 0",
+   "fieldname": "dob_no_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "name_matched_ac_pc",
+   "fieldtype": "Check",
+   "label": "Name on ITR Matched with AC/PC"
+  },
+  {
+   "bold": 1,
+   "default": "\u26a0 Need to Correct",
+   "depends_on": "eval:doc.name_matched_ac_pc == 0",
+   "fieldname": "name_no_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "itr_verified",
+   "fieldtype": "Check",
+   "label": "ITR Verified"
+  },
+  {
+   "depends_on": "eval:doc.itr_verified == 1",
+   "fieldname": "itr_upload",
+   "fieldtype": "Attach",
+   "label": "Upload ITR"
+  },
+  {
+   "bold": 1,
+   "default": "\u26a0 Needs to Verify and Set Reminder",
+   "depends_on": "eval:doc.itr_verified == 0",
+   "fieldname": "itr_not_verified_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "modified": "2026-02-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Study Gap ITR",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

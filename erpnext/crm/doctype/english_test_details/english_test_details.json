@@ -1,0 +1,349 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-02-01 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "english_test_type",
+  "ielts_exam_date",
+  "ielts_validity",
+  "ielts_validity_month_count",
+  "ielts_listening_score",
+  "ielts_reading_score",
+  "ielts_writing_score",
+  "ielts_speaking_score",
+  "ielts_overall_score",
+  "ielts_user_id",
+  "ielts_password",
+  "ielts_verified",
+  "ielts_upload",
+  "ielts_not_accepted_alert",
+  "pte_exam_date",
+  "pte_validity",
+  "pte_validity_month_count",
+  "pte_listening_score",
+  "pte_reading_score",
+  "pte_writing_score",
+  "pte_speaking_score",
+  "pte_overall_score",
+  "pte_user_id",
+  "pte_password",
+  "pte_verified",
+  "pte_upload",
+  "pte_not_accepted_alert",
+  "toefl_test_format",
+  "toefl_exam_date",
+  "toefl_validity",
+  "toefl_validity_month_count",
+  "toefl_listening_score",
+  "toefl_reading_score",
+  "toefl_writing_score",
+  "toefl_speaking_score",
+  "toefl_overall_score",
+  "toefl_user_id",
+  "toefl_password",
+  "toefl_verified",
+  "toefl_upload",
+  "toefl_not_accepted_alert",
+  "toefl_home_edition_not_accepted_alert"
+ ],
+ "fields": [
+  {
+   "fieldname": "english_test_type",
+   "fieldtype": "Select",
+   "label": "Test Type",
+   "options": "\nIELTS\nPTE\nTOEFL",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'IELTS'",
+   "fieldname": "ielts_exam_date",
+   "fieldtype": "Date",
+   "label": "Date of Exam"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.english_test_type == 'IELTS'",
+   "fieldname": "ielts_validity",
+   "fieldtype": "Check",
+   "label": "Validity"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'IELTS' && doc.ielts_validity == 1",
+   "fieldname": "ielts_validity_month_count",
+   "fieldtype": "Int",
+   "label": "Month Count"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'IELTS'",
+   "fieldname": "ielts_listening_score",
+   "fieldtype": "Float",
+   "label": "L - Listening Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'IELTS'",
+   "fieldname": "ielts_reading_score",
+   "fieldtype": "Float",
+   "label": "R - Reading Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'IELTS'",
+   "fieldname": "ielts_writing_score",
+   "fieldtype": "Float",
+   "label": "W - Writing Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'IELTS'",
+   "fieldname": "ielts_speaking_score",
+   "fieldtype": "Float",
+   "label": "S - Speaking Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'IELTS'",
+   "fieldname": "ielts_overall_score",
+   "fieldtype": "Float",
+   "label": "Overall Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'IELTS'",
+   "fieldname": "ielts_user_id",
+   "fieldtype": "Text",
+   "label": "Login Credential - User Id"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'IELTS'",
+   "fieldname": "ielts_password",
+   "fieldtype": "Password",
+   "label": "Password"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.english_test_type == 'IELTS'",
+   "fieldname": "ielts_verified",
+   "fieldtype": "Check",
+   "label": "Verified"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'IELTS' && doc.ielts_verified == 1",
+   "fieldname": "ielts_upload",
+   "fieldtype": "Table",
+   "label": "Upload",
+   "options": "student documents"
+  },
+  {
+   "bold": 1,
+   "default": "\u26a0\ufe0f NOT ACCEPTED - IELTS test needs to be verified",
+   "depends_on": "eval:doc.english_test_type == 'IELTS' && doc.ielts_verified == 0",
+   "fieldname": "ielts_not_accepted_alert",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'PTE'",
+   "fieldname": "pte_exam_date",
+   "fieldtype": "Date",
+   "label": "Date of Exam"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.english_test_type == 'PTE'",
+   "fieldname": "pte_validity",
+   "fieldtype": "Check",
+   "label": "Validity"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'PTE' && doc.pte_validity == 1",
+   "fieldname": "pte_validity_month_count",
+   "fieldtype": "Int",
+   "label": "Month Count"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'PTE'",
+   "fieldname": "pte_listening_score",
+   "fieldtype": "Float",
+   "label": "L - Listening Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'PTE'",
+   "fieldname": "pte_reading_score",
+   "fieldtype": "Float",
+   "label": "R - Reading Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'PTE'",
+   "fieldname": "pte_writing_score",
+   "fieldtype": "Float",
+   "label": "W - Writing Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'PTE'",
+   "fieldname": "pte_speaking_score",
+   "fieldtype": "Float",
+   "label": "S - Speaking Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'PTE'",
+   "fieldname": "pte_overall_score",
+   "fieldtype": "Float",
+   "label": "Overall Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'PTE'",
+   "fieldname": "pte_user_id",
+   "fieldtype": "Text",
+   "label": "Login Credential - User Id"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'PTE'",
+   "fieldname": "pte_password",
+   "fieldtype": "Password",
+   "label": "Password"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.english_test_type == 'PTE'",
+   "fieldname": "pte_verified",
+   "fieldtype": "Check",
+   "label": "Verified"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'PTE' && doc.pte_verified == 1",
+   "fieldname": "pte_upload",
+   "fieldtype": "Table",
+   "label": "Upload",
+   "options": "student documents"
+  },
+  {
+   "bold": 1,
+   "default": "\u26a0\ufe0f NOT ACCEPTED - PTE test needs to be verified",
+   "depends_on": "eval:doc.english_test_type == 'PTE' && doc.pte_verified == 0",
+   "fieldname": "pte_not_accepted_alert",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'TOEFL'",
+   "fieldname": "toefl_test_format",
+   "fieldtype": "Select",
+   "label": "Test Format",
+   "options": "\nIBT Center based\nHome Edition"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'TOEFL'",
+   "fieldname": "toefl_exam_date",
+   "fieldtype": "Date",
+   "label": "Date of Exam"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.english_test_type == 'TOEFL'",
+   "fieldname": "toefl_validity",
+   "fieldtype": "Check",
+   "label": "Validity"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'TOEFL' && doc.toefl_validity == 1",
+   "fieldname": "toefl_validity_month_count",
+   "fieldtype": "Int",
+   "label": "Month Count"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'TOEFL'",
+   "fieldname": "toefl_listening_score",
+   "fieldtype": "Float",
+   "label": "L - Listening Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'TOEFL'",
+   "fieldname": "toefl_reading_score",
+   "fieldtype": "Float",
+   "label": "R - Reading Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'TOEFL'",
+   "fieldname": "toefl_writing_score",
+   "fieldtype": "Float",
+   "label": "W - Writing Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'TOEFL'",
+   "fieldname": "toefl_speaking_score",
+   "fieldtype": "Float",
+   "label": "S - Speaking Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'TOEFL'",
+   "fieldname": "toefl_overall_score",
+   "fieldtype": "Float",
+   "label": "Overall Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'TOEFL'",
+   "fieldname": "toefl_user_id",
+   "fieldtype": "Text",
+   "label": "Login Credential - User Id"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'TOEFL'",
+   "fieldname": "toefl_password",
+   "fieldtype": "Password",
+   "label": "Password"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.english_test_type == 'TOEFL' && doc.toefl_test_format == 'IBT Center based'",
+   "fieldname": "toefl_verified",
+   "fieldtype": "Check",
+   "label": "Verified"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'TOEFL' && doc.toefl_test_format == 'IBT Center based' && doc.toefl_verified == 1",
+   "fieldname": "toefl_upload",
+   "fieldtype": "Table",
+   "label": "Upload",
+   "options": "student documents"
+  },
+  {
+   "bold": 1,
+   "default": "\u26a0\ufe0f NOT ACCEPTED - TOEFL test needs to be verified",
+   "depends_on": "eval:doc.english_test_type == 'TOEFL' && doc.toefl_test_format == 'IBT Center based' && doc.toefl_verified == 0",
+   "fieldname": "toefl_not_accepted_alert",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "bold": 1,
+   "default": "\u26a0\ufe0f NOT ACCEPTED - Home Edition not accepted",
+   "depends_on": "eval:doc.english_test_type == 'TOEFL' && doc.toefl_test_format == 'Home Edition'",
+   "fieldname": "toefl_home_edition_not_accepted_alert",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "modified": "2026-02-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "English Test Details",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -1,0 +1,56 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-01-13 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "istable": 1,
+ "field_order": [
+  "assessment_year",
+  "income_value",
+  "form_16_upload"
+ ],
+ "fields": [
+  {
+   "fieldname": "assessment_year",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Assessment Year",
+   "reqd": 1
+  },
+  {
+   "fieldname": "income_value",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Income Value on Form 16",
+   "options": "INR",
+   "reqd": 1
+  },
+  {
+   "fieldname": "form_16_upload",
+   "fieldtype": "Attach",
+   "label": "Upload Form 16"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "modified": "2026-01-13 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Application Sponsor Form 16",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

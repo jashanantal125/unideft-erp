@@ -48,6 +48,11 @@ frappe.pages['applications-view'].on_page_load = function (wrapper) {
 			<div class="applications-grid" id="applications-grid">
 				<!-- Applications will be loaded here -->
 			</div>
+
+			<!-- Pagination -->
+			<div class="pagination-container" id="pagination-container">
+				<!-- Pagination buttons will be rendered here -->
+			</div>
 			
 			<div class="empty-state" id="empty-state" style="display: none;">
 				<div class="empty-icon">
@@ -61,16 +66,18 @@ frappe.pages['applications-view'].on_page_load = function (wrapper) {
     // Global storage for app data (scoped to window to match previous logic, or attach to wrapper)
     window.applicationsData = {};
     window.allApplications = [];
+	// Pagination
+	window.currentApplicationsPage = 1;
 
     // Load applications
     loadApplications();
-    
+
     // Setup search input clear button visibility
     setTimeout(() => {
         const searchInput = document.getElementById('search-input');
         const clearBtn = document.getElementById('search-clear-btn');
         if (searchInput && clearBtn) {
-            searchInput.addEventListener('input', function() {
+            searchInput.addEventListener('input', function () {
                 if (this.value.length > 0) {
                     clearBtn.style.display = 'flex';
                 } else {
@@ -81,8 +88,113 @@ frappe.pages['applications-view'].on_page_load = function (wrapper) {
     }, 100);
 };
 
+const APPLICATIONS_PAGE_SIZE = 10;
+window.currentApplications = [];
+
 function applyFilters() {
-    loadApplications();
+    const searchTerm = document.getElementById('search-input') ? (document.getElementById('search-input').value || '').toLowerCase().trim() : '';
+
+	// Reset to page 1 when search changes
+	if (window.lastApplicationsSearchTerm !== searchTerm) {
+		window.lastApplicationsSearchTerm = searchTerm;
+		window.currentApplicationsPage = 1;
+	}
+
+    // Use the cached allApplications array if available
+    if (window.allApplications && window.allApplications.length > 0) {
+        const filteredApps = window.allApplications.filter(app => {
+            const studentName = app.student_data
+                ? `${app.student_data.first_name || ''} ${app.student_data.last_name || ''}`.toLowerCase()
+                : (app.student || '').toLowerCase();
+
+            // Also search by Application ID, Student email, or specific status if needed
+            const appId = (app.name || '').toLowerCase();
+            const email = (app.student_email || (app.student_data && app.student_data.email) || '').toLowerCase();
+
+            if (!searchTerm) return true;
+            return studentName.includes(searchTerm) || appId.includes(searchTerm) || email.includes(searchTerm);
+        });
+
+		// Pagination calculations
+		const totalItems = filteredApps.length;
+		const pageSize = APPLICATIONS_PAGE_SIZE;
+		const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+
+		// Clamp current page
+		if (!window.currentApplicationsPage || window.currentApplicationsPage < 1) {
+			window.currentApplicationsPage = 1;
+		} else if (window.currentApplicationsPage > totalPages) {
+			window.currentApplicationsPage = totalPages;
+		}
+
+		const startIndex = (window.currentApplicationsPage - 1) * pageSize;
+		const paginatedApps = filteredApps.slice(startIndex, startIndex + pageSize);
+
+		// Keep latest filtered list (for paging)
+		window.currentApplications = filteredApps;
+
+        renderApplications(paginatedApps);
+
+        // Update empty state visibility
+        const emptyState = document.getElementById('empty-state');
+        if (emptyState) {
+            emptyState.style.display = totalItems === 0 ? 'flex' : 'none';
+        }
+
+		// Render pagination controls
+		renderApplicationsPagination(window.currentApplicationsPage, totalPages, totalItems);
+    } else {
+        // Fallback if no data loaded yet (unlikely if user is typing)
+        // loadApplications(); // Don't reload, just wait
+    }
+}
+
+function renderApplicationsPagination(currentPage, totalPages, totalItems) {
+	const container = document.getElementById('pagination-container');
+	if (!container) return;
+
+	if (totalPages <= 1) {
+		container.innerHTML = '';
+		return;
+	}
+
+	let html = '<div class="pagination">';
+
+	html += `<button class="page-btn prev" ${currentPage === 1 ? 'disabled' : ''} onclick="goToApplicationsPage(${currentPage - 1})">Prev</button>`;
+
+	const maxButtons = 5;
+	let start = Math.max(1, currentPage - 2);
+	let end = Math.min(totalPages, start + maxButtons - 1);
+	if (end - start < maxButtons - 1) {
+		start = Math.max(1, end - maxButtons + 1);
+	}
+
+	for (let p = start; p <= end; p++) {
+		html += `<button class="page-btn ${p === currentPage ? 'active' : ''}" onclick="goToApplicationsPage(${p})">${p}</button>`;
+	}
+
+	html += `<button class="page-btn next" ${currentPage === totalPages ? 'disabled' : ''} onclick="goToApplicationsPage(${currentPage + 1})">Next</button>`;
+	html += `<span class="page-info">Page ${currentPage} of ${totalPages} • ${totalItems} items</span>`;
+	html += '</div>';
+
+	container.innerHTML = html;
+}
+
+function goToApplicationsPage(page) {
+	if (!window.currentApplications) return;
+
+	const totalItems = window.currentApplications.length;
+	const pageSize = APPLICATIONS_PAGE_SIZE;
+	const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+
+	const targetPage = Math.min(Math.max(1, page), totalPages);
+	window.currentApplicationsPage = targetPage;
+
+	const startIndex = (targetPage - 1) * pageSize;
+	const paginatedApps = window.currentApplications.slice(startIndex, startIndex + pageSize);
+
+	renderApplications(paginatedApps);
+	renderApplicationsPagination(window.currentApplicationsPage, totalPages, totalItems);
 }
 
 function clearSearch() {
@@ -91,7 +203,9 @@ function clearSearch() {
     if (searchInput) {
         searchInput.value = '';
         if (clearBtn) clearBtn.style.display = 'none';
-        loadApplications();
+        // When cleared, show all applications
+		window.currentApplicationsPage = 1;
+        applyFilters();
     }
 }
 
@@ -147,26 +261,18 @@ function loadApplications() {
             if (response.message) {
                 let applications = response.message;
 
-                // Apply client-side search filter (only by student name)
-                if (searchTerm) {
-                    applications = applications.filter(app => {
-                        const studentName = app.student_data 
-                            ? `${app.student_data.first_name || ''} ${app.student_data.last_name || ''}`.toLowerCase()
-                            : (app.student || '').toLowerCase();
-                        
-                        return studentName.includes(searchTerm);
-                    });
-                }
-
-                // Store all applications for filtering
+                // Store all applications for filtering (cache full list)
                 window.allApplications = applications;
+
+                // Render immediately with basic data (prevents blank screen)
+                applyFilters();
 
                 if (applications.length === 0) {
                     emptyState.style.display = 'flex';
                     return;
                 }
 
-                // Fetch student details for each application
+                // Fetch details in background - this will trigger re-renders
                 fetchStudentDetails(applications);
             } else {
                 showError('Failed to load applications');
@@ -182,7 +288,7 @@ function loadApplications() {
 function fetchStudentDetails(applications) {
     const studentNames = applications.map(app => app.student).filter(Boolean);
     if (studentNames.length === 0) {
-        renderApplications(applications);
+        applyFilters();
         return;
     }
 
@@ -214,7 +320,7 @@ function fetchStudentDetails(applications) {
         },
         error: function () {
             // If student fetch fails, render without student details
-            renderApplications(applications);
+            applyFilters();
         }
     });
 }
@@ -222,7 +328,7 @@ function fetchStudentDetails(applications) {
 function fetchPreferredCourses(applications) {
     const applicationNames = applications.map(app => app.name).filter(Boolean);
     if (applicationNames.length === 0) {
-        renderApplications(applications);
+        applyFilters();
         return;
     }
 
@@ -233,7 +339,7 @@ function fetchPreferredCourses(applications) {
     const coursesByApp = {};
 
     if (total === 0) {
-        renderApplications(applications);
+        applyFilters();
         return;
     }
 
@@ -285,7 +391,7 @@ function fetchCourseNames(applications, coursesByApp) {
         applications.forEach(app => {
             app.preferred_courses = coursesByApp[app.name] || [];
         });
-        renderApplications(applications);
+        applyFilters();
         return;
     }
 
@@ -313,14 +419,14 @@ function fetchCourseNames(applications, coursesByApp) {
                 app.preferred_courses = courseIds.map(courseId => courseNameMap[courseId] || courseId);
             });
 
-            renderApplications(applications);
+            applyFilters();
         },
         error: function () {
             // If course name fetch fails, use IDs as fallback
             applications.forEach(app => {
                 app.preferred_courses = coursesByApp[app.name] || [];
             });
-            renderApplications(applications);
+            applyFilters();
         }
     });
 }
@@ -483,10 +589,10 @@ function createTimelineContent(app) {
     // Generate timeline stages from all statuses
     const timelineStages = allStatuses.map((status, index) => {
         const isCompleted = index <= currentStatusIndex;
-        
+
         // Generate short code from status (first letters or abbreviation)
         const code = getStatusCode(status);
-        
+
         // For completed stages, use creation date for first status, modified date for current, or today
         let actualDate = null;
         if (isCompleted) {
@@ -552,7 +658,7 @@ function getStatusCode(status) {
         'Visa Refused': 'VR',
         'Closed': 'C'
     };
-    
+
     return codeMap[status] || status.substring(0, 3).toUpperCase();
 }
 
@@ -624,17 +730,17 @@ function fetchApplicationDocuments(appName, container) {
             if (response.message && response.message.length > 0) {
                 const files = response.message;
                 let filesHTML = '<div class="documents-list">';
-                
+
                 files.forEach((file, index) => {
                     const serialNumber = index + 1;
                     const fileSize = file.file_size ? formatFileSize(file.file_size) : '';
                     const fileDate = file.creation ? frappe.datetime.str_to_user(file.creation.split(' ')[0]) : '';
                     const fileIcon = getFileIcon(file.file_name);
                     // For private files, use the download API endpoint
-                    const fileUrl = file.is_private 
-                        ? `/api/method/frappe.core.doctype.file.file.download_file?file_url=${encodeURIComponent(file.file_url)}` 
+                    const fileUrl = file.is_private
+                        ? `/api/method/frappe.core.doctype.file.file.download_file?file_url=${encodeURIComponent(file.file_url)}`
                         : file.file_url;
-                    
+
                     filesHTML += `
                         <div class="document-item">
                             <div class="document-serial">${serialNumber}.</div>
@@ -654,7 +760,7 @@ function fetchApplicationDocuments(appName, container) {
                         </div>
                     `;
                 });
-                
+
                 filesHTML += '</div>';
                 container.innerHTML = filesHTML;
             } else {
@@ -751,7 +857,7 @@ function fetchApplicationComments(appName, container) {
             if (response.message && response.message.length > 0) {
                 const comments = response.message;
                 let commentsHTML = '<div class="comments-list">';
-                
+
                 comments.forEach((comment) => {
                     const commentDate = comment.creation ? frappe.datetime.str_to_user(comment.creation) : '';
                     const commentBy = comment.comment_by || comment.owner || 'Unknown';
@@ -761,7 +867,7 @@ function fetchApplicationComments(appName, container) {
                     commentContent = commentContent.replace(/style\s*=\s*["'][^"']*["']/gi, '');
                     // Remove color-related inline styles specifically
                     commentContent = commentContent.replace(/style\s*=\s*["'][^"']*color[^"']*["']/gi, '');
-                    
+
                     commentsHTML += `
                         <div class="comment-item">
                             <div class="comment-header">
@@ -779,7 +885,7 @@ function fetchApplicationComments(appName, container) {
                         </div>
                     `;
                 });
-                
+
                 commentsHTML += '</div>';
                 container.innerHTML = commentsHTML;
             } else {
@@ -853,12 +959,12 @@ function fetchApplicationReminders(appName, container) {
             if (response.message && response.message.length > 0) {
                 const reminders = response.message;
                 let remindersHTML = '<div class="reminders-list">';
-                
+
                 reminders.forEach((reminder, index) => {
                     const remindDate = reminder.remind_at ? frappe.datetime.str_to_user(reminder.remind_at) : '';
                     const isPast = reminder.remind_at ? new Date(reminder.remind_at) < new Date() : false;
                     const isNotified = reminder.notified ? true : false;
-                    
+
                     remindersHTML += `
                         <div class="reminder-item ${isPast ? 'past' : ''} ${isNotified ? 'notified' : ''}">
                             <div class="reminder-number">${index + 1}.</div>
@@ -876,7 +982,7 @@ function fetchApplicationReminders(appName, container) {
                         </div>
                     `;
                 });
-                
+
                 remindersHTML += '</div>';
                 container.innerHTML = remindersHTML;
             } else {
@@ -902,22 +1008,22 @@ function fetchApplicationReminders(appName, container) {
 function addReminder(appName) {
     const dateInput = document.getElementById(`reminder-date-${appName}`);
     const purposeInput = document.getElementById(`reminder-purpose-${appName}`);
-    
+
     if (!dateInput || !purposeInput) return;
-    
+
     const remindAt = dateInput.value;
     const description = purposeInput.value.trim();
-    
+
     if (!remindAt || !description) {
         frappe.show_alert('Please fill in both date and purpose', 3);
         return;
     }
-    
+
     // Convert datetime-local to datetime format for Frappe
     // datetime-local format: YYYY-MM-DDTHH:mm
     // Frappe expects: YYYY-MM-DD HH:mm:ss
     const remindAtDatetime = remindAt.replace('T', ' ') + ':00';
-    
+
     frappe.call({
         method: 'frappe.automation.doctype.reminder.reminder.create_new_reminder',
         args: {
@@ -951,7 +1057,7 @@ function deleteReminder(reminderName, appName) {
     if (!confirm('Are you sure you want to delete this reminder?')) {
         return;
     }
-    
+
     frappe.call({
         method: 'frappe.client.delete',
         args: {

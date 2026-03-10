@@ -1,0 +1,109 @@
+{
+    "actions": [],
+    "creation": "2026-02-08 22:24:00.000000",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "notarize_docs_required",
+        "notarized_academic_docs_upload",
+        "parents_name_matched_academics",
+        "parents_name_academics_status",
+        "parents_name_academics_affidavit_upload",
+        "parents_name_matched_passport",
+        "parents_name_passport_status",
+        "parents_name_passport_affidavit_upload",
+        "gap_docs_notarized_upload",
+        "passport_stamp_or_immigration_history",
+        "passport_stamp_check_details",
+        "full_notarized_passport_upload"
+    ],
+    "fields": [
+        {
+            "default": "0",
+            "fieldname": "notarize_docs_required",
+            "fieldtype": "Check",
+            "label": "Notarize Documents Required"
+        },
+        {
+            "depends_on": "eval:doc.notarize_docs_required",
+            "fieldname": "notarized_academic_docs_upload",
+            "fieldtype": "Attach",
+            "label": "Notarized All Academic Docs"
+        },
+        {
+            "default": "0",
+            "fieldname": "parents_name_matched_academics",
+            "fieldtype": "Check",
+            "label": "Parents Name Matched with Students Academics"
+        },
+        {
+            "default": "\u2713 Ok",
+            "depends_on": "eval:doc.parents_name_matched_academics",
+            "fieldname": "parents_name_academics_status",
+            "fieldtype": "Text",
+            "label": "Status",
+            "read_only": 1
+        },
+        {
+            "depends_on": "eval:!doc.parents_name_matched_academics",
+            "fieldname": "parents_name_academics_affidavit_upload",
+            "fieldtype": "Attach",
+            "label": "Same Name Affidavit Upload"
+        },
+        {
+            "default": "0",
+            "fieldname": "parents_name_matched_passport",
+            "fieldtype": "Check",
+            "label": "Parents Name Matched with Passport"
+        },
+        {
+            "default": "\u2713 Ok",
+            "depends_on": "eval:doc.parents_name_matched_passport",
+            "fieldname": "parents_name_passport_status",
+            "fieldtype": "Text",
+            "label": "Status",
+            "read_only": 1
+        },
+        {
+            "depends_on": "eval:!doc.parents_name_matched_passport",
+            "fieldname": "parents_name_passport_affidavit_upload",
+            "fieldtype": "Attach",
+            "label": "Same Name Affidavit Upload"
+        },
+        {
+            "fieldname": "gap_docs_notarized_upload",
+            "fieldtype": "Attach",
+            "label": "Gap Documents Notarized Upload"
+        },
+        {
+            "default": "0",
+            "fieldname": "passport_stamp_or_immigration_history",
+            "fieldtype": "Check",
+            "label": "Is there Any Stump on Passport or Immigration History"
+        },
+        {
+            "depends_on": "eval:doc.passport_stamp_or_immigration_history",
+            "fieldname": "passport_stamp_check_details",
+            "fieldtype": "Text",
+            "label": "Check Details - Whether We Can Process or Not"
+        },
+        {
+            "fieldname": "full_notarized_passport_upload",
+            "fieldtype": "Attach",
+            "label": "Full Notarized Passport Upload"
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "istable": 1,
+    "links": [],
+    "modified": "2026-02-08 22:24:00.000000",
+    "modified_by": "Administrator",
+    "module": "CRM",
+    "name": "Academic Verification",
+    "owner": "Administrator",
+    "permissions": [],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": []
+}

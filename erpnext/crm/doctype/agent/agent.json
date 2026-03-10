@@ -163,7 +163,7 @@
  "icon": "fa fa-users",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-04 14:53:28.974215",
+ "modified": "2026-01-20 18:56:13.369677",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Agent",
@@ -179,17 +179,6 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
-   "share": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Desk User",
    "share": 1,
    "write": 1
   }

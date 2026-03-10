@@ -35,16 +35,11 @@ class ServiceLevelAgreement(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.types import DF
-
 		from erpnext.support.doctype.pause_sla_on_status.pause_sla_on_status import PauseSLAOnStatus
 		from erpnext.support.doctype.service_day.service_day import ServiceDay
-		from erpnext.support.doctype.service_level_priority.service_level_priority import (
-			ServiceLevelPriority,
-		)
-		from erpnext.support.doctype.sla_fulfilled_on_status.sla_fulfilled_on_status import (
-			SLAFulfilledOnStatus,
-		)
+		from erpnext.support.doctype.service_level_priority.service_level_priority import ServiceLevelPriority
+		from erpnext.support.doctype.sla_fulfilled_on_status.sla_fulfilled_on_status import SLAFulfilledOnStatus
+		from frappe.types import DF
 
 		apply_sla_for_resolution: DF.Check
 		condition: DF.Code | None

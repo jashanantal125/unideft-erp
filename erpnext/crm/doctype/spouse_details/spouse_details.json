@@ -1,0 +1,764 @@
+{
+    "actions": [],
+    "creation": "2026-02-08 15:30:00.000000",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "family_details_sb",
+        "do_you_have_kids",
+        "take_kid_with_you",
+        "kid_name",
+        "kid_dob",
+        "kid_passport",
+        "column_break_spouse_info",
+        "spouse_name",
+        "spouse_dob",
+        "spouse_passport",
+        "marriage_details_sb",
+        "marriage_date",
+        "marriage_duration",
+        "marriage_cert_verified",
+        "marriage_cert_upload",
+        "marriage_reminder",
+        "education_details_sb",
+        "edu_result_link",
+        "edu_university_email",
+        "edu_school_digi_locker_id",
+        "edu_school_digi_locker_password",
+        "edu_docs_verified",
+        "gap_proof_sb",
+        "gap_proof_type",
+        "edu_reason",
+        "reappear_subject",
+        "reappear_date",
+        "reappear_admit_card",
+        "reappear_dmc",
+        "higher_university",
+        "higher_course",
+        "higher_admit_card",
+        "higher_fee_receipt",
+        "higher_dmc",
+        "higher_enrollment_proof",
+        "diploma_institute",
+        "diploma_course",
+        "diploma_duration",
+        "diploma_docs",
+        "diploma_verification_info",
+        "diploma_verified",
+        "english_date_of_issue",
+        "english_score_card",
+        "other_details",
+        "other_supporting_docs",
+        "work_type",
+        "job_type",
+        "private_company",
+        "private_position",
+        "private_duration",
+        "private_domain",
+        "private_salary",
+        "private_salary_mode",
+        "cash_slips_checked",
+        "cash_slips_comments",
+        "cash_slips_months",
+        "cash_reminder",
+        "acc_statement_months",
+        "acc_entries_exist",
+        "acc_statement_verified",
+        "acc_reason_no_verify",
+        "acc_reminder",
+        "work_exp_letter_verified",
+        "work_exp_no_verify_comment",
+        "govt_dept",
+        "govt_pos",
+        "govt_id_card",
+        "govt_salary",
+        "govt_slips",
+        "govt_statement",
+        "proof_gst",
+        "gst_number",
+        "gst_verified",
+        "gst_certificate",
+        "proof_msme",
+        "msme_company_name",
+        "msme_start_duration",
+        "msme_reg_date",
+        "msme_duration",
+        "msme_logic_note",
+        "msme_upload",
+        "proof_inc",
+        "inc_start_date",
+        "inc_reg_date",
+        "inc_upload",
+        "inc_logic_note",
+        "proof_shop",
+        "shop_company_name",
+        "shop_start_duration",
+        "shop_reg_date",
+        "shop_duration",
+        "shop_logic_note",
+        "shop_upload",
+        "proof_iec",
+        "iec_company_name",
+        "iec_start_duration",
+        "iec_reg_date",
+        "iec_duration",
+        "iec_logic_note",
+        "iec_upload",
+        "work_exp_supporting_docs_pdf",
+        "income_proof",
+        "itr_details",
+        "form_16_details"
+    ],
+    "fields": [
+        {
+            "fieldname": "family_details_sb",
+            "fieldtype": "Section Break",
+            "label": "Family Details"
+        },
+        {
+            "fieldname": "do_you_have_kids",
+            "fieldtype": "Select",
+            "label": "Do you have Kids?",
+            "options": "\nYes\nNo"
+        },
+        {
+            "depends_on": "eval:doc.do_you_have_kids == 'Yes'",
+            "fieldname": "take_kid_with_you",
+            "fieldtype": "Select",
+            "label": "Are you going to take your kid with you?",
+            "options": "\nYes\nNo"
+        },
+        {
+            "fieldname": "kid_name",
+            "fieldtype": "Data",
+            "label": "Name of kid"
+        },
+        {
+            "fieldname": "kid_dob",
+            "fieldtype": "Date",
+            "label": "DOB"
+        },
+        {
+            "depends_on": "eval:doc.take_kid_with_you == 'Yes'",
+            "fieldname": "kid_passport",
+            "fieldtype": "Attach",
+            "label": "Upload Passport"
+        },
+        {
+            "fieldname": "column_break_spouse_info",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "spouse_name",
+            "fieldtype": "Data",
+            "label": "Name of Spouse"
+        },
+        {
+            "fieldname": "spouse_dob",
+            "fieldtype": "Date",
+            "label": "DOB"
+        },
+        {
+            "fieldname": "spouse_passport",
+            "fieldtype": "Attach",
+            "label": "Upload Passport"
+        },
+        {
+            "fieldname": "marriage_details_sb",
+            "fieldtype": "Section Break",
+            "label": "Marriage Details"
+        },
+        {
+            "fieldname": "marriage_date",
+            "fieldtype": "Date",
+            "label": "Date of Marriage"
+        },
+        {
+            "fieldname": "marriage_duration",
+            "fieldtype": "Data",
+            "label": "Marriage Duration",
+            "read_only": 1
+        },
+        {
+            "fieldname": "marriage_cert_verified",
+            "fieldtype": "Select",
+            "label": "Verification of Marriage certificate",
+            "options": "\nYes\nNo"
+        },
+        {
+            "depends_on": "eval:doc.marriage_cert_verified == 'Yes'",
+            "fieldname": "marriage_cert_upload",
+            "fieldtype": "Attach",
+            "label": "Upload Marriage Certificate"
+        },
+        {
+            "default": "set reminder to verify",
+            "depends_on": "eval:doc.marriage_cert_verified == 'No'",
+            "fieldname": "marriage_reminder",
+            "fieldtype": "Data",
+            "label": "Status",
+            "read_only": 1
+        },
+        {
+            "fieldname": "education_details_sb",
+            "fieldtype": "Section Break",
+            "label": "Spouse Education Details"
+        },
+        {
+            "fieldname": "edu_result_link",
+            "fieldtype": "Data",
+            "label": "Result verification link (if applicable)"
+        },
+        {
+            "fieldname": "edu_university_email",
+            "fieldtype": "Data",
+            "label": "University domain email id"
+        },
+        {
+            "fieldname": "edu_school_digi_locker_id",
+            "fieldtype": "Data",
+            "label": "10th and 12th Digi Locker ID"
+        },
+        {
+            "fieldname": "edu_school_digi_locker_password",
+            "fieldtype": "Password",
+            "label": "Digi Locker Password"
+        },
+        {
+            "fieldname": "edu_docs_verified",
+            "fieldtype": "Select",
+            "label": "10th/12th Documents Verified",
+            "options": "\nYes\nNo"
+        },
+        {
+            "fieldname": "gap_proof_sb",
+            "fieldtype": "Section Break",
+            "label": "F. Gap Proof"
+        },
+        {
+            "fieldname": "gap_proof_type",
+            "fieldtype": "Select",
+            "label": "Gap Proof",
+            "options": "\nNo Gap\nEducational\nWork\nOther"
+        },
+        {
+            "depends_on": "eval:doc.gap_proof_type == 'Educational'",
+            "fieldname": "edu_reason",
+            "fieldtype": "Select",
+            "label": "Educational Reason",
+            "options": "\nReappear Exam\nPursuing Higher Studies\nDiploma / Certificate\nIELTS / PTE"
+        },
+        {
+            "depends_on": "eval:doc.edu_reason == 'Reappear Exam' && doc.gap_proof_type == 'Educational'",
+            "fieldname": "reappear_subject",
+            "fieldtype": "Data",
+            "label": "Subject of Reappear"
+        },
+        {
+            "depends_on": "eval:doc.edu_reason == 'Reappear Exam' && doc.gap_proof_type == 'Educational'",
+            "fieldname": "reappear_date",
+            "fieldtype": "Date",
+            "label": "Month / Year"
+        },
+        {
+            "depends_on": "eval:doc.edu_reason == 'Reappear Exam' && doc.gap_proof_type == 'Educational'",
+            "fieldname": "reappear_admit_card",
+            "fieldtype": "Attach",
+            "label": "Reappear Admit Card"
+        },
+        {
+            "depends_on": "eval:doc.edu_reason == 'Reappear Exam' && doc.gap_proof_type == 'Educational'",
+            "fieldname": "reappear_dmc",
+            "fieldtype": "Attach",
+            "label": "DMC"
+        },
+        {
+            "depends_on": "eval:doc.edu_reason == 'Pursuing Higher Studies' && doc.gap_proof_type == 'Educational'",
+            "fieldname": "higher_university",
+            "fieldtype": "Data",
+            "label": "University Name"
+        },
+        {
+            "depends_on": "eval:doc.edu_reason == 'Pursuing Higher Studies' && doc.gap_proof_type == 'Educational'",
+            "fieldname": "higher_course",
+            "fieldtype": "Data",
+            "label": "Course"
+        },
+        {
+            "depends_on": "eval:doc.edu_reason == 'Pursuing Higher Studies' && doc.gap_proof_type == 'Educational'",
+            "fieldname": "higher_admit_card",
+            "fieldtype": "Attach",
+            "label": "Admit Card"
+        },
+        {
+            "depends_on": "eval:doc.edu_reason == 'Pursuing Higher Studies' && doc.gap_proof_type == 'Educational'",
+            "fieldname": "higher_fee_receipt",
+            "fieldtype": "Attach",
+            "label": "Fee Receipt"
+        },
+        {
+            "depends_on": "eval:doc.edu_reason == 'Pursuing Higher Studies' && doc.gap_proof_type == 'Educational'",
+            "fieldname": "higher_dmc",
+            "fieldtype": "Attach",
+            "label": "DMC"
+        },
+        {
+            "depends_on": "eval:doc.edu_reason == 'Pursuing Higher Studies' && doc.gap_proof_type == 'Educational'",
+            "fieldname": "higher_enrollment_proof",
+            "fieldtype": "Attach",
+            "label": "Proof of Enrollment"
+        },
+        {
+            "depends_on": "eval:doc.edu_reason == 'Diploma / Certificate' && doc.gap_proof_type == 'Educational'",
+            "fieldname": "diploma_institute",
+            "fieldtype": "Data",
+            "label": "Institute Name"
+        },
+        {
+            "depends_on": "eval:doc.edu_reason == 'Diploma / Certificate' && doc.gap_proof_type == 'Educational'",
+            "fieldname": "diploma_course",
+            "fieldtype": "Data",
+            "label": "Course Name"
+        },
+        {
+            "depends_on": "eval:doc.edu_reason == 'Diploma / Certificate' && doc.gap_proof_type == 'Educational'",
+            "fieldname": "diploma_duration",
+            "fieldtype": "Data",
+            "label": "Course Duration"
+        },
+        {
+            "depends_on": "eval:doc.edu_reason == 'Diploma / Certificate' && doc.gap_proof_type == 'Educational'",
+            "fieldname": "diploma_docs",
+            "fieldtype": "Attach",
+            "label": "Supporting Documents"
+        },
+        {
+            "depends_on": "eval:doc.edu_reason == 'Diploma / Certificate' && doc.gap_proof_type == 'Educational'",
+            "fieldname": "diploma_verification_info",
+            "fieldtype": "Data",
+            "label": "Verification Link or Email ID"
+        },
+        {
+            "depends_on": "eval:doc.edu_reason == 'Diploma / Certificate' && doc.gap_proof_type == 'Educational'",
+            "fieldname": "diploma_verified",
+            "fieldtype": "Check",
+            "label": "Docs Verified"
+        },
+        {
+            "depends_on": "eval:doc.edu_reason == 'IELTS / PTE' && doc.gap_proof_type == 'Educational'",
+            "fieldname": "english_date_of_issue",
+            "fieldtype": "Date",
+            "label": "Date of Issue"
+        },
+        {
+            "depends_on": "eval:doc.edu_reason == 'IELTS / PTE' && doc.gap_proof_type == 'Educational'",
+            "fieldname": "english_score_card",
+            "fieldtype": "Attach",
+            "label": "Score Card"
+        },
+        {
+            "depends_on": "eval:doc.gap_proof_type == 'Other'",
+            "fieldname": "other_details",
+            "fieldtype": "Small Text",
+            "label": "Details"
+        },
+        {
+            "depends_on": "eval:doc.gap_proof_type == 'Other'",
+            "fieldname": "other_supporting_docs",
+            "fieldtype": "Attach",
+            "label": "Supporting Documents"
+        },
+        {
+            "depends_on": "eval:doc.gap_proof_type == 'Work'",
+            "fieldname": "work_type",
+            "fieldtype": "Select",
+            "label": "Work/Business",
+            "options": "\nJob\nBusiness"
+        },
+        {
+            "depends_on": "eval:doc.work_type == 'Job' && doc.gap_proof_type == 'Work'",
+            "fieldname": "job_type",
+            "fieldtype": "Select",
+            "label": "Job Type",
+            "options": "\nPrivate\nGovernment"
+        },
+        {
+            "depends_on": "eval:doc.job_type == 'Private' && doc.work_type == 'Job' && doc.gap_proof_type == 'Work'",
+            "fieldname": "private_company",
+            "fieldtype": "Data",
+            "label": "Company Name"
+        },
+        {
+            "depends_on": "eval:doc.job_type == 'Private' && doc.work_type == 'Job' && doc.gap_proof_type == 'Work'",
+            "fieldname": "private_position",
+            "fieldtype": "Data",
+            "label": "Position"
+        },
+        {
+            "depends_on": "eval:doc.job_type == 'Private' && doc.work_type == 'Job' && doc.gap_proof_type == 'Work'",
+            "fieldname": "private_duration",
+            "fieldtype": "Data",
+            "label": "Duration"
+        },
+        {
+            "depends_on": "eval:doc.job_type == 'Private' && doc.work_type == 'Job' && doc.gap_proof_type == 'Work'",
+            "fieldname": "private_domain",
+            "fieldtype": "Data",
+            "label": "Employer Domain ID"
+        },
+        {
+            "depends_on": "eval:doc.job_type == 'Private' && doc.work_type == 'Job' && doc.gap_proof_type == 'Work'",
+            "fieldname": "private_salary",
+            "fieldtype": "Data",
+            "label": "Salary amount"
+        },
+        {
+            "depends_on": "eval:doc.job_type == 'Private' && doc.work_type == 'Job' && doc.gap_proof_type == 'Work'",
+            "fieldname": "private_salary_mode",
+            "fieldtype": "Select",
+            "label": "Salary Mode",
+            "options": "\nCash\nBank Account"
+        },
+        {
+            "depends_on": "eval:doc.private_salary_mode == 'Cash' && doc.job_type == 'Private'",
+            "fieldname": "cash_slips_checked",
+            "fieldtype": "Select",
+            "label": "Salary slips cross checked",
+            "options": "\nYes\nNo"
+        },
+        {
+            "depends_on": "eval:doc.cash_slips_checked == 'No' && doc.private_salary_mode == 'Cash'",
+            "fieldname": "cash_slips_comments",
+            "fieldtype": "Small Text",
+            "label": "Comments"
+        },
+        {
+            "depends_on": "eval:doc.private_salary_mode == 'Cash' && doc.job_type == 'Private'",
+            "fieldname": "cash_slips_months",
+            "fieldtype": "Select",
+            "label": "Salary slips Required in months",
+            "options": "\n6 month and above 6 months\nbelow 6 month"
+        },
+        {
+            "default": "set reminder for 6-month salary slips",
+            "depends_on": "eval:doc.cash_slips_months == 'below 6 month' && doc.private_salary_mode == 'Cash'",
+            "fieldname": "cash_reminder",
+            "fieldtype": "Data",
+            "label": "Instruction",
+            "read_only": 1
+        },
+        {
+            "depends_on": "eval:doc.private_salary_mode == 'Bank Account' && doc.job_type == 'Private'",
+            "fieldname": "acc_statement_months",
+            "fieldtype": "Select",
+            "label": "Salary Statement Month Duration",
+            "options": "\n6 month or above 6 months\nBelow 6 months"
+        },
+        {
+            "depends_on": "eval:doc.private_salary_mode == 'Bank Account' && doc.job_type == 'Private'",
+            "fieldname": "acc_entries_exist",
+            "fieldtype": "Select",
+            "label": "Salary entry exists in statement",
+            "options": "\nYes\nNo"
+        },
+        {
+            "depends_on": "eval:doc.acc_entries_exist == 'Yes' && doc.private_salary_mode == 'Bank Account'",
+            "fieldname": "acc_statement_verified",
+            "fieldtype": "Select",
+            "label": "Verify salary statement",
+            "options": "\nYes\nNo"
+        },
+        {
+            "depends_on": "eval:doc.acc_statement_verified == 'No' && doc.acc_entries_exist == 'Yes'",
+            "fieldname": "acc_reason_no_verify",
+            "fieldtype": "Small Text",
+            "label": "Reason"
+        },
+        {
+            "default": "set reminder for 6-month statement",
+            "depends_on": "eval:doc.acc_statement_months == 'Below 6 months' && doc.private_salary_mode == 'Bank Account'",
+            "fieldname": "acc_reminder",
+            "fieldtype": "Data",
+            "label": "Instruction",
+            "read_only": 1
+        },
+        {
+            "depends_on": "eval:doc.job_type == 'Private' && doc.work_type == 'Job'",
+            "fieldname": "work_exp_letter_verified",
+            "fieldtype": "Select",
+            "label": "Work experience letter verified",
+            "options": "\nYes\nNo"
+        },
+        {
+            "depends_on": "eval:doc.work_exp_letter_verified == 'No' && doc.job_type == 'Private'",
+            "fieldname": "work_exp_no_verify_comment",
+            "fieldtype": "Small Text",
+            "label": "Comments why not verified"
+        },
+        {
+            "depends_on": "eval:doc.job_type == 'Government' && doc.work_type == 'Job'",
+            "fieldname": "govt_dept",
+            "fieldtype": "Data",
+            "label": "Department"
+        },
+        {
+            "depends_on": "eval:doc.job_type == 'Government' && doc.work_type == 'Job'",
+            "fieldname": "govt_pos",
+            "fieldtype": "Data",
+            "label": "Position"
+        },
+        {
+            "depends_on": "eval:doc.job_type == 'Government' && doc.work_type == 'Job'",
+            "fieldname": "govt_id_card",
+            "fieldtype": "Attach",
+            "label": "ID Card"
+        },
+        {
+            "depends_on": "eval:doc.job_type == 'Government' && doc.work_type == 'Job'",
+            "fieldname": "govt_salary",
+            "fieldtype": "Data",
+            "label": "Current Salary"
+        },
+        {
+            "depends_on": "eval:doc.job_type == 'Government' && doc.work_type == \"Job\"",
+            "fieldname": "govt_slips",
+            "fieldtype": "Attach",
+            "label": "Upload salary slip"
+        },
+        {
+            "depends_on": "eval:doc.job_type == \"Government\" && doc.work_type == \"Job\"",
+            "fieldname": "govt_statement",
+            "fieldtype": "Attach",
+            "label": "Upload Salary statement"
+        },
+        {
+            "depends_on": "eval:doc.work_type == 'Business' && doc.gap_proof_type == 'Work'",
+            "fieldname": "proof_gst",
+            "fieldtype": "Check",
+            "label": "GST Certificate"
+        },
+        {
+            "depends_on": "eval:doc.proof_gst == 1",
+            "fieldname": "gst_number",
+            "fieldtype": "Data",
+            "label": "GST Number"
+        },
+        {
+            "depends_on": "eval:doc.proof_gst == 1",
+            "fieldname": "gst_verified",
+            "fieldtype": "Check",
+            "label": "GST verified"
+        },
+        {
+            "depends_on": "eval:doc.proof_gst == 1",
+            "fieldname": "gst_certificate",
+            "fieldtype": "Attach",
+            "label": "Upload GST Certificate"
+        },
+        {
+            "depends_on": "eval:doc.work_type == 'Business' && doc.gap_proof_type == 'Work'",
+            "fieldname": "proof_msme",
+            "fieldtype": "Check",
+            "label": "MSME Certificate"
+        },
+        {
+            "depends_on": "eval:doc.proof_msme == 1",
+            "fieldname": "msme_company_name",
+            "fieldtype": "Data",
+            "label": "Company Name (MSME)"
+        },
+        {
+            "depends_on": "eval:doc.proof_msme == 1",
+            "fieldname": "msme_start_duration",
+            "fieldtype": "Data",
+            "label": "Company Start duration (MSME)"
+        },
+        {
+            "depends_on": "eval:doc.proof_msme == 1",
+            "fieldname": "msme_reg_date",
+            "fieldtype": "Date",
+            "label": "MSME Registration date"
+        },
+        {
+            "depends_on": "eval:doc.proof_msme == 1",
+            "fieldname": "msme_duration",
+            "fieldtype": "Select",
+            "label": "MSME Registration Duration",
+            "options": "\nBelow 1 Year\nBelow 2 Years\nAbove 2 Years"
+        },
+        {
+            "default": "Current Account Statement required/GST Certification required",
+            "depends_on": "eval:doc.proof_msme == 1 && (doc.msme_duration == 'Below 1 Year' || doc.msme_duration == 'Below 2 Years')",
+            "fieldname": "msme_logic_note",
+            "fieldtype": "Data",
+            "label": "Instruction",
+            "read_only": 1
+        },
+        {
+            "depends_on": "eval:doc.proof_msme == 1",
+            "fieldname": "msme_upload",
+            "fieldtype": "Attach",
+            "label": "Upload MSME"
+        },
+        {
+            "depends_on": "eval:doc.work_type == 'Business' && doc.gap_proof_type == 'Work'",
+            "fieldname": "proof_inc",
+            "fieldtype": "Check",
+            "label": "Incorporation Certificate"
+        },
+        {
+            "depends_on": "eval:doc.proof_inc == 1",
+            "fieldname": "inc_start_date",
+            "fieldtype": "Date",
+            "label": "Business Start Date"
+        },
+        {
+            "depends_on": "eval:doc.proof_inc == 1",
+            "fieldname": "inc_reg_date",
+            "fieldtype": "Date",
+            "label": "Date of Registration"
+        },
+        {
+            "depends_on": "eval:doc.proof_inc == 1",
+            "fieldname": "inc_upload",
+            "fieldtype": "Attach",
+            "label": "Upload Incorporation Certificate"
+        },
+        {
+            "default": "Current Account Statement (Mandatory)",
+            "depends_on": "eval:doc.proof_inc == 1",
+            "fieldname": "inc_logic_note",
+            "fieldtype": "Data",
+            "label": "Instruction",
+            "read_only": 1
+        },
+        {
+            "depends_on": "eval:doc.work_type == 'Business' && doc.gap_proof_type == 'Work'",
+            "fieldname": "proof_shop",
+            "fieldtype": "Check",
+            "label": "Shop Act"
+        },
+        {
+            "depends_on": "eval:doc.proof_shop == 1",
+            "fieldname": "shop_company_name",
+            "fieldtype": "Data",
+            "label": "Company Name (Shop Act)"
+        },
+        {
+            "depends_on": "eval:doc.proof_shop == 1",
+            "fieldname": "shop_start_duration",
+            "fieldtype": "Data",
+            "label": "Company Start duration (Shop Act)"
+        },
+        {
+            "depends_on": "eval:doc.proof_shop == 1",
+            "fieldname": "shop_reg_date",
+            "fieldtype": "Date",
+            "label": "MSME Registration date (Shop Act)"
+        },
+        {
+            "depends_on": "eval:doc.proof_shop == 1",
+            "fieldname": "shop_duration",
+            "fieldtype": "Select",
+            "label": "MSME Registration Duration (Shop Act)",
+            "options": "\nBelow 1 Year\nBelow 2 Years\nAbove 2 Years"
+        },
+        {
+            "default": "Current Account Statement required/GST Certification required",
+            "depends_on": "eval:doc.proof_shop == 1 && (doc.shop_duration == 'Below 1 Year' || doc.shop_duration == 'Below 2 Years')",
+            "fieldname": "shop_logic_note",
+            "fieldtype": "Data",
+            "label": "Instruction",
+            "read_only": 1
+        },
+        {
+            "depends_on": "eval:doc.proof_shop == 1",
+            "fieldname": "shop_upload",
+            "fieldtype": "Attach",
+            "label": "Upload Shop Act Certificate"
+        },
+        {
+            "depends_on": "eval:doc.work_type == 'Business' && doc.gap_proof_type == 'Work'",
+            "fieldname": "proof_iec",
+            "fieldtype": "Check",
+            "label": "IEC Certificate"
+        },
+        {
+            "depends_on": "eval:doc.proof_iec == 1",
+            "fieldname": "iec_company_name",
+            "fieldtype": "Data",
+            "label": "Company Name (IEC)"
+        },
+        {
+            "depends_on": "eval:doc.proof_iec == 1",
+            "fieldname": "iec_start_duration",
+            "fieldtype": "Data",
+            "label": "Company Start duration (IEC)"
+        },
+        {
+            "depends_on": "eval:doc.proof_iec == 1",
+            "fieldname": "iec_reg_date",
+            "fieldtype": "Date",
+            "label": "MSME Registration date (IEC)"
+        },
+        {
+            "depends_on": "eval:doc.proof_iec == 1",
+            "fieldname": "iec_duration",
+            "fieldtype": "Select",
+            "label": "MSME Registration Duration (IEC)",
+            "options": "\nBelow 1 Year\nBelow 2 Years\nAbove 2 Years"
+        },
+        {
+            "default": "Current Account Statement required/GST Certification required",
+            "depends_on": "eval:doc.proof_iec == 1 && (doc.iec_duration == 'Below 1 Year' || doc.iec_duration == 'Below 2 Years')",
+            "fieldname": "iec_logic_note",
+            "fieldtype": "Data",
+            "label": "Instruction",
+            "read_only": 1
+        },
+        {
+            "depends_on": "eval:doc.proof_iec == 1",
+            "fieldname": "iec_upload",
+            "fieldtype": "Attach",
+            "label": "Upload IEC certificate"
+        },
+        {
+            "depends_on": "eval:doc.gap_proof_type == 'Work'",
+            "fieldname": "work_exp_supporting_docs_pdf",
+            "fieldtype": "Attach",
+            "label": "Upload work experience and supporting documents in single PDF"
+        },
+        {
+            "fieldname": "income_proof",
+            "fieldtype": "Select",
+            "label": "Income proof",
+            "options": "\nITR\nForm 16"
+        },
+        {
+            "depends_on": "eval:doc.income_proof == 'ITR'",
+            "fieldname": "itr_details",
+            "fieldtype": "Table",
+            "label": "ITR Details",
+            "options": "Spouse ITR Details"
+        },
+        {
+            "depends_on": "eval:doc.income_proof == 'Form 16'",
+            "fieldname": "form_16_details",
+            "fieldtype": "Table",
+            "label": "Form 16 Details",
+            "options": "Spouse Form 16 Details"
+        }
+    ],
+    "istable": 1,
+    "links": [],
+    "modified": "2026-02-08 15:30:00.000000",
+    "modified_by": "Administrator",
+    "module": "CRM",
+    "name": "Spouse Details",
+    "owner": "Administrator",
+    "permissions": [],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": []
+}

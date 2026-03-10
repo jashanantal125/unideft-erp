@@ -1977,6 +1977,63 @@ body {
 	}
 }
 
+/* Pagination */
+.pagination-container {
+	margin: 16px 0 0 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.pagination {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 12px;
+	background: #fff;
+	border: 1px solid #e5e7eb;
+	border-radius: 10px;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+	flex-wrap: wrap;
+}
+
+.pagination .page-btn {
+	padding: 8px 12px;
+	border: 1px solid #e5e7eb;
+	border-radius: 6px;
+	background: #f9fafb;
+	color: #374151;
+	font-size: 13px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	min-width: 38px;
+}
+
+.pagination .page-btn:hover:not(:disabled) {
+	background: #e5f7dd;
+	border-color: #52c41a;
+	color: #24630d;
+}
+
+.pagination .page-btn.active {
+	background: #52c41a;
+	border-color: #52c41a;
+	color: #fff;
+	box-shadow: 0 2px 6px rgba(82, 196, 26, 0.4);
+}
+
+.pagination .page-btn:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.pagination .page-info {
+	font-size: 12px;
+	color: #6b7280;
+	padding-left: 6px;
+}
+
 /* Smooth transitions */
 .application-card,
 .tab-btn,

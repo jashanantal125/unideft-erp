@@ -1,16 +1,7 @@
 {
  "app": "erpnext",
- "charts": [
-  {
-   "chart_name": "Applications Status",
-   "label": "Application Status"
-  },
-  {
-   "chart_name": "Application Status Wise",
-   "label": "Status Wise "
-  }
- ],
- "content": "[{\"id\":\"XGIwEUStw_\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Your Shortcuts</b></span>\",\"col\":12}},{\"id\":\"e8-V8M4qs3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"+ Add new  applications\",\"col\":3}},{\"id\":\"pPx-dG0m3W\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"New Applications\",\"col\":4}},{\"id\":\"X1Sz2dA0VW\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Pending applications (Total)\",\"col\":4}},{\"id\":\"XtkjU9utEL\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"g-V-9L698O\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Reports Chart</b></span>\",\"col\":12}},{\"id\":\"uWMnCgsVlG\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Application Status\",\"col\":12}},{\"id\":\"2BNspRi4n3\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Status Wise \",\"col\":12}},{\"id\":\"3U8ckN5ogr\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Recent Applications\",\"col\":6}},{\"id\":\"a_YQVEN-OC\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Counsellings\",\"col\":6}}]",
+ "charts": [],
+ "content": "[{\"id\":\"LAKRmpYMRA\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"XGIwEUStw_\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Your Shortcuts</b></span>\",\"col\":12}},{\"id\":\"wdROEmB_XG\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Dashboard\",\"col\":3}},{\"id\":\"69RN0XsiJK\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Leads\",\"col\":3}},{\"id\":\"6UH-6i2zWH\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Applications\",\"col\":3}},{\"id\":\"5FiSddf9Kh\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Counsellings\",\"col\":3}},{\"id\":\"-I9HhcgUKE\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"ttpROKW9vk\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Reports &amp; Masters</b></span>\",\"col\":12}},{\"id\":\"qamF8iFp7U\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Courses\",\"col\":3}},{\"id\":\"5hnxnBRrAk\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Universities\",\"col\":3}},{\"id\":\"OClawfbye9\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Students\",\"col\":3}},{\"id\":\"XtkjU9utEL\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"g-V-9L698O\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Recents</b></span>\",\"col\":12}},{\"id\":\"3U8ckN5ogr\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Recent Applications\",\"col\":6}},{\"id\":\"a_YQVEN-OC\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Counsellings\",\"col\":6}}]",
  "creation": "2020-01-23 14:48:30.183272",
  "custom_blocks": [],
  "docstatus": 0,
@@ -153,7 +144,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-01-18 11:00:54.465365",
+ "modified": "2026-01-20 18:57:26.824681",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "CRM",
@@ -193,6 +184,31 @@
    "link_to": "Application",
    "stats_filter": "[]",
    "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "format": "{} Open",
+   "icon": "fa fa-user",
+   "label": "Leads",
+   "link_to": "Lead",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "icon": "fa fa-book",
+   "label": "Courses",
+   "link_to": "Course",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "icon": "fa fa-dashboard",
+   "label": "Dashboard",
+   "link_to": "CRM",
+   "type": "Dashboard"
   }
  ],
  "title": "CRM",

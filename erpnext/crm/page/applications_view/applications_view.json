@@ -1,0 +1,26 @@
+{
+ "creation": "2026-02-06 00:00:00.000000",
+ "doctype": "Page",
+ "icon": "fa fa-th-large",
+ "idx": 0,
+ "modified": "2026-02-06 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "applications_view",
+ "owner": "Administrator",
+ "page_name": "applications_view",
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Team Lead"
+  },
+  {
+   "role": "Team Executive"
+  }
+ ],
+ "standard": "Yes",
+ "system_page": 0,
+ "title": "Applications View"
+}

@@ -1,0 +1,58 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-02-01 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "field_order": [
+  "processing_agent_type",
+  "processing_agent_direct",
+  "processing_agent_vendor"
+ ],
+ "fields": [
+  {
+   "fieldname": "processing_agent_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Processing Agent",
+   "options": "\nDirect\nVendor"
+  },
+  {
+   "depends_on": "eval:doc.processing_agent_type == 'Direct'",
+   "description": "Auto-pick company names associated with the university",
+   "fieldname": "processing_agent_direct",
+   "fieldtype": "Text",
+   "label": "Processing Agent Name",
+   "options": "Company"
+  },
+  {
+   "depends_on": "eval:doc.processing_agent_type == 'Vendor'",
+   "description": "Select vendor as per priority (only 3 priorities visible)",
+   "fieldname": "processing_agent_vendor",
+   "fieldtype": "Text",
+   "label": "Vendor Name",
+   "options": "vendor"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "modified": "2026-02-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Processing Agent Details",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

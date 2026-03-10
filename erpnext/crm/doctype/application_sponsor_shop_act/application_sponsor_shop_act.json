@@ -1,0 +1,63 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-01-13 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "company_name",
+  "company_start_duration",
+  "shop_act_registration_date",
+  "shop_act_upload"
+ ],
+ "fields": [
+  {
+   "fieldname": "company_name",
+   "fieldtype": "Text",
+   "in_list_view": 1,
+   "label": "Company Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "company_start_duration",
+   "fieldtype": "Duration",
+   "hide_seconds": 1,
+   "in_list_view": 1,
+   "label": "Company Start Duration",
+   "reqd": 1
+  },
+  {
+   "fieldname": "shop_act_registration_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Shop Act Registration Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "shop_act_upload",
+   "fieldtype": "Attach",
+   "label": "Upload Shop Act"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "modified": "2026-01-13 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Application Sponsor Shop Act",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

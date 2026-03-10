@@ -1,0 +1,2378 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2025-01-15 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "details_tab",
+  "application_section",
+  "student",
+  "contact_number",
+  "student_email",
+  "agent",
+  "destination_country",
+  "assigned_team",
+  "assigned_executive",
+  "column_break_jdtj",
+  "application_type",
+  "status",
+  "higher_education",
+  "preferred_university",
+  "intake",
+  "column_break_ilyf",
+  "naming_series",
+  "dob",
+  "martial_status",
+  "current_age",
+  "any_visa_refused",
+  "visa_refused_not_able_to_process",
+  "visa_refused_ok",
+  "study_gap",
+  "study_gap_proof",
+  "study_gap_ok",
+  "spouse_details_section",
+  "spouse_name",
+  "column_break_zwta",
+  "spouse_dob",
+  "column_break_cnrx",
+  "spouse_qualification",
+  "column_break_zdbg",
+  "spouse_study_gap",
+  "section_break_dkel",
+  "preferred_courses",
+  "information_tab",
+  "section_a_email",
+  "is_package_case",
+  "data_swym",
+  "recovery_email_id",
+  "column_break_section_a",
+  "password",
+  "login_contact_no",
+  "section_b_documents",
+  "twelfth_admit_card_uploaded",
+  "documents_10th_to_12th",
+  "documents_verified",
+  "documents_verified_pdf",
+  "documents_not_accepted_alert",
+  "column_break_section_b",
+  "data_isfw",
+  "digi_locker_id_optional",
+  "digi_locker_password",
+  "section_c_english_test",
+  "english_test_type",
+  "ielts_validity",
+  "ielts_listening_score",
+  "ielts_writing_score",
+  "ielts_user_id",
+  "ielts_password",
+  "ielts_verified",
+  "ielts_upload",
+  "ielts_not_accepted_alert",
+  "pte_exam_date",
+  "pte_reading_score",
+  "pte_speaking_score",
+  "pte_user_id",
+  "pte_verified",
+  "pte_upload",
+  "pte_not_accepted_alert",
+  "toefl_test_format",
+  "toefl_validity",
+  "toefl_reading_score",
+  "toefl_speaking_score",
+  "toefl_user_id",
+  "toefl_password",
+  "toefl_verified",
+  "toefl_upload",
+  "toefl_not_accepted_alert",
+  "column_break_section_c",
+  "ielts_exam_date",
+  "ielts_validity_month_count",
+  "ielts_reading_score",
+  "ielts_speaking_score",
+  "ielts_overall_score",
+  "pte_validity",
+  "pte_validity_month_count",
+  "pte_listening_score",
+  "pte_writing_score",
+  "pte_overall_score",
+  "pte_password",
+  "toefl_exam_date",
+  "toefl_validity_month_count",
+  "toefl_listening_score",
+  "toefl_writing_score",
+  "toefl_overall_score",
+  "toefl_home_edition_not_accepted_alert",
+  "section_d_passport",
+  "passport_uploaded",
+  "passport_documents",
+  "column_break_section_d",
+  "section_e_processing_agent",
+  "processing_agent_type",
+  "processing_agent_vendor",
+  "column_break_section_e",
+  "processing_agent_direct",
+  "section_f_applications",
+  "application_filled_by",
+  "application_form_1",
+  "application_form_2",
+  "application_form_3",
+  "application_form_4",
+  "column_break_miqz",
+  "documents_passport_application_form_sop",
+  "sop_upload",
+  "spouse_processing_details_section",
+  "documents_10th_to_12thgraduation_copy",
+  "column_break_ikaf",
+  "spouse_gap_type",
+  "spouse_work_experience",
+  "spouse_work_experience_details",
+  "column_break_rdby",
+  "spouse_result_verification_link_if_applicable_copy",
+  "spouse_university_domain_email_id_optional_copy",
+  "spouse_salary_mode",
+  "spouse_documents",
+  "spouse_work_experience_verified",
+  "spouse_itr_verified_as_per_work_exp",
+  "spouse_salary_slips_verified_6_months",
+  "spouse_salary_statements_verified_3_months",
+  "submitted_tab",
+  "submitted_date",
+  "any_further_requirement_offer_letter",
+  "pending_requirement_details",
+  "pending_requirements_completed",
+  "supporting_documents",
+  "offer_tab",
+  "offer_section",
+  "offer_currency",
+  "university_name",
+  "course_name",
+  "university_intake",
+  "column_break_offer_1",
+  "full_year_tuition_fee",
+  "scholarship",
+  "payable_fee",
+  "oshc_offer",
+  "living_expenses",
+  "travel_expenses",
+  "column_break_offer_2",
+  "funds_required_type",
+  "funds_required_amount",
+  "conditions_on_offer_letter",
+  "section_break_offer_docs",
+  "offer_letter_upload",
+  "send_offer_to_chat",
+  "other_documents_offer",
+  "defer_offer_required",
+  "defer_offer_ok",
+  "defer_offer_section",
+  "defer_offer_currency",
+  "defer_university_name",
+  "defer_course_name",
+  "defer_university_intake",
+  "column_break_defer_1",
+  "defer_full_year_tuition_fee",
+  "defer_scholarship",
+  "defer_payable_fee",
+  "defer_oshc",
+  "defer_living_expenses",
+  "defer_travel_expenses",
+  "column_break_defer_2",
+  "defer_funds_required_type",
+  "defer_funds_required_amount",
+  "defer_conditions_on_offer_letter",
+  "section_break_defer_docs",
+  "defer_offer_letter_upload",
+  "defer_other_documents",
+  "financials_tab",
+  "gs_submitted_section",
+  "gs_submitted",
+  "financial_stage_completed",
+  "gs_submitted_reminder_date",
+  "conditions_section",
+  "conditions_note",
+  "interview_condition_section",
+  "interview_timing",
+  "interview_deadline_date",
+  "student_prepare",
+  "schedule_interview",
+  "english_requirement_section",
+  "english_requirement_details",
+  "english_requirement_documents",
+  "gap_justification_section",
+  "gap_justification_details",
+  "gap_justification_documents",
+  "verification_section",
+  "verification_type",
+  "sponsors_section",
+  "who_sponsored",
+  "sponsor_name",
+  "dob_matched_pc_ac",
+  "dob_pc_ac_status",
+  "name_matched_ac_pc",
+  "name_ac_pc_status",
+  "account_upload",
+  "income_support_documents",
+  "itr_table",
+  "dob_matched_itr_ac_pc",
+  "dob_itr_status",
+  "name_matched_itr_ac_pc",
+  "name_itr_status",
+  "sponsor_itr_verified",
+  "itr_upload",
+  "itr_verification_reminder",
+  "form_16_table",
+  "family_id_upload",
+  "occupation_documents_needed",
+  "occupation_reason",
+  "sponsor_occupation",
+  "business_proof",
+  "gst_number",
+  "gst_verified",
+  "gst_certificate_upload",
+  "msme_company_name",
+  "msme_company_start_duration",
+  "msme_certificate_upload",
+  "msme_registration_duration",
+  "msme_additional_document",
+  "msme_cert_verified",
+  "incorporation_business_start_date",
+  "incorporation_date_of_registration",
+  "incorporation_certificate_upload",
+  "incorporation_current_account_statement",
+  "shop_act_company_name",
+  "shop_act_company_start_duration",
+  "shop_act_registration_date",
+  "column_break_occupation_col1",
+  "msme_registration_duration",
+  "msme_additional_document",
+  "msme_cert_verified",
+  "incorporation_business_start_date",
+  "incorporation_date_of_registration",
+  "incorporation_certificate_upload",
+  "shop_act_upload",
+  "shop_act_registration_duration",
+  "iec_company_name",
+  "column_break_occupation_col2",
+  "incorporation_current_account_statement",
+  "shop_act_additional_document",
+  "shop_act_uploaded",
+  "iec_company_start_duration",
+  "iec_registration_date",
+  "iec_cert_upload",
+  "iec_registration_duration",
+  "iec_additional_document",
+  "iec_cert_uploaded",
+  "column_break_fvxc",
+  "financial_documents",
+  "checklist_section",
+  "dob_matched",
+  "name_matched_column",
+  "name_matched",
+  "column_break_gbmy",
+  "itr_verified",
+  "gte_tab",
+  "all_documents",
+  "gte_approved_tab",
+  "tution_fee",
+  "oshc",
+  "oshc_arranged_by",
+  "column_break_teil",
+  "table_eliz",
+  "oshc_uploaded",
+  "tuition_fee_uploaded",
+  "acceptance_tab",
+  "offer_accepted",
+  "coe_tab",
+  "intake_date",
+  "coe_documents",
+  "column_break_xlzi",
+  "coe_uploaded",
+  "956a_form_uploaded",
+  "original_funds_uploaded",
+  "financial_matrix_uploaded",
+  "file_lodged_tab",
+  "file_lodged_documents",
+  "immi_acknowledgement_uploaded",
+  "hap_id_uploaded",
+  "medical",
+  "visa_status",
+  "visa_tab",
+  "visa_documents",
+  "visa_copy_uploaded",
+  "student_enrolled",
+  "visa_refused_tab",
+  "want_to_process_in_any_other_country",
+  "reason",
+  "which_country",
+  "visa_refusal_status",
+  "column_break_jvqk",
+  "refusal_documents",
+  "refusal_letter_uploaded",
+  "oshc_refund_form_uploaded",
+  "refund_form_uploaded",
+  "refund_invoice_attached",
+  "enrollment_tab",
+  "enrollment_documents",
+  "on_shore_college_change_tab",
+  "student_wants_to_change_college",
+  "where",
+  "others",
+  "college_change_status",
+  "column_break_icwd",
+  "college_change_documents",
+  "closed_tab",
+  "application_closed"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "no_copy": 1,
+   "options": "APP-.YYYY.-",
+   "set_only_once": 1
+  },
+  {
+   "columns": 3,
+   "fieldname": "application_section",
+   "fieldtype": "Section Break",
+   "label": "Application Information"
+  },
+  {
+   "fieldname": "student",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Student",
+   "options": "Student",
+   "reqd": 1
+  },
+  {
+   "fieldname": "application_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Application Type",
+   "options": "B2B",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "default": "__user",
+   "depends_on": "eval:doc.application_type == 'B2B' || doc.application_type == 'B2C'",
+   "fieldname": "agent",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Agent",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Pending\nProcessing\nOffer Letter Received\nFinancial\nGTE Processing\nGTE Approved\nAcceptance\nCOE\nFile Lodged\nVisa\nEnrollment\nOn Shore College change\nVisa Refused\nClosed",
+   "reqd": 1
+  },
+  {
+   "fieldname": "destination_country",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Destination Country",
+   "options": "Country",
+   "reqd": 1
+  },
+  {
+   "description": "Auto-assigned based on destination country",
+   "fieldname": "assigned_team",
+   "fieldtype": "Link",
+   "label": "Assigned Team",
+   "options": "Team",
+   "read_only": 1
+  },
+  {
+   "description": "Team Lead assigns an executive to process this application",
+   "fieldname": "assigned_executive",
+   "fieldtype": "Link",
+   "label": "Assigned Executive",
+   "options": "User"
+  },
+  {
+   "fieldname": "preferred_university",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Preferred University",
+   "options": "University"
+  },
+  {
+   "fieldname": "preferred_courses",
+   "fieldtype": "Table",
+   "label": "Preferred Course",
+   "options": "Application Course"
+  },
+  {
+   "fieldname": "intake",
+   "fieldtype": "Select",
+   "label": "Intake",
+   "options": "\nJanuary\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_jdtj",
+   "fieldtype": "Column Break",
+   "options": "High\nSecondary\nGraduation\nPost Graduation"
+  },
+  {
+   "fieldname": "section_break_dkel",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "No",
+   "fieldname": "any_visa_refused",
+   "fieldtype": "Select",
+   "label": "Refused from Aus/NZ",
+   "options": "No\nYes"
+  },
+  {
+   "bold": 1,
+   "default": "\u26a0\ufe0f We are not able to process this application",
+   "depends_on": "eval:doc.any_visa_refused == 'Yes'",
+   "fieldname": "visa_refused_not_able_to_process",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "bold": 1,
+   "default": "\u2713 OK",
+   "depends_on": "eval:doc.any_visa_refused == 'No'",
+   "fieldname": "visa_refused_ok",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "fieldname": "higher_education",
+   "fieldtype": "Select",
+   "label": "Qualification",
+   "options": "\n12th pass\nBachelors\nDiploma\nMasters\nCertification\nOthers"
+  },
+  {
+   "fieldname": "martial_status",
+   "fieldtype": "Select",
+   "label": "Martial Status",
+   "options": "\nMarried\nSingle"
+  },
+  {
+   "depends_on": "eval:in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive')",
+   "fieldname": "information_tab",
+   "fieldtype": "Tab Break",
+   "label": "Processing"
+  },
+  {
+   "description": "Note: In package cases these fields are mandatory otherwise optional",
+   "fieldname": "section_a_email",
+   "fieldtype": "Section Break",
+   "label": "A. Our Email Id"
+  },
+  {
+   "default": "0",
+   "description": "If checked, email fields below are mandatory",
+   "fieldname": "is_package_case",
+   "fieldtype": "Check",
+   "label": "Package Case"
+  },
+  {
+   "fieldname": "data_swym",
+   "fieldtype": "Text",
+   "label": "Our Email Id"
+  },
+  {
+   "fieldname": "password",
+   "fieldtype": "Password",
+   "label": "Password"
+  },
+  {
+   "fieldname": "recovery_email_id",
+   "fieldtype": "Text",
+   "label": "Recovery Email Id"
+  },
+  {
+   "fieldname": "login_contact_no",
+   "fieldtype": "Phone",
+   "label": "Login Contact No"
+  },
+  {
+   "fieldname": "column_break_section_a",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_b_documents",
+   "fieldtype": "Section Break",
+   "label": "B. Documents 10th to 12th to Diploma"
+  },
+  {
+   "default": "0",
+   "fieldname": "twelfth_admit_card_uploaded",
+   "fieldtype": "Check",
+   "label": "12th Admit Card Uploaded"
+  },
+  {
+   "fieldname": "documents_10th_to_12th",
+   "fieldtype": "Table",
+   "label": "Documents (10th to 12th)/Graduation",
+   "options": "student documents"
+  },
+  {
+   "fieldname": "data_isfw",
+   "fieldtype": "Text",
+   "label": "School Domain Email ID"
+  },
+  {
+   "fieldname": "digi_locker_id_optional",
+   "fieldtype": "Text",
+   "label": "Digi Locker ID"
+  },
+  {
+   "fieldname": "digi_locker_password",
+   "fieldtype": "Password",
+   "label": "Digi Locker Password"
+  },
+  {
+   "fieldname": "documents_verified",
+   "fieldtype": "Select",
+   "label": "Documents Verified",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.documents_verified == 'Yes'",
+   "fieldname": "documents_verified_pdf",
+   "fieldtype": "Table",
+   "label": "Upload in Single PDF",
+   "options": "student documents"
+  },
+  {
+   "bold": 1,
+   "default": "\u26a0\ufe0f NOT ACCEPTED - Documents need to be verified",
+   "depends_on": "eval:doc.documents_verified == 'No'",
+   "fieldname": "documents_not_accepted_alert",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_section_b",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_c_english_test",
+   "fieldtype": "Section Break",
+   "label": "C. English Proficiency Test"
+  },
+  {
+   "fieldname": "english_test_type",
+   "fieldtype": "Select",
+   "label": "Test Type",
+   "options": "\nIELTS\nPTE\nTOEFL"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'IELTS'",
+   "fieldname": "ielts_exam_date",
+   "fieldtype": "Date",
+   "label": "Date of Exam"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'IELTS'",
+   "fieldname": "ielts_validity",
+   "fieldtype": "Select",
+   "label": "Validity",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'IELTS' && doc.ielts_validity == 'Yes'",
+   "fieldname": "ielts_validity_month_count",
+   "fieldtype": "Int",
+   "label": "Month Count"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'IELTS'",
+   "fieldname": "ielts_listening_score",
+   "fieldtype": "Float",
+   "label": "L - Listening Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'IELTS'",
+   "fieldname": "ielts_reading_score",
+   "fieldtype": "Float",
+   "label": "R - Reading Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'IELTS'",
+   "fieldname": "ielts_writing_score",
+   "fieldtype": "Float",
+   "label": "W - Writing Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'IELTS'",
+   "fieldname": "ielts_speaking_score",
+   "fieldtype": "Float",
+   "label": "S - Speaking Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'IELTS'",
+   "fieldname": "ielts_overall_score",
+   "fieldtype": "Float",
+   "label": "Overall Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'IELTS'",
+   "fieldname": "ielts_user_id",
+   "fieldtype": "Text",
+   "label": "Login Credential - User Id"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'IELTS'",
+   "fieldname": "ielts_password",
+   "fieldtype": "Password",
+   "label": "Login Credential - Password"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'IELTS'",
+   "fieldname": "ielts_verified",
+   "fieldtype": "Select",
+   "label": "Verified",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'IELTS' && doc.ielts_verified == 'Yes'",
+   "fieldname": "ielts_upload",
+   "fieldtype": "Table",
+   "label": "Upload",
+   "options": "student documents"
+  },
+  {
+   "bold": 1,
+   "default": "\u26a0\ufe0f NOT ACCEPTED - IELTS test needs to be verified",
+   "depends_on": "eval:doc.english_test_type == 'IELTS' && doc.ielts_verified == 'No'",
+   "fieldname": "ielts_not_accepted_alert",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'PTE'",
+   "fieldname": "pte_exam_date",
+   "fieldtype": "Date",
+   "label": "Date of Exam"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'PTE'",
+   "fieldname": "pte_validity",
+   "fieldtype": "Select",
+   "label": "Validity",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'PTE' && doc.pte_validity == 'Yes'",
+   "fieldname": "pte_validity_month_count",
+   "fieldtype": "Int",
+   "label": "Month Count"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'PTE'",
+   "fieldname": "pte_listening_score",
+   "fieldtype": "Float",
+   "label": "L - Listening Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'PTE'",
+   "fieldname": "pte_reading_score",
+   "fieldtype": "Float",
+   "label": "R - Reading Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'PTE'",
+   "fieldname": "pte_writing_score",
+   "fieldtype": "Float",
+   "label": "W - Writing Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'PTE'",
+   "fieldname": "pte_speaking_score",
+   "fieldtype": "Float",
+   "label": "S - Speaking Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'PTE'",
+   "fieldname": "pte_overall_score",
+   "fieldtype": "Float",
+   "label": "Overall Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'PTE'",
+   "fieldname": "pte_user_id",
+   "fieldtype": "Text",
+   "label": "Login Credential - User Id"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'PTE'",
+   "fieldname": "pte_password",
+   "fieldtype": "Password",
+   "label": "Login Credential - Password"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'PTE'",
+   "fieldname": "pte_verified",
+   "fieldtype": "Select",
+   "label": "Verified",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'PTE' && doc.pte_verified == 'Yes'",
+   "fieldname": "pte_upload",
+   "fieldtype": "Table",
+   "label": "Upload",
+   "options": "student documents"
+  },
+  {
+   "bold": 1,
+   "default": "\u26a0\ufe0f NOT ACCEPTED - PTE test needs to be verified",
+   "depends_on": "eval:doc.english_test_type == 'PTE' && doc.pte_verified == 'No'",
+   "fieldname": "pte_not_accepted_alert",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'TOEFL'",
+   "fieldname": "toefl_test_format",
+   "fieldtype": "Select",
+   "label": "TOEFL Format",
+   "options": "\nIBT Center based\nIBT Home Edition based"
+  },
+  {
+   "bold": 1,
+   "default": "\u26a0\ufe0f NOT ACCEPTED - IBT Home Edition Based is not accepted",
+   "depends_on": "eval:doc.english_test_type == 'TOEFL' && doc.toefl_test_format == 'IBT Home Edition based'",
+   "fieldname": "toefl_home_edition_not_accepted_alert",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'TOEFL' && doc.toefl_test_format == 'IBT Center based'",
+   "fieldname": "toefl_exam_date",
+   "fieldtype": "Date",
+   "label": "Date of Exam"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'TOEFL' && doc.toefl_test_format == 'IBT Center based'",
+   "fieldname": "toefl_validity",
+   "fieldtype": "Select",
+   "label": "Validity",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'TOEFL' && doc.toefl_test_format == 'IBT Center based' && doc.toefl_validity == 'Yes'",
+   "fieldname": "toefl_validity_month_count",
+   "fieldtype": "Int",
+   "label": "Month Count"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'TOEFL' && doc.toefl_test_format == 'IBT Center based'",
+   "fieldname": "toefl_listening_score",
+   "fieldtype": "Float",
+   "label": "L - Listening Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'TOEFL' && doc.toefl_test_format == 'IBT Center based'",
+   "fieldname": "toefl_reading_score",
+   "fieldtype": "Float",
+   "label": "R - Reading Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'TOEFL' && doc.toefl_test_format == 'IBT Center based'",
+   "fieldname": "toefl_writing_score",
+   "fieldtype": "Float",
+   "label": "W - Writing Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'TOEFL' && doc.toefl_test_format == 'IBT Center based'",
+   "fieldname": "toefl_speaking_score",
+   "fieldtype": "Float",
+   "label": "S - Speaking Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'TOEFL' && doc.toefl_test_format == 'IBT Center based'",
+   "fieldname": "toefl_overall_score",
+   "fieldtype": "Float",
+   "label": "Overall Score"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'TOEFL' && doc.toefl_test_format == 'IBT Center based'",
+   "fieldname": "toefl_user_id",
+   "fieldtype": "Data",
+   "label": "Login Credential - User Id"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'TOEFL' && doc.toefl_test_format == 'IBT Center based'",
+   "fieldname": "toefl_password",
+   "fieldtype": "Password",
+   "label": "Login Credential - Password"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'TOEFL' && doc.toefl_test_format == 'IBT Center based'",
+   "fieldname": "toefl_verified",
+   "fieldtype": "Select",
+   "label": "Verified",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.english_test_type == 'TOEFL' && doc.toefl_test_format == 'IBT Center based' && doc.toefl_verified == 'Yes'",
+   "fieldname": "toefl_upload",
+   "fieldtype": "Table",
+   "label": "Upload",
+   "options": "student documents"
+  },
+  {
+   "bold": 1,
+   "default": "\u26a0\ufe0f NOT ACCEPTED - TOEFL test needs to be verified",
+   "depends_on": "eval:doc.english_test_type == 'TOEFL' && doc.toefl_test_format == 'IBT Center based' && doc.toefl_verified == 'No'",
+   "fieldname": "toefl_not_accepted_alert",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_section_c",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_d_passport",
+   "fieldtype": "Section Break",
+   "label": "D. Passport"
+  },
+  {
+   "default": "0",
+   "fieldname": "passport_uploaded",
+   "fieldtype": "Check",
+   "label": "Passport Uploaded"
+  },
+  {
+   "depends_on": "eval:doc.passport_uploaded == 1",
+   "fieldname": "passport_documents",
+   "fieldtype": "Table",
+   "label": "Passport Documents",
+   "options": "student documents"
+  },
+  {
+   "fieldname": "column_break_section_d",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_e_processing_agent",
+   "fieldtype": "Section Break",
+   "label": "E. Processing Agent"
+  },
+  {
+   "fieldname": "processing_agent_type",
+   "fieldtype": "Select",
+   "label": "Processing Agent",
+   "options": "\nDirect\nVendor"
+  },
+  {
+   "depends_on": "eval:doc.processing_agent_type == 'Direct'",
+   "description": "Auto-pick company names associated with the university",
+   "fieldname": "processing_agent_direct",
+   "fieldtype": "Link",
+   "label": "Processing Agent Name",
+   "options": "Company"
+  },
+  {
+   "depends_on": "eval:doc.processing_agent_type == 'Vendor'",
+   "description": "Select vendor as per priority (only 3 priorities visible)",
+   "fieldname": "processing_agent_vendor",
+   "fieldtype": "Link",
+   "label": "Vendor Name",
+   "options": "vendor"
+  },
+  {
+   "fieldname": "column_break_section_e",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_f_applications",
+   "fieldtype": "Section Break",
+   "label": "F. Applications"
+  },
+  {
+   "fieldname": "application_filled_by",
+   "fieldtype": "Select",
+   "label": "Application Filled By",
+   "options": "\nApplication filled by us\nFilled on portal\nFilled by Vendor"
+  },
+  {
+   "depends_on": "eval:doc.application_filled_by == 'Application filled by us'",
+   "fieldname": "application_form_1",
+   "fieldtype": "Table",
+   "label": "Application Form 1 Upload",
+   "options": "student documents"
+  },
+  {
+   "depends_on": "eval:doc.application_filled_by == 'Application filled by us'",
+   "fieldname": "application_form_2",
+   "fieldtype": "Table",
+   "label": "Application Form 2 Upload",
+   "options": "student documents"
+  },
+  {
+   "depends_on": "eval:doc.application_filled_by == 'Application filled by us'",
+   "fieldname": "application_form_3",
+   "fieldtype": "Table",
+   "label": "Application Form 3 Upload",
+   "options": "student documents"
+  },
+  {
+   "depends_on": "eval:doc.application_filled_by == 'Application filled by us'",
+   "fieldname": "application_form_4",
+   "fieldtype": "Table",
+   "label": "Application Form 4 Upload",
+   "options": "student documents"
+  },
+  {
+   "depends_on": "eval:doc.application_filled_by == 'Application filled by us' || doc.application_filled_by == 'Filled on portal' || doc.application_filled_by == 'Filled by Vendor'",
+   "fieldname": "sop_upload",
+   "fieldtype": "Table",
+   "label": "SOP Upload",
+   "options": "student documents"
+  },
+  {
+   "fieldname": "documents_passport_application_form_sop",
+   "fieldtype": "Table",
+   "label": "Documents ",
+   "options": "student documents"
+  },
+  {
+   "depends_on": "eval:in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive')",
+   "fieldname": "financials_tab",
+   "fieldtype": "Tab Break",
+   "label": "Financials"
+  },
+  {
+   "fieldname": "column_break_fvxc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "financial_documents",
+   "fieldtype": "Table",
+   "label": "Financial Documents",
+   "options": "student documents"
+  },
+  {
+   "fieldname": "checklist_section",
+   "fieldtype": "Section Break",
+   "label": "Checklist"
+  },
+  {
+   "default": "0",
+   "fieldname": "dob_matched",
+   "fieldtype": "Check",
+   "label": "DOB Matched"
+  },
+  {
+   "fieldname": "name_matched_column",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_gbmy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "itr_verified",
+   "fieldtype": "Check",
+   "label": "ITR Verified"
+  },
+  {
+   "default": "0",
+   "fieldname": "name_matched",
+   "fieldtype": "Check",
+   "label": "Name Matched"
+  },
+  {
+   "fieldname": "all_documents",
+   "fieldtype": "Table",
+   "label": "All Documents",
+   "options": "student documents"
+  },
+  {
+   "depends_on": "eval:in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive')",
+   "fieldname": "gte_approved_tab",
+   "fieldtype": "Tab Break",
+   "label": "GTE Approved"
+  },
+  {
+   "fieldname": "tution_fee",
+   "fieldtype": "Select",
+   "label": "Tuition Fee",
+   "options": "Paid\nNot Paid\nProcessing"
+  },
+  {
+   "fieldname": "column_break_teil",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "oshc",
+   "fieldtype": "Select",
+   "label": "OSHC",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "table_eliz",
+   "fieldtype": "Table",
+   "options": "student documents"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.oshc == 'Yes'",
+   "fieldname": "oshc_uploaded",
+   "fieldtype": "Check",
+   "label": "OSHC Uploaded"
+  },
+  {
+   "depends_on": "eval:doc.oshc == 'Yes'",
+   "fieldname": "oshc_arranged_by",
+   "fieldtype": "Text",
+   "label": "OSHC Arranged by"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.tution_fee == 'Paid'",
+   "fieldname": "tuition_fee_uploaded",
+   "fieldtype": "Check",
+   "label": "Tuition Fee Uploaded"
+  },
+  {
+   "depends_on": "eval:in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive')",
+   "fieldname": "acceptance_tab",
+   "fieldtype": "Tab Break",
+   "label": "Acceptance"
+  },
+  {
+   "fieldname": "offer_accepted",
+   "fieldtype": "Select",
+   "label": "Offer Accepted",
+   "options": "Yes\nNo"
+  },
+  {
+   "depends_on": "eval:in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive')",
+   "fieldname": "coe_tab",
+   "fieldtype": "Tab Break",
+   "label": "COE"
+  },
+  {
+   "fieldname": "intake_date",
+   "fieldtype": "Date",
+   "label": "Intake Date"
+  },
+  {
+   "fieldname": "column_break_xlzi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "coe_documents",
+   "fieldtype": "Table",
+   "label": "COE Documents",
+   "options": "student documents"
+  },
+  {
+   "default": "0",
+   "fieldname": "coe_uploaded",
+   "fieldtype": "Check",
+   "label": "COE Uploaded"
+  },
+  {
+   "default": "0",
+   "fieldname": "956a_form_uploaded",
+   "fieldtype": "Check",
+   "label": "956A Form uploaded"
+  },
+  {
+   "default": "0",
+   "fieldname": "original_funds_uploaded",
+   "fieldtype": "Check",
+   "label": "Original Funds uploaded"
+  },
+  {
+   "default": "0",
+   "fieldname": "financial_matrix_uploaded",
+   "fieldtype": "Check",
+   "label": "Financial Matrix uploaded"
+  },
+  {
+   "depends_on": "eval:in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive')",
+   "fieldname": "file_lodged_tab",
+   "fieldtype": "Tab Break",
+   "label": "File lodged"
+  },
+  {
+   "fieldname": "file_lodged_documents",
+   "fieldtype": "Table",
+   "label": "File Lodged Documents",
+   "options": "student documents"
+  },
+  {
+   "default": "0",
+   "fieldname": "immi_acknowledgement_uploaded",
+   "fieldtype": "Check",
+   "label": "IMMI acknowledgement uploaded"
+  },
+  {
+   "default": "0",
+   "fieldname": "hap_id_uploaded",
+   "fieldtype": "Check",
+   "label": "HAP ID uploaded"
+  },
+  {
+   "fieldname": "medical",
+   "fieldtype": "Select",
+   "label": "Medical",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "visa_status",
+   "fieldtype": "Select",
+   "label": "Visa Status",
+   "options": "File Lodged\nVisa Approved\nVisa Refused"
+  },
+  {
+   "depends_on": "eval:doc.visa_status == 'Visa Approved' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive'))",
+   "fieldname": "visa_tab",
+   "fieldtype": "Tab Break",
+   "label": "Visa"
+  },
+  {
+   "fieldname": "visa_documents",
+   "fieldtype": "Table",
+   "label": "Visa Documents",
+   "options": "student documents"
+  },
+  {
+   "default": "0",
+   "fieldname": "visa_copy_uploaded",
+   "fieldtype": "Check",
+   "label": "Visa Copy Uploaded"
+  },
+  {
+   "fieldname": "student_enrolled",
+   "fieldtype": "Select",
+   "label": "Student Enrolled",
+   "options": "Yes\nNo\nProcessing"
+  },
+  {
+   "depends_on": "eval:doc.visa_status == 'Visa Approved' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive'))",
+   "fieldname": "enrollment_tab",
+   "fieldtype": "Tab Break",
+   "label": "Enrollment"
+  },
+  {
+   "fieldname": "enrollment_documents",
+   "fieldtype": "Table",
+   "label": "Enrollment Documents",
+   "options": "student documents"
+  },
+  {
+   "depends_on": "eval:doc.visa_status == 'Visa Approved' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive'))",
+   "fieldname": "on_shore_college_change_tab",
+   "fieldtype": "Tab Break",
+   "label": "On Shore College change"
+  },
+  {
+   "fieldname": "student_wants_to_change_college",
+   "fieldtype": "Select",
+   "label": "Student wants to change college",
+   "options": "Yes\nNo\nOthers"
+  },
+  {
+   "depends_on": "eval:doc.student_wants_to_change_college == 'Yes' ",
+   "fieldname": "where",
+   "fieldtype": "Select",
+   "label": "Where",
+   "options": "Same Country/City\nSomewhere else"
+  },
+  {
+   "depends_on": "eval:doc.student_wants_to_change_college == 'Others' ",
+   "fieldname": "others",
+   "fieldtype": "Text",
+   "label": "Others"
+  },
+  {
+   "depends_on": "eval:doc.student_wants_to_change_college == 'Yes' ",
+   "fieldname": "college_change_status",
+   "fieldtype": "Select",
+   "label": "College Change Status",
+   "options": "Processing\nOffer Letter\nCOE\nEnrolled"
+  },
+  {
+   "fieldname": "column_break_icwd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.student_wants_to_change_college == 'Yes' ",
+   "fieldname": "college_change_documents",
+   "fieldtype": "Table",
+   "label": "College Change Documents",
+   "options": "student documents"
+  },
+  {
+   "depends_on": "eval:doc.visa_status == 'Visa Refused' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive'))",
+   "fieldname": "visa_refused_tab",
+   "fieldtype": "Tab Break",
+   "label": "Visa Refused"
+  },
+  {
+   "fieldname": "want_to_process_in_any_other_country",
+   "fieldtype": "Select",
+   "label": "Want to process in any other country",
+   "options": "Yes\nNo\nNot Decided"
+  },
+  {
+   "fieldname": "column_break_jvqk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "refusal_documents",
+   "fieldtype": "Table",
+   "label": "Refusal Documents",
+   "options": "student documents"
+  },
+  {
+   "depends_on": "eval:doc.want_to_process_in_any_other_country == 'No'",
+   "fieldname": "reason",
+   "fieldtype": "Text",
+   "label": "Reason"
+  },
+  {
+   "depends_on": "eval:doc.want_to_process_in_any_other_country == 'Yes'",
+   "fieldname": "which_country",
+   "fieldtype": "Text",
+   "label": "Which Country"
+  },
+  {
+   "default": "0",
+   "fieldname": "refusal_letter_uploaded",
+   "fieldtype": "Check",
+   "label": "Refusal letter uploaded"
+  },
+  {
+   "default": "0",
+   "fieldname": "oshc_refund_form_uploaded",
+   "fieldtype": "Check",
+   "label": "OSHC Refund form uploaded"
+  },
+  {
+   "default": "0",
+   "fieldname": "refund_form_uploaded",
+   "fieldtype": "Check",
+   "label": "Refund Form uploaded"
+  },
+  {
+   "fieldname": "visa_refusal_status",
+   "fieldtype": "Select",
+   "label": "Visa Refusal Status",
+   "options": "Fee refund processing\nOHSC refund processing\nFee refunded\nOSHC refunded"
+  },
+  {
+   "default": "0",
+   "fieldname": "refund_invoice_attached",
+   "fieldtype": "Check",
+   "label": "Refund Invoice attached"
+  },
+  {
+   "fieldname": "contact_number",
+   "fieldtype": "Phone",
+   "in_list_view": 1,
+   "label": "Contact Number"
+  },
+  {
+   "fieldname": "details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "student_email",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Student Email"
+  },
+  {
+   "fieldname": "dob",
+   "fieldtype": "Date",
+   "label": "DOB",
+   "reqd": 1
+  },
+  {
+   "description": "Automatically calculated from Date of Birth",
+   "fieldname": "current_age",
+   "fieldtype": "Data",
+   "label": "Age (as of now)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "study_gap",
+   "fieldtype": "Select",
+   "label": "Study Gap",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.study_gap == 'Yes'",
+   "description": "Please provide study gap proof",
+   "fieldname": "study_gap_proof",
+   "fieldtype": "Table",
+   "label": "Study Gap Proof",
+   "options": "student documents"
+  },
+  {
+   "bold": 1,
+   "default": "\u2713 OK",
+   "depends_on": "eval:doc.study_gap == 'No'",
+   "fieldname": "study_gap_ok",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.martial_status == 'Married'",
+   "fieldname": "spouse_details_section",
+   "fieldtype": "Section Break",
+   "label": "Spouse Details"
+  },
+  {
+   "fieldname": "spouse_name",
+   "fieldtype": "Text",
+   "label": "Spouse Name"
+  },
+  {
+   "fieldname": "column_break_zwta",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "spouse_dob",
+   "fieldtype": "Date",
+   "label": "Spouse DOB"
+  },
+  {
+   "fieldname": "column_break_cnrx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.martial_status == 'Married'",
+   "fieldname": "spouse_qualification",
+   "fieldtype": "Select",
+   "label": "Spouse Qualification",
+   "options": "10th Pass\n12th Pass\nBachelors\nMasters\nDiploma\ncertificate\nOthers"
+  },
+  {
+   "fieldname": "column_break_zdbg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.spouse_qualification == 'Bachelors' || doc.spouse_qualification == 'Masters'",
+   "fieldname": "spouse_study_gap",
+   "fieldtype": "Select",
+   "label": "Spouse Study Gap",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "column_break_miqz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.spouse_qualification == 'Bachelors' || doc.spouse_qualification == 'Masters'",
+   "fieldname": "spouse_processing_details_section",
+   "fieldtype": "Section Break",
+   "label": "Spouse Processing Details"
+  },
+  {
+   "fieldname": "documents_10th_to_12thgraduation_copy",
+   "fieldtype": "Table",
+   "label": "Documents (10th to 12th)/Graduation Copy",
+   "options": "student documents"
+  },
+  {
+   "fieldname": "column_break_ikaf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.spouse_study_gap == 'Yes'",
+   "fieldname": "spouse_gap_type",
+   "fieldtype": "Data",
+   "label": "Spouse Gap Type"
+  },
+  {
+   "fieldname": "spouse_work_experience",
+   "fieldtype": "Select",
+   "label": "Spouse Work Experience",
+   "options": "Yes\nNo"
+  },
+  {
+   "default": "Company:\nPosition:\nDuration:\nEmployer Domain ID:",
+   "depends_on": "eval:doc.spouse_work_experience == 'Yes'",
+   "fieldname": "spouse_work_experience_details",
+   "fieldtype": "Long Text",
+   "label": "Spouse Work Experience details"
+  },
+  {
+   "fieldname": "column_break_rdby",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "spouse_result_verification_link_if_applicable_copy",
+   "fieldtype": "Text",
+   "label": "Result verification link (if applicable)"
+  },
+  {
+   "fieldname": "spouse_university_domain_email_id_optional_copy",
+   "fieldtype": "Data",
+   "label": "University domain email id (optional)"
+  },
+  {
+   "depends_on": "eval:doc.spouse_work_experience == 'Yes'",
+   "fieldname": "spouse_salary_mode",
+   "fieldtype": "Select",
+   "label": "Salary Mode",
+   "options": "Cash\nBank Account"
+  },
+  {
+   "fieldname": "spouse_documents",
+   "fieldtype": "Table",
+   "label": "Spouse Documents",
+   "options": "student documents"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.spouse_work_experience == 'Yes'",
+   "fieldname": "spouse_work_experience_verified",
+   "fieldtype": "Check",
+   "label": "Work Experience Verified"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.spouse_work_experience == 'Yes'",
+   "fieldname": "spouse_itr_verified_as_per_work_exp",
+   "fieldtype": "Check",
+   "label": "ITR Verified (as per Work Exp) "
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.spouse_salary_mode == 'Cash'",
+   "fieldname": "spouse_salary_slips_verified_6_months",
+   "fieldtype": "Check",
+   "label": "Salary Slips Verified (6 Months) Copy"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.spouse_salary_mode == 'Bank Account'",
+   "fieldname": "spouse_salary_statements_verified_3_months",
+   "fieldtype": "Check",
+   "label": "Salary Statements Verified (3 Months)"
+  },
+  {
+   "depends_on": "eval:in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive')",
+   "fieldname": "offer_tab",
+   "fieldtype": "Tab Break",
+   "label": "Offer Letter"
+  },
+  {
+   "depends_on": "eval:in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive')",
+   "fieldname": "gte_tab",
+   "fieldtype": "Tab Break",
+   "label": "GTE Processing"
+  },
+  {
+   "fieldname": "offer_section",
+   "fieldtype": "Section Break",
+   "label": "Offer Letter"
+  },
+  {
+   "default": "AUD",
+   "fieldname": "offer_currency",
+   "fieldtype": "Select",
+   "label": "Currency",
+   "options": "AUD\nCAD\nNZD\nUSD\nINR"
+  },
+  {
+   "fieldname": "university_name",
+   "fieldtype": "Link",
+   "label": "University Name",
+   "options": "University"
+  },
+  {
+   "fieldname": "course_name",
+   "fieldtype": "Link",
+   "label": "Course Name",
+   "options": "Course"
+  },
+  {
+   "fieldname": "university_intake",
+   "fieldtype": "Date",
+   "label": "Intake"
+  },
+  {
+   "fieldname": "column_break_offer_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "full_year_tuition_fee",
+   "fieldtype": "Currency",
+   "label": "Full Year Tuition Fee",
+   "options": "offer_currency"
+  },
+  {
+   "fieldname": "scholarship",
+   "fieldtype": "Currency",
+   "label": "Scholarship",
+   "options": "offer_currency"
+  },
+  {
+   "fieldname": "payable_fee",
+   "fieldtype": "Currency",
+   "label": "Payable Fee",
+   "options": "offer_currency"
+  },
+  {
+   "fieldname": "oshc_offer",
+   "fieldtype": "Currency",
+   "label": "OSHC",
+   "options": "offer_currency"
+  },
+  {
+   "default": "29710",
+   "fieldname": "living_expenses",
+   "fieldtype": "Currency",
+   "label": "Living Expenses",
+   "options": "offer_currency"
+  },
+  {
+   "default": "2200",
+   "fieldname": "travel_expenses",
+   "fieldtype": "Currency",
+   "label": "Travel Expenses",
+   "options": "offer_currency"
+  },
+  {
+   "fieldname": "column_break_offer_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "funds_required_type",
+   "fieldtype": "Select",
+   "label": "Funds Required",
+   "options": "\nWith Full Year Fee\nWithout Full Year Fee"
+  },
+  {
+   "description": "Automatically calculated based on Funds Required selection",
+   "fieldname": "funds_required_amount",
+   "fieldtype": "Currency",
+   "label": "Funds Required Amount",
+   "options": "offer_currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "conditions_on_offer_letter",
+   "fieldtype": "Table MultiSelect",
+   "label": "Conditions on Offer Letter",
+   "options": "Application Offer Letter Condition"
+  },
+  {
+   "fieldname": "section_break_offer_docs",
+   "fieldtype": "Section Break",
+   "label": "Documents"
+  },
+  {
+   "fieldname": "offer_letter_upload",
+   "fieldtype": "Table",
+   "label": "Offer Letter",
+   "options": "student documents"
+  },
+  {
+   "default": "0",
+   "fieldname": "send_offer_to_chat",
+   "fieldtype": "Check",
+   "label": "Send directly to chat"
+  },
+  {
+   "fieldname": "other_documents_offer",
+   "fieldtype": "Table",
+   "label": "Other Documents",
+   "options": "student documents"
+  },
+  {
+   "fieldname": "defer_offer_required",
+   "fieldtype": "Select",
+   "label": "Defer Offer Required",
+   "options": "\nYes\nNo"
+  },
+  {
+   "bold": 1,
+   "default": "\u2713 OK",
+   "depends_on": "eval:doc.defer_offer_required == 'No'",
+   "fieldname": "defer_offer_ok",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_offer_section",
+   "fieldtype": "Section Break",
+   "label": "Defer Offer Details"
+  },
+  {
+   "default": "AUD",
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_offer_currency",
+   "fieldtype": "Select",
+   "label": "Currency",
+   "options": "AUD\nCAD\nNZD\nUSD\nINR"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_university_name",
+   "fieldtype": "Link",
+   "label": "University Name",
+   "options": "University"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_course_name",
+   "fieldtype": "Link",
+   "label": "Course Name",
+   "options": "Course"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_university_intake",
+   "fieldtype": "Date",
+   "label": "Intake"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "column_break_defer_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_full_year_tuition_fee",
+   "fieldtype": "Currency",
+   "label": "Full Year Tuition Fee",
+   "options": "defer_offer_currency"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_scholarship",
+   "fieldtype": "Currency",
+   "label": "Scholarship",
+   "options": "defer_offer_currency"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_payable_fee",
+   "fieldtype": "Currency",
+   "label": "Payable Fee",
+   "options": "defer_offer_currency"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_oshc",
+   "fieldtype": "Currency",
+   "label": "OSHC",
+   "options": "defer_offer_currency"
+  },
+  {
+   "default": "29710",
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_living_expenses",
+   "fieldtype": "Currency",
+   "label": "Living Expenses",
+   "options": "defer_offer_currency"
+  },
+  {
+   "default": "2200",
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_travel_expenses",
+   "fieldtype": "Currency",
+   "label": "Travel Expenses",
+   "options": "defer_offer_currency"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "column_break_defer_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_funds_required_type",
+   "fieldtype": "Select",
+   "label": "Funds Required",
+   "options": "\nWith Full Year Fee\nWithout Full Year Fee"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "description": "Automatically calculated based on Funds Required selection",
+   "fieldname": "defer_funds_required_amount",
+   "fieldtype": "Currency",
+   "label": "Funds Required Amount",
+   "options": "defer_offer_currency",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_conditions_on_offer_letter",
+   "fieldtype": "Table MultiSelect",
+   "label": "Conditions on Offer Letter",
+   "options": "Application Offer Letter Condition"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "section_break_defer_docs",
+   "fieldtype": "Section Break",
+   "label": "Documents"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_offer_letter_upload",
+   "fieldtype": "Table",
+   "label": "Offer Letter",
+   "options": "student documents"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_other_documents",
+   "fieldtype": "Table",
+   "label": "Other Documents",
+   "options": "student documents"
+  },
+  {
+   "fieldname": "gs_submitted_section",
+   "fieldtype": "Section Break",
+   "label": "A. GS Submitted"
+  },
+  {
+   "fieldname": "gs_submitted",
+   "fieldtype": "Select",
+   "label": "GS Submitted",
+   "options": "\nYes\nNo"
+  },
+  {
+   "bold": 1,
+   "default": "\u2713 Financial stage completed",
+   "depends_on": "eval:doc.gs_submitted == 'Yes'",
+   "fieldname": "financial_stage_completed",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.gs_submitted == 'No'",
+   "description": "Select the date when financials are expected to be completed. A reminder will be automatically set for this date.",
+   "fieldname": "gs_submitted_reminder_date",
+   "fieldtype": "Date",
+   "label": "When will financials be completed?"
+  },
+  {
+   "fieldname": "conditions_section",
+   "fieldtype": "Section Break",
+   "label": "B. Conditions"
+  },
+  {
+   "default": "Note: Select conditions in the Offer Letter tab to see condition fields here",
+   "depends_on": "eval:!doc.conditions_on_offer_letter || doc.conditions_on_offer_letter == ''",
+   "fieldname": "conditions_note",
+   "fieldtype": "Small Text",
+   "label": "Note",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && doc.conditions_on_offer_letter.indexOf('Interview') !== -1",
+   "fieldname": "interview_condition_section",
+   "fieldtype": "Section Break",
+   "label": "Interview Condition"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && doc.conditions_on_offer_letter.indexOf('Interview') !== -1",
+   "description": "Select when the interview needs to be scheduled. 'Before Acceptance' will be handled in GS stage, 'Before COE' in Acceptance stage.",
+   "fieldname": "interview_timing",
+   "fieldtype": "Select",
+   "label": "Interview Timing",
+   "options": "\nBefore GS Approval\nBefore Acceptance\nBefore COE"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && doc.conditions_on_offer_letter.indexOf('Interview') !== -1 && doc.interview_timing == 'Before GS Approval'",
+   "description": "Set the deadline date for the interview. A reminder will be automatically created for this date.",
+   "fieldname": "interview_deadline_date",
+   "fieldtype": "Date",
+   "label": "Interview Deadline Date"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && doc.conditions_on_offer_letter.indexOf('Interview') !== -1 && doc.interview_timing == 'Before GS Approval'",
+   "description": "Has the student been prepared for the interview? If 'No', a reminder will be set to prepare the student.",
+   "fieldname": "student_prepare",
+   "fieldtype": "Select",
+   "label": "Student Prepare",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && doc.conditions_on_offer_letter.indexOf('Interview') !== -1 && doc.interview_timing == 'Before GS Approval' && doc.student_prepare == 'Yes'",
+   "description": "Has the interview been scheduled? If 'Yes', prepare student strongly. If 'No', follow up on interview schedule.",
+   "fieldname": "schedule_interview",
+   "fieldtype": "Select",
+   "label": "Schedule Interview",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && doc.conditions_on_offer_letter.indexOf('English Requirement') !== -1",
+   "fieldname": "english_requirement_section",
+   "fieldtype": "Section Break",
+   "label": "English Requirement"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && doc.conditions_on_offer_letter.indexOf('English Requirement') !== -1",
+   "description": "Enter the details of the English requirement condition",
+   "fieldname": "english_requirement_details",
+   "fieldtype": "Small Text",
+   "label": "Details"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && doc.conditions_on_offer_letter.indexOf('English Requirement') !== -1",
+   "description": "Upload any supporting documents related to the English requirement",
+   "fieldname": "english_requirement_documents",
+   "fieldtype": "Table",
+   "label": "Supporting Documents (Optional)",
+   "options": "student documents"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && doc.conditions_on_offer_letter.indexOf('Gap Justification') !== -1",
+   "fieldname": "gap_justification_section",
+   "fieldtype": "Section Break",
+   "label": "Gap Justification"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && doc.conditions_on_offer_letter.indexOf('Gap Justification') !== -1",
+   "description": "Provide details explaining the study gap",
+   "fieldname": "gap_justification_details",
+   "fieldtype": "Small Text",
+   "label": "Details"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && doc.conditions_on_offer_letter.indexOf('Gap Justification') !== -1",
+   "description": "Upload documents that justify the study gap",
+   "fieldname": "gap_justification_documents",
+   "fieldtype": "Table",
+   "label": "Supporting Documents (Optional)",
+   "options": "student documents"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && doc.conditions_on_offer_letter.indexOf('Verification') !== -1",
+   "fieldname": "verification_section",
+   "fieldtype": "Section Break",
+   "label": "Verification"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && doc.conditions_on_offer_letter.indexOf('Verification') !== -1",
+   "description": "Select what needs to be verified",
+   "fieldname": "verification_type",
+   "fieldtype": "Select",
+   "label": "Verification Type",
+   "options": "\nAcademics\nWork Experience"
+  },
+  {
+   "fieldname": "sponsors_section",
+   "fieldtype": "Section Break",
+   "label": "C. Sponsors"
+  },
+  {
+   "fieldname": "who_sponsored",
+   "fieldtype": "Table MultiSelect",
+   "label": "Who Sponsored",
+   "options": "Application Sponsor Type"
+  },
+  {
+   "fieldname": "sponsor_name",
+   "fieldtype": "Text",
+   "label": "Sponsor Name"
+  },
+  {
+   "fieldname": "dob_matched_pc_ac",
+   "fieldtype": "Select",
+   "label": "DOB on PC & AC Matched",
+   "options": "\nYes\nNo"
+  },
+  {
+   "bold": 1,
+   "fieldname": "dob_pc_ac_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "fieldname": "name_matched_ac_pc",
+   "fieldtype": "Select",
+   "label": "Name Matched on A/C & PC",
+   "options": "\nYes\nNo"
+  },
+  {
+   "bold": 1,
+   "fieldname": "name_ac_pc_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.name_matched_ac_pc == 'Yes'",
+   "fieldname": "account_upload",
+   "fieldtype": "Attach",
+   "label": "Upload A/C"
+  },
+  {
+   "fieldname": "income_support_documents",
+   "fieldtype": "Select",
+   "label": "Income Support Documents",
+   "options": "ITRs\nForm 16\nFamily ID"
+  },
+  {
+   "depends_on": "eval:doc.income_support_documents == 'ITRs'",
+   "fieldname": "itr_table",
+   "fieldtype": "Table",
+   "label": "ITR Child Table",
+   "options": "Application Sponsor ITR"
+  },
+  {
+   "depends_on": "eval:doc.income_support_documents == 'ITRs'",
+   "fieldname": "dob_matched_itr_ac_pc",
+   "fieldtype": "Select",
+   "label": "DOB on ITR matched with AC & PC",
+   "options": "\nYes\nNo"
+  },
+  {
+   "bold": 1,
+   "depends_on": "eval:doc.income_support_documents == 'ITRs'",
+   "fieldname": "dob_itr_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.income_support_documents == 'ITRs'",
+   "fieldname": "name_matched_itr_ac_pc",
+   "fieldtype": "Select",
+   "label": "Name on ITR matched with AC / PC",
+   "options": "\nYes\nNo"
+  },
+  {
+   "bold": 1,
+   "depends_on": "eval:doc.income_support_documents == 'ITRs'",
+   "fieldname": "name_itr_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.income_support_documents == 'ITRs'",
+   "fieldname": "sponsor_itr_verified",
+   "fieldtype": "Select",
+   "label": "ITR Verified",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.income_support_documents == 'ITRs' && doc.sponsor_itr_verified == 'Yes'",
+   "fieldname": "itr_upload",
+   "fieldtype": "Attach",
+   "label": "Upload ITR"
+  },
+  {
+   "bold": 1,
+   "depends_on": "eval:doc.income_support_documents == 'ITRs' && doc.sponsor_itr_verified == 'No'",
+   "fieldname": "itr_verification_reminder",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.income_support_documents == 'Form 16'",
+   "fieldname": "form_16_table",
+   "fieldtype": "Table",
+   "label": "Form 16 Child Table",
+   "options": "Application Sponsor Form 16"
+  },
+  {
+   "depends_on": "eval:doc.income_support_documents == 'Family ID'",
+   "fieldname": "family_id_upload",
+   "fieldtype": "Attach",
+   "label": "Upload Family ID"
+  },
+  {
+   "fieldname": "occupation_documents_needed",
+   "fieldtype": "Select",
+   "label": "Occupation Documents Needed",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'No'",
+   "fieldname": "occupation_reason",
+   "fieldtype": "Small Text",
+   "label": "Reason in Details"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes'",
+   "fieldname": "sponsor_occupation",
+   "fieldtype": "Select",
+   "label": "Sponsor Occupation",
+   "options": "\nBusiness\nJob\nFarmer\nOther"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business'",
+   "fieldname": "business_proof",
+   "fieldtype": "Select",
+   "label": "Business Proof",
+   "options": "\nGST Certificate\nMSME Certificate\nIncorporation Certificate\nShop Act\nIEC Certificate\nOthers"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'GST Certificate'",
+   "fieldname": "gst_number",
+   "fieldtype": "Data",
+   "label": "GST Number"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'GST Certificate'",
+   "fieldname": "gst_verified",
+   "fieldtype": "Check",
+   "label": "GST Verified"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'GST Certificate'",
+   "fieldname": "gst_certificate_upload",
+   "fieldtype": "Attach",
+   "label": "Upload Certificate"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'MSME Certificate'",
+   "fieldname": "msme_company_name",
+   "fieldtype": "Text",
+   "label": "Company Name"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'MSME Certificate'",
+   "fieldname": "msme_company_start_duration",
+   "fieldtype": "Duration",
+   "hide_seconds": 1,
+   "label": "Company Start Duration"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'MSME Certificate'",
+   "fieldname": "msme_certificate_upload",
+   "fieldtype": "Attach",
+   "label": "Upload MSME Certificate"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'Shop Act'",
+   "fieldname": "shop_act_company_name",
+   "fieldtype": "Text",
+   "label": "Company Name"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'Shop Act'",
+   "fieldname": "shop_act_company_start_duration",
+   "fieldtype": "Duration",
+   "hide_seconds": 1,
+   "label": "Company Start Duration"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'Shop Act'",
+   "fieldname": "shop_act_registration_date",
+   "fieldtype": "Date",
+   "label": "Shop Act Registration Date"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business'",
+   "fieldname": "column_break_occupation_col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'MSME Certificate'",
+   "fieldname": "msme_registration_duration",
+   "fieldtype": "Select",
+   "label": "MSME Registration Duration",
+   "options": "\nBelow 1 Year\nBelow 2 Years\nAbove 2 Years"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'MSME Certificate' && (doc.msme_registration_duration == 'Below 1 Year' || doc.msme_registration_duration == 'Below 2 Years')",
+   "fieldname": "msme_additional_document",
+   "fieldtype": "Attach",
+   "label": "Additional Current A/C Statement/GST Cert Required",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'MSME Certificate'",
+   "fieldname": "msme_cert_verified",
+   "fieldtype": "Check",
+   "label": "MSME Cert Verified"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'Incorporation Certificate'",
+   "fieldname": "incorporation_business_start_date",
+   "fieldtype": "Date",
+   "label": "Business Start Date"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'Incorporation Certificate'",
+   "fieldname": "incorporation_date_of_registration",
+   "fieldtype": "Date",
+   "label": "Date of Registration"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'Incorporation Certificate'",
+   "fieldname": "incorporation_certificate_upload",
+   "fieldtype": "Attach",
+   "label": "Upload Incorporation Certificate"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'Shop Act'",
+   "fieldname": "shop_act_upload",
+   "fieldtype": "Attach",
+   "label": "Upload Shop Act"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'Shop Act'",
+   "fieldname": "shop_act_registration_duration",
+   "fieldtype": "Select",
+   "label": "Shop Act Registration Duration",
+   "options": "\nBelow 1 Year\nBelow 2 Years\nAbove 2 Years"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'IEC Certificate'",
+   "fieldname": "iec_company_name",
+   "fieldtype": "Text",
+   "label": "Company Name"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business'",
+   "fieldname": "column_break_occupation_col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'Incorporation Certificate'",
+   "fieldname": "incorporation_current_account_statement",
+   "fieldtype": "Attach",
+   "label": "Upload Current A/C Statement",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'Shop Act' && (doc.shop_act_registration_duration == 'Below 1 Year' || doc.shop_act_registration_duration == 'Below 2 Years')",
+   "fieldname": "shop_act_additional_document",
+   "fieldtype": "Attach",
+   "label": "Additional Current A/C Statement/GST Cert Required",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'Shop Act'",
+   "fieldname": "shop_act_uploaded",
+   "fieldtype": "Check",
+   "label": "Shop Act Uploaded"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'IEC Certificate'",
+   "fieldname": "iec_company_start_duration",
+   "fieldtype": "Duration",
+   "hide_seconds": 1,
+   "label": "Company Start Duration"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'IEC Certificate'",
+   "fieldname": "iec_registration_date",
+   "fieldtype": "Date",
+   "label": "IEC Registration Date"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'IEC Certificate'",
+   "fieldname": "iec_cert_upload",
+   "fieldtype": "Attach",
+   "label": "Upload IEC Cert"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'IEC Certificate'",
+   "fieldname": "iec_registration_duration",
+   "fieldtype": "Select",
+   "label": "IEC Registration Duration",
+   "options": "\nBelow 1 Year\nBelow 2 Years\nAbove 2 Years"
+  },
+  {
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'IEC Certificate' && (doc.iec_registration_duration == 'Below 1 Year' || doc.iec_registration_duration == 'Below 2 Years')",
+   "fieldname": "iec_additional_document",
+   "fieldtype": "Attach",
+   "label": "Additional Current A/C Statement/GST Cert Required",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.occupation_documents_needed == 'Yes' && doc.sponsor_occupation == 'Business' && doc.business_proof == 'IEC Certificate'",
+   "fieldname": "iec_cert_uploaded",
+   "fieldtype": "Check",
+   "label": "IEC Cert Uploaded"
+  },
+  {
+   "fieldname": "column_break_ilyf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:(doc.visa_status == 'Visa Refused' || doc.visa_status == 'Visa Approved') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive'))",
+   "fieldname": "closed_tab",
+   "fieldtype": "Tab Break",
+   "label": "Closed"
+  },
+  {
+   "fieldname": "application_closed",
+   "fieldtype": "Select",
+   "label": "Application Closed",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "submitted_tab",
+   "fieldtype": "Tab Break",
+   "label": "Submitted"
+  },
+  {
+   "default": "Today",
+   "fieldname": "submitted_date",
+   "fieldtype": "Date",
+   "label": "Submitted Date"
+  },
+  {
+   "fieldname": "any_further_requirement_offer_letter",
+   "fieldtype": "Select",
+   "label": "Any Further Requirement for offer letter?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.any_further_requirement_offer_letter == 'Yes'",
+   "fieldname": "pending_requirement_details",
+   "fieldtype": "Small Text",
+   "label": "Pending Requirement Details"
+  },
+  {
+   "depends_on": "eval:doc.any_further_requirement_offer_letter == 'Yes'",
+   "fieldname": "pending_requirements_completed",
+   "fieldtype": "Select",
+   "label": "Pending requirements Completed?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.any_further_requirement_offer_letter == 'Yes' && doc.pending_requirements_completed == 'Yes'",
+   "fieldname": "supporting_documents",
+   "fieldtype": "Table",
+   "label": "Supporting Documents",
+   "options": "student documents"
+  }
+ ],
+ "grid_page_length": 50,
+ "icon": "fa fa-file-text",
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-01-26 19:41:53.822747",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Application",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "CRM Admin",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "CRM Sales Staff",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "B2B Agent",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "B2C Agent",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Agent",
+   "write": 1
+  },
+  {
+   "print": 1,
+   "read": 1,
+   "role": "Institution"
+  },
+  {
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Team Lead",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Team Executive",
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

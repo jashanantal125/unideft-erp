@@ -1,6 +1,11 @@
 // Global storage for app data
 window.applicationsData = {};
 
+// Pagination settings
+const APPLICATIONS_PAGE_SIZE = 10;
+window.currentApplicationsPage = 1;
+window.currentApplications = []; // holds latest filtered list for pagination
+
 frappe.ready(function () {
 	loadWorkspaceSidebar();
 	loadApplications();
@@ -20,7 +25,117 @@ frappe.ready(function () {
 });
 
 function applyFilters() {
-	loadApplications();
+	const searchInput = document.getElementById('search-input');
+	const searchTerm = searchInput ? (searchInput.value || '').toLowerCase().trim() : '';
+
+	// Reset to page 1 when search changes
+	if (window.lastApplicationsSearchTerm !== searchTerm) {
+		window.lastApplicationsSearchTerm = searchTerm;
+		window.currentApplicationsPage = 1;
+	}
+
+	// If we haven't loaded data yet, load once (don't spam API on every keypress)
+	if (!window.allApplications || window.allApplications.length === 0) {
+		loadApplications();
+		return;
+	}
+
+	const filteredApps = window.allApplications.filter(app => {
+		const studentName = app.student_data
+			? `${app.student_data.first_name || ''} ${app.student_data.last_name || ''}`.toLowerCase()
+			: (app.student || '').toLowerCase();
+
+		const appId = (app.name || '').toLowerCase();
+		const email = (app.student_email || (app.student_data && app.student_data.email) || '').toLowerCase();
+
+		if (!searchTerm) return true;
+		return studentName.includes(searchTerm) || appId.includes(searchTerm) || email.includes(searchTerm);
+	});
+
+	// Pagination calculations
+	const totalItems = filteredApps.length;
+	const pageSize = APPLICATIONS_PAGE_SIZE;
+	const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+
+	// Clamp current page
+	if (!window.currentApplicationsPage || window.currentApplicationsPage < 1) {
+		window.currentApplicationsPage = 1;
+	} else if (window.currentApplicationsPage > totalPages) {
+		window.currentApplicationsPage = totalPages;
+	}
+
+	const startIndex = (window.currentApplicationsPage - 1) * pageSize;
+	const paginatedApps = filteredApps.slice(startIndex, startIndex + pageSize);
+
+	// Render current page
+	// Keep latest filtered list (for re-render on page changes)
+	window.currentApplications = filteredApps;
+
+	renderApplications(paginatedApps);
+
+	// Toggle empty state based on filtered results
+	const emptyState = document.getElementById('empty-state');
+	if (emptyState) {
+		emptyState.style.display = totalItems === 0 ? 'flex' : 'none';
+	}
+
+	// Render pagination controls
+	renderApplicationsPagination(window.currentApplicationsPage, totalPages, totalItems);
+}
+
+function renderApplicationsPagination(currentPage, totalPages, totalItems) {
+	const container = document.getElementById('pagination-container');
+	if (!container) return;
+
+	// If only 1 page, clear pagination
+	if (totalPages <= 1) {
+		container.innerHTML = '';
+		return;
+	}
+
+	let html = '<div class="pagination">';
+
+	// Prev button
+	html += `<button class="page-btn prev" ${currentPage === 1 ? 'disabled' : ''} onclick="goToApplicationsPage(${currentPage - 1})">Prev</button>`;
+
+	// Page numbers (simple window)
+	const maxButtons = 5;
+	let start = Math.max(1, currentPage - 2);
+	let end = Math.min(totalPages, start + maxButtons - 1);
+	if (end - start < maxButtons - 1) {
+		start = Math.max(1, end - maxButtons + 1);
+	}
+
+	for (let p = start; p <= end; p++) {
+		html += `<button class="page-btn ${p === currentPage ? 'active' : ''}" onclick="goToApplicationsPage(${p})">${p}</button>`;
+	}
+
+	// Next button
+	html += `<button class="page-btn next" ${currentPage === totalPages ? 'disabled' : ''} onclick="goToApplicationsPage(${currentPage + 1})">Next</button>`;
+
+	// Info
+	html += `<span class="page-info">Page ${currentPage} of ${totalPages} • ${totalItems} items</span>`;
+
+	html += '</div>';
+	container.innerHTML = html;
+}
+
+function goToApplicationsPage(page) {
+	if (!window.currentApplications) return;
+
+	const totalItems = window.currentApplications.length;
+	const pageSize = APPLICATIONS_PAGE_SIZE;
+	const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+
+	// Clamp page
+	const targetPage = Math.min(Math.max(1, page), totalPages);
+	window.currentApplicationsPage = targetPage;
+
+	const startIndex = (targetPage - 1) * pageSize;
+	const paginatedApps = window.currentApplications.slice(startIndex, startIndex + pageSize);
+
+	renderApplications(paginatedApps);
+	renderApplicationsPagination(window.currentApplicationsPage, totalPages, totalItems);
 }
 
 function clearSearch() {
@@ -29,7 +144,9 @@ function clearSearch() {
 	if (searchInput) {
 		searchInput.value = '';
 		if (clearBtn) clearBtn.style.display = 'none';
-		loadApplications();
+		// Reset to first page and re-apply filters
+		window.currentApplicationsPage = 1;
+		applyFilters();
 	}
 }
 
@@ -84,28 +201,23 @@ function loadApplications() {
 			loadingState.style.display = 'none';
 
 			if (response.message) {
-				let applications = response.message;
+				const applications = response.message;
 
-				// Apply client-side search filter (only by student name)
-				if (searchTerm) {
-					applications = applications.filter(app => {
-						const studentName = app.student_data 
-							? `${app.student_data.first_name || ''} ${app.student_data.last_name || ''}`.toLowerCase()
-							: (app.student || '').toLowerCase();
-						
-						return studentName.includes(searchTerm);
-					});
-				}
-
-				// Store all applications for filtering
+				// Cache full list (unfiltered) for client-side search
 				window.allApplications = applications;
+
+				// Reset to first page on new load
+				window.currentApplicationsPage = 1;
+
+				// Render immediately based on current search term
+				applyFilters();
 
 				if (applications.length === 0) {
 					emptyState.style.display = 'flex';
 					return;
 				}
 
-				// Fetch student details for each application
+				// Fetch student details / preferred courses in background and re-render via applyFilters()
 				fetchStudentDetails(applications);
 			} else {
 				showError('Failed to load applications');
@@ -121,7 +233,7 @@ function loadApplications() {
 function fetchStudentDetails(applications) {
 	const studentNames = applications.map(app => app.student).filter(Boolean);
 	if (studentNames.length === 0) {
-		renderApplications(applications);
+		applyFilters();
 		return;
 	}
 
@@ -153,7 +265,7 @@ function fetchStudentDetails(applications) {
 		},
 		error: function () {
 			// If student fetch fails, render without student details
-			renderApplications(applications);
+			applyFilters();
 		}
 	});
 }
@@ -161,7 +273,7 @@ function fetchStudentDetails(applications) {
 function fetchPreferredCourses(applications) {
 	const applicationNames = applications.map(app => app.name).filter(Boolean);
 	if (applicationNames.length === 0) {
-		renderApplications(applications);
+		applyFilters();
 		return;
 	}
 
@@ -172,7 +284,7 @@ function fetchPreferredCourses(applications) {
 	const coursesByApp = {};
 
 	if (total === 0) {
-		renderApplications(applications);
+		applyFilters();
 		return;
 	}
 
@@ -224,7 +336,7 @@ function fetchCourseNames(applications, coursesByApp) {
 		applications.forEach(app => {
 			app.preferred_courses = coursesByApp[app.name] || [];
 		});
-		renderApplications(applications);
+		applyFilters();
 		return;
 	}
 
@@ -252,14 +364,14 @@ function fetchCourseNames(applications, coursesByApp) {
 				app.preferred_courses = courseIds.map(courseId => courseNameMap[courseId] || courseId);
 			});
 
-			renderApplications(applications);
+			applyFilters();
 		},
 		error: function () {
 			// If course name fetch fails, use IDs as fallback
 			applications.forEach(app => {
 				app.preferred_courses = coursesByApp[app.name] || [];
 			});
-			renderApplications(applications);
+			applyFilters();
 		}
 	});
 }

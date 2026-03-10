@@ -1,0 +1,137 @@
+{
+    "actions": [],
+    "creation": "2026-02-08 17:00:00.000000",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "assessment_year",
+        "itr_value",
+        "itr_val_matched",
+        "other_income",
+        "other_income_remider",
+        "acknowledgement_no",
+        "computation_details",
+        "computation_reminder",
+        "itr_dob_match",
+        "itr_dob_reminder",
+        "itr_name_match",
+        "itr_name_reminder",
+        "itr_verified",
+        "itr_upload",
+        "itr_verify_reminder"
+    ],
+    "fields": [
+        {
+            "fieldname": "assessment_year",
+            "fieldtype": "Data",
+            "label": "Assessment Year",
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "itr_value",
+            "fieldtype": "Currency",
+            "label": "ITR Value",
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "itr_val_matched",
+            "fieldtype": "Select",
+            "label": "ITR Value Matched with salary",
+            "options": "\nYes\nNo"
+        },
+        {
+            "depends_on": "eval:doc.itr_val_matched == 'No'",
+            "fieldname": "other_income",
+            "fieldtype": "Select",
+            "label": "Is there any other source of income",
+            "options": "\nYes\nNo"
+        },
+        {
+            "default": "set reminder to revise ITR",
+            "depends_on": "eval:doc.other_income == 'No' && doc.itr_val_matched == 'No'",
+            "fieldname": "other_income_remider",
+            "fieldtype": "Data",
+            "label": "Instruction",
+            "read_only": 1
+        },
+        {
+            "fieldname": "acknowledgement_no",
+            "fieldtype": "Data",
+            "label": "Acknowledgement No"
+        },
+        {
+            "fieldname": "computation_details",
+            "fieldtype": "Select",
+            "label": "Company Details/Business details mentioned on Computation",
+            "options": "\nYes\nNo"
+        },
+        {
+            "default": "set reminder to correct computation",
+            "depends_on": "eval:doc.computation_details == 'No'",
+            "fieldname": "computation_reminder",
+            "fieldtype": "Data",
+            "label": "Instruction",
+            "read_only": 1
+        },
+        {
+            "fieldname": "itr_dob_match",
+            "fieldtype": "Select",
+            "label": "DOB on ITR matched with AC & PC",
+            "options": "\nYes\nNo"
+        },
+        {
+            "default": "need to correct",
+            "depends_on": "eval:doc.itr_dob_match == 'No'",
+            "fieldname": "itr_dob_reminder",
+            "fieldtype": "Data",
+            "label": "Instruction",
+            "read_only": 1
+        },
+        {
+            "fieldname": "itr_name_match",
+            "fieldtype": "Select",
+            "label": "Name on ITR matched with AC/PC",
+            "options": "\nYes\nNo"
+        },
+        {
+            "default": "Need to correct",
+            "depends_on": "eval:doc.itr_name_match == 'No'",
+            "fieldname": "itr_name_reminder",
+            "fieldtype": "Data",
+            "label": "Instruction",
+            "read_only": 1
+        },
+        {
+            "fieldname": "itr_verified",
+            "fieldtype": "Select",
+            "label": "ITR Verified",
+            "options": "\nYes\nNo"
+        },
+        {
+            "depends_on": "eval:doc.itr_verified == 'Yes'",
+            "fieldname": "itr_upload",
+            "fieldtype": "Attach",
+            "label": "Upload ITR"
+        },
+        {
+            "default": "needs to verify and set reminder",
+            "depends_on": "eval:doc.itr_verified == 'No'",
+            "fieldname": "itr_verify_reminder",
+            "fieldtype": "Data",
+            "label": "Instruction",
+            "read_only": 1
+        }
+    ],
+    "istable": 1,
+    "links": [],
+    "modified": "2026-02-08 17:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "CRM",
+    "name": "Spouse ITR Details",
+    "owner": "Administrator",
+    "permissions": [],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": []
+}

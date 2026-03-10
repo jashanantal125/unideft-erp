@@ -1,0 +1,127 @@
+{
+    "actions": [],
+    "creation": "2024-02-08 11:40:00.000000",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "graduation_result_link",
+        "graduation_university_email",
+        "graduation_docs_verified",
+        "graduation_docs_pdf",
+        "graduation_docs_status",
+        "column_break_backlog",
+        "graduation_no_of_backlogs",
+        "backlog_below_8_verified",
+        "backlog_below_8_proof",
+        "backlog_below_8_status",
+        "backlog_above_8_accepted",
+        "backlog_above_8_verified",
+        "backlog_above_8_proof",
+        "backlog_above_8_status"
+    ],
+    "fields": [
+        {
+            "fieldname": "graduation_result_link",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "label": "Result verification link (if applicable)"
+        },
+        {
+            "fieldname": "graduation_university_email",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "label": "University domain email id"
+        },
+        {
+            "fieldname": "graduation_docs_verified",
+            "fieldtype": "Select",
+            "label": "Documents Verified",
+            "options": "\nYes\nNo"
+        },
+        {
+            "depends_on": "eval:doc.graduation_docs_verified == 'Yes'",
+            "fieldname": "graduation_docs_pdf",
+            "fieldtype": "Attach",
+            "label": "Upload in Single PDF"
+        },
+        {
+            "default": "Not Accepted",
+            "depends_on": "eval:doc.graduation_docs_verified == 'No'",
+            "fieldname": "graduation_docs_status",
+            "fieldtype": "Data",
+            "label": "Status",
+            "read_only": 1
+        },
+        {
+            "fieldname": "column_break_backlog",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "graduation_no_of_backlogs",
+            "fieldtype": "Select",
+            "label": "No of Backlogs",
+            "options": "\nBelow 8\nAbove 8"
+        },
+        {
+            "depends_on": "eval:doc.graduation_no_of_backlogs == 'Below 8'",
+            "fieldname": "backlog_below_8_verified",
+            "fieldtype": "Select",
+            "label": "Backlog Verified (Below 8)",
+            "options": "\nYes\nNo"
+        },
+        {
+            "depends_on": "eval:doc.backlog_below_8_verified == 'Yes' && doc.graduation_no_of_backlogs == 'Below 8'",
+            "fieldname": "backlog_below_8_proof",
+            "fieldtype": "Attach",
+            "label": "Upload Backlog Proof (Below 8)"
+        },
+        {
+            "default": "Set Reminder to Verify",
+            "depends_on": "eval:doc.backlog_below_8_verified == 'No'  && doc.graduation_no_of_backlogs == 'Below 8'",
+            "fieldname": "backlog_below_8_status",
+            "fieldtype": "Data",
+            "label": "Status",
+            "read_only": 1
+        },
+        {
+            "depends_on": "eval:doc.graduation_no_of_backlogs == 'Above 8'",
+            "fieldname": "backlog_above_8_accepted",
+            "fieldtype": "Select",
+            "label": "Conditional Offer Accepted?",
+            "options": "\nYes\nNo"
+        },
+        {
+            "depends_on": "eval:doc.backlog_above_8_accepted == 'Yes'  && doc.graduation_no_of_backlogs == 'Above 8'",
+            "fieldname": "backlog_above_8_verified",
+            "fieldtype": "Select",
+            "label": "Backlog Verified (Above 8)",
+            "options": "\nYes\nNo"
+        },
+        {
+            "depends_on": "eval:doc.backlog_above_8_verified == 'Yes' && doc.graduation_no_of_backlogs == 'Above 8'",
+            "fieldname": "backlog_above_8_proof",
+            "fieldtype": "Attach",
+            "label": "Upload Backlog Proof (Above 8)"
+        },
+        {
+            "default": "Set Reminder to Verify",
+            "depends_on": "eval:doc.backlog_above_8_verified == 'No' && doc.graduation_no_of_backlogs == 'Above 8'",
+            "fieldname": "backlog_above_8_status",
+            "fieldtype": "Data",
+            "label": "Status",
+            "read_only": 1
+        }
+    ],
+    "istable": 1,
+    "links": [],
+    "modified": "2024-02-08 11:40:00.000000",
+    "modified_by": "Administrator",
+    "module": "CRM",
+    "name": "Graduation Verification",
+    "owner": "Administrator",
+    "permissions": [],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": []
+}

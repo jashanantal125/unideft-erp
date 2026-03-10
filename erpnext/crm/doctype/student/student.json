@@ -92,6 +92,7 @@
    "label": "City"
   },
   {
+   "depends_on": "eval:!in_list(frappe.user_roles, 'agents')",
    "fieldname": "country_code",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -112,6 +113,7 @@
    "options": "Country"
   },
   {
+   "depends_on": "eval:!in_list(frappe.user_roles, 'agents')",
    "fieldname": "birthday",
    "fieldtype": "Date",
    "label": "Birthday"
@@ -128,6 +130,7 @@
    "label": "Highest Education"
   },
   {
+   "depends_on": "eval:!in_list(frappe.user_roles, 'agents')",
    "fieldname": "testscore",
    "fieldtype": "Data",
    "label": "Testscore"
@@ -145,11 +148,20 @@
    "label": "Comment"
   },
   {
+   "depends_on": "eval:!in_list(frappe.user_roles, 'agents')",
    "fieldname": "preferred_study_level",
    "fieldtype": "Data",
    "label": "Preferred Study Level"
   },
   {
+   "depends_on": "eval:!in_list(frappe.user_roles, 'agents')",
+   "fieldname": "assigned_to",
+   "fieldtype": "Link",
+   "label": "Assigned Staff",
+   "options": "User"
+  },
+  {
+   "depends_on": "eval:!in_list(frappe.user_roles, 'agents')",
    "fieldname": "lead_link",
    "fieldtype": "Link",
    "label": "Lead",
@@ -200,7 +212,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-18 15:30:44.769034",
+ "modified": "2026-01-20 18:59:11.645155",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Student",
@@ -262,6 +274,22 @@
    "print": 1,
    "read": 1,
    "role": "Institution"
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Team Lead",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Team Executive",
+   "write": 1
   }
  ],
  "row_format": "Dynamic",

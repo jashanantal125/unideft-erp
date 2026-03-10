@@ -1,0 +1,22 @@
+{
+ "content": null,
+ "creation": "2026-01-17 23:59:56.704998",
+ "docstatus": 0,
+ "doctype": "Page",
+ "idx": 0,
+ "modified": "2026-01-18 00:00:32.183205",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "custom-mm",
+ "owner": "Administrator",
+ "page_name": "custom-mm",
+ "roles": [
+  {
+   "role": "All"
+  }
+ ],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "system_page": 0
+}
