@@ -1,0 +1,82 @@
+{
+ "actions": [],
+ "creation": "2026-07-23 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "assessment_channel",
+  "vendor",
+  "assessment_received",
+  "options_provided_to_student",
+  "student_confirmed_to_apply",
+  "university",
+  "course"
+ ],
+ "fields": [
+  {
+   "fieldname": "assessment_channel",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Vendor / Channel",
+   "options": "\nDirect\nVendor",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.assessment_channel == 'Vendor'",
+   "fieldname": "vendor",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Vendor",
+   "options": "vendor"
+  },
+  {
+   "fieldname": "assessment_received",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Have you received assessment?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.assessment_received == 'Yes'",
+   "fieldname": "options_provided_to_student",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Have you provided option to student?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.options_provided_to_student == 'Yes'",
+   "fieldname": "student_confirmed_to_apply",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Student confirmed to apply?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.student_confirmed_to_apply == 'Yes'",
+   "fieldname": "university",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "University Name",
+   "options": "University"
+  },
+  {
+   "depends_on": "eval:doc.student_confirmed_to_apply == 'Yes'",
+   "fieldname": "course",
+   "fieldtype": "Link",
+   "label": "Course Name",
+   "options": "Course"
+  }
+ ],
+ "istable": 1,
+ "modified": "2026-07-23 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Need Assessment Vendor",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

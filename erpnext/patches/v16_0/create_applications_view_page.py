@@ -12,7 +12,13 @@ def execute():
 			"roles": [
 				{"role": "System Manager"},
 				{"role": "Sales User"},
-				{"role": "Sales Manager"}
+				{"role": "Sales Manager"},
+				{"role": "Team Lead"},
+				{"role": "Team Executive"},
+				{"role": "Agent"},
+				{"role": "B2B Agent"},
+				{"role": "B2C Agent"},
+				{"role": "agents"},
 			]
 		})
 		doc.insert(ignore_permissions=True)

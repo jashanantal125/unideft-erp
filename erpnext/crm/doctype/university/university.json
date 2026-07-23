@@ -177,5 +177,7 @@
  "sort_field": "creation",
  "sort_order": "DESC",
  "states": [],
+ "show_title_field_in_link": 1,
+ "search_fields": "university_name,country,city",
  "title_field": "university_name"
 }

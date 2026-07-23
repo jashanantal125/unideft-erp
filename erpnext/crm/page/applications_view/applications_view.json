@@ -18,6 +18,18 @@
   },
   {
    "role": "Team Executive"
+  },
+  {
+   "role": "Agent"
+  },
+  {
+   "role": "B2B Agent"
+  },
+  {
+   "role": "B2C Agent"
+  },
+  {
+   "role": "agents"
   }
  ],
  "standard": "Yes",

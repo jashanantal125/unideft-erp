@@ -28,11 +28,28 @@
         "martial_status",
         "current_age",
         "any_visa_refused",
-        "visa_refused_not_able_to_process",
         "visa_refused_ok",
+        "visa_refused_country",
+        "visa_refused_type",
+        "visa_refused_not_able_to_process",
+        "visa_refused_can_process",
+        "visa_refused_go_ahead_status",
+        "visa_refused_other_country",
+        "visa_refused_other_country_name",
+        "visa_refused_create_new_application",
+        "visa_refused_new_application",
+        "visa_refused_close_reason",
+        "visa_refused_closed_status",
         "study_gap",
+        "study_gap_upto_1_year",
+        "study_gap_status",
+        "study_gap_not_accepted_status",
         "study_gap_proof",
         "study_gap_ok",
+        "need_assessment",
+        "need_assessment_vendors",
+        "need_assessment_university",
+        "need_assessment_course",
         "section_break_dkel",
         "preferred_courses",
         "section_case_4_spouse",
@@ -72,8 +89,7 @@
         "section_d_study_gap_proof",
         "study_gap_proof_list",
         "section_d_passport",
-        "passport_uploaded",
-        "passport_documents",
+        "passport_upload",
         "column_break_section_d",
         "section_e_processing_agent",
         "processing_agent_details",
@@ -90,11 +106,17 @@
         "spouse_salary_statements_verified_3_months",
         "submitted_tab",
         "submitted_date",
+        "submitted_another_application",
+        "submitted_another_application_yes_note",
+        "need_another_application",
+        "need_another_application_yes_note",
+        "not_processing_another_application_reason",
         "any_further_requirement_offer_letter",
         "no_further_requirement_note",
         "pending_requirement_details",
         "pending_requirements_completed",
         "pending_requirements_reminder_note",
+        "pending_requirements_completed_yes_note",
         "supporting_documents",
         "offer_tab",
         "offer_section",
@@ -125,6 +147,16 @@
         "other_documents_offer",
         "defer_offer_required",
         "defer_offer_ok",
+        "applied_for_defer_offer_letter",
+        "applied_for_defer_offer_yes_section",
+        "defer_any_further_requirement",
+        "defer_no_further_requirement_note",
+        "defer_pending_requirement_details",
+        "defer_pending_requirements_completed",
+        "defer_pending_requirements_reminder_note",
+        "defer_pending_requirements_completed_yes_note",
+        "defer_supporting_documents",
+        "applied_for_defer_offer_no_note",
         "defer_offer_section",
         "defer_offer_currency",
         "defer_university_name",
@@ -147,7 +179,6 @@
         "defer_funds_required_type",
         "defer_funds_required_amount",
         "defer_conditions_on_offer_letter",
-        "asd",
         "section_break_defer_docs",
         "defer_offer_letter_upload",
         "defer_other_documents",
@@ -155,6 +186,7 @@
         "gs_submitted_section",
         "gs_submitted",
         "financial_stage_completed",
+        "gs_submitted_no_note",
         "gs_submitted_reminder_date",
         "conditions_section",
         "conditions_note",
@@ -171,6 +203,12 @@
         "gap_justification_documents",
         "verification_section",
         "verification_type",
+        "academic_transcript_section",
+        "academic_transcript_details",
+        "academic_transcript_documents",
+        "other_condition_section",
+        "other_condition_details",
+        "other_condition_documents",
         "section_d_academics",
         "student_academic_verification",
         "spouse_academics_sb",
@@ -463,25 +501,97 @@
             "fieldtype": "Section Break"
         },
         {
-            "default": "0",
             "fieldname": "any_visa_refused",
-            "fieldtype": "Check",
-            "label": "Refused from Aus/NZ"
+            "fieldtype": "Select",
+            "label": "IX. Refused from Aus/NZ",
+            "options": "\nYes\nNo"
         },
         {
             "bold": 1,
-            "default": "\u26a0\ufe0f We are not able to process this application",
-            "depends_on": "eval:doc.any_visa_refused == 1",
+            "default": "\u2713 OK",
+            "depends_on": "eval:doc.any_visa_refused == 'No'",
+            "fieldname": "visa_refused_ok",
+            "fieldtype": "Text",
+            "label": "Status",
+            "read_only": 1
+        },
+        {
+            "depends_on": "eval:doc.any_visa_refused == 'Yes'",
+            "fieldname": "visa_refused_country",
+            "fieldtype": "Select",
+            "label": "Which Country?",
+            "options": "\nAustralia\nNew Zealand"
+        },
+        {
+            "depends_on": "eval:doc.any_visa_refused == 'Yes' && doc.visa_refused_country",
+            "fieldname": "visa_refused_type",
+            "fieldtype": "Select",
+            "label": "Which type of Visa refused?",
+            "options": "\nStudy Visa\nTourist Visa\nWork Visa\nOther Visa"
+        },
+        {
+            "bold": 1,
+            "default": "We cannot process this case for Australia",
+            "depends_on": "eval:doc.any_visa_refused == 'Yes' && doc.visa_refused_country == 'Australia' && doc.visa_refused_type == 'Study Visa'",
             "fieldname": "visa_refused_not_able_to_process",
             "fieldtype": "Text",
             "label": "Status",
             "read_only": 1
         },
         {
+            "depends_on": "eval:doc.any_visa_refused == 'Yes' && doc.visa_refused_type && !(doc.visa_refused_country == 'Australia' && doc.visa_refused_type == 'Study Visa')",
+            "fieldname": "visa_refused_can_process",
+            "fieldtype": "Select",
+            "label": "Can we process this case for Australia?",
+            "options": "\nYes\nNo"
+        },
+        {
             "bold": 1,
-            "default": "\u2713 OK",
-            "depends_on": "eval:doc.any_visa_refused == 0",
-            "fieldname": "visa_refused_ok",
+            "default": "\u2713 Go Ahead",
+            "depends_on": "eval:doc.visa_refused_can_process == 'Yes'",
+            "fieldname": "visa_refused_go_ahead_status",
+            "fieldtype": "Text",
+            "label": "Status",
+            "read_only": 1
+        },
+        {
+            "depends_on": "eval:doc.any_visa_refused == 'Yes' && ((doc.visa_refused_country == 'Australia' && doc.visa_refused_type == 'Study Visa') || doc.visa_refused_can_process == 'No')",
+            "fieldname": "visa_refused_other_country",
+            "fieldtype": "Select",
+            "label": "Does student want to process any other country?",
+            "options": "\nYes\nNo"
+        },
+        {
+            "depends_on": "eval:doc.visa_refused_other_country == 'Yes'",
+            "fieldname": "visa_refused_other_country_name",
+            "fieldtype": "Link",
+            "label": "Name of Country",
+            "options": "Country"
+        },
+        {
+            "depends_on": "eval:doc.visa_refused_other_country == 'Yes' && doc.visa_refused_other_country_name",
+            "fieldname": "visa_refused_create_new_application",
+            "fieldtype": "Button",
+            "label": "Create New Application & Close Case"
+        },
+        {
+            "depends_on": "eval:doc.visa_refused_new_application",
+            "fieldname": "visa_refused_new_application",
+            "fieldtype": "Link",
+            "label": "New Application",
+            "options": "Application",
+            "read_only": 1
+        },
+        {
+            "depends_on": "eval:doc.visa_refused_other_country == 'No'",
+            "fieldname": "visa_refused_close_reason",
+            "fieldtype": "Small Text",
+            "label": "Reason to Close Case"
+        },
+        {
+            "bold": 1,
+            "depends_on": "eval:doc.status == 'Closed' && doc.any_visa_refused == 'Yes'",
+            "fieldname": "visa_refused_closed_status",
             "fieldtype": "Text",
             "label": "Status",
             "read_only": 1
@@ -523,7 +633,7 @@
             "fieldname": "case_4_proceed_below_graduate",
             "fieldtype": "Select",
             "label": "Student wants to proceed (Below Graduate)",
-            "options": "\non single basis\nDon’t want to procced"
+            "options": "\non single basis\nDon\u2019t want to procced"
         },
         {
             "depends_on": "eval:doc.case_4_marriage_duration == 'Below 1 year' && doc.case_4_spouse_qualification == 'Graduate or above Graduation' && doc.higher_education == 'Graduation' && doc.martial_status == 'Married'",
@@ -549,14 +659,14 @@
         },
         {
             "default": "Convince to process on single basis otherwise Close case",
-            "depends_on": "eval:doc.case_4_proceed_below_graduate == 'Don’t want to procced' && doc.higher_education == 'Graduation' && doc.martial_status == 'Married'",
+            "depends_on": "eval:doc.case_4_proceed_below_graduate == 'Don\u2019t want to procced' && doc.higher_education == 'Graduation' && doc.martial_status == 'Married'",
             "fieldname": "case_4_note_convince",
             "fieldtype": "Data",
             "label": "Instruction",
             "read_only": 1
         },
         {
-            "depends_on": "eval:doc.case_4_proceed_below_graduate == 'Don’t want to procced' && doc.higher_education == 'Graduation' && doc.martial_status == 'Married'",
+            "depends_on": "eval:doc.case_4_proceed_below_graduate == 'Don\u2019t want to procced' && doc.higher_education == 'Graduation' && doc.martial_status == 'Married'",
             "fieldname": "case_4_close_reason",
             "fieldtype": "Small Text",
             "label": "Close Case Reason"
@@ -726,17 +836,9 @@
             "label": "E. Passport"
         },
         {
-            "default": "0",
-            "fieldname": "passport_uploaded",
-            "fieldtype": "Check",
-            "label": "Passport Uploaded"
-        },
-        {
-            "depends_on": "eval:doc.passport_uploaded == 1",
-            "fieldname": "passport_documents",
-            "fieldtype": "Table",
-            "label": "Passport Documents",
-            "options": "student documents"
+            "fieldname": "passport_upload",
+            "fieldtype": "Attach",
+            "label": "Upload Passport"
         },
         {
             "fieldname": "column_break_section_d",
@@ -1698,13 +1800,38 @@
             "read_only": 1
         },
         {
-            "default": "0",
             "fieldname": "study_gap",
-            "fieldtype": "Check",
-            "label": "Study Gap"
+            "fieldtype": "Select",
+            "label": "Study Gap?",
+            "options": "\nYes\nNo"
         },
         {
-            "depends_on": "eval:doc.study_gap == 1",
+            "depends_on": "eval:doc.study_gap == 'Yes'",
+            "fieldname": "study_gap_upto_1_year",
+            "fieldtype": "Select",
+            "label": "Is study gap up to 1 year?",
+            "options": "\nYes\nNo"
+        },
+        {
+            "bold": 1,
+            "depends_on": "eval:doc.study_gap == 'Yes' && doc.study_gap_upto_1_year == 'Yes'",
+            "fieldname": "study_gap_status",
+            "fieldtype": "Data",
+            "label": "Study Gap Status",
+            "read_only": 1,
+            "default": "Accepted"
+        },
+        {
+            "bold": 1,
+            "depends_on": "eval:doc.study_gap == 'Yes' && doc.study_gap_upto_1_year == 'No'",
+            "fieldname": "study_gap_not_accepted_status",
+            "fieldtype": "Data",
+            "label": "Study Gap Status",
+            "read_only": 1,
+            "default": "Not Accepted"
+        },
+        {
+            "depends_on": "eval:doc.study_gap == 'Yes' && doc.study_gap_upto_1_year == 'Yes'",
             "description": "Please provide study gap proof",
             "fieldname": "study_gap_proof",
             "fieldtype": "Table",
@@ -1714,11 +1841,39 @@
         {
             "bold": 1,
             "default": "\u2713 OK",
-            "depends_on": "eval:doc.study_gap == 0",
+            "depends_on": "eval:doc.study_gap == 'No'",
             "fieldname": "study_gap_ok",
             "fieldtype": "Text",
             "label": "Status",
             "read_only": 1
+        },
+        {
+            "fieldname": "need_assessment",
+            "fieldtype": "Select",
+            "label": "Need Assessment",
+            "options": "\nYes\nNo"
+        },
+        {
+            "depends_on": "eval:doc.need_assessment == 'Yes'",
+            "description": "Add one row per vendor/channel. Assessment may go to multiple vendors.",
+            "fieldname": "need_assessment_vendors",
+            "fieldtype": "Table",
+            "label": "Assessment Vendors",
+            "options": "Need Assessment Vendor"
+        },
+        {
+            "depends_on": "eval:doc.need_assessment == 'No'",
+            "fieldname": "need_assessment_university",
+            "fieldtype": "Link",
+            "label": "University Name",
+            "options": "University"
+        },
+        {
+            "depends_on": "eval:doc.need_assessment == 'No'",
+            "fieldname": "need_assessment_course",
+            "fieldtype": "Link",
+            "label": "Course Name",
+            "options": "Course"
         },
         {
             "depends_on": "eval:in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive')",
@@ -1742,7 +1897,8 @@
             "default": "0",
             "fieldname": "interview_stage_available",
             "fieldtype": "Check",
-            "label": "Interview Before Acceptance (This stage available)"
+            "label": "Interview Before Acceptance (This stage available)",
+            "description": "Auto-checked when Offer Letter Interview condition timing is Before Acceptance (from Financials)."
         },
         {
             "default": "\u2139 Check this if interview is at this stage, otherwise proceed to next stage",
@@ -1782,7 +1938,7 @@
             "read_only": 1
         },
         {
-            "depends_on": "eval:doc.interview_stage_available",
+            "depends_on": "eval:doc.interview_stage_available && doc.student_prepare == 'Yes'",
             "fieldname": "schedule_interview",
             "fieldtype": "Select",
             "label": "Schedule Interview",
@@ -1805,57 +1961,57 @@
             "read_only": 1
         },
         {
-            "default": "0",
             "depends_on": "eval:doc.interview_stage_available",
             "fieldname": "gs_approved_check",
-            "fieldtype": "Check",
-            "label": "GS Approved"
+            "fieldtype": "Select",
+            "label": "GS Approved",
+            "options": "\nYes\nNo"
         },
         {
             "default": "\u2713 Go to GS Approved Stage",
-            "depends_on": "eval:doc.interview_stage_available && (doc.gs_approved_check)",
+            "depends_on": "eval:doc.interview_stage_available && (doc.gs_approved_check == 'Yes')",
             "fieldname": "gs_approved_yes_status",
             "fieldtype": "Text",
             "label": "Status",
             "read_only": 1
         },
         {
-            "default": "0",
-            "depends_on": "eval:doc.interview_stage_available && (!doc.gs_approved_check)",
+            "depends_on": "eval:doc.interview_stage_available && (doc.gs_approved_check != 'Yes')",
             "fieldname": "gs_any_requirement",
-            "fieldtype": "Check",
-            "label": "Is There Any Requirement"
+            "fieldtype": "Select",
+            "label": "Is There Any Requirement",
+            "options": "\nYes\nNo"
         },
         {
             "default": "\u26a0 Set Reminder When Expecting GS Approved",
-            "depends_on": "eval:doc.interview_stage_available && (!doc.gs_approved_check && !doc.gs_any_requirement)",
+            "depends_on": "eval:doc.interview_stage_available && (doc.gs_approved_check != 'Yes' && doc.gs_any_requirement == 'No')",
             "fieldname": "no_requirement_status",
             "fieldtype": "Text",
             "label": "Status",
             "read_only": 1
         },
         {
-            "depends_on": "eval:doc.interview_stage_available && (!doc.gs_approved_check && doc.gs_any_requirement)",
+            "depends_on": "eval:doc.interview_stage_available && (doc.gs_approved_check != 'Yes' && doc.gs_any_requirement == 'Yes')",
             "fieldname": "requirement_details",
             "fieldtype": "Text",
             "label": "Requirement Details"
         },
         {
-            "depends_on": "eval:doc.interview_stage_available && (!doc.gs_approved_check && doc.gs_any_requirement)",
+            "depends_on": "eval:doc.interview_stage_available && (doc.gs_approved_check != 'Yes' && doc.gs_any_requirement == 'Yes')",
             "fieldname": "requirement_document_upload",
             "fieldtype": "Attach",
             "label": "Upload Required Document"
         },
         {
             "default": "0",
-            "depends_on": "eval:doc.interview_stage_available && (!doc.gs_approved_check && doc.gs_any_requirement)",
+            "depends_on": "eval:doc.interview_stage_available && (doc.gs_approved_check != 'Yes' && doc.gs_any_requirement == 'Yes')",
             "fieldname": "requirements_completed",
             "fieldtype": "Check",
             "label": "Requirements Completed"
         },
         {
             "default": "\u2713 Set Reminder When Expecting GS Approved",
-            "depends_on": "eval:doc.interview_stage_available && (!doc.gs_approved_check && doc.gs_any_requirement && doc.requirements_completed)",
+            "depends_on": "eval:doc.interview_stage_available && (doc.gs_approved_check != 'Yes' && doc.gs_any_requirement == 'Yes' && doc.requirements_completed)",
             "fieldname": "requirements_completed_yes_status",
             "fieldtype": "Text",
             "label": "Status",
@@ -1863,7 +2019,7 @@
         },
         {
             "default": "\u26a0 Set Reminder When Requirement Will Be Completed",
-            "depends_on": "eval:doc.interview_stage_available && (!doc.gs_approved_check && doc.gs_any_requirement && !doc.requirements_completed)",
+            "depends_on": "eval:doc.interview_stage_available && (doc.gs_approved_check != 'Yes' && doc.gs_any_requirement == 'Yes' && !doc.requirements_completed)",
             "fieldname": "requirements_completed_no_status",
             "fieldtype": "Text",
             "label": "Status",
@@ -2035,82 +2191,158 @@
             "options": "student documents"
         },
         {
-            "default": "0",
             "fieldname": "defer_offer_required",
-            "fieldtype": "Check",
-            "label": "Defer Offer Required"
+            "fieldtype": "Select",
+            "label": "Defer Offer Required",
+            "options": "\nYes\nNo"
         },
         {
             "bold": 1,
             "default": "\u2713 OK",
-            "depends_on": "eval:doc.defer_offer_required == 0",
+            "depends_on": "eval:doc.defer_offer_required == 'No'",
             "fieldname": "defer_offer_ok",
             "fieldtype": "Text",
             "label": "Status",
             "read_only": 1
         },
         {
-            "depends_on": "eval:doc.defer_offer_required == 1",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+            "fieldname": "applied_for_defer_offer_letter",
+            "fieldtype": "Select",
+            "label": "Have you applied for Defer Offer letter?",
+            "options": "\nYes\nNo"
+        },
+        {
+            "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes'",
+            "fieldname": "applied_for_defer_offer_yes_section",
+            "fieldtype": "Section Break",
+            "label": "Defer Offer Application Requirements"
+        },
+        {
+            "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes'",
+            "fieldname": "defer_any_further_requirement",
+            "fieldtype": "Select",
+            "label": "Any Further Requirement for Defer offer letter?",
+            "options": "\nYes\nNo"
+        },
+        {
+            "bold": 1,
+            "default": "If no \u2192 Set reminder: Follow up on Defer Offer Letter",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes' && doc.defer_any_further_requirement == 'No'",
+            "fieldname": "defer_no_further_requirement_note",
+            "fieldtype": "Text",
+            "label": "Note",
+            "read_only": 1
+        },
+        {
+            "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes' && doc.defer_any_further_requirement == 'Yes'",
+            "fieldname": "defer_pending_requirement_details",
+            "fieldtype": "Text",
+            "label": "Pending Requirement Details"
+        },
+        {
+            "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes' && doc.defer_any_further_requirement == 'Yes'",
+            "fieldname": "defer_pending_requirements_completed",
+            "fieldtype": "Select",
+            "label": "Pending requirements Completed?",
+            "options": "\nYes\nNo"
+        },
+        {
+            "bold": 1,
+            "default": "\u2192 Set reminder: To Complete Pending requirements",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes' && doc.defer_any_further_requirement == 'Yes' && doc.defer_pending_requirements_completed == 'No'",
+            "fieldname": "defer_pending_requirements_reminder_note",
+            "fieldtype": "Text",
+            "label": "Note",
+            "read_only": 1
+        },
+        {
+            "bold": 1,
+            "default": "\u2192 Set reminder: Follow up on Offer Letter",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes' && doc.defer_any_further_requirement == 'Yes' && doc.defer_pending_requirements_completed == 'Yes'",
+            "fieldname": "defer_pending_requirements_completed_yes_note",
+            "fieldtype": "Text",
+            "label": "Note",
+            "read_only": 1
+        },
+        {
+            "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes' && doc.defer_any_further_requirement == 'Yes' && doc.defer_pending_requirements_completed == 'Yes'",
+            "fieldname": "defer_supporting_documents",
+            "fieldtype": "Table",
+            "label": "Supporting Documents",
+            "options": "student documents"
+        },
+        {
+            "bold": 1,
+            "default": "\u2192 Set reminder: Follow up on Defer Offer Letter",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'No'",
+            "fieldname": "applied_for_defer_offer_no_note",
+            "fieldtype": "Text",
+            "label": "Note",
+            "read_only": 1
+        },
+        {
+            "depends_on": "eval:doc.defer_offer_required == 'Yes'",
             "fieldname": "defer_offer_section",
             "fieldtype": "Section Break",
             "label": "Defer Offer Details"
         },
         {
             "default": "AUD",
-            "depends_on": "eval:doc.defer_offer_required == 1",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes'",
             "fieldname": "defer_offer_currency",
             "fieldtype": "Select",
             "label": "Currency",
             "options": "AUD\nCAD\nNZD\nUSD\nINR"
         },
         {
-            "depends_on": "eval:doc.defer_offer_required == 1",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes'",
             "fieldname": "defer_university_name",
             "fieldtype": "Link",
             "label": "University Name",
             "options": "University"
         },
         {
-            "depends_on": "eval:doc.defer_offer_required == 1",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes'",
             "fieldname": "defer_course_name",
             "fieldtype": "Link",
             "label": "Course Name",
             "options": "Course"
         },
         {
-            "depends_on": "eval:doc.defer_offer_required == 1",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes'",
             "fieldname": "defer_university_intake",
             "fieldtype": "Date",
             "label": "Intake"
         },
         {
-            "depends_on": "eval:doc.defer_offer_required == 1",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes'",
             "fieldname": "column_break_defer_1",
             "fieldtype": "Column Break"
         },
         {
-            "depends_on": "eval:doc.defer_offer_required == 1",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes'",
             "fieldname": "defer_full_year_tuition_fee",
             "fieldtype": "Currency",
             "label": "Full Year Tuition Fee",
             "options": "defer_offer_currency"
         },
         {
-            "depends_on": "eval:doc.defer_offer_required == 1",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes'",
             "fieldname": "defer_scholarship",
             "fieldtype": "Currency",
             "label": "Scholarship",
             "options": "defer_offer_currency"
         },
         {
-            "depends_on": "eval:doc.defer_offer_required == 1",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes'",
             "fieldname": "defer_payable_fee",
             "fieldtype": "Currency",
             "label": "Payable Fee",
             "options": "defer_offer_currency"
         },
         {
-            "depends_on": "eval:doc.defer_offer_required == 1",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes'",
             "fieldname": "defer_oshc",
             "fieldtype": "Currency",
             "label": "OSHC",
@@ -2118,7 +2350,7 @@
         },
         {
             "default": "29710",
-            "depends_on": "eval:doc.defer_offer_required == 1",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes'",
             "fieldname": "defer_living_expenses",
             "fieldtype": "Currency",
             "label": "Living Expenses",
@@ -2126,7 +2358,7 @@
         },
         {
             "default": "2200",
-            "depends_on": "eval:doc.defer_offer_required == 1",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes'",
             "fieldname": "defer_travel_expenses",
             "fieldtype": "Currency",
             "label": "Travel Expenses",
@@ -2134,7 +2366,7 @@
         },
         {
             "default": "10394",
-            "depends_on": "eval:doc.defer_offer_required == 1 && doc.martial_status == 'Married' && doc.case_4_proceed_above_1_year == 'with Spouse'",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.martial_status == 'Married' && doc.case_4_proceed_above_1_year == 'with Spouse'",
             "fieldname": "defer_living_expenses_spouse",
             "fieldtype": "Currency",
             "label": "Living Expense Spouse",
@@ -2142,7 +2374,7 @@
         },
         {
             "default": "2200",
-            "depends_on": "eval:doc.defer_offer_required == 1 && doc.martial_status == 'Married' && doc.case_4_proceed_above_1_year == 'with Spouse'",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.martial_status == 'Married' && doc.case_4_proceed_above_1_year == 'with Spouse'",
             "fieldname": "defer_travel_expenses_spouse",
             "fieldtype": "Currency",
             "label": "Travel Expense Spouse",
@@ -2150,21 +2382,21 @@
         },
         {
             "default": "0",
-            "depends_on": "eval:doc.defer_offer_required == 1",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes'",
             "fieldname": "defer_process_with_kids",
             "fieldtype": "Check",
             "label": "Process with Kids"
         },
         {
             "default": "0",
-            "depends_on": "eval:doc.defer_offer_required == 1 && doc.defer_process_with_kids == 1",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.defer_process_with_kids == 1",
             "fieldname": "defer_no_of_kids",
             "fieldtype": "Int",
             "label": "Number of Kids"
         },
         {
             "default": "449",
-            "depends_on": "eval:doc.defer_offer_required == 1 && doc.defer_process_with_kids == 1",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.defer_process_with_kids == 1",
             "fieldname": "defer_living_expenses_kid_unit",
             "fieldtype": "Currency",
             "label": "Living Expense Kid (Per Kid)",
@@ -2173,7 +2405,7 @@
         },
         {
             "default": "2200",
-            "depends_on": "eval:doc.defer_offer_required == 1 && doc.defer_process_with_kids == 1",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.defer_process_with_kids == 1",
             "fieldname": "defer_travel_expenses_kid_unit",
             "fieldtype": "Currency",
             "label": "Travel Expense Kid (Per Kid)",
@@ -2181,19 +2413,19 @@
             "read_only": 1
         },
         {
-            "depends_on": "eval:doc.defer_offer_required == 1",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes'",
             "fieldname": "column_break_defer_2",
             "fieldtype": "Column Break"
         },
         {
-            "depends_on": "eval:doc.defer_offer_required == 1",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes'",
             "fieldname": "defer_funds_required_type",
             "fieldtype": "Select",
             "label": "Funds Required",
             "options": "\nWith Full Year fee (single basis)\nWithout Full Year fee (single basis)\nWith Full Year fee (With spouse)\nWithout Full Year fee (With spouse)\nWith Full Year fee (With spouse and Kid)\nWithout Full Year fee (With spouse and Kid)\nWith Full Year fee (With Kid)\nWithout Full Year fee (With Kid)"
         },
         {
-            "depends_on": "eval:doc.defer_offer_required == 1",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes'",
             "description": "Automatically calculated based on Funds Required selection",
             "fieldname": "defer_funds_required_amount",
             "fieldtype": "Currency",
@@ -2202,27 +2434,27 @@
             "read_only": 1
         },
         {
-            "depends_on": "eval:doc.defer_offer_required == 1",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes'",
             "fieldname": "defer_conditions_on_offer_letter",
             "fieldtype": "Table MultiSelect",
             "label": "Conditions on Offer Letter",
             "options": "Application Offer Letter Condition"
         },
         {
-            "depends_on": "eval:doc.defer_offer_required == 1",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes'",
             "fieldname": "section_break_defer_docs",
             "fieldtype": "Section Break",
             "label": "Documents"
         },
         {
-            "depends_on": "eval:doc.defer_offer_required == 1",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes'",
             "fieldname": "defer_offer_letter_upload",
             "fieldtype": "Table",
             "label": "Offer Letter",
             "options": "student documents"
         },
         {
-            "depends_on": "eval:doc.defer_offer_required == 1",
+            "depends_on": "eval:doc.defer_offer_required == 'Yes'",
             "fieldname": "defer_other_documents",
             "fieldtype": "Table",
             "label": "Other Documents",
@@ -2234,23 +2466,32 @@
             "label": "A. GS Submitted"
         },
         {
-            "default": "0",
             "fieldname": "gs_submitted",
-            "fieldtype": "Check",
-            "label": "GS Submitted"
+            "fieldtype": "Select",
+            "label": "GS Submitted",
+            "options": "\nYes\nNo"
         },
         {
             "bold": 1,
-            "default": "\u2713 Financial stage completed",
-            "depends_on": "eval:doc.gs_submitted == 1",
+            "default": "\u2713 Financial stage completed \u2192 Move to GS Processing",
+            "depends_on": "eval:doc.gs_submitted == 'Yes'",
             "fieldname": "financial_stage_completed",
             "fieldtype": "Text",
             "label": "Status",
             "read_only": 1
         },
         {
-            "depends_on": "eval:doc.gs_submitted == 0",
-            "description": "Select the date when financials are expected to be completed. A reminder will be automatically set for this date.",
+            "bold": 1,
+            "default": "\u26a0 Set reminder when financials will be completed (calendar + remarks)",
+            "depends_on": "eval:doc.gs_submitted == 'No'",
+            "fieldname": "gs_submitted_no_note",
+            "fieldtype": "Text",
+            "label": "Note",
+            "read_only": 1
+        },
+        {
+            "depends_on": "eval:doc.gs_submitted == 'No'",
+            "description": "Optional expected date. Reminder popup also lets you set date, time, and remarks.",
             "fieldname": "gs_submitted_reminder_date",
             "fieldtype": "Date",
             "label": "When will financials be completed?"
@@ -2344,6 +2585,48 @@
             "fieldtype": "Select",
             "label": "Verification Type",
             "options": "\nAcademics\nWork Experience"
+        },
+        {
+            "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Academic Transcript') !== -1; })",
+            "fieldname": "academic_transcript_section",
+            "fieldtype": "Section Break",
+            "label": "Academic Transcript"
+        },
+        {
+            "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Academic Transcript') !== -1; })",
+            "description": "Enter details for the academic transcript condition",
+            "fieldname": "academic_transcript_details",
+            "fieldtype": "Text",
+            "label": "Details"
+        },
+        {
+            "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Academic Transcript') !== -1; })",
+            "description": "Upload academic transcript / related documents",
+            "fieldname": "academic_transcript_documents",
+            "fieldtype": "Table",
+            "label": "Supporting Documents",
+            "options": "student documents"
+        },
+        {
+            "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Other') !== -1; })",
+            "fieldname": "other_condition_section",
+            "fieldtype": "Section Break",
+            "label": "Other Condition"
+        },
+        {
+            "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Other') !== -1; })",
+            "description": "Describe the other offer letter condition",
+            "fieldname": "other_condition_details",
+            "fieldtype": "Text",
+            "label": "Details"
+        },
+        {
+            "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Other') !== -1; })",
+            "description": "Upload supporting documents for other condition",
+            "fieldname": "other_condition_documents",
+            "fieldtype": "Table",
+            "label": "Supporting Documents (Optional)",
+            "options": "student documents"
         },
         {
             "depends_on": "eval:doc.occupation_documents_needed && doc.sponsor_occupation == 'Business' && doc.business_proof == 'Shop Act' && (doc.shop_act_registration_duration == 'Below 1 Year' || doc.shop_act_registration_duration == 'Below 2 Years')",
@@ -2522,28 +2805,65 @@
             "label": "Submitted Date"
         },
         {
-            "default": "0",
+            "fieldname": "submitted_another_application",
+            "fieldtype": "Select",
+            "label": "Have you submitted another application?",
+            "options": "\nYes\nNo"
+        },
+        {
+            "bold": 1,
+            "default": "\u2713 Another application will do process",
+            "depends_on": "eval:doc.submitted_another_application == 'Yes'",
+            "fieldname": "submitted_another_application_yes_note",
+            "fieldtype": "Text",
+            "label": "Note",
+            "read_only": 1
+        },
+        {
+            "depends_on": "eval:doc.submitted_another_application == 'No'",
+            "fieldname": "need_another_application",
+            "fieldtype": "Select",
+            "label": "Is There any need to apply another application?",
+            "options": "\nYes\nNo"
+        },
+        {
+            "bold": 1,
+            "default": "\u26a0 Set reminder when you will process another application",
+            "depends_on": "eval:doc.submitted_another_application == 'No' && doc.need_another_application == 'Yes'",
+            "fieldname": "need_another_application_yes_note",
+            "fieldtype": "Text",
+            "label": "Note",
+            "read_only": 1
+        },
+        {
+            "depends_on": "eval:doc.submitted_another_application == 'No' && doc.need_another_application == 'No'",
+            "fieldname": "not_processing_another_application_reason",
+            "fieldtype": "Text",
+            "label": "Give Reason why you are not processing another application"
+        },
+        {
             "fieldname": "any_further_requirement_offer_letter",
-            "fieldtype": "Check",
-            "label": "Any Further Requirement for offer letter?"
+            "fieldtype": "Select",
+            "label": "Any Further Requirement for offer letter?",
+            "options": "\nYes\nNo"
         },
         {
             "bold": 1,
             "default": "If no \u2192 Set reminder: Follow up on Offer Letter",
-            "depends_on": "eval:!doc.any_further_requirement_offer_letter",
+            "depends_on": "eval:doc.any_further_requirement_offer_letter == 'No'",
             "fieldname": "no_further_requirement_note",
             "fieldtype": "Text",
             "label": "Note",
             "read_only": 1
         },
         {
-            "depends_on": "eval:doc.any_further_requirement_offer_letter == 1",
+            "depends_on": "eval:doc.any_further_requirement_offer_letter == 'Yes'",
             "fieldname": "pending_requirement_details",
             "fieldtype": "Text",
             "label": "Pending Requirement Details"
         },
         {
-            "depends_on": "eval:doc.any_further_requirement_offer_letter == 1",
+            "depends_on": "eval:doc.any_further_requirement_offer_letter == 'Yes'",
             "fieldname": "pending_requirements_completed",
             "fieldtype": "Select",
             "label": "Pending requirements Completed?",
@@ -2552,14 +2872,23 @@
         {
             "bold": 1,
             "default": "\u2192 Set reminder: To Complete Pending requirements",
-            "depends_on": "eval:doc.any_further_requirement_offer_letter == 1 && doc.pending_requirements_completed == 'No'",
+            "depends_on": "eval:doc.any_further_requirement_offer_letter == 'Yes' && doc.pending_requirements_completed == 'No'",
             "fieldname": "pending_requirements_reminder_note",
             "fieldtype": "Text",
             "label": "Note",
             "read_only": 1
         },
         {
-            "depends_on": "eval:doc.any_further_requirement_offer_letter == 1 && doc.pending_requirements_completed == 'Yes'",
+            "bold": 1,
+            "default": "\u2192 Set reminder: Follow up on Offer Letter",
+            "depends_on": "eval:doc.any_further_requirement_offer_letter == 'Yes' && doc.pending_requirements_completed == 'Yes'",
+            "fieldname": "pending_requirements_completed_yes_note",
+            "fieldtype": "Text",
+            "label": "Note",
+            "read_only": 1
+        },
+        {
+            "depends_on": "eval:doc.any_further_requirement_offer_letter == 'Yes' && doc.pending_requirements_completed == 'Yes'",
             "fieldname": "supporting_documents",
             "fieldtype": "Table",
             "label": "Supporting Documents",
@@ -2647,11 +2976,6 @@
             "fieldtype": "Table",
             "label": "Study Gap Proof List",
             "options": "Study Gap Proof"
-        },
-        {
-            "fieldname": "asd",
-            "fieldtype": "Data",
-            "label": "asd"
         },
         {
             "fieldname": "c_sponsors_section",

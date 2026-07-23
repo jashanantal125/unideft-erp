@@ -1,0 +1,19 @@
+country_scope,flow_case,tab,section,fieldname,label,fieldtype,options,depends_on,reqd,read_only,in_list_view,implementation_status,notes
+United Kingdom,UK Case 1,UK — Screening,Case 1 Eligibility,uk_c1_REPLACE_01,PASTE_LABEL_HERE,Select,Option A | Option B,"eval:doc.destination_country=='United Kingdom' && doc.country_flow_case=='UK Case 1'",0,0,0,DRAFT,Replace with your Case 1 field
+United Kingdom,UK Case 1,UK — Screening,Case 1 Eligibility,uk_c1_REPLACE_02,PASTE_LABEL_HERE,Check,,"eval:doc.destination_country=='United Kingdom' && doc.country_flow_case=='UK Case 1'",0,0,0,DRAFT,
+United Kingdom,UK Case 1,UK — Documents,Case 1 Document Checklist,uk_c1_REPLACE_03,PASTE_LABEL_HERE,Attach,,"eval:doc.destination_country=='United Kingdom' && doc.country_flow_case=='UK Case 1'",0,0,0,DRAFT,
+United Kingdom,UK Case 1,UK — Offer & CAS,Case 1 CAS,uk_c1_REPLACE_04,PASTE_LABEL_HERE,Attach,,"eval:doc.destination_country=='United Kingdom' && doc.country_flow_case=='UK Case 1'",0,0,0,DRAFT,
+United Kingdom,UK Case 1,UK — Financials,Case 1 Funds,uk_c1_REPLACE_05,PASTE_LABEL_HERE,Check,,"eval:doc.destination_country=='United Kingdom' && doc.country_flow_case=='UK Case 1'",0,0,0,DRAFT,
+United Kingdom,UK Case 1,UK — Visa Application,Case 1 Visa,uk_c1_REPLACE_06,PASTE_LABEL_HERE,Date,,"eval:doc.destination_country=='United Kingdom' && doc.country_flow_case=='UK Case 1'",0,0,0,DRAFT,
+United Kingdom,UK Case 1,UK — Decision,Case 1 Decision,uk_c1_REPLACE_07,PASTE_LABEL_HERE,Select,Granted | Refused,"eval:doc.destination_country=='United Kingdom' && doc.country_flow_case=='UK Case 1'",0,0,0,DRAFT,
+United Kingdom,UK Case 2,UK — Screening,Case 2 Eligibility,uk_c2_REPLACE_01,PASTE_LABEL_HERE,Select,Option A | Option B,"eval:doc.destination_country=='United Kingdom' && doc.country_flow_case=='UK Case 2'",0,0,0,DRAFT,Replace with your Case 2 field
+United Kingdom,UK Case 2,UK — Screening,Case 2 Eligibility,uk_c2_REPLACE_02,PASTE_LABEL_HERE,Check,,"eval:doc.destination_country=='United Kingdom' && doc.country_flow_case=='UK Case 2'",0,0,0,DRAFT,
+United Kingdom,UK Case 2,UK — Documents,Case 2 Document Checklist,uk_c2_REPLACE_03,PASTE_LABEL_HERE,Attach,,"eval:doc.destination_country=='United Kingdom' && doc.country_flow_case=='UK Case 2'",0,0,0,DRAFT,
+United Kingdom,UK Case 2,UK — Offer & CAS,Case 2 CAS,uk_c2_REPLACE_04,PASTE_LABEL_HERE,Attach,,"eval:doc.destination_country=='United Kingdom' && doc.country_flow_case=='UK Case 2'",0,0,0,DRAFT,
+United Kingdom,UK Case 2,UK — Financials,Case 2 Funds,uk_c2_REPLACE_05,PASTE_LABEL_HERE,Check,,"eval:doc.destination_country=='United Kingdom' && doc.country_flow_case=='UK Case 2'",0,0,0,DRAFT,
+United Kingdom,UK Case 2,UK — Visa Application,Case 2 Visa,uk_c2_REPLACE_06,PASTE_LABEL_HERE,Date,,"eval:doc.destination_country=='United Kingdom' && doc.country_flow_case=='UK Case 2'",0,0,0,DRAFT,
+United Kingdom,UK Case 2,UK — Decision,Case 2 Decision,uk_c2_REPLACE_07,PASTE_LABEL_HERE,Select,Granted | Refused,"eval:doc.destination_country=='United Kingdom' && doc.country_flow_case=='UK Case 2'",0,0,0,DRAFT,
+United Kingdom,ALL,UK — Offer & CAS,Shared CAS,uk_cas_received,CAS received,Check,,"eval:doc.destination_country=='United Kingdom'",0,0,0,DRAFT,Shared across UK Case 1 and Case 2 if same for both
+United Kingdom,ALL,UK — Offer & CAS,Shared CAS,uk_cas_document,CAS letter upload,Attach,,"eval:doc.destination_country=='United Kingdom'",0,0,0,DRAFT,
+United Kingdom,ALL,UK — Financials,Shared Funds,uk_funds_28_day_ok,28-day funds rule met,Check,,"eval:doc.destination_country=='United Kingdom'",0,0,0,DRAFT,
+United Kingdom,ALL,UK — Visa Application,Shared Visa,uk_biometrics_done,Biometrics completed,Check,,"eval:doc.destination_country=='United Kingdom'",0,0,0,DRAFT,

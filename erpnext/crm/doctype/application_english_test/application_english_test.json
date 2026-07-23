@@ -7,8 +7,10 @@
  "field_order": [
   "test_type",
   "exam_date",
-  "validity",
   "validity_months",
+  "validity_until",
+  "validity_status",
+  "validity",
   "ielts_section",
   "ielts_listening",
   "ielts_reading",
@@ -59,22 +61,39 @@
    "reqd": 1
   },
   {
+   "description": "Validity is calculated as 24 months from this date",
    "fieldname": "exam_date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "Date of Exam"
+   "label": "Result Date"
+  },
+  {
+   "default": "24",
+   "fieldname": "validity_months",
+   "fieldtype": "Int",
+   "label": "Validity Period (Months)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "validity_until",
+   "fieldtype": "Date",
+   "label": "Valid Until",
+   "read_only": 1
+  },
+  {
+   "fieldname": "validity_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Validity Status",
+   "options": "\nValid\nNot Valid",
+   "read_only": 1
   },
   {
    "default": "0",
    "fieldname": "validity",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Valid?"
-  },
-  {
-   "depends_on": "eval:doc.validity == 1",
-   "fieldname": "validity_months",
-   "fieldtype": "Int",
-   "label": "Validity (Months)"
   },
   {
    "depends_on": "eval:doc.test_type == 'IELTS'",
@@ -146,12 +165,12 @@
    "label": "Upload Score Report"
   },
   {
+   "default": "\u26a0 Not Accepted - Needs Verification",
    "depends_on": "eval:doc.test_type == 'IELTS' && doc.ielts_verified == 0",
    "fieldname": "ielts_not_accepted",
    "fieldtype": "Text",
    "label": "Status",
-   "read_only": 1,
-   "default": "⚠️ Not Accepted - Needs Verification"
+   "read_only": 1
   },
   {
    "depends_on": "eval:doc.test_type == 'PTE'",
@@ -223,12 +242,12 @@
    "label": "Upload Score Report"
   },
   {
+   "default": "\u26a0 Not Accepted - Needs Verification",
    "depends_on": "eval:doc.test_type == 'PTE' && doc.pte_verified == 0",
    "fieldname": "pte_not_accepted",
    "fieldtype": "Text",
    "label": "Status",
-   "read_only": 1,
-   "default": "⚠️ Not Accepted - Needs Verification"
+   "read_only": 1
   },
   {
    "depends_on": "eval:doc.test_type == 'TOEFL'",
@@ -312,24 +331,24 @@
    "label": "Upload Score Report"
   },
   {
+   "default": "\u26a0 Not Accepted - Needs Verification",
    "depends_on": "eval:doc.test_type == 'TOEFL' && doc.toefl_type == 'IBT Center Based' && doc.toefl_verified == 0",
    "fieldname": "toefl_not_accepted",
    "fieldtype": "Text",
    "label": "Status",
-   "read_only": 1,
-   "default": "⚠️ Not Accepted - Needs Verification"
+   "read_only": 1
   },
   {
+   "default": "This test type is not accepted",
    "depends_on": "eval:doc.test_type == 'TOEFL' && doc.toefl_type == 'IBT Home Edition Based'",
    "fieldname": "toefl_home_not_accepted",
    "fieldtype": "Text",
    "label": "Status",
-   "read_only": 1,
-   "default": "This test type is not accepted"
+   "read_only": 1
   }
  ],
  "istable": 1,
- "modified": "2026-02-06 00:00:00.000000",
+ "modified": "2026-07-23 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Application English Test",

@@ -1,0 +1,152 @@
+# Application Country Config — UK (draft)
+
+country: United Kingdom
+country_code: GB
+extension_doctype: Application UK Data
+default_currency: GBP
+active: true
+
+# Auto-router: evaluated when qualification + marital_status change
+case_rules:
+  - case_id: UK Case 1
+    qualification: 12th
+    marital_status: Married
+    flags:
+      single_basis_only: true
+      allow_spouse_processing: false
+
+  - case_id: UK Case 2
+    qualification: 12th
+    marital_status: Not Married
+    flags:
+      single_basis_only: true
+      allow_spouse_processing: false
+
+  - case_id: UK Case 3
+    qualification: Graduation
+    marital_status: Married
+    flags:
+      single_basis_only: true
+      allow_spouse_processing: false
+
+  - case_id: UK Case 4
+    qualification: Graduation
+    marital_status: Not Married
+    flags:
+      single_basis_only: true
+      allow_spouse_processing: false
+
+  - case_id: UK Case 5
+    qualification: Post-graduation
+    marital_status: Married
+    flags:
+      single_basis_only: true
+      allow_spouse_processing: false
+
+  - case_id: UK Case 6
+    qualification: Post-graduation
+    marital_status: Not Married
+    flags:
+      single_basis_only: true
+      allow_spouse_processing: false
+
+stages:
+  - id: assessment
+    label: Assessment
+    order: 10
+    icon: clipboard
+  - id: processing
+    label: Processing
+    order: 20
+    icon: settings
+  - id: submitted
+    label: Submitted
+    order: 30
+    icon: check
+  - id: offer_letter
+    label: Offer Letter
+    order: 40
+    icon: file-text
+  - id: financial
+    label: Financial
+    order: 50
+    icon: credit-card
+  - id: acceptance
+    label: Acceptance
+    order: 60
+    icon: inbox
+  - id: cas
+    label: CAS
+    order: 70
+    icon: certificate
+  - id: visa_lodged
+    label: Visa Lodged
+    order: 80
+    icon: send
+  - id: visa
+    label: Visa
+    order: 90
+    icon: passport
+  - id: enrolment
+    label: Enrolment
+    order: 100
+    icon: graduation-cap
+  - id: refused
+    label: Refused
+    order: 200
+    icon: x-circle
+    terminal: true
+  - id: refund_processing
+    label: Refund Processing
+    order: 210
+    icon: refresh
+  - id: refunded
+    label: Refunded
+    order: 220
+    icon: check-circle
+    terminal: true
+
+living_expense_options:
+  - label: Inner London
+    amount_gbp: 13347
+  - label: Outer London
+    amount_gbp: 10224
+
+offer_conditions:
+  - Interview
+  - English Requirement
+  - Verification
+  - Gap Justification
+  - Other
+
+english_test_types:
+  - IELTS Waiver
+  - IELTS
+  - UKVI IELTS
+  - PTE
+  - UKVI PTE
+  - Duolingo
+  - TOEFL
+
+study_gap_types:
+  - Educational
+  - Work
+  - Other
+
+sponsor_types:
+  - Student
+  - Father
+  - Mother
+
+fund_types:
+  - Bank statement
+  - FD
+  - Education Loan
+
+visa_lodged_by:
+  - Our Team
+  - Agent
+  - Student
+
+# Cases 1 & 2: full field spec in UK_CASE_01_SPEC.md / UK_CASE_02_SPEC.md
+# Cases 3-6: stage shell identical; assessment document pack TBD
