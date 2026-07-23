@@ -1,0 +1,15 @@
+Source files used for this planning round:
+- /apps/public/UK process flow case 3 & 4.pdf
+- /apps/public/UK process flow case 5 & 6.pdf
+- /apps/public/UK process flow case 7 & 8.pdf
+
+Important extraction finding:
+- The file named "UK process flow case 7 & 8.pdf" currently contains heading "Case 5 & 6" in extracted text.
+- So Case 7/8 field-level details are not yet available from this source set.
+
+Common stage shell found in provided docs (same as earlier UK flow):
+Assessment -> Processing -> Submitted -> Offer Letter -> Financial -> Acceptance -> CAS -> Visa Lodged -> Visa -> Enrolment -> Refused -> Refund Processing -> Refunded
+
+Case-specific deltas observed:
+- Case 3 & 4 file: Documents are "10th to Bachelor"; adds Bachelor acceptance branch; includes Experience LOR.
+- Case 5 & 6 file: Adds research-program gate; documents "10th to Post Graduation"; introduces applicant/spouse dual financial and visa handling fields.

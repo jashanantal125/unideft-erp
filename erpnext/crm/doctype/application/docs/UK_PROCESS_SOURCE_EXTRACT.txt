@@ -1,0 +1,43 @@
+Source: /Users/jashanantal/Downloads/UK Process flow case 1 & 2.docx
+Extracted for planning (not a legal spec — implement against signed-off client doc).
+
+================================================================================
+UK — ASSESSMENT (all cases)
+================================================================================
+- Student Name
+- Student Contact No.
+- Marital Status (select)
+- D.O.B (date)
+- Age (as of now)
+- Student email id
+- Qualification (select)
+- Study gap (select) → if yes: study gap proof; if no: ok
+- Refused from UK or any other country? → if yes: refusal letters; if no: ok
+
+CASE ROUTER (6 cases — drives downstream flow):
+- Case 1: Qualification = 12th AND Marital Status = Married → single basis only (NOT spouse)
+- Case 2: Qualification = 12th AND Marital Status = Not Married
+- Case 3: Qualification = Graduation AND Marital Status = Married → single basis only (NOT spouse)
+- Case 4: Qualification = Graduation AND Marital Status = Not Married
+- Case 5: Qualification = Post-graduation AND Marital Status = Married → single basis only (NOT spouse)
+- Case 6: Qualification = Post-graduation AND Marital Status = Not Married
+
+Document body after router is titled "Case 1 & 2" but stages appear shared for UK pipeline.
+
+================================================================================
+STAGES (shared UK pipeline documented in source)
+================================================================================
+1. Processing
+2. Submitted
+3. Offer Letter
+4. Financial
+5. Acceptance
+6. CAS
+7. Visa Lodged
+8. Visa
+9. Enrolment
+10. Refused
+11. Refund processing
+12. Refunded
+
+(See UK_CASE_01_SPEC.md and UK_CASE_02_SPEC.md for field-level detail.)

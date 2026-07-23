@@ -447,3 +447,11 @@ erpnext.patches.v15_0.set_asset_status_if_not_already_set
 erpnext.patches.v15_0.toggle_legacy_controller_for_period_closing
 erpnext.patches.v16_0.update_serial_batch_entries
 erpnext.patches.v16_0.create_applications_view_page
+erpnext.patches.v16_0.enable_applications_workspace_for_agents
+erpnext.patches.v16_0.seed_offer_letter_conditions
+erpnext.patches.v16_0.convert_defer_offer_required_to_select
+erpnext.patches.v16_0.ensure_offer_letter_conditions
+erpnext.patches.v16_0.convert_gs_submitted_to_select
+erpnext.patches.v16_0.convert_gs_processing_checks_to_select
+erpnext.patches.v16_0.convert_study_gap_to_select
+erpnext.patches.v16_0.convert_any_visa_refused_to_select

@@ -365,11 +365,13 @@ class Application(Document):
 
 	def validate(self):
 		# Validate that maximum 3 courses are selected
-		if len(self.preferred_courses) > 3:
-			frappe.throw("You can select a maximum of 3 courses only.")
-		
-		#if len(self.preferred_courses) == 0:
-		#	frappe.throw("Please select at least one course.")
+		if not self.flags.get("skip_preferred_course_validation"):
+			if len(self.preferred_courses) > 3:
+				frappe.throw("You can select a maximum of 3 courses only.")
+
+			if len(self.preferred_courses) == 0:
+				frappe.throw("Please select at least one course.")
+
 		
 		# For B2C: Auto-set agent to Unideft if not set or if wrong agent selected
 		if self.application_type == "B2C":
@@ -383,5 +385,44 @@ class Application(Document):
 		
 		# For B2B: No validation - can select any agent or leave empty
 
-	pass
+
+@frappe.whitelist()
+def create_application_for_other_country(source_name, destination_country):
+	"""Create a new Application for another country and close the Australia case."""
+	if not source_name or not destination_country:
+		frappe.throw("Source application and destination country are required.")
+
+	source = frappe.get_doc("Application", source_name)
+	if source.visa_refused_new_application:
+		frappe.throw(
+			f"New application already created: {source.visa_refused_new_application}"
+		)
+
+	new_app = frappe.new_doc("Application")
+	new_app.naming_series = source.naming_series or "APP-.YYYY.-"
+	new_app.student = source.student
+	new_app.student_email = source.student_email
+	new_app.student_contact_no = source.student_contact_no
+	new_app.application_type = source.application_type or "B2B"
+	new_app.agent = source.agent
+	new_app.destination_country = destination_country
+	new_app.dob = source.dob
+	new_app.martial_status = source.martial_status
+	new_app.higher_education = source.higher_education
+	new_app.preferred_university = source.preferred_university
+	new_app.intake = source.intake
+	new_app.status = "Pending"
+
+	for row in source.preferred_courses or []:
+		new_app.append("preferred_courses", {"course": row.course})
+
+	new_app.flags.skip_preferred_course_validation = not bool(new_app.preferred_courses)
+	new_app.insert(ignore_permissions=True)
+
+	source.visa_refused_new_application = new_app.name
+	source.visa_refused_closed_status = "Case Closed from Australia — new application created"
+	source.status = "Closed"
+	source.save(ignore_permissions=True)
+
+	return new_app.name
 

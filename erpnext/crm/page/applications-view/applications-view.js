@@ -1,4 +1,6 @@
 frappe.pages['applications-view'].on_page_load = function (wrapper) {
+	frappe.require('/assets/erpnext/css/applications_view.css');
+
     var page = frappe.ui.make_app_page({
         parent: wrapper,
         title: 'Applications View',

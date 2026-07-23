@@ -1,4 +1,6 @@
 frappe.pages['applications-view'].on_page_load = function (wrapper) {
+	frappe.require('/assets/erpnext/css/applications_view.css');
+
     var page = frappe.ui.make_app_page({
         parent: wrapper,
         title: 'Applications View',
@@ -475,7 +477,7 @@ function createApplicationCard(app) {
 					<div class="profile-info">
 						<h3 class="student-name">${escapeHtml(studentName)}</h3>
 						<div class="contact-details">
-							${app.student_contact_no ? `<span class="contact-item"><i class="fa fa-phone"></i> ${escapeHtml(app.student_contact_no)}</span>` : ''}
+							${(app.contact_number || (app.student_data && app.student_data.mobile)) ? `<span class="contact-item"><i class="fa fa-phone"></i> ${escapeHtml(app.contact_number || app.student_data.mobile)}</span>` : ''}
 							${app.student_email || (app.student_data && app.student_data.email) ? `<span class="contact-item"><i class="fa fa-envelope"></i> ${escapeHtml(app.student_email || app.student_data.email)}</span>` : ''}
 							<span class="contact-item"><i class="fa fa-calendar"></i> ${dobDate}</span>
 						</div>
