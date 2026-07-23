@@ -1,161 +1,189 @@
-<div align="center">
-    <a href="https://frappe.io/erpnext">
-	<img src="./erpnext/public/images/v16/erpnext.svg" alt="ERPNext Logo" height="80px" width="80xp"/>
-    </a>
-    <h2>ERPNext</h2>
-    <p align="center">
-        <p>Powerful, Intuitive and Open-Source ERP</p>
-    </p>
+# Unideft — AI‑Driven Visa Management CRM 
 
-[![Learn on Frappe School](https://img.shields.io/badge/Frappe%20School-Learn%20ERPNext-blue?style=flat-square)](https://frappe.school)<br><br>
-[![CI](https://github.com/frappe/erpnext/actions/workflows/server-tests-mariadb.yml/badge.svg?event=schedule)](https://github.com/frappe/erpnext/actions/workflows/server-tests-mariadb.yml)
-[![docker pulls](https://img.shields.io/docker/pulls/frappe/erpnext-worker.svg)](https://hub.docker.com/r/frappe/erpnext-worker)
+Unideft is an **AI‑driven visa management CRM** built on the **Frappe/ERPNext** framework for overseas education and migration consultancies. It models each client matter as a single **Application** record with a stage‑based workflow (Processing → Financials → GS Processing → Acceptance → COE → File Lodged → Visa → Enrolled), combining **forensic‑grade traceability**, structured evidence capture, and **analytics‑ready data**.
 
-</div>
+This repository is published as a **sanitized showcase**: it highlights architecture and implementation patterns while intentionally excluding sensitive configurations and any real client data.
 
-<div align="center">
-	<img src="./erpnext/public/images/v16/hero_image.png"/>
-</div>
+---
 
-<div align="center">
-	<a href="https://erpnext-demo.frappe.cloud/api/method/erpnext_demo.erpnext_demo.auth.login_demo">Live Demo</a>
-	-
-	<a href="https://frappe.io/erpnext">Website</a>
-	-
-	<a href="https://docs.frappe.io/erpnext/">Documentation</a>
-</div>
+## Screenshots
+<img width="1438" height="809" alt="Screenshot 2026-03-03 at 6 57 25 PM" src="https://github.com/user-attachments/assets/132ad5a6-d924-4b30-8118-3e73b63ca959" />
 
-## ERPNext
+<img width="1440" height="813" alt="Screenshot 2026-03-13 at 11 27 42 AM" src="https://github.com/user-attachments/assets/13217d53-3d54-47c9-bd28-20e85ab118f5" />
 
-100% Open-Source ERP system to help you run your business.
+<img width="1440" height="814" alt="Screenshot 2026-03-13 at 11 28 54 AM" src="https://github.com/user-attachments/assets/eb66e354-cc83-46e8-9df1-29e90a9d64e0" />
 
-### Motivation
-
-Running a business is a complex task - handling invoices, tracking stock, managing personnel and even more ad-hoc activities. In a market where software is sold separately to manage each of these tasks, ERPNext does all of the above and more, for free.
-
-### Key Features
-
-- **Accounting**: All the tools you need to manage cash flow in one place, right from recording transactions to summarizing and analyzing financial reports.
-- **Order Management**: Track inventory levels, replenish stock, and manage sales orders, customers, suppliers, shipments, deliverables, and order fulfillment.
-- **Manufacturing**: Simplifies the production cycle, helps track material consumption, exhibits capacity planning, handles subcontracting, and more!
-- **Asset Management**: From purchase to perishment, IT infrastructure to equipment. Cover every branch of your organization, all in one centralized system.
-- **Projects**: Delivery both internal and external Projects on time, budget and Profitability. Track tasks, timesheets, and issues by project.
-
-<details open>
-
-<summary>More</summary>
-	<img src="https://erpnext.com/files/v16_bom.png"/>
-	<img src="https://erpnext.com/files/v16_stock_summary.png"/>
-	<img src="https://erpnext.com/files/v16_job_card.png"/>
-	<img src="https://erpnext.com/files/v16_tasks.png"/>
-</details>
-
-### Under the Hood
-
-- [**Frappe Framework**](https://github.com/frappe/frappe): A full-stack web application framework written in Python and Javascript. The framework provides a robust foundation for building web applications, including a database abstraction layer, user authentication, and a REST API.
-
-- [**Frappe UI**](https://github.com/frappe/frappe-ui): A Vue-based UI library, to provide a modern user interface. The Frappe UI library provides a variety of components that can be used to build single-page applications on top of the Frappe Framework.
-
-## Production Setup
-
-### Managed Hosting
-
-You can try [Frappe Cloud](https://frappecloud.com), a simple, user-friendly and sophisticated [open-source](https://github.com/frappe/press) platform to host Frappe applications with peace of mind.
-
-It takes care of installation, setup, upgrades, monitoring, maintenance and support of your Frappe deployments. It is a fully featured developer platform with an ability to manage and control multiple Frappe deployments.
-
-<div>
-	<a href="https://erpnext-demo.frappe.cloud/app/home" target="_blank">
-		<picture>
-			<source media="(prefers-color-scheme: dark)" srcset="https://frappe.io/files/try-on-fc-white.png">
-			<img src="https://frappe.io/files/try-on-fc-black.png" alt="Try on Frappe Cloud" height="28" />
-		</picture>
-	</a>
-</div>
+---
 
 
+## 🔑 Key Highlights
 
-### Self-Hosted
-#### Docker
+- **End‑to‑end case lifecycle modeling**: The visa journey is structured into a single auditable **Application** entity with defined stages and conditional transitions.
+- **Forensic‑grade traceability**: Linked, normalized data (student, sponsor, conditions, refusals, gap proofs, documents) enables fast reconstruction of “what happened and why.”
+- **Rule‑based logic & risk flags**: Business rules for offer‑letter conditions, English requirements, gap justification, and interview scheduling are enforced via conditional logic.
+- **Evidence workflows**: Document schemas and verification flags support systematic review (ITR, salary slips, SOPs, offer letters, sponsor proofs).
+- **Analytics‑ready foundation**: Strongly structured child tables + categorical statuses are suitable for downstream scoring/anomaly detection/cohort analysis.
 
-Prerequisites: docker, docker-compose, git. Refer [Docker Documentation](https://docs.docker.com) for more details on Docker setup.
+---
 
-Run following commands:
+## 🧩 Core Features
 
-```
-git clone https://github.com/frappe/frappe_docker
-cd frappe_docker
-docker compose -f pwd.yml up -d
+Unideft models visa operations as a **stage‑based workflow** centered on the `Application` doctype, with separate tabs for Processing, Financials, GS Processing, Acceptance, COE, File Lodged, Visa, and Enrolled. The form is heavily **context‑aware**: sections render only when relevant (e.g., spouse pathways, refusal handling, interview requirements, study gap proof types), guiding users through a consistent process and reducing operational variance across teams.
+
+The system is designed for **evidence‑driven decisioning**. Documents are captured in structured tables (not generic attachments), and paired with verification flags/status fields (e.g., sponsor proofs, financial artifacts, English test formats, gap proofs). This supports auditability and rapid matter reconstruction—key when cases require formal review, escalation, or defensible documentation.
+
+Finally, the data model is intentionally **analytics‑first**. Normalized child doctypes and categorical statuses create a clean foundation for advanced analytics and AI: risk scoring (e.g., gap/refusal patterns), anomaly detection, SLA bottlenecks by stage, and cohort analysis across destinations, sponsors, and outcomes.
+
+---
+
+## 🏗️ Architecture Overview
+
+```mermaid
+flowchart LR
+  U[Users: Team Lead/Executive/Agent] --> F[Frappe Desk UI]
+  F --> A[Application DocType]
+
+  A -->|Child Tables| ET[Application English Test]
+  A -->|Child Tables| SG[Study Gap Proof]
+  A -->|Child Tables| SD[Spouse Details]
+  A -->|Child Tables| SP[Application Sponsor Complete]
+  A -->|Child Tables| ED[Enrollment Document]
+  A -->|Child Tables| D1012[Application Documents 10th To 12th]
+
+  A -->|Conditions| OL[Offer Letter Condition Master]
+  A --> R[Reminders / Follow‑ups]
+
+  subgraph Data Layer
+    DB[(MariaDB)]
+  end
+  A --> DB
+  ET --> DB
+  SG --> DB
+  SD --> DB
+  SP --> DB
+  ED --> DB
+  D1012 --> DB
+  R --> DB
 ```
 
-After a couple of minutes, site should be accessible on your localhost port: 8080. Use below default login credentials to access the site.
-- Username: Administrator
-- Password: admin
+---
 
-See [Frappe Docker](https://github.com/frappe/frappe_docker?tab=readme-ov-file#to-run-on-arm64-architecture-follow-this-instructions) for ARM based docker setup.
+## ✨ Implementation Snippets
 
+These snippets are included to show **how** the system enforces workflows and remains analytics‑ready.
 
-## Development Setup
-### Manual Install
+### 1) Forcing complex child tables to open in a full modal form
 
-The Easy Way: our install script for bench will install all dependencies (e.g. MariaDB). See https://github.com/frappe/bench for more details.
+Some child tables are intentionally edited via a modal (form view) for usability and data quality.
 
-New passwords will be created for the ERPNext "Administrator" user, the MariaDB root user, and the frappe user (the script displays the passwords and saves them to ~/frappe_passwords.txt).
+Source: `erpnext/crm/doctype/application/application.js`
 
+```js
+onload(frm) {
+  // Force form view (modal) for child tables that should open in dialog on Add Row
+  const form_view_tables = ["spouse_details_list", "table_ihmq"];
+  form_view_tables.forEach((fieldname) => {
+    const doctype = frm.meta.fields.find((df) => df.fieldname === fieldname && df.fieldtype === "Table")?.options;
+    if (doctype) {
+      frappe.model.with_doctype(doctype, () => {
+        const meta = frappe.get_meta(doctype);
+        if (meta) meta.editable_grid = 0;
+      });
+    }
+  });
+},
 
-### Local
+refresh(frm) {
+  // Force Spouse Details and C. Sponsors tables to open in form/modal on Add Row
+  ["spouse_details_list", "table_ihmq"].forEach((fieldname) => {
+    const control = frm.fields_dict[fieldname];
+    if (control && control.grid && !control.grid._form_view_patched) {
+      control.grid.allow_on_grid_editing = function () {
+        return false;
+      };
+      control.grid._form_view_patched = true;
+    }
+  });
+}
+```
 
-To setup the repository locally follow the steps mentioned below:
+### 2) Table MultiSelect → dynamic “Conditions” sections
 
-1. Setup bench by following the [Installation Steps](https://frappeframework.com/docs/user/en/installation) and start the server
-   ```
-   bench start
-   ```
+Offer‑letter conditions are stored as **Table MultiSelect rows**, and Financials sections appear based on selected `condition` values.
 
-2. In a separate terminal window, run the following commands:
-   ```
-   # Create a new site
-   bench new-site erpnext.localhost
-   ```
+Source: `erpnext/crm/doctype/application/application.json`
 
-3. Get the ERPNext app and install it
-   ```
-   # Get the ERPNext app
-   bench get-app https://github.com/frappe/erpnext
+```js
+// depends_on pattern used for conditional section rendering
+eval:
+doc.conditions_on_offer_letter
+&& Array.isArray(doc.conditions_on_offer_letter)
+&& doc.conditions_on_offer_letter.some(function(r){
+  return (r.condition || '').indexOf('Interview') !== -1;
+})
+```
 
-   # Install the app
-   bench --site erpnext.localhost install-app erpnext
-   ```
+### 3) Structured evidence tables (purpose‑built child doctype)
 
-4. Open the URL `http://erpnext.localhost:8000/app` in your browser, you should see the app running
+Instead of a generic “documents” table, certain stages use tailored doctypes to maintain clean semantics.
 
-## Learning and community
+Source: `erpnext/crm/doctype/application_documents_10th_to_12th/application_documents_10th_to_12th.json`
 
-1. [Frappe School](https://school.frappe.io) - Learn Frappe Framework and ERPNext from the various courses by the maintainers or from the community.
-2. [Official documentation](https://docs.erpnext.com/) - Extensive documentation for ERPNext.
-3. [Discussion Forum](https://discuss.frappe.io/c/erpnext/6) - Engage with community of ERPNext users and service providers.
-4. [Telegram Group](https://erpnext_public.t.me) - Get instant help from huge community of users.
+```json
+{
+  "istable": 1,
+  "fields": [
+    {
+      "fieldname": "document_type",
+      "fieldtype": "Select",
+      "label": "Document Type",
+      "options": "\n12th Admit card\nschool domain email id\ndigilocker id/password"
+    },
+    {
+      "depends_on": "eval:doc.document_type == 'school domain email id' || doc.document_type == 'digilocker id/password'",
+      "fieldname": "write_details",
+      "fieldtype": "Small Text",
+      "label": "Write Details"
+    },
+    {
+      "fieldname": "upload_document",
+      "fieldtype": "Attach",
+      "label": "Upload Document"
+    }
+  ]
+}
+```
 
+---
 
-## Contributing
+## 🧱 Tech Stack
 
-1. [Issue Guidelines](https://github.com/frappe/erpnext/wiki/Issue-Guidelines)
-1. [Report Security Vulnerabilities](https://erpnext.com/security)
-1. [Pull Request Requirements](https://github.com/frappe/erpnext/wiki/Contribution-Guidelines)
-2. [Translations](https://crowdin.com/project/frappe)
+- **Framework**: Frappe / ERPNext
+- **Backend**: Python
+- **Client**: JavaScript (form scripts)
+- **Database**: MariaDB (via Frappe)
+- **UI**: Frappe Desk (DocTypes, Tabs, Child Tables, conditional sections)
 
+---
 
-## Logo and Trademark Policy
+## 🛠 Setup (High‑Level)
 
-Please read our [Logo and Trademark Policy](TRADEMARK_POLICY.md).
+> Keep setup simple for reviewers; production deployments may differ.
 
-<br />
-<br />
-<div align="center" style="padding-top: 0.75rem;">
-	<a href="https://frappe.io" target="_blank">
-		<picture>
-			<source media="(prefers-color-scheme: dark)" srcset="https://frappe.io/files/Frappe-white.png">
-			<img src="https://frappe.io/files/Frappe-black.png" alt="Frappe Technologies" height="28"/>
-		</picture>
-	</a>
-</div>
+```bash
+cd /path/to/frappe-bench/apps
+git clone https://github.com/<your-username>/unidef-erp.git
+
+cd /path/to/frappe-bench
+bench --site <site-name> install-app erpnext
+bench migrate
+bench clear-cache
+bench restart
+```
+
+---
+
+## Notes / Sanitization
+
+- No secrets, tokens, or real client data are included.
+- If you want access to a full private demo environment, contact the author.
