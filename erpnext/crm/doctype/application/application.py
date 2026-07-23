@@ -70,12 +70,15 @@ class Application(Document):
 		from erpnext.crm.doctype.application_sponsor_complete.application_sponsor_complete import ApplicationSponsorComplete
 		from erpnext.crm.doctype.enrollment_document.enrollment_document import EnrollmentDocument
 		from erpnext.crm.doctype.graduation_verification.graduation_verification import GraduationVerification
+		from erpnext.crm.doctype.need_assessment_vendor.need_assessment_vendor import NeedAssessmentVendor
 		from erpnext.crm.doctype.processing_agent_details.processing_agent_details import ProcessingAgentDetails
 		from erpnext.crm.doctype.spouse_details.spouse_details import SpouseDetails
 		from erpnext.crm.doctype.student_documents.student_documents import studentdocuments
 		from erpnext.crm.doctype.study_gap_proof.study_gap_proof import StudyGapProof
 		from frappe.types import DF
 
+		academic_transcript_details: DF.Text | None
+		academic_transcript_documents: DF.Table[studentdocuments]
 		acceptance_any_requirement: DF.Check
 		acceptance_before_coe_available: DF.Check
 		acceptance_interview_deadline: DF.Date | None
@@ -107,8 +110,8 @@ class Application(Document):
 		agent_policy_not_received_status: DF.Text | None
 		agent_policy_received: DF.Check
 		all_documents: DF.Table[studentdocuments]
-		any_further_requirement_offer_letter: DF.Check
-		any_visa_refused: DF.Check
+		any_further_requirement_offer_letter: DF.Literal["", "Yes", "No"]
+		any_visa_refused: DF.Literal["", "Yes", "No"]
 		application_closed: DF.Check
 		application_filled_by: DF.Literal["", "Application filled by us", "Filled on portal", "Filled by Vendor"]
 		application_form_1_upload: DF.Attach | None
@@ -116,9 +119,11 @@ class Application(Document):
 		application_form_3_upload: DF.Attach | None
 		application_form_4_upload: DF.Attach | None
 		application_type: DF.Literal["B2B"]
-		asd: DF.Data | None
+		applied_for_defer_offer_letter: DF.Literal["", "Yes", "No"]
+		applied_for_defer_offer_no_note: DF.Text | None
 		assigned_executive: DF.Link | None
 		assigned_team: DF.Link | None
+		case_4_close_reason: DF.SmallText | None
 		case_4_marriage_duration: DF.Literal["", "1 year or above", "Below 1 year"]
 		case_4_note_convince: DF.Data | None
 		case_4_note_wait: DF.Data | None
@@ -137,6 +142,7 @@ class Application(Document):
 		course_name: DF.Link | None
 		current_age: DF.Int
 		data_swym: DF.Text | None
+		defer_any_further_requirement: DF.Literal["", "Yes", "No"]
 		defer_conditions_on_offer_letter: DF.TableMultiSelect[ApplicationOfferLetterCondition]
 		defer_course_name: DF.Link | None
 		defer_full_year_tuition_fee: DF.Currency
@@ -145,16 +151,22 @@ class Application(Document):
 		defer_living_expenses: DF.Currency
 		defer_living_expenses_kid_unit: DF.Currency
 		defer_living_expenses_spouse: DF.Currency
+		defer_no_further_requirement_note: DF.Text | None
 		defer_no_of_kids: DF.Int
 		defer_offer_currency: DF.Literal["AUD", "CAD", "NZD", "USD", "INR"]
 		defer_offer_letter_upload: DF.Table[studentdocuments]
 		defer_offer_ok: DF.Text | None
-		defer_offer_required: DF.Check
+		defer_offer_required: DF.Literal["", "Yes", "No"]
 		defer_oshc: DF.Currency
 		defer_other_documents: DF.Table[studentdocuments]
 		defer_payable_fee: DF.Currency
+		defer_pending_requirement_details: DF.Text | None
+		defer_pending_requirements_completed: DF.Literal["", "Yes", "No"]
+		defer_pending_requirements_completed_yes_note: DF.Text | None
+		defer_pending_requirements_reminder_note: DF.Text | None
 		defer_process_with_kids: DF.Check
 		defer_scholarship: DF.Currency
+		defer_supporting_documents: DF.Table[studentdocuments]
 		defer_travel_expenses: DF.Currency
 		defer_travel_expenses_kid_unit: DF.Currency
 		defer_travel_expenses_spouse: DF.Currency
@@ -195,13 +207,14 @@ class Application(Document):
 		gha_policy_not_received_status: DF.Text | None
 		gha_policy_received: DF.Check
 		graduation_verification_documents: DF.Table[GraduationVerification]
-		gs_any_requirement: DF.Check
-		gs_approved_check: DF.Check
+		gs_any_requirement: DF.Literal["", "Yes", "No"]
+		gs_approved_check: DF.Literal["", "Yes", "No"]
 		gs_approved_yes_status: DF.Text | None
 		gs_form_1_upload: DF.Attach | None
 		gs_form_2_upload: DF.Attach | None
 		gs_sop_upload: DF.Attach | None
-		gs_submitted: DF.Check
+		gs_submitted: DF.Literal["", "Yes", "No"]
+		gs_submitted_no_note: DF.Text | None
 		gs_submitted_reminder_date: DF.Date | None
 		hap_id_upload: DF.Attach | None
 		higher_education: DF.Literal["", "12th pass", "Bachelors", "Diploma", "Masters", "Certification", "Others", "Graduation"]
@@ -215,7 +228,6 @@ class Application(Document):
 		interview_timing: DF.Literal["", "Before GS Approval", "Before Acceptance", "Before COE"]
 		is_package_case: DF.Check
 		issue_not_resolved_reminder: DF.Text | None
-		lead_id: DF.Data | None
 		living_expenses: DF.Currency
 		living_expenses_kid_unit: DF.Currency
 		living_expenses_spouse: DF.Currency
@@ -223,6 +235,12 @@ class Application(Document):
 		martial_status: DF.Literal["", "Married", "Single"]
 		medical_arranged_by: DF.Literal["", "Our Side", "Agent", "Student"]
 		naming_series: DF.Literal["APP-.YYYY.-"]
+		need_another_application: DF.Literal["", "Yes", "No"]
+		need_another_application_yes_note: DF.Text | None
+		need_assessment: DF.Literal["", "Yes", "No"]
+		need_assessment_course: DF.Link | None
+		need_assessment_university: DF.Link | None
+		need_assessment_vendors: DF.Table[NeedAssessmentVendor]
 		new_app_handling_person: DF.Text | None
 		new_app_handling_team: DF.Text | None
 		no_further_requirement_note: DF.Text | None
@@ -230,6 +248,7 @@ class Application(Document):
 		no_process_comments: DF.Text | None
 		no_process_reason: DF.Text | None
 		no_requirement_status: DF.Text | None
+		not_processing_another_application_reason: DF.Text | None
 		offer_currency: DF.Literal["AUD", "CAD", "NZD", "USD", "INR"]
 		offer_letter_upload: DF.Table[studentdocuments]
 		original_funds_upload: DF.Attach | None
@@ -245,6 +264,8 @@ class Application(Document):
 		oshc_refund_received: DF.Check
 		oshc_refund_received_issue_resolved: DF.Check
 		oshc_required: DF.Check
+		other_condition_details: DF.Text | None
+		other_condition_documents: DF.Table[studentdocuments]
 		other_country_name: DF.Text | None
 		other_documents_offer: DF.Table[studentdocuments]
 		others_reason: DF.Text | None
@@ -255,12 +276,12 @@ class Application(Document):
 		our_side_medical_scheduled: DF.Check
 		our_side_medical_scheduled_no_status: DF.Text | None
 		our_side_medical_scheduled_yes_status: DF.Text | None
-		passport_documents: DF.Table[studentdocuments]
-		passport_uploaded: DF.Check
+		passport_upload: DF.Attach | None
 		password: DF.Password | None
 		payable_fee: DF.Currency
 		pending_requirement_details: DF.Text | None
 		pending_requirements_completed: DF.Literal["", "Yes", "No"]
+		pending_requirements_completed_yes_note: DF.Text | None
 		pending_requirements_reminder_note: DF.Text | None
 		preferred_courses: DF.Table[ApplicationCourse]
 		preferred_university: DF.Link | None
@@ -289,6 +310,8 @@ class Application(Document):
 		school_docs_status: DF.Data | None
 		school_docs_verified: DF.Literal["", "Yes", "No"]
 		send_offer_to_chat: DF.Check
+		shop_act_additional_document: DF.Attach | None
+		shop_act_uploaded: DF.Check
 		sop_portal_or_vendor_upload: DF.Attach | None
 		sop_upload: DF.Attach | None
 		sponsor_1_docs_pdf_upload: DF.Attach | None
@@ -299,11 +322,11 @@ class Application(Document):
 		spouse_details_list: DF.Table[SpouseDetails]
 		spouse_visa_upload: DF.Attach | None
 		status: DF.Literal["Pending", "Processing", "Offer Letter Received", "Financial", "GS Processing", "GS Approved", "Acceptance", "COE", "File Lodged", "Visa", "Enrollment", "On Shore College change", "Visa Refused", "Closed"]
-		student: DF.Data | None
+		student: DF.Link
 		student_academic_verification: DF.Table[AcademicVerification]
 		student_affidavit_upload: DF.Attach | None
 		student_contact_no: DF.Phone | None
-		student_email: DF.Data | None
+		student_email: DF.Text | None
 		student_enrolled: DF.Check
 		student_enrolled_no_status: DF.Text | None
 		student_enrolled_yes_status: DF.Text | None
@@ -322,10 +345,15 @@ class Application(Document):
 		student_prepare_no_status: DF.Text | None
 		student_prepare_yes_status: DF.Text | None
 		student_wants_college_change: DF.Literal["", "No", "Yes"]
-		study_gap: DF.Check
+		study_gap: DF.Literal["", "Yes", "No"]
+		study_gap_not_accepted_status: DF.Data | None
 		study_gap_ok: DF.Text | None
 		study_gap_proof: DF.Table[studentdocuments]
 		study_gap_proof_list: DF.Table[StudyGapProof]
+		study_gap_status: DF.Data | None
+		study_gap_upto_1_year: DF.Literal["", "Yes", "No"]
+		submitted_another_application: DF.Literal["", "Yes", "No"]
+		submitted_another_application_yes_note: DF.Text | None
 		submitted_date: DF.Date | None
 		supporting_documents: DF.Table[studentdocuments]
 		table_ihmq: DF.Table[ApplicationSponsorComplete]
@@ -356,9 +384,18 @@ class Application(Document):
 		visa_approved_status: DF.Text | None
 		visa_copy_upload: DF.Attach | None
 		visa_decision: DF.Literal["", "Visa Approved", "Visa Refused"]
+		visa_refused_can_process: DF.Literal["", "Yes", "No"]
+		visa_refused_close_reason: DF.SmallText | None
+		visa_refused_closed_status: DF.Text | None
+		visa_refused_country: DF.Literal["", "Australia", "New Zealand"]
+		visa_refused_go_ahead_status: DF.Text | None
+		visa_refused_new_application: DF.Link | None
 		visa_refused_not_able_to_process: DF.Text | None
 		visa_refused_ok: DF.Text | None
+		visa_refused_other_country: DF.Literal["", "Yes", "No"]
+		visa_refused_other_country_name: DF.Link | None
 		visa_refused_status: DF.Text | None
+		visa_refused_type: DF.Literal["", "Study Visa", "Tourist Visa", "Work Visa", "Other Visa"]
 		visa_sop_upload: DF.Attach | None
 		visa_status: DF.Literal["File Lodged", "Visa Approved", "Visa Refused"]
 	# end: auto-generated types
