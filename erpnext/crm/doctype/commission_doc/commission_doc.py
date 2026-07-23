@@ -5,7 +5,7 @@
 from frappe.model.document import Document
 
 
-class commissionsdoc(Document):
+class commissiondoc(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -14,8 +14,7 @@ class commissionsdoc(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		commision: DF.AttachImage | None
-		doc: DF.AttachImage | None
+		attach_yhqn: DF.Attach | None
 	# end: auto-generated types
 
 	pass

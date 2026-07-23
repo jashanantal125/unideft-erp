@@ -225,7 +225,7 @@ class Lead(SellingController, CRMNote):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		area_of_interest: DF.Data
+		area_of_interest: DF.Literal["Study", "Tourist", "Work", "other"]
 		birthday: DF.Date | None
 		city: DF.Data | None
 		comment: DF.SmallText | None
@@ -245,6 +245,7 @@ class Lead(SellingController, CRMNote):
 		lead_source: DF.Literal["", "Website", "Referral", "Social Media", "Advertisement", "Agent", "Other"]
 		mobile_no: DF.Data
 		naming_series: DF.Literal["CRM-LEAD-.YYYY.-"]
+		phone: DF.Data | None
 		sales_partner: DF.Link | None
 		state: DF.Data | None
 		status: DF.Literal["Lead", "Open", "Replied", "Opportunity", "Quotation", "Lost Quotation", "Interested", "Converted", "Do Not Contact"]

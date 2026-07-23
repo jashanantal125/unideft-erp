@@ -83,13 +83,14 @@
   },
   {
    "fieldname": "description",
-   "fieldtype": "Text Editor",
+   "fieldtype": "Small Text",
    "label": "Description"
   },
   {
    "fieldname": "entry_requirements",
-   "fieldtype": "Text Editor",
-   "label": "Entry Requirements"
+   "fieldtype": "Small Text",
+   "label": "Entry Requirements",
+   "length": 300
   },
   {
    "fieldname": "column_break_ncgr",
@@ -194,7 +195,7 @@
  "icon": "fa fa-graduation-cap",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-18 13:55:40.556009",
+ "modified": "2026-03-16 10:04:51.596791",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Course",

@@ -1,12 +1,12 @@
 {
  "app": "erpnext",
  "charts": [],
- "content": "[{\"id\":\"Sfu-HA2oQB\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Commission Document</span>\",\"col\":12}},{\"id\":\"NlgbMqle3B\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Commission PDF Viewer\",\"col\":12}}]",
+ "content": "[{\"id\":\"j9uX723BAk\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"commisions\",\"col\":12}}]",
  "creation": "2026-01-17 21:01:07.556525",
  "custom_blocks": [
   {
-   "custom_block_name": "Commission PDF Viewer",
-   "label": "Commission PDF Viewer"
+   "custom_block_name": "commisions",
+   "label": "commisions"
   }
  ],
  "docstatus": 0,
@@ -20,7 +20,7 @@
  "label": "Commission",
  "link_type": "DocType",
  "links": [],
- "modified": "2026-01-18 10:23:38.245789",
+ "modified": "2026-03-12 15:47:25.858141",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Commission",

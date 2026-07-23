@@ -5,6 +5,7 @@
  "allow_rename": 1,
  "autoname": "naming_series:",
  "creation": "2022-02-08 13:14:41.083327",
+ "default_view": "List",
  "doctype": "DocType",
  "document_type": "Document",
  "email_append_to": 1,
@@ -19,6 +20,7 @@
   "lead_owner",
   "highest_education",
   "title",
+  "phone",
   "column_break_name",
   "last_name",
   "country_code",
@@ -98,7 +100,6 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Status",
-   "no_copy": 1,
    "oldfieldname": "status",
    "oldfieldtype": "Select",
    "options": "Lead\nOpen\nReplied\nOpportunity\nQuotation\nLost Quotation\nInterested\nConverted\nDo Not Contact",
@@ -206,8 +207,9 @@
   },
   {
    "fieldname": "area_of_interest",
-   "fieldtype": "Data",
+   "fieldtype": "Select",
    "label": "Area of Interest",
+   "options": "Study\nTourist\nWork\nother",
    "reqd": 1
   },
   {
@@ -264,14 +266,21 @@
    "hidden": 1,
    "label": "Sales Partner",
    "options": "Sales Partner"
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "phone"
   }
  ],
+ "force_re_route_to_default_view": 1,
  "grid_page_length": 50,
  "icon": "fa fa-user",
  "idx": 5,
  "image_field": "image",
  "links": [],
- "modified": "2025-12-11 19:43:37.973654",
+ "modified": "2026-03-16 19:47:58.772300",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Lead",
@@ -279,10 +288,13 @@
  "owner": "Administrator",
  "permissions": [
   {
-   "permlevel": 1,
+   "create": 1,
+   "delete": 1,
    "read": 1,
    "report": 1,
-   "role": "Desk User"
+   "role": "Desk User",
+   "select": 1,
+   "write": 1
   },
   {
    "create": 1,
@@ -322,25 +334,13 @@
    "delete": 1,
    "email": 1,
    "export": 1,
-   "import": 1,
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "CRM Admin",
+   "role": "agents",
+   "select": 1,
    "share": 1,
    "write": 1
-  },
-  {
-   "permlevel": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Sales Manager"
-  },
-  {
-   "permlevel": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Sales User"
   },
   {
    "create": 1,
@@ -350,7 +350,20 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "agents",
+   "role": "Agent",
+   "select": 1,
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Administrator",
    "share": 1,
    "write": 1
   }

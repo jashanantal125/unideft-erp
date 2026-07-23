@@ -14,7 +14,7 @@ class ApplicationCourse(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		course: DF.Link
+		course: DF.Link | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data

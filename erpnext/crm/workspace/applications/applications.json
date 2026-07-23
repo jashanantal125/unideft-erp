@@ -15,7 +15,7 @@
  "link_to": "Application",
  "link_type": "DocType",
  "links": [],
- "modified": "2026-01-18 14:09:50.005229",
+ "modified": "2026-03-16 20:20:02.899527",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Applications",
@@ -23,7 +23,11 @@
  "owner": "Administrator",
  "public": 1,
  "quick_lists": [],
- "roles": [],
+ "roles": [
+  {
+   "role": "Team Executive"
+  }
+ ],
  "sequence_id": 0.0,
  "shortcuts": [],
  "title": "Applications",
