@@ -116,6 +116,157 @@ function save_application_reminder(frm, { remind_at, description }) {
 		});
 }
 
+function activate_application_tab(frm, tab_fieldname, tab_label) {
+	try {
+		const tab_field = frm.get_field(tab_fieldname);
+		if (tab_field && tab_field.tab && typeof frm.set_active_tab === "function") {
+			frm.set_active_tab(tab_field.tab);
+			return;
+		}
+	} catch (e) {
+		// fall through
+	}
+
+	const $link = frm.$wrapper
+		.find(".form-tabs .nav-link")
+		.filter(function () {
+			const text = ($(this).text() || "").trim();
+			const df = $(this).attr("data-fieldname") || "";
+			return df === tab_fieldname || text === tab_label || text === __(tab_label);
+		})
+		.first();
+
+	if ($link.length) {
+		$link.trigger("click");
+	} else {
+		frm.scroll_to_field(tab_fieldname);
+	}
+}
+
+function prompt_legacy_reminder(frm, specificDate, description, trigger_prefix) {
+	let default_date = frappe.datetime.get_today();
+	if (specificDate) {
+		if (typeof specificDate === "string") {
+			default_date = specificDate.split(" ")[0];
+		} else {
+			try {
+				default_date = frappe.datetime.obj_to_str(specificDate).split(" ")[0];
+			} catch (e) {
+				default_date = frappe.datetime.get_today();
+			}
+		}
+	}
+
+	return prompt_application_reminder(frm, {
+		title: __("Set Reminder"),
+		default_description: description || __("Follow up"),
+		default_date: default_date,
+		trigger_key: `${trigger_prefix || "legacy"}_${frappe.scrub(description || "reminder")}_${frm.doc.name}`,
+	});
+}
+
+const APPLICATION_ATTACH_STAGE_MAP = {
+	school_docs_pdf: "Processing — Academics",
+	passport_upload: "Processing — Passport",
+	application_form_1_upload: "Processing — Applications",
+	application_form_2_upload: "Processing — Applications",
+	application_form_3_upload: "Processing — Applications",
+	application_form_4_upload: "Processing — Applications",
+	sop_upload: "Processing — Applications",
+	sop_portal_or_vendor_upload: "Processing — Applications",
+	sponsor_1_docs_pdf_upload: "Submitted — Funds & Documents",
+	sponsor_2_docs_pdf_upload: "Submitted — Funds & Documents",
+	sponsor_3_docs_pdf_upload: "Submitted — Funds & Documents",
+	gs_sop_upload: "Submitted — GS & Affidavits",
+	gs_form_1_upload: "Submitted — GS & Affidavits",
+	gs_form_2_upload: "Submitted — GS & Affidavits",
+	sponsorship_affidavit_upload: "Submitted — GS & Affidavits",
+	student_affidavit_upload: "Submitted — GS & Affidavits",
+	requirement_document_upload: "GS Processing",
+	shop_act_additional_document: "Financial / Sponsors",
+	tuition_fee_upload: "GS Approved",
+	gha_oshc_upload: "GS Approved",
+	agent_oshc_upload: "GS Approved",
+	student_oshc_upload: "GS Approved",
+	acceptance_requirement_upload: "Acceptance",
+	coe_uploaded: "COE",
+	agent_medical_upload: "COE",
+	student_medical_upload: "COE",
+	form_956a_upload: "COE",
+	visa_sop_upload: "COE",
+	original_funds_upload: "COE",
+	financial_matrix_upload: "COE",
+	visa_application_upload: "COE",
+	immi_acknowledgement_upload: "File Lodged",
+	hap_id_upload: "File Lodged",
+	visa_copy_upload: "Visa",
+	spouse_visa_upload: "Visa",
+	refused_letter_upload: "Visa Refused",
+	refund_form_upload: "Visa Refused",
+	oshc_refund_form_upload: "Visa Refused",
+	oshc_refund_invoice_upload: "Refund Processing",
+	close_case_upload_issue_resolved: "Refunded",
+	close_case_upload_no_issue: "Refunded",
+};
+
+function refresh_documents_by_stage(frm) {
+	if (!frm.doc.name || frm.doc.__islocal || !frm.fields_dict.documents_by_stage) {
+		return;
+	}
+
+	frm.fields_dict.documents_by_stage.$wrapper.html(
+		`<div class="text-muted" style="padding:8px;">${__("Loading documents…")}</div>`
+	);
+
+	frappe.call({
+		method: "erpnext.crm.doctype.application.application.get_application_documents_by_stage",
+		args: { name: frm.doc.name },
+		callback(r) {
+			const groups = (r && r.message) || {};
+			frm.fields_dict.documents_by_stage.$wrapper.html(render_documents_by_stage_html(groups));
+		},
+		error() {
+			frm.fields_dict.documents_by_stage.$wrapper.html(
+				`<div class="text-danger" style="padding:8px;">${__("Could not load documents")}</div>`
+			);
+		},
+	});
+}
+
+function render_documents_by_stage_html(groups) {
+	const stage_names = Object.keys(groups || {});
+	if (!stage_names.length) {
+		return `<div class="text-muted" style="padding:10px;">${__("No documents uploaded yet")}</div>`;
+	}
+
+	let html = `<div class="documents-by-stage" style="padding:4px 0;">`;
+	stage_names.forEach((stage) => {
+		const files = groups[stage] || [];
+		html += `
+			<div style="margin:0 0 14px 0; border:1px solid var(--border-color); border-radius:8px; overflow:hidden;">
+				<div style="background:var(--bg-light-gray); padding:8px 12px; font-weight:600;">
+					${frappe.utils.escape_html(stage)}
+					<span class="text-muted" style="font-weight:400;">(${files.length})</span>
+				</div>
+				<div style="padding:8px 12px;">`;
+		files.forEach((file) => {
+			const label = file.field_label
+				? `${file.field_label}: ${file.file_name}`
+				: file.file_name;
+			html += `
+				<div style="display:flex; justify-content:space-between; gap:12px; padding:4px 0; border-bottom:1px dashed var(--border-color);">
+					<a href="${frappe.utils.escape_html(file.file_url)}" target="_blank" rel="noopener">
+						${frappe.utils.escape_html(label)}
+					</a>
+					<span class="text-muted" style="white-space:nowrap;">${frappe.utils.escape_html(file.creation || "")}</span>
+				</div>`;
+		});
+		html += `</div></div>`;
+	});
+	html += `</div>`;
+	return html;
+}
+
 function prompt_application_reminder(frm, options) {
 	if (!frm.doc.name || frm.doc.__islocal) {
 		frappe.msgprint(__("Please save the Application first before setting a reminder."));
@@ -314,6 +465,51 @@ function maybe_prompt_intake_reminder(frm, intake_date, offer_type) {
 	});
 }
 
+function country_code_to_flag_emoji(code) {
+	if (!code || typeof code !== "string") {
+		return "";
+	}
+	const cc = code.trim().toUpperCase();
+	if (!/^[A-Z]{2}$/.test(cc)) {
+		return "";
+	}
+	// Regional Indicator Symbols: A → 🇦
+	return String.fromCodePoint(...[...cc].map((c) => 127397 + c.charCodeAt(0)));
+}
+
+const _application_country_flag_cache = {};
+
+function refresh_application_country_flag(frm) {
+	if (!frm || !frm.page) {
+		return;
+	}
+
+	const base_title = frm.doc.name || __("New Application");
+	const country = frm.doc.destination_country;
+
+	const apply_title = (flag) => {
+		// Flag sits in front of the application code in the form header
+		frm.page.set_title(flag ? `${flag}  ${base_title}` : base_title);
+	};
+
+	if (!country) {
+		apply_title("");
+		return;
+	}
+
+	if (Object.prototype.hasOwnProperty.call(_application_country_flag_cache, country)) {
+		apply_title(_application_country_flag_cache[country]);
+		return;
+	}
+
+	frappe.db.get_value("Country", country, "code").then((r) => {
+		const code = r && r.message && r.message.code;
+		const flag = country_code_to_flag_emoji(code) || "";
+		_application_country_flag_cache[country] = flag;
+		apply_title(flag);
+	});
+}
+
 frappe.ui.form.on("Application", {
 	onload(frm) {
 		// Force form view (modal) for child tables that should open in dialog on Add Row
@@ -487,6 +683,12 @@ frappe.ui.form.on("Application", {
 		sync_financial_condition_visibility(frm);
 		refresh_financial_condition_sections(frm);
 		sync_gs_interview_stage_from_financials(frm);
+		// Documents-by-stage UI lives on Card/List views; Details tab no longer shows it.
+		refresh_application_country_flag(frm);
+	},
+
+	destination_country(frm) {
+		refresh_application_country_flag(frm);
 	},
 
 	// Currency selector handler - update all currency fields when currency changes
@@ -1132,8 +1334,15 @@ frappe.ui.form.on("Application", {
 	gs_submitted(frm) {
 		if (frm.doc.gs_submitted === "Yes") {
 			frm.set_value("gs_submitted_reminder_date", "");
+			const move_to_gs_tab = () => {
+				setTimeout(() => {
+					activate_application_tab(frm, "gs_tab", "GS Processing");
+				}, 250);
+			};
 			if (["Financial", "Offer Letter Received", "Pending", "Processing"].includes(frm.doc.status)) {
-				frm.set_value("status", "GS Processing");
+				frm.set_value("status", "GS Processing").then(move_to_gs_tab);
+			} else {
+				move_to_gs_tab();
 			}
 			frappe.show_alert(
 				{
@@ -2072,146 +2281,17 @@ frappe.ui.form.on("Application", {
 
 // Helper function to create Refund reminder
 function createRefundReminder(frm, specificDate, description) {
-	if (!frm.doc.name || frm.doc.__islocal) {
-		return;
-	}
-
-	let remindDate;
-	if (specificDate) {
-		remindDate = new Date(specificDate);
-		remindDate.setHours(9, 0, 0, 0);
-	} else {
-		remindDate = new Date();
-		remindDate.setDate(remindDate.getDate() + 3);
-		remindDate.setHours(9, 0, 0, 0);
-	}
-
-	const remindAt = frappe.datetime.obj_to_str(remindDate).replace('T', ' ') + ':00';
-
-	frappe.db.get_list("Reminder", {
-		filters: {
-			reminder_doctype: "Application",
-			reminder_docname: frm.doc.name,
-			description: description
-		},
-		limit: 1
-	}).then(function (existingReminders) {
-		if (existingReminders.length === 0) {
-			frappe.call({
-				method: 'frappe.automation.doctype.reminder.reminder.create_new_reminder',
-				args: {
-					remind_at: remindAt,
-					description: description,
-					reminder_doctype: 'Application',
-					reminder_docname: frm.doc.name
-				},
-				callback: function (response) {
-					if (response.message) {
-						frappe.show_alert({
-							message: 'Reminder set: ' + description,
-							indicator: 'green'
-						}, 3);
-					}
-				}
-			});
-		}
-	});
+	prompt_legacy_reminder(frm, specificDate, description, "refund");
 }
 
 // Helper function to create College Change reminder
 function createCollegeChangeReminder(frm, specificDate, description) {
-	if (!frm.doc.name || frm.doc.__islocal) {
-		return;
-	}
-
-	let remindDate;
-	if (specificDate) {
-		remindDate = new Date(specificDate);
-		remindDate.setHours(9, 0, 0, 0);
-	} else {
-		remindDate = new Date();
-		remindDate.setDate(remindDate.getDate() + 1);
-		remindDate.setHours(9, 0, 0, 0);
-	}
-
-	const remindAt = frappe.datetime.obj_to_str(remindDate).replace('T', ' ') + ':00';
-
-	frappe.db.get_list("Reminder", {
-		filters: {
-			reminder_doctype: "Application",
-			reminder_docname: frm.doc.name,
-			description: description
-		},
-		limit: 1
-	}).then(function (existingReminders) {
-		if (existingReminders.length === 0) {
-			frappe.call({
-				method: 'frappe.automation.doctype.reminder.reminder.create_new_reminder',
-				args: {
-					remind_at: remindAt,
-					description: description,
-					reminder_doctype: 'Application',
-					reminder_docname: frm.doc.name
-				},
-				callback: function (response) {
-					if (response.message) {
-						frappe.show_alert({
-							message: 'Reminder set: ' + description,
-							indicator: 'blue'
-						}, 3);
-					}
-				}
-			});
-		}
-	});
+	prompt_legacy_reminder(frm, specificDate, description, "college_change");
 }
 
 // Helper function to create Visa reminder
 function createVisaReminder(frm, specificDate, description) {
-	if (!frm.doc.name || frm.doc.__islocal) {
-		return;
-	}
-
-	let remindDate;
-	if (specificDate) {
-		remindDate = new Date(specificDate);
-		remindDate.setHours(9, 0, 0, 0);
-	} else {
-		remindDate = new Date();
-		remindDate.setDate(remindDate.getDate() + 1);
-		remindDate.setHours(9, 0, 0, 0);
-	}
-
-	const remindAt = frappe.datetime.obj_to_str(remindDate).replace('T', ' ') + ':00';
-
-	frappe.db.get_list("Reminder", {
-		filters: {
-			reminder_doctype: "Application",
-			reminder_docname: frm.doc.name,
-			description: description
-		},
-		limit: 1
-	}).then(function (existingReminders) {
-		if (existingReminders.length === 0) {
-			frappe.call({
-				method: 'frappe.automation.doctype.reminder.reminder.create_new_reminder',
-				args: {
-					remind_at: remindAt,
-					description: description,
-					reminder_doctype: 'Application',
-					reminder_docname: frm.doc.name
-				},
-				callback: function (response) {
-					if (response.message) {
-						frappe.show_alert({
-							message: 'Reminder set: ' + description,
-							indicator: 'blue'
-						}, 3);
-					}
-				}
-			});
-		}
-	});
+	prompt_legacy_reminder(frm, specificDate, description, "visa");
 }
 
 // Helper function to send Visa Approved notification to Account Department
@@ -2261,188 +2341,22 @@ TRN Number: ${frm.doc.trn_number || 'N/A'}
 
 // Helper function to create COE reminder
 function createCOEReminder(frm, specificDate, description) {
-	if (!frm.doc.name || frm.doc.__islocal) {
-		return;
-	}
-
-	let remindDate;
-	if (specificDate) {
-		remindDate = new Date(specificDate);
-		remindDate.setHours(9, 0, 0, 0);
-	} else {
-		remindDate = new Date();
-		remindDate.setDate(remindDate.getDate() + 1);
-		remindDate.setHours(9, 0, 0, 0);
-	}
-
-	const remindAt = frappe.datetime.obj_to_str(remindDate).replace('T', ' ') + ':00';
-
-	frappe.db.get_list("Reminder", {
-		filters: {
-			reminder_doctype: "Application",
-			reminder_docname: frm.doc.name,
-			description: description
-		},
-		limit: 1
-	}).then(function (existingReminders) {
-		if (existingReminders.length === 0) {
-			frappe.call({
-				method: 'frappe.automation.doctype.reminder.reminder.create_new_reminder',
-				args: {
-					remind_at: remindAt,
-					description: description,
-					reminder_doctype: 'Application',
-					reminder_docname: frm.doc.name
-				},
-				callback: function (response) {
-					if (response.message) {
-						frappe.show_alert({
-							message: 'Reminder set: ' + description,
-							indicator: 'green'
-						}, 3);
-					}
-				}
-			});
-		}
-	});
+	prompt_legacy_reminder(frm, specificDate, description, "coe");
 }
 
 // Helper function to create Acceptance reminder
 function createAcceptanceReminder(frm, specificDate, description) {
-	if (!frm.doc.name || frm.doc.__islocal) {
-		return;
-	}
-
-	let remindDate;
-	if (specificDate) {
-		remindDate = new Date(specificDate);
-		remindDate.setHours(9, 0, 0, 0);
-	} else {
-		remindDate = new Date();
-		remindDate.setDate(remindDate.getDate() + 1);
-		remindDate.setHours(9, 0, 0, 0);
-	}
-
-	const remindAt = frappe.datetime.obj_to_str(remindDate).replace('T', ' ') + ':00';
-
-	frappe.db.get_list("Reminder", {
-		filters: {
-			reminder_doctype: "Application",
-			reminder_docname: frm.doc.name,
-			description: description
-		},
-		limit: 1
-	}).then(function (existingReminders) {
-		if (existingReminders.length === 0) {
-			frappe.call({
-				method: 'frappe.automation.doctype.reminder.reminder.create_new_reminder',
-				args: {
-					remind_at: remindAt,
-					description: description,
-					reminder_doctype: 'Application',
-					reminder_docname: frm.doc.name
-				},
-				callback: function (response) {
-					if (response.message) {
-						frappe.show_alert({
-							message: 'Reminder set: ' + description,
-							indicator: 'purple'
-						}, 3);
-					}
-				}
-			});
-		}
-	});
+	prompt_legacy_reminder(frm, specificDate, description, "acceptance");
 }
 
 // Helper function to create GS Processing reminder
 function createGSReminder(frm, specificDate, description) {
-	if (!frm.doc.name || frm.doc.__islocal) {
-		return;
-	}
-
-	let remindDate;
-	if (specificDate) {
-		remindDate = new Date(specificDate);
-		remindDate.setHours(9, 0, 0, 0);
-	} else {
-		remindDate = new Date();
-		remindDate.setDate(remindDate.getDate() + 1);
-		remindDate.setHours(9, 0, 0, 0);
-	}
-
-	const remindAt = frappe.datetime.obj_to_str(remindDate).replace('T', ' ') + ':00';
-
-	frappe.db.get_list("Reminder", {
-		filters: {
-			reminder_doctype: "Application",
-			reminder_docname: frm.doc.name,
-			description: description
-		},
-		limit: 1
-	}).then(function (existingReminders) {
-		if (existingReminders.length === 0) {
-			frappe.call({
-				method: 'frappe.automation.doctype.reminder.reminder.create_new_reminder',
-				args: {
-					remind_at: remindAt,
-					description: description,
-					reminder_doctype: 'Application',
-					reminder_docname: frm.doc.name
-				},
-				callback: function (response) {
-					if (response.message) {
-						frappe.show_alert({
-							message: 'Reminder set: ' + description,
-							indicator: 'orange'
-						}, 3);
-					}
-				}
-			});
-		}
-	});
+	prompt_legacy_reminder(frm, specificDate, description, "gs");
 }
 
 // Helper function to create Types of Funds reminder
 function createTypesOfFundsReminder(frm, description) {
-	if (!frm.doc.name || frm.doc.__islocal) {
-		return;
-	}
-
-	const remindDate = new Date();
-	remindDate.setDate(remindDate.getDate() + 1);
-	remindDate.setHours(9, 0, 0, 0);
-
-	const remindAt = frappe.datetime.obj_to_str(remindDate).replace('T', ' ') + ':00';
-
-	frappe.db.get_list("Reminder", {
-		filters: {
-			reminder_doctype: "Application",
-			reminder_docname: frm.doc.name,
-			description: description
-		},
-		limit: 1
-	}).then(function (existingReminders) {
-		if (existingReminders.length === 0) {
-			frappe.call({
-				method: 'frappe.automation.doctype.reminder.reminder.create_new_reminder',
-				args: {
-					remind_at: remindAt,
-					description: description,
-					reminder_doctype: 'Application',
-					reminder_docname: frm.doc.name
-				},
-				callback: function (response) {
-					if (response.message) {
-						frappe.show_alert({
-							message: 'Reminder set: ' + description,
-							indicator: 'blue'
-						}, 3);
-					}
-				}
-			});
-		}
-	});
+	prompt_legacy_reminder(frm, null, description, "funds");
 }
 
 // Helper function to create interview deadline reminder (legacy — use prompt_application_reminder)

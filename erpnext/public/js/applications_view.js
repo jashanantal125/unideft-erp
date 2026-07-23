@@ -218,6 +218,7 @@ function loadApplications() {
 				}
 
 				// Fetch student details / preferred courses in background and re-render via applyFilters()
+				fetchUniversityNames(applications);
 				fetchStudentDetails(applications);
 			} else {
 				showError('Failed to load applications');
@@ -227,6 +228,63 @@ function loadApplications() {
 			loadingState.style.display = 'none';
 			showError(err.message || 'An error occurred while loading applications');
 		}
+	});
+}
+
+function getUniversityLabel(app) {
+	return (
+		app.university_display_name ||
+		app.preferred_university_title ||
+		app.university_name_title ||
+		app.preferred_university ||
+		app.university_name ||
+		'N/A'
+	);
+}
+
+function fetchUniversityNames(applications) {
+	const universityIds = [];
+	applications.forEach((app) => {
+		[app.preferred_university, app.university_name].forEach((id) => {
+			if (id && !universityIds.includes(id)) {
+				universityIds.push(id);
+			}
+		});
+	});
+
+	if (universityIds.length === 0) {
+		return;
+	}
+
+	frappe.call({
+		method: 'frappe.client.get_list',
+		args: {
+			doctype: 'University',
+			filters: { name: ['in', universityIds] },
+			fields: ['name', 'university_name'],
+			limit_page_length: 1000,
+		},
+		callback: function (response) {
+			const universities = {};
+			(response.message || []).forEach((uni) => {
+				universities[uni.name] = uni.university_name || uni.name;
+			});
+
+			applications.forEach((app) => {
+				if (app.preferred_university && universities[app.preferred_university]) {
+					app.preferred_university_title = universities[app.preferred_university];
+				}
+				if (app.university_name && universities[app.university_name]) {
+					app.university_name_title = universities[app.university_name];
+				}
+				const code = app.preferred_university || app.university_name;
+				if (code && universities[code]) {
+					app.university_display_name = universities[code];
+				}
+			});
+
+			applyFilters();
+		},
 	});
 }
 
@@ -419,7 +477,9 @@ function createApplicationCard(app) {
 					<div class="profile-info">
 						<h3 class="student-name">${escapeHtml(studentName)}</h3>
 						<div class="contact-details">
-							${(app.contact_number || (app.student_data && app.student_data.mobile)) ? `<span class="contact-item"><i class="fa fa-phone"></i> ${escapeHtml(app.contact_number || app.student_data.mobile)}</span>` : ''}
+
+							${(app.student_contact_no || app.contact_number || (app.student_data && app.student_data.mobile)) ? `<span class="contact-item"><i class="fa fa-phone"></i> ${escapeHtml(app.student_contact_no || app.contact_number || app.student_data.mobile)}</span>` : ''}
+
 							${app.student_email || (app.student_data && app.student_data.email) ? `<span class="contact-item"><i class="fa fa-envelope"></i> ${escapeHtml(app.student_email || app.student_data.email)}</span>` : ''}
 							<span class="contact-item"><i class="fa fa-calendar"></i> ${dobDate}</span>
 						</div>
@@ -452,9 +512,9 @@ function createApplicationCard(app) {
 					<i class="fa fa-external-link program-external-link" aria-hidden="true" onclick="viewApplication('${app.name}')"></i>
 				</h3>
 				<div class="program-meta">
-					${(app.preferred_university || app.university_name) || app.destination_country ? `
+					${(app.preferred_university || app.university_name || app.university_display_name) || app.destination_country ? `
 						<span class="program-university">
-							${escapeHtml(app.preferred_university || app.university_name || 'N/A')}
+							${escapeHtml(getUniversityLabel(app))}
 							${app.destination_country ? `In ${escapeHtml(app.destination_country)}` : ''}
 						</span>
 					` : ''}
@@ -638,7 +698,7 @@ function createProgramsContent(app) {
 		<div class="programs-content">
 			<div class="program-item">
 				${coursesHTML}
-				<p><i class="fa fa-university"></i> <strong>University:</strong> ${escapeHtml(app.preferred_university || app.university_name || 'N/A')}</p>
+				<p><i class="fa fa-university"></i> <strong>University:</strong> ${escapeHtml(getUniversityLabel(app))}</p>
 				<p><i class="fa fa-calendar"></i> <strong>Intake:</strong> ${escapeHtml(app.intake || 'N/A')}</p>
 				${app.university_intake ? `<p><i class="fa fa-calendar-check-o"></i> <strong>University Intake:</strong> ${frappe.datetime.str_to_user(app.university_intake)}</p>` : ''}
 			</div>
@@ -660,62 +720,60 @@ function createDocumentsContent(app) {
 
 function fetchApplicationDocuments(appName, container) {
 	frappe.call({
-		method: 'frappe.client.get_list',
-		args: {
-			doctype: 'File',
-			filters: {
-				attached_to_doctype: 'Application',
-				attached_to_name: appName
-			},
-			fields: ['name', 'file_name', 'file_url', 'file_size', 'is_private', 'creation'],
-			order_by: 'creation desc'
-		},
+		method: 'erpnext.crm.doctype.application.application.get_application_documents_by_stage',
+		args: { name: appName },
 		callback: function (response) {
-			if (response.message && response.message.length > 0) {
-				const files = response.message;
-				let filesHTML = '<div class="documents-list">';
-				
-				files.forEach((file, index) => {
-					const serialNumber = index + 1;
-					const fileSize = file.file_size ? formatFileSize(file.file_size) : '';
-					const fileDate = file.creation ? frappe.datetime.str_to_user(file.creation.split(' ')[0]) : '';
-					const fileIcon = getFileIcon(file.file_name);
-					// For private files, use the download API endpoint
-					const fileUrl = file.is_private 
-						? `/api/method/frappe.core.doctype.file.file.download_file?file_url=${encodeURIComponent(file.file_url)}` 
-						: file.file_url;
-					
-					filesHTML += `
-						<div class="document-item">
-							<div class="document-serial">${serialNumber}.</div>
-							<div class="document-icon">${fileIcon}</div>
-							<div class="document-info">
-								<a href="${fileUrl}" target="_blank" class="document-name" title="${escapeHtml(file.file_name)}">
-									${escapeHtml(file.file_name)}
-								</a>
-								<div class="document-meta">
-									${fileSize ? `<span class="document-size"><i class="fa fa-hdd-o"></i> ${fileSize}</span>` : ''}
-									${fileDate ? `<span class="document-date"><i class="fa fa-calendar"></i> ${fileDate}</span>` : ''}
-								</div>
-							</div>
-							<a href="${fileUrl}" target="_blank" class="document-download" title="Download">
-								<i class="fa fa-download"></i>
-								<span class="document-download-text">Download</span>
-							</a>
-						</div>
-					`;
-				});
-				
-				filesHTML += '</div>';
-				container.innerHTML = filesHTML;
-			} else {
+			const groups = response.message || {};
+			const stageNames = Object.keys(groups);
+			if (!stageNames.length) {
 				container.innerHTML = `
 					<div class="documents-empty">
 						<i class="fa fa-file-o"></i>
 						<p>No documents uploaded yet</p>
 					</div>
 				`;
+				return;
 			}
+
+			let filesHTML = '<div class="documents-list documents-by-stage">';
+			stageNames.forEach((stage) => {
+				const files = groups[stage] || [];
+				filesHTML += `
+					<div class="document-stage-group" style="margin-bottom:14px;">
+						<div class="document-stage-title" style="font-weight:600; margin-bottom:6px;">
+							${escapeHtml(stage)} <span class="text-muted">(${files.length})</span>
+						</div>
+				`;
+				files.forEach((file) => {
+					const fileSize = file.file_size ? formatFileSize(file.file_size) : '';
+					const fileDate = file.creation || '';
+					const fileIcon = getFileIcon(file.file_name);
+					const label = file.field_label
+						? `${file.field_label}: ${file.file_name}`
+						: file.file_name;
+					filesHTML += `
+						<div class="document-item">
+							<div class="document-icon">${fileIcon}</div>
+							<div class="document-info">
+								<a href="${escapeHtml(file.file_url)}" target="_blank" class="document-name" title="${escapeHtml(label)}">
+									${escapeHtml(label)}
+								</a>
+								<div class="document-meta">
+									${fileSize ? `<span class="document-size"><i class="fa fa-hdd-o"></i> ${fileSize}</span>` : ''}
+									${fileDate ? `<span class="document-date"><i class="fa fa-calendar"></i> ${fileDate}</span>` : ''}
+								</div>
+							</div>
+							<a href="${escapeHtml(file.file_url)}" target="_blank" class="document-download" title="Download">
+								<i class="fa fa-download"></i>
+								<span class="document-download-text">Download</span>
+							</a>
+						</div>
+					`;
+				});
+				filesHTML += '</div>';
+			});
+			filesHTML += '</div>';
+			container.innerHTML = filesHTML;
 		},
 		error: function () {
 			container.innerHTML = `

@@ -6,7 +6,7 @@
    "label": "Lead Source"
   }
  ],
- "content": "[{\"id\":\"LAKRmpYMRA\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"XGIwEUStw_\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Your Shortcuts</b></span>\",\"col\":12}},{\"id\":\"69RN0XsiJK\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Leads\",\"col\":3}},{\"id\":\"-I9HhcgUKE\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"ttpROKW9vk\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Reports &amp; Masters</b></span>\",\"col\":12}},{\"id\":\"aldI0pFsUz\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Lead Source\",\"col\":12}},{\"id\":\"XtkjU9utEL\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"g-V-9L698O\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Recents</b></span>\",\"col\":12}},{\"id\":\"3U8ckN5ogr\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Recent Applications\",\"col\":6}},{\"id\":\"a_YQVEN-OC\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Counsellings\",\"col\":6}}]",
+ "content": "[{\"id\":\"LAKRmpYMRA\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"XGIwEUStw_\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Your Shortcuts</b></span>\",\"col\":12}},{\"id\":\"69RN0XsiJK\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Leads\",\"col\":3}},{\"id\":\"PwOrJl9iyB\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Applications\",\"col\":3}},{\"id\":\"-I9HhcgUKE\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"ttpROKW9vk\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Reports &amp; Masters</b></span>\",\"col\":12}},{\"id\":\"aldI0pFsUz\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Lead Source\",\"col\":12}},{\"id\":\"XtkjU9utEL\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"g-V-9L698O\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Recents</b></span>\",\"col\":12}},{\"id\":\"3U8ckN5ogr\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Recent Applications\",\"col\":6}},{\"id\":\"a_YQVEN-OC\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Counsellings\",\"col\":6}}]",
  "creation": "2020-01-23 14:48:30.183272",
  "custom_blocks": [],
  "docstatus": 0,
@@ -30,7 +30,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-03-16 20:22:09.708075",
+ "modified": "2026-07-23 16:41:03.610257",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "CRM",
@@ -64,6 +64,16 @@
  ],
  "sequence_id": 17.0,
  "shortcuts": [
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "format": "{} Open",
+   "icon": "fa fa-user",
+   "label": "Applications",
+   "link_to": "Application",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
   {
    "color": "Blue",
    "doc_view": "List",
