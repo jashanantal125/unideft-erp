@@ -13,24 +13,30 @@
         "student_email",
         "student_contact_no",
         "agent",
-        "destination_country",
-        "assigned_team",
-        "assigned_executive",
         "column_break_jdtj",
         "application_type",
         "status",
-        "higher_education",
-        "preferred_university",
-        "intake",
-        "column_break_ilyf",
+        "destination_country",
         "naming_series",
+        "column_break_ilyf",
         "dob",
-        "martial_status",
         "current_age",
+        "martial_status",
+        "higher_education",
+        "details_program_section",
+        "preferred_university",
+        "column_break_details_program_1",
+        "intake",
+        "column_break_details_program_2",
+        "assigned_team",
+        "assigned_executive",
+        "details_visa_section",
         "any_visa_refused",
+        "column_break_details_visa_1",
         "visa_refused_ok",
         "visa_refused_country",
         "visa_refused_type",
+        "column_break_details_visa_2",
         "visa_refused_not_able_to_process",
         "visa_refused_can_process",
         "visa_refused_go_ahead_status",
@@ -40,22 +46,32 @@
         "visa_refused_new_application",
         "visa_refused_close_reason",
         "visa_refused_closed_status",
+        "details_study_gap_section",
         "study_gap",
+        "column_break_details_gap_1",
         "study_gap_upto_1_year",
+        "column_break_details_gap_2",
         "study_gap_status",
         "study_gap_not_accepted_status",
-        "study_gap_proof",
         "study_gap_ok",
-        "need_assessment",
-        "need_assessment_vendors",
-        "need_assessment_university",
-        "need_assessment_course",
         "section_break_dkel",
+        "study_gap_proof",
+        "details_need_assessment_section",
+        "need_assessment",
+        "column_break_details_na_1",
+        "need_assessment_university",
+        "column_break_details_na_2",
+        "need_assessment_course",
+        "details_vendors_section",
+        "need_assessment_vendors",
+        "details_courses_section",
         "preferred_courses",
         "section_case_4_spouse",
         "case_4_spouse_qualification",
+        "column_break_spouse_1",
         "case_4_marriage_duration",
         "case_4_proceed_below_graduate",
+        "column_break_spouse_2",
         "case_4_proceed_below_1_year",
         "case_4_proceed_above_1_year",
         "case_4_note_wait",
@@ -101,9 +117,7 @@
         "application_form_4_upload",
         "sop_upload",
         "sop_portal_or_vendor_upload",
-        "column_break_miqz",
         "documents_passport_application_form_sop",
-        "spouse_salary_statements_verified_3_months",
         "submitted_tab",
         "submitted_date",
         "submitted_another_application",
@@ -493,17 +507,17 @@
         },
         {
             "fieldname": "column_break_jdtj",
-            "fieldtype": "Column Break",
-            "options": "High\nSecondary\nGraduation\nPost Graduation"
+            "fieldtype": "Column Break"
         },
         {
             "fieldname": "section_break_dkel",
-            "fieldtype": "Section Break"
+            "fieldtype": "Section Break",
+            "label": "Study Gap Proof"
         },
         {
             "fieldname": "any_visa_refused",
             "fieldtype": "Select",
-            "label": "IX. Refused from Aus/NZ",
+            "label": "Refused from Aus/NZ",
             "options": "\nYes\nNo"
         },
         {
@@ -600,7 +614,7 @@
             "fieldname": "higher_education",
             "fieldtype": "Select",
             "label": "Qualification",
-            "options": "\n12th pass\nBachelors\nDiploma\nMasters\nCertification\nOthers\nGraduation"
+            "options": "\n12th pass\nGraduation\nOthers"
         },
         {
             "fieldname": "martial_status",
@@ -612,7 +626,7 @@
             "depends_on": "eval:doc.higher_education == 'Graduation' && doc.martial_status == 'Married'",
             "fieldname": "section_case_4_spouse",
             "fieldtype": "Section Break",
-            "label": "Case 4: Spouse Details"
+            "label": "Spouse Details"
         },
         {
             "depends_on": "eval:doc.higher_education == 'Graduation' && doc.martial_status == 'Married'",
@@ -681,7 +695,7 @@
             "description": "Note: In package cases these fields are mandatory otherwise optional",
             "fieldname": "section_a_email",
             "fieldtype": "Section Break",
-            "label": "A. Our Email Id"
+            "label": "Our Email Id"
         },
         {
             "default": "0",
@@ -717,7 +731,7 @@
         {
             "fieldname": "section_b_documents",
             "fieldtype": "Section Break",
-            "label": "B. Documents 10th to 12th to Diploma"
+            "label": "Documents 10th to 12th to Diploma"
         },
         {
             "default": "0",
@@ -760,7 +774,7 @@
             "depends_on": "eval:doc.higher_education == 'Graduation'",
             "fieldname": "graduation_verification_documents",
             "fieldtype": "Table",
-            "label": "B. Graduation Verification",
+            "label": "Graduation Verification",
             "options": "Graduation Verification"
         },
         {
@@ -806,13 +820,13 @@
             "depends_on": "eval:doc.martial_status == 'Married' && doc.case_4_proceed_above_1_year == 'with Spouse'",
             "fieldname": "spouse_details_list",
             "fieldtype": "Table",
-            "label": "E. Spouse details",
+            "label": "Spouse Details",
             "options": "Spouse Details"
         },
         {
             "fieldname": "section_c_english_test",
             "fieldtype": "Section Break",
-            "label": "C. English Proficiency Test"
+            "label": "English Proficiency Test"
         },
         {
             "description": "Click 'Add Row' to open form with conditional fields for IELTS/PTE/TOEFL",
@@ -828,12 +842,12 @@
         {
             "fieldname": "section_d_study_gap_proof",
             "fieldtype": "Section Break",
-            "label": "D. Study Gap Proof"
+            "label": "Study Gap Proof"
         },
         {
             "fieldname": "section_d_passport",
             "fieldtype": "Section Break",
-            "label": "E. Passport"
+            "label": "Passport"
         },
         {
             "fieldname": "passport_upload",
@@ -847,7 +861,7 @@
         {
             "fieldname": "section_e_processing_agent",
             "fieldtype": "Section Break",
-            "label": "F. Processing Agent"
+            "label": "Processing Agent"
         },
         {
             "description": "Click 'Add Row' to select Direct or Vendor agent",
@@ -859,7 +873,7 @@
         {
             "fieldname": "section_f_applications",
             "fieldtype": "Section Break",
-            "label": "F. Applications"
+            "label": "Applications"
         },
         {
             "fieldname": "application_filled_by",
@@ -1777,9 +1791,10 @@
         },
         {
             "fieldname": "student_email",
-            "fieldtype": "Text",
+            "fieldtype": "Data",
             "in_list_view": 1,
-            "label": "Student Email"
+            "label": "Student Email",
+            "options": "Email"
         },
         {
             "fieldname": "student_contact_no",
@@ -2463,7 +2478,7 @@
         {
             "fieldname": "gs_submitted_section",
             "fieldtype": "Section Break",
-            "label": "A. GS Submitted"
+            "label": "GS Submitted"
         },
         {
             "fieldname": "gs_submitted",
@@ -2499,7 +2514,7 @@
         {
             "fieldname": "conditions_section",
             "fieldtype": "Section Break",
-            "label": "B. Conditions"
+            "label": "Conditions"
         },
         {
             "default": "Note: Select conditions in the Offer Letter tab to see condition fields here",
@@ -2633,7 +2648,7 @@
             "fieldname": "shop_act_additional_document",
             "fieldtype": "Attach",
             "label": "Additional Current A/C Statement/GST Cert Required",
-            "reqd": 1
+            "mandatory_depends_on": "eval:doc.occupation_documents_needed && doc.sponsor_occupation == 'Business' && doc.business_proof == 'Shop Act' && (doc.shop_act_registration_duration == 'Below 1 Year' || doc.shop_act_registration_duration == 'Below 2 Years')"
         },
         {
             "default": "0",
@@ -2980,12 +2995,83 @@
         {
             "fieldname": "c_sponsors_section",
             "fieldtype": "Section Break",
-            "label": "C. Sponsors"
+            "label": "Sponsors"
         },
         {
             "fieldname": "table_ihmq",
             "fieldtype": "Table",
             "options": "Application Sponsor Complete"
+        },
+        {
+            "fieldname": "details_program_section",
+            "fieldtype": "Section Break",
+            "label": "Program & Assignment"
+        },
+        {
+            "fieldname": "column_break_details_program_1",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "column_break_details_program_2",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "details_visa_section",
+            "fieldtype": "Section Break",
+            "label": "Visa Refusal"
+        },
+        {
+            "fieldname": "column_break_details_visa_1",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "column_break_details_visa_2",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "details_study_gap_section",
+            "fieldtype": "Section Break",
+            "label": "Study Gap"
+        },
+        {
+            "fieldname": "column_break_details_gap_1",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "column_break_details_gap_2",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "details_need_assessment_section",
+            "fieldtype": "Section Break",
+            "label": "Need Assessment"
+        },
+        {
+            "fieldname": "column_break_details_na_1",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "column_break_details_na_2",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "details_courses_section",
+            "fieldtype": "Section Break",
+            "label": "Preferred Courses"
+        },
+        {
+            "fieldname": "column_break_spouse_1",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "column_break_spouse_2",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "details_vendors_section",
+            "fieldtype": "Section Break",
+            "label": "Assessment Vendors",
+            "depends_on": "eval:doc.need_assessment == 'Yes'"
         }
     ],
     "grid_page_length": 50,

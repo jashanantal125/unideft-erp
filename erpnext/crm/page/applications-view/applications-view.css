@@ -1,2 +1,710 @@
-/* Desk page uses the same Applications View theme as the web route */
-@import url("/assets/erpnext/css/applications_view.css");
+/* Card view styles — scoped to .applications-container so Desk/portal theme is not affected */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* Import clean fonts */
+
+
+.applications-container,
+.applications-container * {
+	box-sizing: border-box;
+}
+
+.applications-container{
+	box-sizing: border-box;
+	padding: 24px;
+	max-width: 1600px;
+	margin: 0 auto;
+	font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.applications-container .page-header{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 24px;
+	padding-bottom: 0;
+	border-bottom: none;
+}
+
+.applications-container .page-title{
+	font-size: 32px;
+	font-weight: 700;
+	color: #111827;
+	margin: 0;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.applications-container .page-title i{
+	color: #52c41a;
+}
+
+.applications-container .page-actions{
+	display: flex;
+	gap: 12px;
+}
+
+.applications-container .loading-state,
+.applications-container .error-state,
+.applications-container .empty-state{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 80px 20px;
+	text-align: center;
+}
+
+.applications-container .loading-state .spinner{
+	border: 4px solid #f3f4f6;
+	border-top: 4px solid #52c41a;
+	border-radius: 50%;
+	width: 50px;
+	height: 50px;
+	animation: spin 1s linear infinite;
+	margin-bottom: 20px;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+.applications-container .error-state .error-icon,
+.applications-container .empty-state .empty-icon{
+	font-size: 64px;
+	color: #ef4444;
+	margin-bottom: 20px;
+}
+
+.applications-container .empty-state .empty-icon{
+	color: #9ca3af;
+}
+
+.applications-container .error-state p,
+.applications-container .empty-state p{
+	font-size: 18px;
+	color: #6b7280;
+	margin-bottom: 20px;
+}
+
+.applications-container .applications-grid{
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
+	gap: 24px;
+	margin-top: 20px;
+}
+
+/* Application Card */
+.applications-container .application-card{
+	background: #ffffff;
+	border-radius: 16px;
+	border: 1px solid #e5e7eb;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+	transition: all 0.2s ease;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+.applications-container .application-card:hover{
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+	border-color: #d1d5db;
+}
+
+/* Header Section */
+.applications-container .card-header-section{
+	padding: 20px 24px;
+	background: #f8f9fa;
+	border-bottom: 1px solid #e5e7eb;
+}
+
+.applications-container .profile-area{
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	margin-bottom: 16px;
+}
+
+.applications-container .avatar-circle{
+	width: 56px;
+	height: 56px;
+	border-radius: 50%;
+	background: #E0E7FF;
+	color: #3730A3;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 600;
+	font-size: 18px;
+	flex-shrink: 0;
+}
+
+.applications-container .profile-info{
+	flex: 1;
+	min-width: 0;
+}
+
+.applications-container .student-name{
+	font-size: 20px;
+	font-weight: 600;
+	color: #111827;
+	margin: 0 0 8px 0;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.applications-container .contact-details{
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px;
+	font-size: 14px;
+	color: #6b7280;
+}
+
+.applications-container .contact-item{
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.applications-container .contact-item i{
+	font-size: 12px;
+	color: #9ca3af;
+}
+
+.applications-container .header-meta-right{
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 12px;
+}
+
+.applications-container .badges-section{
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	justify-content: flex-end;
+}
+
+.applications-container .header-actions-row{
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.applications-container .badge{
+	padding: 6px 12px;
+	border-radius: 20px;
+	font-size: 12px;
+	font-weight: 500;
+	display: inline-flex;
+	align-items: center;
+}
+
+.applications-container .badge-app-id{
+	background: #eff6ff;
+	color: #1e40af;
+}
+
+.applications-container .badge-student-id{
+	background: #f0fdf4;
+	color: #166534;
+}
+
+.applications-container .badge-b2b{
+	background: #fef3c7;
+	color: #92400e;
+}
+
+/* Program Info Section */
+.applications-container .program-info-section{
+	padding: 20px 24px;
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	border-bottom: 1px solid #e5e7eb;
+}
+
+.applications-container .program-details{
+	flex: 1;
+}
+
+.applications-container .degree-name{
+	font-size: 18px;
+	font-weight: 600;
+	color: #111827;
+	margin: 0 0 8px 0;
+}
+
+.applications-container .program-meta{
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px;
+	font-size: 14px;
+	color: #6b7280;
+}
+
+.applications-container .university-link{
+	color: #2563eb;
+	text-decoration: none;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	transition: color 0.2s;
+}
+
+.applications-container .university-link:hover{
+	color: #1d4ed8;
+	text-decoration: underline;
+}
+
+.applications-container .intake-date{
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	color: #6b7280;
+}
+
+.applications-container .intake-date strong{
+	font-weight: 700;
+	color: #374151;
+}
+
+
+
+.applications-container .status-pill{
+	padding: 8px 16px;
+	border-radius: 20px;
+	font-size: 13px;
+	font-weight: 500;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	background: #f3f4f6;
+	color: #374151;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.applications-container .status-pill:hover{
+	background: #e5e7eb;
+}
+
+.applications-container .status-pill[data-status="Application Fee Paid"]{
+	background: #DBEAFE;
+	color: #1E40AF;
+	border: 1px solid #BFDBFE;
+}
+
+.applications-container .status-pill[data-status="LOA/OL"]{
+	background: #F3F4F6;
+	color: #374151;
+}
+
+.applications-container .status-pill[data-status="Tuition Fee Paid"]{
+	background: #F3F4F6;
+	color: #374151;
+}
+
+.applications-container .status-pill[data-status="Visa Applied"]{
+	background: #e0e7ff;
+	color: #4338ca;
+}
+
+.applications-container .status-pill[data-status="Visa Approved"]{
+	background: #dcfce7;
+	color: #166534;
+}
+
+.applications-container .status-pill[data-status="Enrolled and Closed"]{
+	background: #dcfce7;
+	color: #166534;
+}
+
+.applications-container .status-edit-icon{
+	font-size: 12px;
+	opacity: 0.7;
+	cursor: pointer;
+}
+
+.applications-container .status-edit-icon:hover{
+	opacity: 1;
+}
+
+.applications-container .btn-chat{
+	padding: 8px 16px;
+	border: none;
+	border-radius: 8px;
+	background: #FDE047;
+	color: #854D0E;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	transition: all 0.2s;
+	text-transform: uppercase;
+}
+
+.applications-container .btn-chat:hover{
+	background: #FACC15;
+}
+
+/* Tab Navigation */
+.applications-container .tab-navigation{
+	display: flex;
+	gap: 0;
+	border-bottom: 1px solid #e5e7eb;
+	padding: 0 24px;
+	overflow-x: auto;
+	scrollbar-width: thin;
+}
+
+.applications-container .tab-navigation::-webkit-scrollbar{
+	height: 4px;
+}
+
+.applications-container .tab-navigation::-webkit-scrollbar-track{
+	background: #f3f4f6;
+}
+
+.applications-container .tab-navigation::-webkit-scrollbar-thumb{
+	background: #d1d5db;
+	border-radius: 2px;
+}
+
+.applications-container .tab-btn{
+	padding: 12px 16px;
+	border: none;
+	background: transparent;
+	color: #6b7280;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	border-bottom: 2px solid transparent;
+	transition: all 0.2s;
+	white-space: nowrap;
+}
+
+.applications-container .tab-btn:hover{
+	color: #374151;
+	background: #f9fafb;
+}
+
+.applications-container .tab-btn.active{
+	color: #52c41a;
+	border-bottom-color: #52c41a;
+	background: transparent;
+}
+
+.applications-container .tab-btn i{
+	font-size: 14px;
+}
+
+/* Tab Content Area */
+.applications-container .tab-content-area{
+	padding: 24px;
+	min-height: 200px;
+	flex: 1;
+}
+
+/* Timeline Component */
+.applications-container .timeline-container{
+	display: flex;
+	align-items: center;
+	gap: 0;
+	padding: 20px 0;
+	overflow-x: auto;
+	scrollbar-width: thin;
+}
+
+.applications-container .timeline-container::-webkit-scrollbar{
+	height: 4px;
+}
+
+.applications-container .timeline-node-wrapper{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	position: relative;
+	min-width: 100px;
+}
+
+.applications-container .timeline-est-date{
+	font-size: 11px;
+	color: #9ca3af;
+	margin-bottom: 8px;
+	font-weight: 500;
+}
+
+.applications-container .timeline-node{
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 600;
+	font-size: 12px;
+	position: relative;
+	z-index: 2;
+	transition: all 0.3s;
+}
+
+.applications-container .timeline-node.completed{
+	background: #52c41a;
+	color: white;
+	border: 3px solid #52c41a;
+}
+
+.applications-container .timeline-node.pending{
+	background: #f3f4f6;
+	color: #9ca3af;
+	border: 3px solid #e5e7eb;
+}
+
+.applications-container .node-code{
+	font-weight: 600;
+	letter-spacing: 0.5px;
+}
+
+.applications-container .timeline-actual-date{
+	font-size: 11px;
+	color: #6b7280;
+	margin-top: 8px;
+	font-weight: 500;
+	min-height: 16px;
+}
+
+.applications-container .timeline-connector{
+	position: absolute;
+	top: 24px;
+	left: 50%;
+	width: 100px;
+	height: 3px;
+	z-index: 1;
+	transform: translateX(24px);
+}
+
+.applications-container .timeline-connector.completed{
+	background: #52c41a;
+}
+
+.applications-container .timeline-connector.pending{
+	background: #e5e7eb;
+}
+
+/* Staff Content */
+.applications-container .staff-content{
+	padding: 16px 0;
+}
+
+.applications-container .staff-item{
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	padding: 16px;
+	background: #f8f9fa;
+	border-radius: 12px;
+}
+
+.applications-container .staff-avatar{
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	background: #e5e7eb;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #6b7280;
+	font-size: 20px;
+}
+
+.applications-container .staff-info h4{
+	margin: 0 0 4px 0;
+	font-size: 16px;
+	font-weight: 600;
+	color: #111827;
+}
+
+.applications-container .staff-info p{
+	margin: 0;
+	font-size: 14px;
+	color: #6b7280;
+}
+
+/* Programs Content */
+.applications-container .programs-content{
+	padding: 16px 0;
+}
+
+.applications-container .program-item{
+	padding: 16px;
+	background: #f8f9fa;
+	border-radius: 12px;
+}
+
+.applications-container .program-item h4{
+	margin: 0 0 12px 0;
+	font-size: 16px;
+	font-weight: 600;
+	color: #111827;
+}
+
+.applications-container .program-item p{
+	margin: 8px 0;
+	font-size: 14px;
+	color: #6b7280;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.applications-container .program-item i{
+	color: #9ca3af;
+	font-size: 14px;
+}
+
+/* Documents & Notes Content */
+.applications-container .documents-content,
+.applications-container .notes-content{
+	padding: 16px 0;
+}
+
+.applications-container .text-muted{
+	color: #9ca3af;
+	font-size: 14px;
+}
+
+/* Footer */
+.applications-container .card-footer{
+	padding: 16px 24px;
+	background: #f8f9fa;
+	border-top: 1px solid #e5e7eb;
+}
+
+.applications-container .footer-meta{
+	display: flex;
+	flex-wrap: wrap;
+	gap: 20px;
+	font-size: 12px;
+	color: #6b7280;
+}
+
+.applications-container .meta-item{
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.applications-container .meta-item i{
+	font-size: 12px;
+	color: #9ca3af;
+}
+
+/* Buttons */
+.applications-container .btn{
+	padding: 8px 16px;
+	border: none;
+	border-radius: 8px;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-family: 'Inter', sans-serif;
+}
+
+.applications-container .btn-primary{
+	background: #52c41a;
+	color: white;
+}
+
+.applications-container .btn-secondary{
+	background: #ffffff !important;
+	color: #374151;
+	border: 1px solid #d1d5db;
+}
+
+.applications-container .btn-secondary:hover{
+	background: #f9fafb;
+	border-color: #9ca3af;
+}
+
+.applications-container .btn-primary:hover{
+	background: #389e0d;
+	transform: translateY(-1px);
+	box-shadow: 0 2px 8px rgba(82, 196, 26, 0.3);
+}
+
+.applications-container .btn-sm{
+	padding: 6px 12px;
+	font-size: 12px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+	.applications-container .applications-grid{
+		grid-template-columns: 1fr;
+	}
+
+	.applications-container .page-header{
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 16px;
+	}
+
+	.applications-container .program-info-section{
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.applications-container .tab-navigation{
+		padding: 0 16px;
+	}
+
+	.applications-container .timeline-container{
+		padding: 16px 0;
+	}
+
+	.applications-container .timeline-node-wrapper{
+		min-width: 80px;
+	}
+
+	.applications-container .timeline-connector{
+		width: 80px;
+	}
+
+	.applications-container .footer-meta{
+		flex-direction: column;
+		gap: 12px;
+	}
+}
+
+/* Smooth transitions */
+.applications-container .application-card,
+.applications-container .tab-btn,
+.applications-container .status-pill,
+.applications-container .btn-chat{
+	transition: all 0.2s ease;
+}
+/* Desk chrome: hide page-head divider while Card View is open */
+body.applications-card-view-open .page-head,
+body.page-applications_view .page-head,
+body.page-applications-view .page-head {
+	border-bottom: none !important;
+	box-shadow: none !important;
+}

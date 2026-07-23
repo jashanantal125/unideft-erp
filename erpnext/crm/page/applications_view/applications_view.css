@@ -2274,7 +2274,6 @@
 .applications-container .btn-chat{
 	transition: all 0.2s ease;
 }
-
 /* Desk chrome: hide page-head / section dividers while Card View is open */
 body.applications-card-view-open .page-head,
 body.page-applications_view .page-head,

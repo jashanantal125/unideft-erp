@@ -1,11 +1,89 @@
-frappe.pages['applications-view'].on_page_load = function (wrapper) {
-	frappe.require('/assets/erpnext/css/applications_view.css');
+frappe.pages['applications_view'].on_page_load = function (wrapper) {
+	// Styles come from applications_view.css (scoped). Do not frappe.require
+	// /assets/erpnext/css/applications_view.css — it was restyling the whole Desk.
 
     var page = frappe.ui.make_app_page({
         parent: wrapper,
         title: 'Applications View',
         single_column: true
     });
+
+    // Kill Desk page-head divider (and any container ring) above the search bar
+    if (!document.getElementById('applications-view-no-border')) {
+        const style = document.createElement('style');
+        style.id = 'applications-view-no-border';
+        style.textContent = `
+			#page-applications_view .page-head,
+			#page-applications-view .page-head,
+			body.applications-card-view-open .page-head,
+			body.page-applications_view .page-head,
+			body.page-applications-view .page-head,
+			#page-applications_view .page-head.drop-shadow,
+			#page-applications-view .page-head.drop-shadow,
+			body.applications-card-view-open .page-head.drop-shadow,
+			#page-applications_view .page-head .page-head-content,
+			#page-applications-view .page-head .page-head-content,
+			body.applications-card-view-open .page-head .page-head-content,
+			#page-applications_view .layout-main-section,
+			#page-applications_view .layout-main-section-wrapper,
+			#page-applications-view .layout-main-section,
+			#page-applications-view .layout-main-section-wrapper,
+			body.page-applications_view .layout-main-section,
+			body.page-applications_view .layout-main-section-wrapper,
+			body.page-applications-view .layout-main-section,
+			body.page-applications-view .layout-main-section-wrapper {
+				border: none !important;
+				border-bottom: none !important;
+				border-top: none !important;
+				box-shadow: none !important;
+			}
+			#page-applications_view .applications-container,
+			#page-applications-view .applications-container,
+			body.applications-card-view-open .applications-container,
+			body.page-applications_view .applications-container,
+			body.page-applications-view .applications-container,
+			body.applications-card-view-open .applications-container .page-content-wrapper,
+			body.page-applications_view .applications-container .page-content-wrapper {
+				border: none !important;
+				border-image: none !important;
+				box-shadow: none !important;
+				border-radius: 0 !important;
+			}
+		`;
+        document.head.appendChild(style);
+    }
+
+    const killBorders = () => {
+        const els = [
+            wrapper.querySelector('.page-head'),
+            wrapper.querySelector('.page-head-content'),
+            document.querySelector('#page-applications_view .page-head'),
+            document.querySelector('#page-applications-view .page-head'),
+            document.querySelector('.page-head'),
+            wrapper.querySelector('.layout-main-section'),
+            wrapper.querySelector('.layout-main-section-wrapper'),
+            wrapper.querySelector('.applications-container'),
+            document.querySelector('.applications-container'),
+        ].filter(Boolean);
+        els.forEach((el) => {
+            el.classList.remove('drop-shadow');
+            el.style.setProperty('border', 'none', 'important');
+            el.style.setProperty('border-bottom', 'none', 'important');
+            el.style.setProperty('border-top', 'none', 'important');
+            el.style.setProperty('box-shadow', 'none', 'important');
+        });
+        document.body.classList.add('applications-card-view-open');
+    };
+    killBorders();
+    setTimeout(killBorders, 50);
+    setTimeout(killBorders, 300);
+    setTimeout(killBorders, 1000);
+    $('body').addClass('applications-card-view-open');
+
+    // Re-apply on every show (Desk caches the page after first load)
+    frappe.pages['applications_view'].on_page_show = function () {
+        killBorders();
+    };
 
     // Add breadcrumbs
     frappe.breadcrumbs.add('CRM');
@@ -17,6 +95,19 @@ frappe.pages['applications-view'].on_page_load = function (wrapper) {
     page.add_inner_button('Back to List View', () => {
         frappe.set_route('List', 'Application');
     });
+
+	// When leaving Card View, drop body class so Desk theme is never stuck altered
+	const clear_card_view_chrome = () => {
+		$('body').removeClass('applications-card-view-open');
+	};
+	$(document).off('page-change.applications_card_view');
+	$(document).on('page-change.applications_card_view', () => {
+		const route = frappe.get_route_str() || '';
+		if (route !== 'applications_view' && route !== 'applications-view') {
+			clear_card_view_chrome();
+			$(document).off('page-change.applications_card_view');
+		}
+	});
 
     // Inject HTML structure into the page body
     $(wrapper).find('.layout-main-section').append(`
@@ -112,9 +203,17 @@ function applyFilters() {
             // Also search by Application ID, Student email, or specific status if needed
             const appId = (app.name || '').toLowerCase();
             const email = (app.student_email || (app.student_data && app.student_data.email) || '').toLowerCase();
+            const uniName = (
+                app.university_display_name ||
+                app.preferred_university_title ||
+                app.university_name_title ||
+                app.preferred_university ||
+                app.university_name ||
+                ''
+            ).toLowerCase();
 
             if (!searchTerm) return true;
-            return studentName.includes(searchTerm) || appId.includes(searchTerm) || email.includes(searchTerm);
+            return studentName.includes(searchTerm) || appId.includes(searchTerm) || email.includes(searchTerm) || uniName.includes(searchTerm);
         });
 
 		// Pagination calculations
@@ -274,6 +373,7 @@ function loadApplications() {
                 }
 
                 // Fetch details in background - this will trigger re-renders
+                fetchUniversityNames(applications);
                 fetchStudentDetails(applications);
             } else {
                 showError('Failed to load applications');
@@ -283,6 +383,63 @@ function loadApplications() {
             loadingState.style.display = 'none';
             showError(err.message || 'An error occurred while loading applications');
         }
+    });
+}
+
+function getUniversityLabel(app) {
+    return (
+        app.university_display_name ||
+        app.preferred_university_title ||
+        app.university_name_title ||
+        app.preferred_university ||
+        app.university_name ||
+        'N/A'
+    );
+}
+
+function fetchUniversityNames(applications) {
+    const universityIds = [];
+    applications.forEach((app) => {
+        [app.preferred_university, app.university_name].forEach((id) => {
+            if (id && !universityIds.includes(id)) {
+                universityIds.push(id);
+            }
+        });
+    });
+
+    if (universityIds.length === 0) {
+        return;
+    }
+
+    frappe.call({
+        method: 'frappe.client.get_list',
+        args: {
+            doctype: 'University',
+            filters: { name: ['in', universityIds] },
+            fields: ['name', 'university_name'],
+            limit_page_length: 1000,
+        },
+        callback: function (response) {
+            const universities = {};
+            (response.message || []).forEach((uni) => {
+                universities[uni.name] = uni.university_name || uni.name;
+            });
+
+            applications.forEach((app) => {
+                if (app.preferred_university && universities[app.preferred_university]) {
+                    app.preferred_university_title = universities[app.preferred_university];
+                }
+                if (app.university_name && universities[app.university_name]) {
+                    app.university_name_title = universities[app.university_name];
+                }
+                const code = app.preferred_university || app.university_name;
+                if (code && universities[code]) {
+                    app.university_display_name = universities[code];
+                }
+            });
+
+            applyFilters();
+        },
     });
 }
 
@@ -509,9 +666,9 @@ function createApplicationCard(app) {
 					<i class="fa fa-external-link program-external-link" aria-hidden="true" onclick="viewApplication('${app.name}')"></i>
 				</h3>
 				<div class="program-meta">
-					${(app.preferred_university || app.university_name) || app.destination_country ? `
+					${(app.preferred_university || app.university_name || app.university_display_name) || app.destination_country ? `
 						<span class="program-university">
-							${escapeHtml(app.preferred_university || app.university_name || 'N/A')}
+							${escapeHtml(getUniversityLabel(app))}
 							${app.destination_country ? `In ${escapeHtml(app.destination_country)}` : ''}
 						</span>
 					` : ''}
@@ -695,7 +852,7 @@ function createProgramsContent(app) {
 		<div class="programs-content">
 			<div class="program-item">
 				${coursesHTML}
-				<p><i class="fa fa-university"></i> <strong>University:</strong> ${escapeHtml(app.preferred_university || app.university_name || 'N/A')}</p>
+				<p><i class="fa fa-university"></i> <strong>University:</strong> ${escapeHtml(getUniversityLabel(app))}</p>
 				<p><i class="fa fa-calendar"></i> <strong>Intake:</strong> ${escapeHtml(app.intake || 'N/A')}</p>
 				${app.university_intake ? `<p><i class="fa fa-calendar-check-o"></i> <strong>University Intake:</strong> ${frappe.datetime.str_to_user(app.university_intake)}</p>` : ''}
 			</div>
@@ -717,61 +874,59 @@ function createDocumentsContent(app) {
 
 function fetchApplicationDocuments(appName, container) {
     frappe.call({
-        method: 'frappe.client.get_list',
-        args: {
-            doctype: 'File',
-            filters: {
-                attached_to_doctype: 'Application',
-                attached_to_name: appName
-            },
-            fields: ['name', 'file_name', 'file_url', 'file_size', 'is_private', 'creation'],
-            order_by: 'creation desc'
-        },
+        method: 'erpnext.crm.doctype.application.application.get_application_documents_by_stage',
+        args: { name: appName },
         callback: function (response) {
-            if (response.message && response.message.length > 0) {
-                const files = response.message;
-                let filesHTML = '<div class="documents-list">';
-
-                files.forEach((file, index) => {
-                    const serialNumber = index + 1;
-                    const fileSize = file.file_size ? formatFileSize(file.file_size) : '';
-                    const fileDate = file.creation ? frappe.datetime.str_to_user(file.creation.split(' ')[0]) : '';
-                    const fileIcon = getFileIcon(file.file_name);
-                    // For private files, use the download API endpoint
-                    const fileUrl = file.is_private
-                        ? `/api/method/frappe.core.doctype.file.file.download_file?file_url=${encodeURIComponent(file.file_url)}`
-                        : file.file_url;
-
-                    filesHTML += `
-                        <div class="document-item">
-                            <div class="document-serial">${serialNumber}.</div>
-                            <div class="document-icon">${fileIcon}</div>
-                            <div class="document-info">
-                                <a href="${fileUrl}" target="_blank" class="document-name" title="${escapeHtml(file.file_name)}">
-                                    ${escapeHtml(file.file_name)}
-                                </a>
-                                <div class="document-meta">
-                                    ${fileSize ? `<span class="document-size"><i class="fa fa-hdd-o"></i> ${fileSize}</span>` : ''}
-                                    ${fileDate ? `<span class="document-date"><i class="fa fa-calendar"></i> ${fileDate}</span>` : ''}
-                                </div>
-                            </div>
-                            <a href="${fileUrl}" target="_blank" class="document-download" title="Download">
-                                <i class="fa fa-download"></i>
-                            </a>
-                        </div>
-                    `;
-                });
-
-                filesHTML += '</div>';
-                container.innerHTML = filesHTML;
-            } else {
+            const groups = response.message || {};
+            const stageNames = Object.keys(groups);
+            if (!stageNames.length) {
                 container.innerHTML = `
                     <div class="documents-empty">
                         <i class="fa fa-file-o"></i>
                         <p>No documents uploaded yet</p>
                     </div>
                 `;
+                return;
             }
+
+            let filesHTML = '<div class="documents-list documents-by-stage">';
+            stageNames.forEach((stage) => {
+                const files = groups[stage] || [];
+                filesHTML += `
+                    <div class="document-stage-group" style="margin-bottom:14px;">
+                        <div class="document-stage-title" style="font-weight:600; margin-bottom:6px;">
+                            ${escapeHtml(stage)} <span class="text-muted">(${files.length})</span>
+                        </div>
+                `;
+                files.forEach((file) => {
+                    const fileSize = file.file_size ? formatFileSize(file.file_size) : '';
+                    const fileDate = file.creation || '';
+                    const fileIcon = getFileIcon(file.file_name);
+                    const label = file.field_label
+                        ? `${file.field_label}: ${file.file_name}`
+                        : file.file_name;
+                    filesHTML += `
+                        <div class="document-item">
+                            <div class="document-icon">${fileIcon}</div>
+                            <div class="document-info">
+                                <a href="${escapeHtml(file.file_url)}" target="_blank" class="document-name" title="${escapeHtml(label)}">
+                                    ${escapeHtml(label)}
+                                </a>
+                                <div class="document-meta">
+                                    ${fileSize ? `<span class="document-size"><i class="fa fa-hdd-o"></i> ${fileSize}</span>` : ''}
+                                    ${fileDate ? `<span class="document-date"><i class="fa fa-calendar"></i> ${fileDate}</span>` : ''}
+                                </div>
+                            </div>
+                            <a href="${escapeHtml(file.file_url)}" target="_blank" class="document-download" title="Download">
+                                <i class="fa fa-download"></i>
+                            </a>
+                        </div>
+                    `;
+                });
+                filesHTML += '</div>';
+            });
+            filesHTML += '</div>';
+            container.innerHTML = filesHTML;
         },
         error: function () {
             container.innerHTML = `

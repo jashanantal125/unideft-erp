@@ -1,6 +1,8 @@
 # Copyright (c) 2025, Unideft and contributors
 # For license information, please see license.txt
 
+from urllib.parse import quote_plus
+
 import frappe
 from frappe.model.document import Document
 
@@ -189,7 +191,7 @@ class Application(Document):
 		gs_submitted: DF.Check
 		gs_submitted_reminder_date: DF.Date | None
 		hap_id_upload: DF.Attach | None
-		higher_education: DF.Literal["", "12th pass", "Bachelors", "Diploma", "Masters", "Certification", "Others"]
+		higher_education: DF.Literal["", "12th pass", "Graduation", "Others"]
 		immi_acknowledgement_upload: DF.Attach | None
 		intake: DF.Literal["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 		intake_date: DF.Date | None
@@ -418,4 +420,313 @@ def create_application_for_other_country(source_name, destination_country):
 	source.save(ignore_permissions=True)
 
 	return new_app.name
+
+
+APPLICATION_ATTACH_STAGE_MAP = {
+	"school_docs_pdf": "Processing — Academics",
+	"passport_upload": "Processing — Passport",
+	"application_form_1_upload": "Processing — Applications",
+	"application_form_2_upload": "Processing — Applications",
+	"application_form_3_upload": "Processing — Applications",
+	"application_form_4_upload": "Processing — Applications",
+	"sop_upload": "Processing — Applications",
+	"sop_portal_or_vendor_upload": "Processing — Applications",
+	"sponsor_1_docs_pdf_upload": "Submitted — Funds & Documents",
+	"sponsor_2_docs_pdf_upload": "Submitted — Funds & Documents",
+	"sponsor_3_docs_pdf_upload": "Submitted — Funds & Documents",
+	"gs_sop_upload": "Submitted — GS & Affidavits",
+	"gs_form_1_upload": "Submitted — GS & Affidavits",
+	"gs_form_2_upload": "Submitted — GS & Affidavits",
+	"sponsorship_affidavit_upload": "Submitted — GS & Affidavits",
+	"student_affidavit_upload": "Submitted — GS & Affidavits",
+	"requirement_document_upload": "GS Processing",
+	"shop_act_additional_document": "Financial / Sponsors",
+	"tuition_fee_upload": "GS Approved",
+	"gha_oshc_upload": "GS Approved",
+	"agent_oshc_upload": "GS Approved",
+	"student_oshc_upload": "GS Approved",
+	"acceptance_requirement_upload": "Acceptance",
+	"coe_uploaded": "COE",
+	"agent_medical_upload": "COE",
+	"student_medical_upload": "COE",
+	"form_956a_upload": "COE",
+	"visa_sop_upload": "COE",
+	"original_funds_upload": "COE",
+	"financial_matrix_upload": "COE",
+	"visa_application_upload": "COE",
+	"immi_acknowledgement_upload": "File Lodged",
+	"hap_id_upload": "File Lodged",
+	"visa_copy_upload": "Visa",
+	"spouse_visa_upload": "Visa",
+	"refused_letter_upload": "Visa Refused",
+	"refund_form_upload": "Visa Refused",
+	"oshc_refund_form_upload": "Visa Refused",
+	"oshc_refund_invoice_upload": "Refund Processing",
+	"close_case_upload_issue_resolved": "Refunded",
+	"close_case_upload_no_issue": "Refunded",
+}
+
+# Child tables often store Attach as upload_document but File.attached_to_field
+# becomes "upload_document" on parent — map by parentfield instead.
+APPLICATION_CHILD_TABLE_STAGE_MAP = {
+	"documents_10th_to_12th": "Processing — Academics",
+	"documents_verified_pdf": "Processing — Academics",
+	"graduation_verification_documents": "Processing — Academics",
+	"study_gap_proof": "Details — Study Gap",
+	"study_gap_proof_list": "Processing — Study Gap",
+	"documents_passport_application_form_sop": "Processing — Applications",
+	"english_test_details": "Processing — English Test",
+	"spouse_details_list": "Processing — Spouse",
+	"supporting_documents": "Submitted — Supporting Documents",
+	"student_academic_verification": "Submitted — Academics",
+	"spouse_academic_verification": "Submitted — Academics",
+	"table_ihmq": "Submitted — Sponsors",
+	"all_documents": "Financials",
+	"financial_documents": "Financials",
+	"offer_letter_upload": "Offer Letter",
+	"other_documents_offer": "Offer Letter",
+	"defer_supporting_documents": "Offer Letter — Defer",
+	"defer_offer_letter_upload": "Offer Letter — Defer",
+	"defer_other_documents": "Offer Letter — Defer",
+	"english_requirement_documents": "Financials — Conditions",
+	"gap_justification_documents": "Financials — Conditions",
+	"academic_transcript_documents": "Financials — Conditions",
+	"other_condition_documents": "Financials — Conditions",
+	"enrollment_documents": "Enrollment",
+	"need_assessment_vendors": "Details — Need Assessment",
+}
+
+CHILD_ATTACH_FIELDNAMES = (
+	"upload_document",
+	"ielts_upload",
+	"pte_upload",
+	"toefl_upload",
+	"document",
+	"attach",
+	"file",
+)
+
+
+def _register_file_keys(mapping, value, meta):
+	"""Store multiple stage hints per file key (same file can appear in multiple tables)."""
+	if not value or not isinstance(value, str):
+		return
+	for key in (value, value.split("?")[0], value.rsplit("/", 1)[-1]):
+		if not key:
+			continue
+		mapping.setdefault(key, [])
+		if meta not in mapping[key]:
+			mapping[key].append(meta)
+
+
+def _pick_best_hint(hints_list):
+	if not hints_list:
+		return None
+	priority = {
+		"Processing — Academics": 0,
+		"Processing — Passport": 1,
+		"Processing — Applications": 2,
+		"Processing — English Test": 3,
+		"Offer Letter": 4,
+		"Offer Letter — Defer": 5,
+		"Submitted — Supporting Documents": 6,
+		"Submitted — Academics": 7,
+		"Submitted — Sponsors": 8,
+		"Submitted — Funds & Documents": 9,
+		"Submitted — GS & Affidavits": 10,
+		"Financials — Conditions": 11,
+		"Financials": 12,
+		"Details — Study Gap": 13,
+		"Details — Need Assessment": 14,
+	}
+	return sorted(hints_list, key=lambda h: priority.get(h.get("stage"), 50))[0]
+
+
+def _collect_application_file_stage_hints(doc):
+	"""Build file_url/file_name → [{stage, fieldname, field_label}, ...] from parent + child attaches."""
+	hints = {}
+	meta = frappe.get_meta("Application")
+	label_by_field = {df.fieldname: df.label for df in meta.fields if df.fieldname}
+
+	for fieldname, stage in APPLICATION_ATTACH_STAGE_MAP.items():
+		_register_file_keys(
+			hints,
+			doc.get(fieldname),
+			{
+				"stage": stage,
+				"fieldname": fieldname,
+				"field_label": label_by_field.get(fieldname) or fieldname,
+			},
+		)
+
+	# Child tables currently on the DocType
+	for table_field in doc.meta.get_table_fields():
+		parentfield = table_field.fieldname
+		stage = APPLICATION_CHILD_TABLE_STAGE_MAP.get(parentfield)
+		if not stage:
+			stage = label_by_field.get(parentfield) or parentfield.replace("_", " ").title()
+
+		table_label = label_by_field.get(parentfield) or parentfield
+		for row in doc.get(parentfield) or []:
+			for child_field in CHILD_ATTACH_FIELDNAMES:
+				value = row.get(child_field) if hasattr(row, "get") else None
+				if not value:
+					continue
+				_register_file_keys(
+					hints,
+					value,
+					{
+						"stage": stage,
+						"fieldname": parentfield,
+						"field_label": table_label,
+					},
+				)
+
+	# Also scan historical/orphan child rows by parent (field may no longer be on meta)
+	for doctype, value_field in (
+		("student documents", "upload_document"),
+		("Application Documents 10th To 12th", "upload_document"),
+		("Graduation Verification", "upload_document"),
+		("Enrollment Document", "upload_document"),
+		("Study Gap Proof", "upload_document"),
+	):
+		if not frappe.db.exists("DocType", doctype):
+			continue
+		child_meta = frappe.get_meta(doctype)
+		if not child_meta.has_field(value_field):
+			attach_fields = [
+				df.fieldname
+				for df in child_meta.fields
+				if df.fieldtype in ("Attach", "Attach Image")
+			]
+			if not attach_fields:
+				continue
+			value_field = attach_fields[0]
+
+		rows = frappe.get_all(
+			doctype,
+			filters={"parenttype": "Application", "parent": doc.name},
+			fields=["parentfield", value_field],
+		)
+		for row in rows:
+			parentfield = row.get("parentfield") or ""
+			value = row.get(value_field)
+			if not value:
+				continue
+			stage = APPLICATION_CHILD_TABLE_STAGE_MAP.get(parentfield) or (
+				label_by_field.get(parentfield)
+				or (parentfield.replace("_", " ").title() if parentfield else "Other / Uncategorized")
+			)
+			table_label = label_by_field.get(parentfield) or parentfield or "Attachment"
+			_register_file_keys(
+				hints,
+				value,
+				{
+					"stage": stage,
+					"fieldname": parentfield or value_field,
+					"field_label": table_label,
+				},
+			)
+
+	return hints
+
+
+@frappe.whitelist()
+def get_application_documents_by_stage(name):
+	"""Return Application attachments grouped by stage/upload field."""
+	if not name or not frappe.db.exists("Application", name):
+		frappe.throw("Application not found")
+
+	frappe.has_permission("Application", "read", doc=name, throw=True)
+
+	doc = frappe.get_doc("Application", name)
+	hints = _collect_application_file_stage_hints(doc)
+
+	files = frappe.get_all(
+		"File",
+		filters={"attached_to_doctype": "Application", "attached_to_name": name},
+		fields=[
+			"name",
+			"file_name",
+			"file_url",
+			"file_size",
+			"is_private",
+			"creation",
+			"attached_to_field",
+		],
+		order_by="creation desc",
+	)
+
+	grouped = {}
+	for row in files:
+		fieldname = row.get("attached_to_field") or ""
+		matched = []
+
+		# Prefer matching by actual stored file URL / name (child tables use upload_document)
+		for candidate in (
+			row.file_url or "",
+			(row.file_url or "").split("?")[0],
+			row.file_name or "",
+			(row.file_url or "").rsplit("/", 1)[-1],
+		):
+			if candidate and candidate in hints:
+				matched = hints[candidate]
+				break
+
+		hint = _pick_best_hint(matched)
+		if hint:
+			stage = hint["stage"]
+			fieldname = hint["fieldname"]
+			field_label = hint["field_label"]
+		elif fieldname in APPLICATION_ATTACH_STAGE_MAP:
+			stage = APPLICATION_ATTACH_STAGE_MAP[fieldname]
+			df = frappe.get_meta("Application").get_field(fieldname)
+			field_label = (df.label if df else None) or fieldname
+		elif fieldname in APPLICATION_CHILD_TABLE_STAGE_MAP:
+			stage = APPLICATION_CHILD_TABLE_STAGE_MAP[fieldname]
+			df = frappe.get_meta("Application").get_field(fieldname)
+			field_label = (df.label if df else None) or fieldname
+		else:
+			stage = "Other / Uncategorized"
+			field_label = "Attachment"
+
+		file_url = row.file_url or ""
+		if row.is_private and file_url:
+			file_url = (
+				"/api/method/frappe.core.doctype.file.file.download_file"
+				f"?file_url={quote_plus(file_url)}"
+			)
+
+		grouped.setdefault(stage, []).append(
+			{
+				"name": row.name,
+				"file_name": row.file_name,
+				"file_url": file_url,
+				"file_size": row.file_size,
+				"creation": frappe.format(row.creation, {"fieldtype": "Datetime"}) if row.creation else "",
+				"attached_to_field": fieldname,
+				"field_label": field_label,
+			}
+		)
+
+	# Stable stage order
+	ordered = {}
+	seen = set()
+	preferred = []
+	for stage in list(APPLICATION_ATTACH_STAGE_MAP.values()) + list(
+		APPLICATION_CHILD_TABLE_STAGE_MAP.values()
+	):
+		if stage not in preferred:
+			preferred.append(stage)
+	preferred.append("Other / Uncategorized")
+
+	for stage in preferred:
+		if stage in grouped:
+			ordered[stage] = grouped[stage]
+			seen.add(stage)
+	for stage, rows in grouped.items():
+		if stage not in seen:
+			ordered[stage] = rows
+
+	return ordered
 

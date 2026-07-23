@@ -1,11 +1,18 @@
 frappe.pages['applications-view'].on_page_load = function (wrapper) {
-	frappe.require('/assets/erpnext/css/applications_view.css');
+	// Use Desk page CSS (applications-view.css) — do NOT load website
+	// applications_view.css here; its global .btn rules wash out Desk buttons.
 
     var page = frappe.ui.make_app_page({
         parent: wrapper,
         title: 'Applications View',
         single_column: true
     });
+
+    $(wrapper).find('.page-head').css({
+        'border-bottom': 'none',
+        'box-shadow': 'none',
+    });
+    $('body').addClass('applications-card-view-open');
 
     // Add breadcrumbs
     frappe.breadcrumbs.add('CRM');
@@ -108,6 +115,7 @@ function loadApplications() {
                 }
 
                 // Fetch student details for each application
+                fetchUniversityNames(applications);
                 fetchStudentDetails(applications);
             } else {
                 showError('Failed to load applications');
@@ -117,6 +125,69 @@ function loadApplications() {
             loadingState.style.display = 'none';
             showError(err.message || 'An error occurred while loading applications');
         }
+    });
+}
+
+function getUniversityLabel(app) {
+    return (
+        app.university_display_name ||
+        app.preferred_university_title ||
+        app.university_name_title ||
+        app.preferred_university ||
+        app.university_name ||
+        'N/A'
+    );
+}
+
+function fetchUniversityNames(applications) {
+    const universityIds = [];
+    applications.forEach((app) => {
+        [app.preferred_university, app.university_name].forEach((id) => {
+            if (id && !universityIds.includes(id)) {
+                universityIds.push(id);
+            }
+        });
+    });
+
+    if (universityIds.length === 0) {
+        return;
+    }
+
+    frappe.call({
+        method: 'frappe.client.get_list',
+        args: {
+            doctype: 'University',
+            filters: { name: ['in', universityIds] },
+            fields: ['name', 'university_name'],
+            limit_page_length: 1000,
+        },
+        callback: function (response) {
+            const universities = {};
+            (response.message || []).forEach((uni) => {
+                universities[uni.name] = uni.university_name || uni.name;
+            });
+
+            applications.forEach((app) => {
+                if (app.preferred_university && universities[app.preferred_university]) {
+                    app.preferred_university_title = universities[app.preferred_university];
+                }
+                if (app.university_name && universities[app.university_name]) {
+                    app.university_name_title = universities[app.university_name];
+                }
+                const code = app.preferred_university || app.university_name;
+                if (code && universities[code]) {
+                    app.university_display_name = universities[code];
+                }
+            });
+
+            if (typeof applyFilters === 'function') {
+                applyFilters();
+            } else if (window.allApplications) {
+                renderApplications(window.allApplications);
+            } else {
+                renderApplications(applications);
+            }
+        },
     });
 }
 
@@ -236,9 +307,9 @@ function createApplicationCard(app) {
 					<i class="fa fa-external-link program-external-link" aria-hidden="true" onclick="viewApplication('${app.name}')"></i>
 				</h3>
 				<div class="program-meta">
-					${(app.preferred_university || app.university_name) || app.destination_country ? `
+					${(app.preferred_university || app.university_name || app.university_display_name) || app.destination_country ? `
 						<span class="program-university">
-							${escapeHtml(app.preferred_university || app.university_name || 'N/A')}
+							${escapeHtml(getUniversityLabel(app))}
 							${app.destination_country ? `In ${escapeHtml(app.destination_country)}` : ''}
 						</span>
 					` : ''}
@@ -392,7 +463,7 @@ function createProgramsContent(app) {
 		<div class="programs-content">
 			<div class="program-item">
 				<h4>${escapeHtml(app.course_name || app.higher_education || 'N/A')}</h4>
-				<p><i class="fa fa-university"></i> ${escapeHtml(app.preferred_university || app.university_name || 'N/A')}</p>
+				<p><i class="fa fa-university"></i> ${escapeHtml(getUniversityLabel(app))}</p>
 				<p><i class="fa fa-calendar"></i> Intake: ${escapeHtml(app.intake || 'N/A')}</p>
 				${app.university_intake ? `<p><i class="fa fa-calendar-check-o"></i> University Intake: ${frappe.datetime.str_to_user(app.university_intake)}</p>` : ''}
 			</div>
@@ -402,10 +473,57 @@ function createProgramsContent(app) {
 
 function createDocumentsContent(app) {
     return `
-		<div class="documents-content">
-			<p class="text-muted">Documents will be displayed here</p>
+		<div class="documents-content" data-app="${escapeHtml(app.name)}">
+			<div class="documents-loading">
+				<div class="spinner-small"></div>
+				<p>Loading documents...</p>
+			</div>
 		</div>
 	`;
+}
+
+function loadDocumentsForCard(appName, container) {
+	if (!container) return;
+	frappe.call({
+		method: 'erpnext.crm.doctype.application.application.get_application_documents_by_stage',
+		args: { name: appName },
+		callback: function (response) {
+			const groups = response.message || {};
+			const stageNames = Object.keys(groups);
+			if (!stageNames.length) {
+				container.innerHTML = `<p class="text-muted">No documents uploaded yet</p>`;
+				return;
+			}
+			let html = '<div class="documents-by-stage-list" style="display:flex;flex-direction:column;gap:14px;">';
+			stageNames.forEach((stage) => {
+				const files = groups[stage] || [];
+				html += `
+					<div class="document-stage-block" style="border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
+						<div style="background:#f8f9fa;padding:8px 12px;font-weight:600;border-bottom:1px solid #e5e7eb;">
+							${escapeHtml(stage)}
+							<span class="text-muted" style="font-weight:400;">(${files.length})</span>
+						</div>
+						<div style="display:flex;flex-direction:column;">`;
+				files.forEach((file) => {
+					const label = file.field_label
+						? `${file.field_label}: ${file.file_name}`
+						: file.file_name;
+					html += `
+						<a href="${escapeHtml(file.file_url)}" target="_blank" rel="noopener"
+							style="display:block;padding:8px 12px;border-bottom:1px solid #f3f4f6;color:#111827;text-decoration:none;">
+							<i class="fa fa-file-o" style="margin-right:8px;color:#6b7280;"></i>
+							${escapeHtml(label)}
+						</a>`;
+				});
+				html += `</div></div>`;
+			});
+			html += '</div>';
+			container.innerHTML = html;
+		},
+		error: function () {
+			container.innerHTML = `<p class="text-danger">Failed to load documents</p>`;
+		}
+	});
 }
 
 function createNotesContent(app) {
@@ -519,6 +637,11 @@ function updateTabContent(contentArea, tabName, appData) {
     }
 
     contentArea.innerHTML = content;
+
+	if (tabName === 'documents' && appData && appData.name) {
+		const docsContainer = contentArea.querySelector('.documents-content');
+		loadDocumentsForCard(appData.name, docsContainer);
+	}
 }
 
 function getInitials(name) {

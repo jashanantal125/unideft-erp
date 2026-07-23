@@ -234,7 +234,7 @@
         {
             "fieldname": "gap_proof_sb",
             "fieldtype": "Section Break",
-            "label": "F. Gap Proof"
+            "label": "Gap Proof"
         },
         {
             "fieldname": "gap_proof_type",
