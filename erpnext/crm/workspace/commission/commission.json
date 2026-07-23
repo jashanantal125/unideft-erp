@@ -1,0 +1,44 @@
+{
+ "app": "erpnext",
+ "charts": [],
+ "content": "[{\"id\":\"Sfu-HA2oQB\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Commission Document</span>\",\"col\":12}},{\"id\":\"NlgbMqle3B\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Commission PDF Viewer\",\"col\":12}}]",
+ "creation": "2026-01-17 21:01:07.556525",
+ "custom_blocks": [
+  {
+   "custom_block_name": "Commission PDF Viewer",
+   "label": "Commission PDF Viewer"
+  }
+ ],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "money-coins-1",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "Commission",
+ "link_type": "DocType",
+ "links": [],
+ "modified": "2026-01-18 10:23:38.245789",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Commission",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [
+  {
+   "role": "Administrator"
+  },
+  {
+   "role": "agents"
+  }
+ ],
+ "sequence_id": 25.0,
+ "shortcuts": [],
+ "title": "Commission",
+ "type": "Workspace"
+}

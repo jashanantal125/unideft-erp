@@ -1,0 +1,22 @@
+{
+ "content": null,
+ "creation": "2026-01-17 23:04:56.749564",
+ "docstatus": 0,
+ "doctype": "Page",
+ "idx": 0,
+ "modified": "2026-01-17 23:04:56.749564",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "commissions",
+ "owner": "Administrator",
+ "page_name": "commissions",
+ "roles": [
+  {
+   "role": "All"
+  }
+ ],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "system_page": 0
+}

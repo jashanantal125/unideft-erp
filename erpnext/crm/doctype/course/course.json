@@ -9,14 +9,29 @@
   "course_section",
   "course_name",
   "degree_level",
-  "duration_unit",
+  "duration_type",
   "currency",
   "university",
+  "program_link",
+  "is_shortlisted",
+  "is_full_time",
+  "discipline",
   "column_break_ncgr",
   "course_code",
   "duration",
   "intake_months",
+  "intake_2",
+  "intake_3",
+  "campus",
+  "application_fee",
+  "minimum_requirement",
+  "column_break_ioqb",
+  "ielts_score",
+  "pte_score",
+  "toefl_score",
+  "duolingo_score",
   "tuition_fee",
+  "select_oghe",
   "section_break_onsa",
   "entry_requirements",
   "description",
@@ -43,21 +58,14 @@
   },
   {
    "fieldname": "degree_level",
-   "fieldtype": "Select",
+   "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Degree Level",
-   "options": "\nCertificate\nDiploma\nBachelor's\nMaster's\nPhD\nFoundation"
+   "label": "Study Level"
   },
   {
    "fieldname": "duration",
    "fieldtype": "Int",
    "label": "Duration"
-  },
-  {
-   "fieldname": "duration_unit",
-   "fieldtype": "Select",
-   "label": "Duration Unit",
-   "options": "\nMonths\nYears"
   },
   {
    "fieldname": "tuition_fee",
@@ -71,10 +79,9 @@
    "options": "Currency"
   },
   {
-   "description": "Comma separated: January, September",
    "fieldname": "intake_months",
    "fieldtype": "Data",
-   "label": "Intake Months"
+   "label": "Intake 1"
   },
   {
    "fieldname": "description",
@@ -105,6 +112,89 @@
    "fieldtype": "Link",
    "label": "University",
    "options": "University"
+  },
+  {
+   "fieldname": "campus",
+   "fieldtype": "Data",
+   "label": "Campus Name"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_shortlisted",
+   "fieldtype": "Check",
+   "label": "Is shortlisted"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_full_time",
+   "fieldtype": "Check",
+   "label": "Is Full Time"
+  },
+  {
+   "fieldname": "duration_type",
+   "fieldtype": "Select",
+   "label": "Duration Type",
+   "options": "Months\nDays"
+  },
+  {
+   "fieldname": "application_fee",
+   "fieldtype": "Currency",
+   "label": "Application Fee"
+  },
+  {
+   "fieldname": "program_link",
+   "fieldtype": "Data",
+   "label": "Program Link"
+  },
+  {
+   "fieldname": "minimum_requirement",
+   "fieldtype": "Data",
+   "label": "Minimum Requirement"
+  },
+  {
+   "fieldname": "select_oghe",
+   "fieldtype": "Select",
+   "label": "Attendance",
+   "options": "On Campus\nOnline\nFlexible"
+  },
+  {
+   "fieldname": "column_break_ioqb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "ielts_score",
+   "fieldtype": "Float",
+   "label": "IELTS Score"
+  },
+  {
+   "fieldname": "pte_score",
+   "fieldtype": "Float",
+   "label": "PTE Score"
+  },
+  {
+   "fieldname": "toefl_score",
+   "fieldtype": "Float",
+   "label": "TOEFL Score"
+  },
+  {
+   "fieldname": "duolingo_score",
+   "fieldtype": "Float",
+   "label": "Duolingo Score"
+  },
+  {
+   "fieldname": "intake_2",
+   "fieldtype": "Data",
+   "label": "Intake 2"
+  },
+  {
+   "fieldname": "intake_3",
+   "fieldtype": "Data",
+   "label": "Intake 3"
+  },
+  {
+   "fieldname": "discipline",
+   "fieldtype": "Data",
+   "label": "Discipline"
   }
  ],
  "grid_page_length": 50,
