@@ -2,24 +2,12 @@
  "app": "erpnext",
  "charts": [],
  "content": "[]",
-<<<<<<< HEAD
- "creation": "2026-06-30 00:00:00.000000",
-=======
  "creation": "2026-06-30 00:00:00",
->>>>>>> jashans-updates
  "custom_blocks": [],
  "docstatus": 0,
  "doctype": "Workspace",
  "for_user": "",
  "hide_custom": 0,
-<<<<<<< HEAD
- "icon": "file-text",
- "idx": 0,
- "is_hidden": 0,
- "label": "Applications",
- "links": [],
- "modified": "2026-06-30 00:00:00.000000",
-=======
  "icon": "small-file",
  "idx": 0,
  "is_hidden": 0,
@@ -28,7 +16,6 @@
  "link_type": "DocType",
  "links": [],
  "modified": "2026-07-29 15:05:28.111819",
->>>>>>> jashans-updates
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Applications",
@@ -42,11 +29,5 @@
  "sequence_id": 18.0,
  "shortcuts": [],
  "title": "Applications",
-<<<<<<< HEAD
- "type": "Link",
- "link_type": "DocType",
- "link_to": "Application"
-=======
  "type": "Link"
->>>>>>> jashans-updates
 }

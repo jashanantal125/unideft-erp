@@ -351,13 +351,9 @@ function loadApplications() {
                 'creation',
                 'modified',
                 'owner',
-<<<<<<< HEAD
-                'higher_education'
-=======
                 'higher_education',
                 'uk_data',
                 'country_flow_case'
->>>>>>> jashans-updates
             ],
             limit_page_length: 1000,
             order_by: 'creation desc'
@@ -404,8 +400,6 @@ function getUniversityLabel(app) {
     );
 }
 
-<<<<<<< HEAD
-=======
 function getCountryFlagHtml(country) {
     if (!country) return '';
     const codeMap = {
@@ -439,7 +433,6 @@ function getCountryFlagHtml(country) {
     return `<img class="country-flag" src="https://flagcdn.com/w40/${code}.png" alt="${safe}" title="${safe}" width="20" height="15" loading="lazy" />`;
 }
 
->>>>>>> jashans-updates
 function fetchUniversityNames(applications) {
     const universityIds = [];
     applications.forEach((app) => {
@@ -677,10 +670,6 @@ function createApplicationCard(app) {
 						<h3 class="student-name">${escapeHtml(studentName)}</h3>
 						<div class="contact-details">
 							${(app.student_contact_no || app.contact_number || (app.student_data && app.student_data.mobile)) ? `<span class="contact-item"><i class="fa fa-phone"></i> ${escapeHtml(app.student_contact_no || app.contact_number || app.student_data.mobile)}</span>` : ''}
-<<<<<<< HEAD
-
-=======
->>>>>>> jashans-updates
 							${app.student_email || (app.student_data && app.student_data.email) ? `<span class="contact-item"><i class="fa fa-envelope"></i> ${escapeHtml(app.student_email || app.student_data.email)}</span>` : ''}
 							<span class="contact-item"><i class="fa fa-calendar"></i> ${dobDate}</span>
 						</div>
@@ -710,21 +699,13 @@ function createApplicationCard(app) {
 			<div class="program-details">
 				<h3 class="degree-name">
 					${escapeHtml(degreeName)}
-<<<<<<< HEAD
-					<i class="fa fa-external-link program-external-link" aria-hidden="true" onclick="viewApplication('${app.name}')"></i>
-=======
 					<i class="fa fa-external-link program-external-link" aria-hidden="true" onclick="viewApplication('${app.name}', '${app.uk_data || ''}', '${(app.destination_country || '').replace(/'/g, "\\'")}')"></i>
->>>>>>> jashans-updates
 				</h3>
 				<div class="program-meta">
 					${(app.preferred_university || app.university_name || app.university_display_name) || app.destination_country ? `
 						<span class="program-university">
 							${escapeHtml(getUniversityLabel(app))}
-<<<<<<< HEAD
-							${app.destination_country ? `In ${escapeHtml(app.destination_country)}` : ''}
-=======
 							${app.destination_country ? `${getCountryFlagHtml(app.destination_country)} In ${escapeHtml(app.destination_country)}` : ''}
->>>>>>> jashans-updates
 						</span>
 					` : ''}
 					${app.intake ? `<span class="intake-date"><strong>Intake:</strong> ${escapeHtml(app.intake)}</span>` : ''}
@@ -1478,9 +1459,6 @@ function getInitials(name) {
     return name.substring(0, 2).toUpperCase();
 }
 
-<<<<<<< HEAD
-function viewApplication(name) {
-=======
 function viewApplication(name, ukData, destinationCountry) {
     if (ukData || (destinationCountry && String(destinationCountry).toLowerCase().includes('kingdom'))) {
         frappe.db.get_value('Application', name, 'uk_data').then((r) => {
@@ -1493,7 +1471,6 @@ function viewApplication(name, ukData, destinationCountry) {
         });
         return;
     }
->>>>>>> jashans-updates
     frappe.set_route('Form', 'Application', name);
 }
 
@@ -1544,9 +1521,4 @@ window.editStatus = editStatus;
 window.openChat = openChat;
 window.applyFilters = applyFilters;
 window.clearSearch = clearSearch;
-<<<<<<< HEAD
-
-
-=======
 //hello just for updating the file
->>>>>>> jashans-updates

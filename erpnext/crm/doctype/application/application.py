@@ -10,39 +10,6 @@ from frappe.model.document import Document
 class Application(Document):
 	@staticmethod
 	def get_list_query(query):
-<<<<<<< HEAD
-		"""Filter applications based on user role hierarchy"""
-		user_roles = frappe.get_roles()
-		ApplicationDoc = frappe.qb.DocType("Application")
-		
-		# System Manager, Administrator, and CRM Admin see all applications
-		if "System Manager" in user_roles or "Administrator" in user_roles or "CRM Admin" in user_roles:
-			return query
-		
-		# Team Lead sees applications assigned to their team(s)
-		if "Team Lead" in user_roles:
-			teams = frappe.get_all("Team", filters={"team_leader": frappe.session.user}, pluck="name")
-			if teams:
-				query = query.where(ApplicationDoc.assigned_team.isin(teams))
-			else:
-				# Team Lead with no team sees nothing
-				query = query.where(ApplicationDoc.assigned_team == "__no_match__")
-			return query
-		
-		# Team Executive sees only applications assigned to them
-		if "Team Executive" in user_roles:
-			query = query.where(ApplicationDoc.assigned_executive == frappe.session.user)
-			return query
-		
-		# Agent sees only their own applications (where agent field matches logged-in user)
-		if "Agent" in user_roles or "B2B Agent" in user_roles or "B2C Agent" in user_roles:
-			query = query.where(ApplicationDoc.agent == frappe.session.user)
-			return query
-		
-		# Default: show nothing for unknown roles
-		query = query.where(ApplicationDoc.name == "__no_match__")
-		return query
-=======
 		"""Filter applications based on user role hierarchy."""
 		user_roles = set(frappe.get_roles())
 		user = frappe.session.user
@@ -127,14 +94,10 @@ def _agents_under_cro_for_support(user):
 	return frappe.get_all(
 		"Agent", filters={"sales_team": ["in", cro_teams]}, pluck="name"
 	) or []
->>>>>>> jashans-updates
 	
 	def before_save(self):
 		"""Auto-assign team based on destination country"""
 		self.auto_assign_team()
-<<<<<<< HEAD
-	
-=======
 		self.apply_country_flow_defaults()
 
 	def after_insert(self):
@@ -178,7 +141,6 @@ def _agents_under_cro_for_support(user):
 		c = (self.destination_country or "").strip().lower()
 		return "australia" in c
 
->>>>>>> jashans-updates
 	def auto_assign_team(self):
 		"""Find the team that handles this destination country and assign it"""
 		if self.destination_country and not self.assigned_team:
@@ -274,10 +236,7 @@ def _agents_under_cro_for_support(user):
 		conditions_note: DF.Text | None
 		conditions_on_offer_letter: DF.TableMultiSelect[ApplicationOfferLetterCondition]
 		convince_times: DF.Int
-<<<<<<< HEAD
-=======
 		country_flow_case: DF.Literal["", "AU Default", "AU Case 4 Spouse", "UK Case 1", "UK Case 2", "UK Case 3", "UK Case 4", "UK Case 5", "UK Case 6", "UK Case 7", "UK Case 8"]
->>>>>>> jashans-updates
 		course_name: DF.Link | None
 		current_age: DF.Int
 		data_swym: DF.Text | None
@@ -292,11 +251,7 @@ def _agents_under_cro_for_support(user):
 		defer_living_expenses_spouse: DF.Currency
 		defer_no_further_requirement_note: DF.Text | None
 		defer_no_of_kids: DF.Int
-<<<<<<< HEAD
-		defer_offer_currency: DF.Literal["AUD", "CAD", "NZD", "USD", "INR"]
-=======
 		defer_offer_currency: DF.Literal["AUD", "CAD", "NZD", "USD", "INR", "GBP"]
->>>>>>> jashans-updates
 		defer_offer_letter_upload: DF.Table[studentdocuments]
 		defer_offer_ok: DF.Text | None
 		defer_offer_required: DF.Literal["", "Yes", "No"]
@@ -360,11 +315,7 @@ def _agents_under_cro_for_support(user):
 		gs_submitted_no_note: DF.Text | None
 		gs_submitted_reminder_date: DF.Date | None
 		hap_id_upload: DF.Attach | None
-<<<<<<< HEAD
-		higher_education: DF.Literal["", "12th pass", "Graduation", "Others"]
-=======
 		higher_education: DF.Literal["", "12th pass", "Graduation", "Post-graduation", "Others"]
->>>>>>> jashans-updates
 		immi_acknowledgement_upload: DF.Attach | None
 		intake: DF.Literal["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 		intake_date: DF.Date | None
@@ -396,11 +347,7 @@ def _agents_under_cro_for_support(user):
 		no_process_reason: DF.Text | None
 		no_requirement_status: DF.Text | None
 		not_processing_another_application_reason: DF.Text | None
-<<<<<<< HEAD
-		offer_currency: DF.Literal["AUD", "CAD", "NZD", "USD", "INR"]
-=======
 		offer_currency: DF.Literal["AUD", "CAD", "NZD", "USD", "INR", "GBP"]
->>>>>>> jashans-updates
 		offer_letter_upload: DF.Table[studentdocuments]
 		original_funds_upload: DF.Attach | None
 		oscg_status: DF.Literal["", "Processing", "On Offer Letter", "On COE", "On Enrolled"]
@@ -477,11 +424,7 @@ def _agents_under_cro_for_support(user):
 		student_academic_verification: DF.Table[AcademicVerification]
 		student_affidavit_upload: DF.Attach | None
 		student_contact_no: DF.Phone | None
-<<<<<<< HEAD
-		student_email: DF.Text | None
-=======
 		student_email: DF.Data | None
->>>>>>> jashans-updates
 		student_enrolled: DF.Check
 		student_enrolled_no_status: DF.Text | None
 		student_enrolled_yes_status: DF.Text | None
@@ -527,10 +470,7 @@ def _agents_under_cro_for_support(user):
 		tuition_fee_refund_yes: DF.Text | None
 		tuition_fee_upload: DF.Attach | None
 		twelfth_admit_card_uploaded: DF.Check
-<<<<<<< HEAD
-=======
 		uk_data: DF.Link | None
->>>>>>> jashans-updates
 		university_intake: DF.Date | None
 		university_name: DF.Link | None
 		vendor_file_lodged_no_status: DF.Text | None
@@ -560,16 +500,6 @@ def _agents_under_cro_for_support(user):
 	# end: auto-generated types
 
 	def validate(self):
-<<<<<<< HEAD
-		# Validate that maximum 3 courses are selected
-		if not self.flags.get("skip_preferred_course_validation"):
-			if len(self.preferred_courses) > 3:
-				frappe.throw("You can select a maximum of 3 courses only.")
-
-			if len(self.preferred_courses) == 0:
-				frappe.throw("Please select at least one course.")
-
-=======
 		# Preferred courses are Australia Details flow — skip for UK (university/course live on UK Offer)
 		if not self.is_united_kingdom() and not self.flags.get("skip_preferred_course_validation"):
 			if len(self.preferred_courses or []) > 3:
@@ -577,7 +507,6 @@ def _agents_under_cro_for_support(user):
 
 			if len(self.preferred_courses or []) == 0:
 				frappe.throw("Please select at least one course.")
->>>>>>> jashans-updates
 		
 		# For B2C: Auto-set agent to Unideft if not set or if wrong agent selected
 		if self.application_type == "B2C":
@@ -592,8 +521,6 @@ def _agents_under_cro_for_support(user):
 		# For B2B: No validation - can select any agent or leave empty
 
 
-<<<<<<< HEAD
-=======
 def _map_au_qualification_to_uk(higher_education):
 	"""Map Application.higher_education options to UK assessment qualification."""
 	he = (higher_education or "").strip()
@@ -686,7 +613,6 @@ def create_uk_application(student, dob=None, application_type="B2B"):
 	}
 
 
->>>>>>> jashans-updates
 @frappe.whitelist()
 def create_application_for_other_country(source_name, destination_country):
 	"""Create a new Application for another country and close the Australia case."""

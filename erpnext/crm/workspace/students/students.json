@@ -38,9 +38,6 @@
   }
  ],
  "restrict_to_domain": "",
-<<<<<<< HEAD
- "roles": [],
-=======
  "roles": [
   {
    "role": "System Manager"
@@ -73,7 +70,6 @@
    "role": "agents"
   }
  ],
->>>>>>> jashans-updates
  "sequence_id": 19.0,
  "shortcuts": [
   {

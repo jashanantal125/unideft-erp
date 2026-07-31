@@ -777,8 +777,6 @@
 	color: rgba(255, 255, 255, 0.9);
 }
 
-<<<<<<< HEAD
-=======
 .applications-container .country-flag{
 	width: 20px;
 	height: 15px;
@@ -789,7 +787,6 @@
 	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
 }
 
->>>>>>> jashans-updates
 .applications-container .intake-date strong{
 	color: var(--unideft-white);
 }

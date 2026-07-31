@@ -242,8 +242,6 @@ function getUniversityLabel(app) {
 	);
 }
 
-<<<<<<< HEAD
-=======
 function getCountryFlagHtml(country) {
 	if (!country) return '';
 	const codeMap = {
@@ -277,7 +275,6 @@ function getCountryFlagHtml(country) {
 	return `<img class="country-flag" src="https://flagcdn.com/w40/${code}.png" alt="${safe}" title="${safe}" width="20" height="15" loading="lazy" />`;
 }
 
->>>>>>> jashans-updates
 function fetchUniversityNames(applications) {
 	const universityIds = [];
 	applications.forEach((app) => {
@@ -513,13 +510,7 @@ function createApplicationCard(app) {
 					<div class="profile-info">
 						<h3 class="student-name">${escapeHtml(studentName)}</h3>
 						<div class="contact-details">
-<<<<<<< HEAD
-
 							${(app.student_contact_no || app.contact_number || (app.student_data && app.student_data.mobile)) ? `<span class="contact-item"><i class="fa fa-phone"></i> ${escapeHtml(app.student_contact_no || app.contact_number || app.student_data.mobile)}</span>` : ''}
-
-=======
-							${(app.student_contact_no || app.contact_number || (app.student_data && app.student_data.mobile)) ? `<span class="contact-item"><i class="fa fa-phone"></i> ${escapeHtml(app.student_contact_no || app.contact_number || app.student_data.mobile)}</span>` : ''}
->>>>>>> jashans-updates
 							${app.student_email || (app.student_data && app.student_data.email) ? `<span class="contact-item"><i class="fa fa-envelope"></i> ${escapeHtml(app.student_email || app.student_data.email)}</span>` : ''}
 							<span class="contact-item"><i class="fa fa-calendar"></i> ${dobDate}</span>
 						</div>
@@ -555,11 +546,7 @@ function createApplicationCard(app) {
 					${(app.preferred_university || app.university_name || app.university_display_name) || app.destination_country ? `
 						<span class="program-university">
 							${escapeHtml(getUniversityLabel(app))}
-<<<<<<< HEAD
-							${app.destination_country ? `In ${escapeHtml(app.destination_country)}` : ''}
-=======
 							${app.destination_country ? `${getCountryFlagHtml(app.destination_country)} In ${escapeHtml(app.destination_country)}` : ''}
->>>>>>> jashans-updates
 						</span>
 					` : ''}
 					${app.intake ? `<span class="intake-date"><strong>Intake:</strong> ${escapeHtml(app.intake)}</span>` : ''}

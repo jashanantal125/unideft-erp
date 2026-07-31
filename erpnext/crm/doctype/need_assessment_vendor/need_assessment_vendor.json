@@ -1,10 +1,6 @@
 {
  "actions": [],
-<<<<<<< HEAD
- "creation": "2026-07-23 00:00:00.000000",
-=======
  "creation": "2026-07-31 00:00:00.000000",
->>>>>>> jashans-updates
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
@@ -14,15 +10,10 @@
   "assessment_received",
   "options_provided_to_student",
   "student_confirmed_to_apply",
-<<<<<<< HEAD
-  "university",
-  "course"
-=======
   "denial_reason",
   "university",
   "course",
   "assessment_status"
->>>>>>> jashans-updates
  ],
  "fields": [
   {
@@ -45,11 +36,7 @@
    "fieldname": "assessment_received",
    "fieldtype": "Select",
    "in_list_view": 1,
-<<<<<<< HEAD
-   "label": "Have you received assessment?",
-=======
    "label": "Have You Received?",
->>>>>>> jashans-updates
    "options": "\nYes\nNo"
   },
   {
@@ -57,20 +44,6 @@
    "fieldname": "options_provided_to_student",
    "fieldtype": "Select",
    "in_list_view": 1,
-<<<<<<< HEAD
-   "label": "Have you provided option to student?",
-   "options": "\nYes\nNo"
-  },
-  {
-   "depends_on": "eval:doc.options_provided_to_student == 'Yes'",
-   "fieldname": "student_confirmed_to_apply",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "label": "Student confirmed to apply?",
-   "options": "\nYes\nNo"
-  },
-  {
-=======
    "label": "Have You Provided?",
    "options": "\nYes\nNo"
   },
@@ -90,7 +63,6 @@
    "mandatory_depends_on": "eval:doc.student_confirmed_to_apply == 'No'"
   },
   {
->>>>>>> jashans-updates
    "depends_on": "eval:doc.student_confirmed_to_apply == 'Yes'",
    "fieldname": "university",
    "fieldtype": "Link",
@@ -104,12 +76,6 @@
    "fieldtype": "Link",
    "label": "Course Name",
    "options": "Course"
-<<<<<<< HEAD
-  }
- ],
- "istable": 1,
- "modified": "2026-07-23 00:00:00.000000",
-=======
   },
   {
    "default": "Open",
@@ -123,7 +89,6 @@
  ],
  "istable": 1,
  "modified": "2026-07-31 12:00:00.000000",
->>>>>>> jashans-updates
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Need Assessment Vendor",

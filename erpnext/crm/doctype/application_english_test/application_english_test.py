@@ -10,14 +10,9 @@ class ApplicationEnglishTest(Document):
 		self.update_validity_from_result_date()
 
 	def update_validity_from_result_date(self):
-<<<<<<< HEAD
-		"""IELTS / PTE / TOEFL: Valid for 24 months from result date."""
-		if self.test_type not in ("IELTS", "PTE", "TOEFL"):
-=======
 		"""Standard / UKVI tests: valid for 24 months from result date."""
 		if self.test_type not in ("IELTS", "UKVI IELTS", "PTE", "UKVI PTE", "TOEFL", "Duolingo"):
 			self.validity_months = None
->>>>>>> jashans-updates
 			return
 
 		self.validity_months = 24

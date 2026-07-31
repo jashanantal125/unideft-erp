@@ -49,9 +49,6 @@
   "toefl_verified",
   "toefl_upload",
   "toefl_not_accepted",
-<<<<<<< HEAD
-  "toefl_home_not_accepted"
-=======
   "toefl_home_not_accepted",
   "waiver_section",
   "english_12th_marks",
@@ -88,7 +85,6 @@
   "duo_verification_link",
   "duo_verified",
   "duo_upload"
->>>>>>> jashans-updates
  ],
  "fields": [
   {
@@ -96,11 +92,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Test Type",
-<<<<<<< HEAD
-   "options": "\nIELTS\nPTE\nTOEFL",
-=======
    "options": "\nIELTS Waiver\nIELTS\nUKVI IELTS\nPTE\nUKVI PTE\nDuolingo\nTOEFL",
->>>>>>> jashans-updates
    "reqd": 1
   },
   {
@@ -208,11 +200,7 @@
    "label": "Upload Score Report"
   },
   {
-<<<<<<< HEAD
-   "default": "\u26a0 Not Accepted - Needs Verification",
-=======
    "default": "⚠ Not Accepted - Needs Verification",
->>>>>>> jashans-updates
    "depends_on": "eval:doc.test_type == 'IELTS' && doc.ielts_verified == 0",
    "fieldname": "ielts_not_accepted",
    "fieldtype": "Text",
@@ -289,11 +277,7 @@
    "label": "Upload Score Report"
   },
   {
-<<<<<<< HEAD
-   "default": "\u26a0 Not Accepted - Needs Verification",
-=======
    "default": "⚠ Not Accepted - Needs Verification",
->>>>>>> jashans-updates
    "depends_on": "eval:doc.test_type == 'PTE' && doc.pte_verified == 0",
    "fieldname": "pte_not_accepted",
    "fieldtype": "Text",
@@ -382,11 +366,7 @@
    "label": "Upload Score Report"
   },
   {
-<<<<<<< HEAD
-   "default": "\u26a0 Not Accepted - Needs Verification",
-=======
    "default": "⚠ Not Accepted - Needs Verification",
->>>>>>> jashans-updates
    "depends_on": "eval:doc.test_type == 'TOEFL' && doc.toefl_type == 'IBT Center Based' && doc.toefl_verified == 0",
    "fieldname": "toefl_not_accepted",
    "fieldtype": "Text",
@@ -400,12 +380,6 @@
    "fieldtype": "Text",
    "label": "Status",
    "read_only": 1
-<<<<<<< HEAD
-  }
- ],
- "istable": 1,
- "modified": "2026-07-23 00:00:00.000000",
-=======
   },
   {
    "depends_on": "eval:doc.test_type=='IELTS Waiver'",
@@ -623,7 +597,6 @@
  ],
  "istable": 1,
  "modified": "2026-07-23 20:30:00.000000",
->>>>>>> jashans-updates
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Application English Test",

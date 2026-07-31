@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-
-=======
->>>>>>> jashans-updates
 // Copyright (c) 2025, Unideft and contributors
 // For license information, please see license.txt
 
@@ -399,16 +395,6 @@ function maybe_prompt_financial_completion_reminder(frm) {
 }
 
 function sync_gs_interview_stage_from_financials(frm) {
-<<<<<<< HEAD
-	// Client rule: GS Processing interview block comes directly when
-	// Financials Interview condition timing = Before Acceptance
-	const has_interview = has_offer_letter_condition(frm, "Interview");
-	const before_acceptance = frm.doc.interview_timing === "Before Acceptance";
-	const should_enable = has_interview && before_acceptance;
-
-	if (should_enable && !frm.doc.interview_stage_available) {
-		frm.set_value("interview_stage_available", 1);
-=======
 	// Interview Before Acceptance section shows when Interview condition is selected
 	const has_interview = has_offer_letter_condition(frm, "Interview");
 	const should_enable = !!has_interview;
@@ -417,7 +403,6 @@ function sync_gs_interview_stage_from_financials(frm) {
 		frm.set_value("interview_stage_available", 1);
 	} else if (!should_enable && frm.doc.interview_stage_available) {
 		frm.set_value("interview_stage_available", 0);
->>>>>>> jashans-updates
 	}
 }
 
@@ -524,8 +509,6 @@ function refresh_application_country_flag(frm) {
 	});
 }
 
-<<<<<<< HEAD
-=======
 function is_uk_destination(country) {
 	const c = (country || "").trim().toLowerCase();
 	return ["united kingdom", "uk", "great britain", "britain", "england"].includes(c);
@@ -710,7 +693,6 @@ function show_application_country_dialog(frm) {
 	d.show();
 }
 
->>>>>>> jashans-updates
 frappe.ui.form.on("Application", {
 	onload(frm) {
 		// Force form view (modal) for child tables that should open in dialog on Add Row
@@ -724,12 +706,6 @@ frappe.ui.form.on("Application", {
 				});
 			}
 		});
-<<<<<<< HEAD
-	},
-
-	refresh(frm) {
-		// Force Spouse Details and C. Sponsors tables to open in form/modal on Add Row
-=======
 
 		// Country was chosen via list dialog → trust it; otherwise force country picker
 		if (frm.is_new()) {
@@ -748,7 +724,6 @@ frappe.ui.form.on("Application", {
 
 	refresh(frm) {
 		// Force Spouse / AU sponsors / UK child tables to open in form/modal on Add Row
->>>>>>> jashans-updates
 		["spouse_details_list", "table_ihmq"].forEach((fieldname) => {
 			const control = frm.fields_dict[fieldname];
 			if (control && control.grid && !control.grid._form_view_patched) {
@@ -883,14 +858,6 @@ frappe.ui.form.on("Application", {
 		// Auto-populate university and course from Details tab
 		populateOfferUniversityAndCourse(frm);
 
-<<<<<<< HEAD
-		// Set default currency if not set
-		if (!frm.doc.offer_currency) {
-			frm.set_value("offer_currency", "AUD");
-		}
-		if (is_defer_offer_required(frm.doc) && !frm.doc.defer_offer_currency) {
-			frm.set_value("defer_offer_currency", frm.doc.offer_currency || "AUD");
-=======
 		// Default currency by destination (do not force AUD on UK / unset country)
 		if (!frm.doc.offer_currency && is_au_destination(frm.doc.destination_country)) {
 			frm.set_value("offer_currency", "AUD");
@@ -902,7 +869,6 @@ frappe.ui.form.on("Application", {
 				"defer_offer_currency",
 				frm.doc.offer_currency || (is_uk_destination(frm.doc.destination_country) ? "GBP" : "AUD")
 			);
->>>>>>> jashans-updates
 		}
 
 		// Update all currency fields to use selected currency
@@ -921,18 +887,11 @@ frappe.ui.form.on("Application", {
 		sync_gs_interview_stage_from_financials(frm);
 		// Documents-by-stage UI lives on Card/List views; Details tab no longer shows it.
 		refresh_application_country_flag(frm);
-<<<<<<< HEAD
-=======
 		apply_country_flow_ui(frm);
->>>>>>> jashans-updates
 	},
 
 	destination_country(frm) {
 		refresh_application_country_flag(frm);
-<<<<<<< HEAD
-	},
-
-=======
 		if (is_uk_destination(frm.doc.destination_country)) {
 			redirect_uk_index_to_native(frm);
 			return;
@@ -953,7 +912,6 @@ frappe.ui.form.on("Application", {
 	},
 
 
->>>>>>> jashans-updates
 	// Currency selector handler - update all currency fields when currency changes
 	offer_currency(frm) {
 		updateCurrencyFields(frm, false);
@@ -1135,10 +1093,6 @@ frappe.ui.form.on("Application", {
 			frm.set_value("study_gap_upto_1_year", "");
 			frm.set_value("study_gap_status", "");
 			frm.set_value("study_gap_not_accepted_status", "");
-<<<<<<< HEAD
-			frm.clear_table("study_gap_proof");
-			frm.refresh_field("study_gap_proof");
-=======
 			frm.set_value("gap_duration", "");
 			frm.set_value("gap_duration_status", "");
 			frm.set_value("gap_duration_not_accepted", "");
@@ -1182,7 +1136,6 @@ frappe.ui.form.on("Application", {
 				default_description: "Expected application submission date",
 				trigger_key: `app_submitted_${frm.doc.name}`,
 			});
->>>>>>> jashans-updates
 		}
 	},
 
@@ -1392,13 +1345,6 @@ frappe.ui.form.on("Application", {
 		// Submitted reminders are set interactively via field change handlers
 	},
 
-<<<<<<< HEAD
-	after_save(frm) {
-		// Intake reminders are prompted when intake date fields change
-	},
-
-=======
->>>>>>> jashans-updates
 	// Funds Required calculation for main offer
 	funds_required_type(frm) {
 		calculateFundsRequired(frm, false);
@@ -1446,8 +1392,6 @@ frappe.ui.form.on("Application", {
 	case_4_proceed_above_1_year(frm) {
 		calculateFundsRequired(frm, false);
 		calculateFundsRequired(frm, true);
-<<<<<<< HEAD
-=======
 		if (frm.doc.case_4_proceed_above_1_year === "with Spouse") {
 			frm.set_value("country_flow_case", "AU Case 4 Spouse");
 		} else if (
@@ -1456,7 +1400,6 @@ frappe.ui.form.on("Application", {
 		) {
 			frm.set_value("country_flow_case", "AU Default");
 		}
->>>>>>> jashans-updates
 	},
 
 	martial_status(frm) {
@@ -2695,10 +2638,6 @@ function createInterviewDeadlineReminder(frm, deadlineDate) {
 	});
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> jashans-updates
 // Keep Financials condition sections in sync when Offer Letter conditions change
 frappe.ui.form.on("Application Offer Letter Condition", {
 	condition(frm) {
@@ -2805,18 +2744,6 @@ frappe.ui.form.on("Need Assessment Vendor", {
 	},
 	student_confirmed_to_apply(frm, cdt, cdn) {
 		const row = locals[cdt][cdn];
-<<<<<<< HEAD
-		if (row.student_confirmed_to_apply !== "Yes") {
-			frappe.model.set_value(cdt, cdn, "university", "");
-			frappe.model.set_value(cdt, cdn, "course", "");
-		}
-		if (row.student_confirmed_to_apply === "No" && frm.doc.name && !frm.doc.__islocal) {
-			prompt_application_reminder(frm, {
-				title: __("Student Confirmation to Apply"),
-				default_description: "Follow up — when will the student confirm to apply?",
-				trigger_key: `na_confirm_${frm.doc.name}_${cdn}`,
-			});
-=======
 		if (row.student_confirmed_to_apply === "Yes") {
 			frappe.model.set_value(cdt, cdn, "denial_reason", "");
 		} else if (row.student_confirmed_to_apply === "No") {
@@ -2846,12 +2773,7 @@ frappe.ui.form.on("Need Assessment Vendor", {
 		const row = locals[cdt][cdn];
 		if (row.student_confirmed_to_apply === "Yes" && row.university && row.course) {
 			frappe.model.set_value(cdt, cdn, "assessment_status", "Converted to Application");
->>>>>>> jashans-updates
 		}
 	},
 });
 
-<<<<<<< HEAD
-
-=======
->>>>>>> jashans-updates

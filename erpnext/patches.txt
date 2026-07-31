@@ -454,12 +454,8 @@ erpnext.patches.v16_0.ensure_offer_letter_conditions
 erpnext.patches.v16_0.convert_gs_submitted_to_select
 erpnext.patches.v16_0.convert_gs_processing_checks_to_select
 erpnext.patches.v16_0.convert_study_gap_to_select
-<<<<<<< HEAD
-erpnext.patches.v16_0.convert_any_visa_refused_to_select
-=======
 erpnext.patches.v16_0.convert_any_visa_refused_to_select
 erpnext.patches.v16_0.rename_application_uk_data
 erpnext.patches.v16_0.migrate_application_uk_field_names
 erpnext.patches.v16_0.setup_org_roles_and_users
 erpnext.patches.v16_0.apply_client_assessment_processing_vendor_updates
->>>>>>> jashans-updates

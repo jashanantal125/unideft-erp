@@ -1,13 +1,6 @@
 // Copyright (c) 2025, Unideft and contributors
 // For license information, please see license.txt
 
-<<<<<<< HEAD
-// frappe.ui.form.on("vendor", {
-// 	refresh(frm) {
-
-// 	},
-// });
-=======
 frappe.ui.form.on("vendor", {
 	contract_end_date(frm) {
 		if (frm.doc.contract_end_date) {
@@ -79,4 +72,3 @@ frappe.ui.form.on("vendor", {
 		}
 	},
 });
->>>>>>> jashans-updates

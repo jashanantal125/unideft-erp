@@ -29,11 +29,8 @@
         "company_name",
         "position",
         "duration",
-<<<<<<< HEAD
-=======
         "duration_from",
         "duration_to",
->>>>>>> jashans-updates
         "employer_domain_id",
         "work_attachments_sb",
         "itr_upload",
@@ -207,9 +204,6 @@
             "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
             "fieldname": "duration",
             "fieldtype": "Small Text",
-<<<<<<< HEAD
-            "label": "Duration"
-=======
             "label": "Duration (From – To)",
             "description": "e.g. Jan 2022 – Mar 2023"
         },
@@ -224,17 +218,12 @@
             "fieldname": "duration_to",
             "fieldtype": "Date",
             "label": "Duration To"
->>>>>>> jashans-updates
         },
         {
             "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
             "fieldname": "employer_domain_id",
             "fieldtype": "Small Text",
-<<<<<<< HEAD
-            "label": "Employer Domain ID"
-=======
             "label": "Employer Domain / Official Email ID"
->>>>>>> jashans-updates
         },
         {
             "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
@@ -346,11 +335,7 @@
         },
         {
             "bold": 1,
-<<<<<<< HEAD
-            "default": "\u2713 Checked Accordingly",
-=======
             "default": "✓ Checked Accordingly",
->>>>>>> jashans-updates
             "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.itr_value_matched_salary == 0 && doc.other_income_source == 1",
             "fieldname": "other_income_yes_status",
             "fieldtype": "Small Text",
@@ -359,11 +344,7 @@
         },
         {
             "bold": 1,
-<<<<<<< HEAD
-            "default": "\u26a0 Set Reminder to Revise ITR",
-=======
             "default": "⚠ Set Reminder to Revise ITR",
->>>>>>> jashans-updates
             "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.itr_value_matched_salary == 0 && doc.other_income_source == 0",
             "fieldname": "other_income_no_status",
             "fieldtype": "Small Text",
@@ -385,11 +366,7 @@
         },
         {
             "bold": 1,
-<<<<<<< HEAD
-            "default": "\u26a0 Set Reminder to Correct Computation",
-=======
             "default": "⚠ Set Reminder to Correct Computation",
->>>>>>> jashans-updates
             "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.company_details_computation == 0",
             "fieldname": "company_details_no_status",
             "fieldtype": "Small Text",
@@ -405,11 +382,7 @@
         },
         {
             "bold": 1,
-<<<<<<< HEAD
-            "default": "\u26a0 Need to Correct",
-=======
             "default": "⚠ Need to Correct",
->>>>>>> jashans-updates
             "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.dob_matched_ac_pc == 0",
             "fieldname": "dob_no_status",
             "fieldtype": "Small Text",
@@ -425,11 +398,7 @@
         },
         {
             "bold": 1,
-<<<<<<< HEAD
-            "default": "\u26a0 Need to Correct",
-=======
             "default": "⚠ Need to Correct",
->>>>>>> jashans-updates
             "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.name_matched_ac_pc == 0",
             "fieldname": "name_no_status",
             "fieldtype": "Small Text",
@@ -438,11 +407,7 @@
         },
         {
             "bold": 1,
-<<<<<<< HEAD
-            "default": "\u26a0 Needs to Verify and Set Reminder",
-=======
             "default": "⚠ Needs to Verify and Set Reminder",
->>>>>>> jashans-updates
             "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.itr_verified == 0",
             "fieldname": "itr_not_verified_status",
             "fieldtype": "Small Text",
@@ -473,8 +438,4 @@
     "sort_field": "modified",
     "sort_order": "DESC",
     "states": []
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> jashans-updates

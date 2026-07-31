@@ -14,11 +14,7 @@ class ApplicationCourse(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-<<<<<<< HEAD
-		course: DF.Link | None
-=======
 		course: DF.Link
->>>>>>> jashans-updates
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data

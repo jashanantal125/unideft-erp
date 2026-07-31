@@ -9,9 +9,6 @@
  "field_order": [
   "team_section",
   "team_name",
-<<<<<<< HEAD
-  "team_leader",
-=======
   "team_type",
   "column_break_team_1",
   "team_leader",
@@ -22,7 +19,6 @@
   "column_break_admission_1",
   "country_head",
   "cro",
->>>>>>> jashans-updates
   "territories_section",
   "territories",
   "team_members_section",
@@ -43,8 +39,6 @@
    "unique": 1
   },
   {
-<<<<<<< HEAD
-=======
    "fieldname": "team_type",
    "fieldtype": "Select",
    "in_list_view": 1,
@@ -56,15 +50,12 @@
    "fieldtype": "Column Break"
   },
   {
->>>>>>> jashans-updates
    "fieldname": "team_leader",
    "fieldtype": "Link",
    "label": "Team Leader",
    "options": "User"
   },
   {
-<<<<<<< HEAD
-=======
    "fieldname": "country",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -110,7 +101,6 @@
    "description": "CRO / Branch Head associated with this group"
   },
   {
->>>>>>> jashans-updates
    "fieldname": "territories_section",
    "fieldtype": "Section Break",
    "label": "Assigned Territories"
@@ -135,11 +125,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
-<<<<<<< HEAD
- "modified": "2025-12-04 00:00:00",
-=======
  "modified": "2026-07-29 12:00:00.000000",
->>>>>>> jashans-updates
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Team",
@@ -167,8 +153,6 @@
    "role": "CRM Admin",
    "share": 1,
    "write": 1
-<<<<<<< HEAD
-=======
   },
   {
    "read": 1,
@@ -186,7 +170,6 @@
   {
    "read": 1,
    "role": "Admission 2"
->>>>>>> jashans-updates
   }
  ],
  "sort_field": "creation",

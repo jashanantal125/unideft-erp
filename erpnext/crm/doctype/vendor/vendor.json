@@ -1,10 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
-<<<<<<< HEAD
-=======
  "autoname": "field:name1",
->>>>>>> jashans-updates
  "creation": "2025-11-28 13:57:32.776570",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -22,16 +19,6 @@
   "last_name",
   "email",
   "phone_number",
-<<<<<<< HEAD
-  "contracts_tab",
-  "table_ocev"
- ],
- "fields": [
-  {
-   "fieldname": "name1",
-   "fieldtype": "Data",
-   "label": "Name"
-=======
   "admission_contacts_tab",
   "admission_contacts",
   "portal_tab",
@@ -77,7 +64,6 @@
    "label": "Vendor Name",
    "reqd": 1,
    "unique": 1
->>>>>>> jashans-updates
   },
   {
    "fieldname": "short_name",
@@ -86,11 +72,7 @@
   },
   {
    "fieldname": "address",
-<<<<<<< HEAD
-   "fieldtype": "Data",
-=======
    "fieldtype": "Small Text",
->>>>>>> jashans-updates
    "label": "Address"
   },
   {
@@ -101,11 +83,7 @@
   {
    "fieldname": "state",
    "fieldtype": "Data",
-<<<<<<< HEAD
-   "label": "State"
-=======
    "label": "State/Province"
->>>>>>> jashans-updates
   },
   {
    "fieldname": "column_break_ttxn",
@@ -113,27 +91,16 @@
   },
   {
    "fieldname": "country",
-<<<<<<< HEAD
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Country",
-=======
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Country",
    "options": "Country",
->>>>>>> jashans-updates
    "reqd": 1
   },
   {
    "fieldname": "contact_person_details",
-<<<<<<< HEAD
-   "fieldtype": "Heading",
-   "label": "Contact Person Details"
-=======
    "fieldtype": "Section Break",
    "label": "Primary Contact Person Details"
->>>>>>> jashans-updates
   },
   {
    "fieldname": "first_name",
@@ -148,24 +115,6 @@
   {
    "fieldname": "email",
    "fieldtype": "Data",
-<<<<<<< HEAD
-   "label": "Email"
-  },
-  {
-   "fieldname": "phone_number",
-   "fieldtype": "Phone",
-   "label": "Phone Number"
-  },
-  {
-   "fieldname": "vendor_info_section",
-   "fieldtype": "Section Break",
-   "label": "Vendor Info"
-  },
-  {
-   "fieldname": "contracts_tab",
-   "fieldtype": "Tab Break",
-   "label": "Contracts"
-=======
    "label": "Email Address",
    "options": "Email"
   },
@@ -338,14 +287,10 @@
    "fieldname": "contract_document",
    "fieldtype": "Attach",
    "label": "Contract Document"
->>>>>>> jashans-updates
   },
   {
    "fieldname": "table_ocev",
    "fieldtype": "Table",
-<<<<<<< HEAD
-   "options": "Vendor Contracts"
-=======
    "label": "Contract History",
    "options": "Vendor Contracts"
   },
@@ -366,24 +311,16 @@
    "fieldtype": "Table",
    "label": "Universities Represented",
    "options": "Vendor Partner University"
->>>>>>> jashans-updates
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
-<<<<<<< HEAD
- "modified": "2026-01-05 13:56:56.765076",
- "modified_by": "Administrator",
- "module": "CRM",
- "name": "vendor",
-=======
  "modified": "2026-07-31 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "vendor",
  "naming_rule": "By fieldname",
->>>>>>> jashans-updates
  "owner": "Administrator",
  "permissions": [
   {
@@ -397,15 +334,6 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
-<<<<<<< HEAD
-  }
- ],
- "row_format": "Dynamic",
- "rows_threshold_for_grid_search": 20,
- "sort_field": "creation",
- "sort_order": "DESC",
- "states": []
-=======
   },
   {
    "create": 1,
@@ -454,5 +382,4 @@
  "states": [],
  "title_field": "name1",
  "track_changes": 1
->>>>>>> jashans-updates
 }

@@ -2759,9 +2759,4 @@
     "sort_field": "creation",
     "sort_order": "DESC",
     "states": []
-<<<<<<< HEAD:erpnext/crm/doctype/application/applicatoin.json
 }
-
-=======
-}
->>>>>>> 45b373784b7731d65471f9c09c0827b086692f15:erpnext/crm/doctype/application/application.json
