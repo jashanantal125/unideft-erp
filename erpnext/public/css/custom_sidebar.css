@@ -115,8 +115,14 @@ body .body-sidebar {
 	border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
+.app-switcher-menu {
+	background: #ffffff !important;
+	background-color: #ffffff !important;
+	color: #000000 !important;
+}
+
 .app-switcher-menu .app-item .app-item-title {
-	color: #ffffff !important;
+	color: #000000 !important;
 }
 
 .app-switcher-menu .app-item:hover {
@@ -124,13 +130,26 @@ body .body-sidebar {
 	background-color: #FF7800 !important;
 }
 
-.app-switcher-menu .app-item a {
+.app-switcher-menu .app-item:hover .app-item-title,
+.app-switcher-menu .app-item:hover a {
 	color: #ffffff !important;
+}
+
+.app-switcher-menu .app-item a {
+	color: #000000 !important;
 }
 
 /* App switcher menu icons */
 .app-switcher-menu .app-item .sidebar-item-icon svg,
 .app-switcher-menu .app-item svg {
+	color: #000000 !important;
+	fill: #000000 !important;
+	stroke: #000000 !important;
+	--icon-stroke: #000000 !important;
+}
+
+.app-switcher-menu .app-item:hover .sidebar-item-icon svg,
+.app-switcher-menu .app-item:hover svg {
 	color: #ffffff !important;
 	fill: #ffffff !important;
 	stroke: #ffffff !important;
