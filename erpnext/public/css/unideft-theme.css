@@ -95,6 +95,7 @@ a:hover,
 	text-decoration: underline;
 }
 
+<<<<<<< HEAD
 /* App switcher menu: force black labels on white background */
 .app-switcher-menu,
 .app-switcher-menu .app-item,
@@ -128,6 +129,8 @@ a:hover,
 	-webkit-text-fill-color: #ffffff !important;
 }
 
+=======
+>>>>>>> jashans-updates
 /* ============================================
    FORM CONTROLS - FOCUS STATES
    ============================================ */
@@ -467,6 +470,7 @@ input[type="radio"]:checked {
 	color: var(--unideft-primary-dark) !important;
 }
 
+<<<<<<< HEAD
 /* ============================================
    CONNECTIONS - document-link badge text white
    ============================================ */
@@ -561,3 +565,5 @@ div.app-switcher-menu .app-item:hover .app-item-title {
 	-webkit-text-fill-color: #ffffff !important;
 }
 
+=======
+>>>>>>> jashans-updates

@@ -1,0 +1,1828 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "naming_series:",
+ "creation": "2026-07-23 19:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "details_tab",
+  "naming_series",
+  "application",
+  "uk_current_stage",
+  "single_basis_only",
+  "application_section",
+  "student",
+  "student_email",
+  "student_contact_no",
+  "agent",
+  "column_break_jdtj",
+  "application_type",
+  "status",
+  "country_flow_case",
+  "column_break_ilyf",
+  "dob",
+  "current_age",
+  "martial_status",
+  "higher_education",
+  "details_program_section",
+  "preferred_university",
+  "column_break_details_program_1",
+  "intake",
+  "column_break_details_program_2",
+  "assigned_team",
+  "assigned_executive",
+  "details_courses_section",
+  "preferred_courses",
+  "details_visa_section",
+  "any_visa_refused",
+  "column_break_details_visa_1",
+  "visa_refusal_letters",
+  "visa_refused_ok",
+  "details_study_gap_section",
+  "study_gap",
+  "column_break_details_gap_1",
+  "study_gap_ok",
+  "study_gap_next_stage_note",
+  "information_tab",
+  "section_a_email",
+  "is_package_case",
+  "data_swym",
+  "recovery_email_id",
+  "column_break_section_a",
+  "password",
+  "login_contact_no",
+  "section_b_documents",
+  "twelfth_admit_card_uploaded",
+  "school_domain_email",
+  "documents_10th_to_12th",
+  "documents_verified",
+  "documents_verified_pdf",
+  "documents_not_accepted_alert",
+  "school_digi_locker_id",
+  "school_digi_locker_password",
+  "column_break_section_b",
+  "section_c_english_test",
+  "english_test_details",
+  "section_d_study_gap_proof",
+  "study_gap_proof_list",
+  "section_d_passport",
+  "passport_upload",
+  "column_break_section_d",
+  "section_e_lor",
+  "academic_lor_list",
+  "section_e_processing_agent",
+  "processing_agent_details",
+  "section_f_applications",
+  "application_filled_by",
+  "application_form_1_upload",
+  "application_form_2_upload",
+  "application_form_3_upload",
+  "application_form_4_upload",
+  "sop_upload",
+  "sop_portal_or_vendor_upload",
+  "application_submitted",
+  "submitted_tab",
+  "submitted_date",
+  "any_further_requirement_offer_letter",
+  "no_further_requirement_note",
+  "pending_requirement_details",
+  "pending_requirements_completed",
+  "pending_requirements_reminder_note",
+  "pending_requirements_completed_yes_note",
+  "supporting_documents",
+  "offer_tab",
+  "offer_section",
+  "offer_currency",
+  "university_name",
+  "course_name",
+  "university_intake",
+  "column_break_offer_1",
+  "full_year_tuition_fee",
+  "scholarship",
+  "payable_fee",
+  "living_expenses_location",
+  "living_expenses",
+  "funds_required_type",
+  "funds_required_amount",
+  "deposit_deadline",
+  "tuition_paid_before_deadline",
+  "conditions_on_offer_letter",
+  "section_break_offer_docs",
+  "offer_letter_upload",
+  "send_offer_to_chat",
+  "other_documents_offer",
+  "defer_offer_required",
+  "defer_offer_ok",
+  "applied_for_defer_offer_letter",
+  "applied_for_defer_offer_yes_section",
+  "defer_any_further_requirement",
+  "defer_no_further_requirement_note",
+  "defer_pending_requirement_details",
+  "defer_pending_requirements_completed",
+  "defer_pending_requirements_reminder_note",
+  "defer_pending_requirements_completed_yes_note",
+  "defer_supporting_documents",
+  "applied_for_defer_offer_no_note",
+  "defer_offer_section",
+  "defer_offer_currency",
+  "defer_university_name",
+  "defer_course_name",
+  "defer_university_intake",
+  "column_break_defer_1",
+  "defer_full_year_tuition_fee",
+  "defer_scholarship",
+  "defer_payable_fee",
+  "defer_living_expenses_location",
+  "defer_living_expenses",
+  "column_break_defer_2",
+  "defer_funds_required_type",
+  "defer_funds_required_amount",
+  "section_break_defer_docs",
+  "defer_offer_letter_upload",
+  "defer_other_documents",
+  "financials_tab",
+  "conditions_section",
+  "conditions_note",
+  "interview_condition_section",
+  "interview_timing",
+  "interview_deadline_date",
+  "english_requirement_section",
+  "english_requirement_details",
+  "english_requirement_documents",
+  "c_sponsors_section",
+  "uk_sponsors",
+  "gap_justification_section",
+  "gap_justification_details",
+  "gap_justification_documents",
+  "verification_section",
+  "verification_type",
+  "academic_transcript_section",
+  "academic_transcript_details",
+  "academic_transcript_documents",
+  "other_condition_section",
+  "other_condition_details",
+  "other_condition_documents",
+  "student_prepare",
+  "student_prepare_yes_status",
+  "student_prepare_no_status",
+  "schedule_interview",
+  "schedule_interview_yes_status",
+  "schedule_interview_no_status",
+  "interview_status",
+  "interview_second_chance",
+  "funds_28_day_ok",
+  "funds_meet_requirement",
+  "medical_scheduled",
+  "financial_docs_submitted",
+  "financial_notes",
+  "acceptance_tab",
+  "acceptance_submitted",
+  "acceptance_submitted_status",
+  "acceptance_not_submitted_status",
+  "deposit_paid",
+  "acceptance_docs",
+  "cas_tab",
+  "cas_section",
+  "cas_letter_received",
+  "cas_any_pendency",
+  "cas_pendency_details",
+  "cas_pendency_completed",
+  "cas_received",
+  "cas_number",
+  "cas_upload",
+  "cas_notes",
+  "sponsor_license_number",
+  "cas_extension_required",
+  "who_lodges_visa",
+  "ihs_number",
+  "ihs_upload",
+  "file_lodged_tab",
+  "file_lodged_section",
+  "visa_file_lodged",
+  "gwf_number",
+  "biometrics_done",
+  "visa_lodge_docs",
+  "biometric_date",
+  "biometric_place",
+  "expected_visa_decision",
+  "trn_number",
+  "immi_acknowledgement_upload",
+  "visa_tab",
+  "visa_section",
+  "visa_decision",
+  "visa_copy_upload",
+  "visa_notes",
+  "evisa_activated",
+  "share_code_received",
+  "share_code_verified",
+  "enrollment_tab",
+  "enrollment_section",
+  "student_enrolled",
+  "student_enrolled_yes_status",
+  "student_enrolled_no_status",
+  "enrolment_docs",
+  "student_id_card",
+  "visa_refused_tab",
+  "refusal_reason",
+  "refusal_letter_upload",
+  "process_other_country",
+  "other_country_name",
+  "applied_for_refund",
+  "refund_processing_tab",
+  "refund_status",
+  "refund_docs",
+  "tuition_refund_received",
+  "ihs_refund_received"
+ ],
+ "fields": [
+  {
+   "fieldname": "details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "no_copy": 1,
+   "options": "APP-UK-.YYYY.-",
+   "set_only_once": 1,
+   "default": "APP-UK-.YYYY.-",
+   "hidden": 1
+  },
+  {
+   "fieldname": "application",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Application Index",
+   "options": "Application",
+   "read_only": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "uk_current_stage",
+   "fieldtype": "Select",
+   "label": "Current Stage",
+   "options": "\nDetails\nProcessing\nSubmitted\nOffer Letter\nFinancial\nAcceptance\nCAS\nVisa Lodged\nVisa\nEnrolment\nVisa Refused\nRefund",
+   "default": "Details",
+   "in_list_view": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "single_basis_only",
+   "fieldtype": "Check",
+   "label": "Single Basis Only (no spouse track)",
+   "read_only": 1,
+   "description": "Auto-set for married UK cases 1/3/5"
+  },
+  {
+   "columns": 3,
+   "fieldname": "application_section",
+   "fieldtype": "Section Break",
+   "label": "Application Information"
+  },
+  {
+   "fieldname": "student",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Student",
+   "options": "Student",
+   "reqd": 1
+  },
+  {
+   "fieldname": "student_email",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Student Email",
+   "options": "Email"
+  },
+  {
+   "fieldname": "student_contact_no",
+   "fieldtype": "Phone",
+   "label": "Student Contact No"
+  },
+  {
+   "default": "__user",
+   "depends_on": "eval:doc.application_type == 'B2B' || doc.application_type == 'B2C'",
+   "fieldname": "agent",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Agent",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_jdtj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "application_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Application Type",
+   "options": "B2B",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Pending\nProcessing\nOffer Letter Received\nFinancial\nGS Processing\nGS Approved\nAcceptance\nCOE\nFile Lodged\nVisa\nEnrollment\nOn Shore College change\nVisa Refused\nClosed",
+   "reqd": 1
+  },
+  {
+   "description": "Auto-set from destination country + assessment (UK router / AU spouse gate).",
+   "fieldname": "country_flow_case",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "UK Case",
+   "options": "\nAU Default\nAU Case 4 Spouse\nUK Case 1\nUK Case 2\nUK Case 3\nUK Case 4\nUK Case 5\nUK Case 6\nUK Case 7\nUK Case 8",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_ilyf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "dob",
+   "fieldtype": "Date",
+   "label": "DOB",
+   "reqd": 1
+  },
+  {
+   "description": "Automatically calculated from Date of Birth",
+   "fieldname": "current_age",
+   "fieldtype": "Int",
+   "label": "Age (as of now)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "martial_status",
+   "fieldtype": "Select",
+   "label": "Marital Status",
+   "options": "\nMarried\nSingle\nNot Married"
+  },
+  {
+   "fieldname": "higher_education",
+   "fieldtype": "Select",
+   "label": "Qualification",
+   "options": "\n12th pass\nGraduation\nPost-graduation\nOthers"
+  },
+  {
+   "fieldname": "details_program_section",
+   "fieldtype": "Section Break",
+   "label": "University / Course / Intake"
+  },
+  {
+   "fieldname": "preferred_university",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Preferred University",
+   "options": "University"
+  },
+  {
+   "fieldname": "column_break_details_program_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "intake",
+   "fieldtype": "Select",
+   "label": "Intake",
+   "options": "\nJanuary\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember"
+  },
+  {
+   "fieldname": "column_break_details_program_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Auto-assigned based on destination country",
+   "fieldname": "assigned_team",
+   "fieldtype": "Link",
+   "label": "Assigned Team",
+   "options": "Team",
+   "read_only": 1
+  },
+  {
+   "description": "Team Lead assigns an executive to process this application",
+   "fieldname": "assigned_executive",
+   "fieldtype": "Link",
+   "label": "Assigned Executive",
+   "options": "User"
+  },
+  {
+   "fieldname": "details_courses_section",
+   "fieldtype": "Section Break",
+   "label": "Preferred Courses"
+  },
+  {
+   "fieldname": "preferred_courses",
+   "fieldtype": "Table",
+   "label": "Preferred Course",
+   "options": "Application Course"
+  },
+  {
+   "depends_on": "eval:(1) || ((doc.destination_country=='United Kingdom' || doc.destination_country=='UK'))",
+   "fieldname": "details_visa_section",
+   "fieldtype": "Section Break",
+   "label": "Visa Refusal"
+  },
+  {
+   "depends_on": "eval:(1) || ((doc.destination_country=='United Kingdom' || doc.destination_country=='UK'))",
+   "fieldname": "any_visa_refused",
+   "fieldtype": "Select",
+   "label": "Refused from UK or any other country?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "column_break_details_visa_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "visa_refusal_letters",
+   "fieldtype": "Attach",
+   "label": "Refusal Letter(s)",
+   "depends_on": "eval:doc.any_visa_refused=='Yes'"
+  },
+  {
+   "bold": 1,
+   "default": "\u2713 OK",
+   "depends_on": "eval:doc.any_visa_refused=='No'",
+   "fieldname": "visa_refused_ok",
+   "fieldtype": "Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:(1) || ((doc.destination_country=='United Kingdom' || doc.destination_country=='UK'))",
+   "fieldname": "details_study_gap_section",
+   "fieldtype": "Section Break",
+   "label": "Study Gap"
+  },
+  {
+   "depends_on": "eval:(1) || ((doc.destination_country=='United Kingdom' || doc.destination_country=='UK'))",
+   "fieldname": "study_gap",
+   "fieldtype": "Select",
+   "label": "Study Gap?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "column_break_details_gap_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "bold": 1,
+   "default": "\u2713 OK",
+   "depends_on": "eval:doc.study_gap=='No'",
+   "fieldname": "study_gap_ok",
+   "fieldtype": "Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "fieldname": "study_gap_next_stage_note",
+   "fieldtype": "HTML",
+   "label": " ",
+   "depends_on": "eval:doc.study_gap=='Yes'",
+   "options": "<p class=\"text-muted\">Please fill in the study gap proof details in the <strong>Processing</strong> stage.</p>"
+  },
+  {
+   "depends_on": "eval:(1) && (1)",
+   "fieldname": "information_tab",
+   "fieldtype": "Tab Break",
+   "label": "Processing"
+  },
+  {
+   "description": "Note: In package cases these fields are mandatory otherwise optional",
+   "fieldname": "section_a_email",
+   "fieldtype": "Section Break",
+   "label": "Our Email Id"
+  },
+  {
+   "default": "0",
+   "description": "If checked, email fields below are mandatory",
+   "fieldname": "is_package_case",
+   "fieldtype": "Check",
+   "label": "Package Case"
+  },
+  {
+   "fieldname": "data_swym",
+   "fieldtype": "Text",
+   "label": "Our Email Id"
+  },
+  {
+   "fieldname": "recovery_email_id",
+   "fieldtype": "Text",
+   "label": "Recovery Email Id"
+  },
+  {
+   "fieldname": "column_break_section_a",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "password",
+   "fieldtype": "Password",
+   "label": "Password"
+  },
+  {
+   "fieldname": "login_contact_no",
+   "fieldtype": "Phone",
+   "label": "Login Contact No"
+  },
+  {
+   "fieldname": "section_b_documents",
+   "fieldtype": "Section Break",
+   "label": "Documents 10th to 12th to Diploma"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.higher_education == '12th pass'",
+   "fieldname": "twelfth_admit_card_uploaded",
+   "fieldtype": "Check",
+   "label": "12th Admit Card Uploaded"
+  },
+  {
+   "fieldname": "school_domain_email",
+   "fieldtype": "Data",
+   "label": "School Domain Email Id",
+   "options": "Email"
+  },
+  {
+   "depends_on": "eval:doc.higher_education == '12th pass'",
+   "fieldname": "documents_10th_to_12th",
+   "fieldtype": "Table",
+   "label": "Documents (10th to 12th)/Graduation",
+   "options": "Application Documents 10th To 12th"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.higher_education == '12th pass'",
+   "fieldname": "documents_verified",
+   "fieldtype": "Check",
+   "label": "Documents Verified"
+  },
+  {
+   "depends_on": "eval:doc.documents_verified == 1 && doc.higher_education == '12th pass'",
+   "fieldname": "documents_verified_pdf",
+   "fieldtype": "Table",
+   "label": "Upload in Single PDF",
+   "options": "student documents"
+  },
+  {
+   "bold": 1,
+   "default": "\u26a0\ufe0f NOT ACCEPTED - Documents need to be verified",
+   "depends_on": "eval:doc.documents_verified == 0 && doc.higher_education == '12th pass'",
+   "fieldname": "documents_not_accepted_alert",
+   "fieldtype": "Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.higher_education == 'Graduation'",
+   "fieldname": "school_digi_locker_id",
+   "fieldtype": "Small Text",
+   "label": "10th and 12th Digi Locker ID"
+  },
+  {
+   "depends_on": "eval:doc.higher_education == 'Graduation'",
+   "fieldname": "school_digi_locker_password",
+   "fieldtype": "Password",
+   "label": "Digi Locker Password"
+  },
+  {
+   "fieldname": "column_break_section_b",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_c_english_test",
+   "fieldtype": "Section Break",
+   "label": "English Proficiency Test"
+  },
+  {
+   "description": "Click 'Add Row' to open form with conditional fields for IELTS/PTE/TOEFL",
+   "fieldname": "english_test_details",
+   "fieldtype": "Table",
+   "label": "English Tests",
+   "options": "Application English Test"
+  },
+  {
+   "fieldname": "section_d_study_gap_proof",
+   "fieldtype": "Section Break",
+   "label": "Study Gap Proof"
+  },
+  {
+   "fieldname": "study_gap_proof_list",
+   "fieldtype": "Table",
+   "label": "Study Gap Proof List",
+   "options": "Study Gap Proof"
+  },
+  {
+   "fieldname": "section_d_passport",
+   "fieldtype": "Section Break",
+   "label": "Passport"
+  },
+  {
+   "fieldname": "passport_upload",
+   "fieldtype": "Attach",
+   "label": "Upload Passport"
+  },
+  {
+   "fieldname": "column_break_section_d",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_e_lor",
+   "fieldtype": "Section Break",
+   "label": "Academic LOR"
+  },
+  {
+   "fieldname": "academic_lor_list",
+   "fieldtype": "Table",
+   "label": "Academic LOR",
+   "options": "Application UK LOR"
+  },
+  {
+   "fieldname": "section_e_processing_agent",
+   "fieldtype": "Section Break",
+   "label": "Processing Agent"
+  },
+  {
+   "description": "Click 'Add Row' to select Direct or Vendor agent",
+   "fieldname": "processing_agent_details",
+   "fieldtype": "Table",
+   "label": "Processing Agent",
+   "options": "Processing Agent Details"
+  },
+  {
+   "fieldname": "section_f_applications",
+   "fieldtype": "Section Break",
+   "label": "Applications"
+  },
+  {
+   "fieldname": "application_filled_by",
+   "fieldtype": "Select",
+   "label": "Application Filled By",
+   "options": "\nApplication filled by us\nFilled on portal\nFilled by Vendor"
+  },
+  {
+   "depends_on": "eval:doc.application_filled_by == 'Application filled by us'",
+   "fieldname": "application_form_1_upload",
+   "fieldtype": "Attach",
+   "label": "Application Form 1 Upload"
+  },
+  {
+   "depends_on": "eval:doc.application_filled_by == 'Application filled by us'",
+   "fieldname": "application_form_2_upload",
+   "fieldtype": "Attach",
+   "label": "Application Form 2 Upload"
+  },
+  {
+   "depends_on": "eval:doc.application_filled_by == 'Application filled by us'",
+   "fieldname": "application_form_3_upload",
+   "fieldtype": "Attach",
+   "label": "Application Form 3 Upload"
+  },
+  {
+   "depends_on": "eval:doc.application_filled_by == 'Application filled by us'",
+   "fieldname": "application_form_4_upload",
+   "fieldtype": "Attach",
+   "label": "Application Form 4 Upload"
+  },
+  {
+   "depends_on": "eval:doc.application_filled_by == 'Application filled by us'",
+   "fieldname": "sop_upload",
+   "fieldtype": "Attach",
+   "label": "SOP Upload"
+  },
+  {
+   "depends_on": "eval:doc.application_filled_by == 'Filled on portal' || doc.application_filled_by == 'Filled by Vendor'",
+   "fieldname": "sop_portal_or_vendor_upload",
+   "fieldtype": "Attach",
+   "label": "SOP Upload"
+  },
+  {
+   "fieldname": "application_submitted",
+   "fieldtype": "Select",
+   "label": "Application Submitted?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:1",
+   "fieldname": "submitted_tab",
+   "fieldtype": "Tab Break",
+   "label": "Submitted"
+  },
+  {
+   "default": "Today",
+   "fieldname": "submitted_date",
+   "fieldtype": "Date",
+   "label": "Submitted Date"
+  },
+  {
+   "fieldname": "any_further_requirement_offer_letter",
+   "fieldtype": "Select",
+   "label": "Any Further Requirement for offer letter?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "bold": 1,
+   "default": "If no \u2192 Set reminder: Follow up on Offer Letter",
+   "depends_on": "eval:doc.any_further_requirement_offer_letter == 'No'",
+   "fieldname": "no_further_requirement_note",
+   "fieldtype": "Text",
+   "label": "Note",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.any_further_requirement_offer_letter == 'Yes'",
+   "fieldname": "pending_requirement_details",
+   "fieldtype": "Text",
+   "label": "Pending Requirement Details"
+  },
+  {
+   "depends_on": "eval:doc.any_further_requirement_offer_letter == 'Yes'",
+   "fieldname": "pending_requirements_completed",
+   "fieldtype": "Select",
+   "label": "Pending requirements Completed?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "bold": 1,
+   "default": "\u2192 Set reminder: To Complete Pending requirements",
+   "depends_on": "eval:doc.any_further_requirement_offer_letter == 'Yes' && doc.pending_requirements_completed == 'No'",
+   "fieldname": "pending_requirements_reminder_note",
+   "fieldtype": "Text",
+   "label": "Note",
+   "read_only": 1
+  },
+  {
+   "bold": 1,
+   "default": "\u2192 Set reminder: Follow up on Offer Letter",
+   "depends_on": "eval:doc.any_further_requirement_offer_letter == 'Yes' && doc.pending_requirements_completed == 'Yes'",
+   "fieldname": "pending_requirements_completed_yes_note",
+   "fieldtype": "Text",
+   "label": "Note",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.any_further_requirement_offer_letter == 'Yes' && doc.pending_requirements_completed == 'Yes'",
+   "fieldname": "supporting_documents",
+   "fieldtype": "Table",
+   "label": "Supporting Documents",
+   "options": "student documents"
+  },
+  {
+   "depends_on": "eval:(1) && (1)",
+   "fieldname": "offer_tab",
+   "fieldtype": "Tab Break",
+   "label": "Offer Letter"
+  },
+  {
+   "fieldname": "offer_section",
+   "fieldtype": "Section Break",
+   "label": "Offer Letter"
+  },
+  {
+   "default": "GBP",
+   "fieldname": "offer_currency",
+   "fieldtype": "Select",
+   "label": "Currency",
+   "options": "AUD\nCAD\nNZD\nUSD\nINR\nGBP"
+  },
+  {
+   "fieldname": "university_name",
+   "fieldtype": "Link",
+   "label": "University Name",
+   "options": "University"
+  },
+  {
+   "fieldname": "course_name",
+   "fieldtype": "Link",
+   "label": "Course Name",
+   "options": "Course"
+  },
+  {
+   "fieldname": "university_intake",
+   "fieldtype": "Date",
+   "label": "Intake"
+  },
+  {
+   "fieldname": "column_break_offer_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "full_year_tuition_fee",
+   "fieldtype": "Currency",
+   "label": "Full Year Tuition Fee",
+   "options": "offer_currency"
+  },
+  {
+   "fieldname": "scholarship",
+   "fieldtype": "Currency",
+   "label": "Scholarship",
+   "options": "offer_currency"
+  },
+  {
+   "fieldname": "payable_fee",
+   "fieldtype": "Currency",
+   "label": "Payable Fee for CAS",
+   "options": "offer_currency"
+  },
+  {
+   "fieldname": "living_expenses_location",
+   "fieldtype": "Select",
+   "label": "Living Expense Location",
+   "options": "\nInner London\nOuter London"
+  },
+  {
+   "default": "29710",
+   "fieldname": "living_expenses",
+   "fieldtype": "Currency",
+   "label": "Living Expense",
+   "options": "GBP"
+  },
+  {
+   "fieldname": "funds_required_type",
+   "fieldtype": "Select",
+   "label": "Funds Required",
+   "options": "\nWith Full Year fee (single basis)\nWithout Full Year fee (single basis)\nWith Full Year fee (With spouse)\nWithout Full Year fee (With spouse)\nWith Full Year fee (With spouse and Kid)\nWithout Full Year fee (With spouse and Kid)\nWith Full Year fee (With Kid)\nWithout Full Year fee (With Kid)"
+  },
+  {
+   "description": "Automatically calculated based on Funds Required selection",
+   "fieldname": "funds_required_amount",
+   "fieldtype": "Currency",
+   "label": "Funds Required",
+   "options": "GBP",
+   "read_only": 1
+  },
+  {
+   "fieldname": "deposit_deadline",
+   "fieldtype": "Date",
+   "label": "Deposit Deadline"
+  },
+  {
+   "fieldname": "tuition_paid_before_deadline",
+   "fieldtype": "Select",
+   "label": "Tuition Paid Before Deadline?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "conditions_on_offer_letter",
+   "fieldtype": "Table MultiSelect",
+   "label": "Conditions on Offer Letter",
+   "options": "Application Offer Letter Condition"
+  },
+  {
+   "fieldname": "section_break_offer_docs",
+   "fieldtype": "Section Break",
+   "label": "Documents"
+  },
+  {
+   "fieldname": "offer_letter_upload",
+   "fieldtype": "Table",
+   "label": "Offer Letter",
+   "options": "student documents"
+  },
+  {
+   "default": "0",
+   "fieldname": "send_offer_to_chat",
+   "fieldtype": "Check",
+   "label": "Send directly to chat"
+  },
+  {
+   "fieldname": "other_documents_offer",
+   "fieldtype": "Table",
+   "label": "Other Documents",
+   "options": "student documents"
+  },
+  {
+   "fieldname": "defer_offer_required",
+   "fieldtype": "Select",
+   "label": "Defer Offer Required",
+   "options": "\nYes\nNo"
+  },
+  {
+   "bold": 1,
+   "default": "\u2713 OK",
+   "depends_on": "eval:doc.defer_offer_required == 'No'",
+   "fieldname": "defer_offer_ok",
+   "fieldtype": "Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "applied_for_defer_offer_letter",
+   "fieldtype": "Select",
+   "label": "Have you applied for Defer Offer letter?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes'",
+   "fieldname": "applied_for_defer_offer_yes_section",
+   "fieldtype": "Section Break",
+   "label": "Defer Offer Application Requirements"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes'",
+   "fieldname": "defer_any_further_requirement",
+   "fieldtype": "Select",
+   "label": "Any Further Requirement for Defer offer letter?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "bold": 1,
+   "default": "If no \u2192 Set reminder: Follow up on Defer Offer Letter",
+   "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes' && doc.defer_any_further_requirement == 'No'",
+   "fieldname": "defer_no_further_requirement_note",
+   "fieldtype": "Text",
+   "label": "Note",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes' && doc.defer_any_further_requirement == 'Yes'",
+   "fieldname": "defer_pending_requirement_details",
+   "fieldtype": "Text",
+   "label": "Pending Requirement Details"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes' && doc.defer_any_further_requirement == 'Yes'",
+   "fieldname": "defer_pending_requirements_completed",
+   "fieldtype": "Select",
+   "label": "Pending requirements Completed?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "bold": 1,
+   "default": "\u2192 Set reminder: To Complete Pending requirements",
+   "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes' && doc.defer_any_further_requirement == 'Yes' && doc.defer_pending_requirements_completed == 'No'",
+   "fieldname": "defer_pending_requirements_reminder_note",
+   "fieldtype": "Text",
+   "label": "Note",
+   "read_only": 1
+  },
+  {
+   "bold": 1,
+   "default": "\u2192 Set reminder: Follow up on Offer Letter",
+   "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes' && doc.defer_any_further_requirement == 'Yes' && doc.defer_pending_requirements_completed == 'Yes'",
+   "fieldname": "defer_pending_requirements_completed_yes_note",
+   "fieldtype": "Text",
+   "label": "Note",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes' && doc.defer_any_further_requirement == 'Yes' && doc.defer_pending_requirements_completed == 'Yes'",
+   "fieldname": "defer_supporting_documents",
+   "fieldtype": "Table",
+   "label": "Supporting Documents",
+   "options": "student documents"
+  },
+  {
+   "bold": 1,
+   "default": "\u2192 Set reminder: Follow up on Defer Offer Letter",
+   "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'No'",
+   "fieldname": "applied_for_defer_offer_no_note",
+   "fieldtype": "Text",
+   "label": "Note",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_offer_section",
+   "fieldtype": "Section Break",
+   "label": "Defer Offer Details"
+  },
+  {
+   "default": "AUD",
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_offer_currency",
+   "fieldtype": "Select",
+   "label": "Currency",
+   "options": "AUD\nCAD\nNZD\nUSD\nINR\nGBP"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_university_name",
+   "fieldtype": "Link",
+   "label": "University Name",
+   "options": "University"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_course_name",
+   "fieldtype": "Link",
+   "label": "Course Name",
+   "options": "Course"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_university_intake",
+   "fieldtype": "Date",
+   "label": "Intake"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "column_break_defer_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_full_year_tuition_fee",
+   "fieldtype": "Currency",
+   "label": "Full Year Tuition Fee",
+   "options": "defer_offer_currency"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_scholarship",
+   "fieldtype": "Currency",
+   "label": "Scholarship",
+   "options": "defer_offer_currency"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_payable_fee",
+   "fieldtype": "Currency",
+   "label": "Payable Fee",
+   "options": "defer_offer_currency"
+  },
+  {
+   "fieldname": "defer_living_expenses_location",
+   "fieldtype": "Select",
+   "label": "Living Expense Location",
+   "options": "\nInner London\nOuter London"
+  },
+  {
+   "default": "29710",
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_living_expenses",
+   "fieldtype": "Currency",
+   "label": "Living Expenses",
+   "options": "defer_offer_currency"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "column_break_defer_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_funds_required_type",
+   "fieldtype": "Select",
+   "label": "Funds Required",
+   "options": "\nWith Full Year fee (single basis)\nWithout Full Year fee (single basis)\nWith Full Year fee (With spouse)\nWithout Full Year fee (With spouse)\nWith Full Year fee (With spouse and Kid)\nWithout Full Year fee (With spouse and Kid)\nWith Full Year fee (With Kid)\nWithout Full Year fee (With Kid)"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "description": "Automatically calculated based on Funds Required selection",
+   "fieldname": "defer_funds_required_amount",
+   "fieldtype": "Currency",
+   "label": "Funds Required Amount",
+   "options": "defer_offer_currency",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "section_break_defer_docs",
+   "fieldtype": "Section Break",
+   "label": "Documents"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_offer_letter_upload",
+   "fieldtype": "Table",
+   "label": "Offer Letter",
+   "options": "student documents"
+  },
+  {
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "fieldname": "defer_other_documents",
+   "fieldtype": "Table",
+   "label": "Other Documents",
+   "options": "student documents"
+  },
+  {
+   "depends_on": "eval:(1) && (1)",
+   "fieldname": "financials_tab",
+   "fieldtype": "Tab Break",
+   "label": "Financials"
+  },
+  {
+   "fieldname": "conditions_section",
+   "fieldtype": "Section Break",
+   "label": "Conditions"
+  },
+  {
+   "default": "Note: Select conditions in the Offer Letter tab to see condition fields here",
+   "depends_on": "eval:!doc.conditions_on_offer_letter || !Array.isArray(doc.conditions_on_offer_letter) || doc.conditions_on_offer_letter.length === 0",
+   "fieldname": "conditions_note",
+   "fieldtype": "Text",
+   "label": "Note",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; })",
+   "fieldname": "interview_condition_section",
+   "fieldtype": "Section Break",
+   "label": "Interview Condition"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; })",
+   "description": "Select when the interview needs to be scheduled. 'Before Acceptance' will be handled in GS stage, 'Before COE' in Acceptance stage.",
+   "fieldname": "interview_timing",
+   "fieldtype": "Select",
+   "label": "Interview Timing",
+   "options": "\nBefore GS Approval\nBefore Acceptance\nBefore COE"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before GS Approval'",
+   "description": "Set the deadline date for the interview. A reminder will be automatically created for this date.",
+   "fieldname": "interview_deadline_date",
+   "fieldtype": "Date",
+   "label": "Interview Deadline Date"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('English Requirement') !== -1; })",
+   "fieldname": "english_requirement_section",
+   "fieldtype": "Section Break",
+   "label": "English Requirement"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('English Requirement') !== -1; })",
+   "description": "Enter the details of the English requirement condition",
+   "fieldname": "english_requirement_details",
+   "fieldtype": "Text",
+   "label": "Details"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('English Requirement') !== -1; })",
+   "description": "Upload any supporting documents related to the English requirement",
+   "fieldname": "english_requirement_documents",
+   "fieldtype": "Table",
+   "label": "Supporting Documents (Optional)",
+   "options": "student documents"
+  },
+  {
+   "fieldname": "c_sponsors_section",
+   "fieldtype": "Section Break",
+   "label": "Sponsors"
+  },
+  {
+   "fieldname": "uk_sponsors",
+   "fieldtype": "Table",
+   "label": "Sponsors / Funds",
+   "options": "Application UK Sponsor",
+   "description": "Father / Mother / Student \u2014 funds type branches inside each row"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Gap Justification') !== -1; })",
+   "fieldname": "gap_justification_section",
+   "fieldtype": "Section Break",
+   "label": "Gap Justification"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Gap Justification') !== -1; })",
+   "description": "Provide details explaining the study gap",
+   "fieldname": "gap_justification_details",
+   "fieldtype": "Text",
+   "label": "Details"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Gap Justification') !== -1; })",
+   "description": "Upload documents that justify the study gap",
+   "fieldname": "gap_justification_documents",
+   "fieldtype": "Table",
+   "label": "Supporting Documents (Optional)",
+   "options": "student documents"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Verification') !== -1; })",
+   "fieldname": "verification_section",
+   "fieldtype": "Section Break",
+   "label": "Verification"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Verification') !== -1; })",
+   "description": "Select what needs to be verified",
+   "fieldname": "verification_type",
+   "fieldtype": "Select",
+   "label": "Verification Type",
+   "options": "\nAcademics\nWork Experience"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Academic Transcript') !== -1; })",
+   "fieldname": "academic_transcript_section",
+   "fieldtype": "Section Break",
+   "label": "Academic Transcript"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Academic Transcript') !== -1; })",
+   "description": "Enter details for the academic transcript condition",
+   "fieldname": "academic_transcript_details",
+   "fieldtype": "Text",
+   "label": "Details"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Academic Transcript') !== -1; })",
+   "description": "Upload academic transcript / related documents",
+   "fieldname": "academic_transcript_documents",
+   "fieldtype": "Table",
+   "label": "Supporting Documents",
+   "options": "student documents"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Other') !== -1; })",
+   "fieldname": "other_condition_section",
+   "fieldtype": "Section Break",
+   "label": "Other Condition"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Other') !== -1; })",
+   "description": "Describe the other offer letter condition",
+   "fieldname": "other_condition_details",
+   "fieldtype": "Text",
+   "label": "Details"
+  },
+  {
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Other') !== -1; })",
+   "description": "Upload supporting documents for other condition",
+   "fieldname": "other_condition_documents",
+   "fieldtype": "Table",
+   "label": "Supporting Documents (Optional)",
+   "options": "student documents"
+  },
+  {
+   "depends_on": "eval:doc.interview_stage_available",
+   "fieldname": "student_prepare",
+   "fieldtype": "Select",
+   "label": "Student Prepare",
+   "options": "\nYes\nNo"
+  },
+  {
+   "default": "\u2713 Schedule Interview (if not scheduled)",
+   "depends_on": "eval:doc.interview_stage_available && doc.student_prepare == 'Yes'",
+   "fieldname": "student_prepare_yes_status",
+   "fieldtype": "Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "default": "\u26a0 Prepare Student - Set Reminder to Prepare Student",
+   "depends_on": "eval:doc.interview_stage_available && doc.student_prepare == 'No'",
+   "fieldname": "student_prepare_no_status",
+   "fieldtype": "Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.interview_stage_available && doc.student_prepare == 'Yes'",
+   "fieldname": "schedule_interview",
+   "fieldtype": "Select",
+   "label": "Schedule Interview",
+   "options": "\nYes\nNo"
+  },
+  {
+   "default": "\u2713 Prepare Student Strongly - Reminder Set for Interview Date",
+   "depends_on": "eval:doc.interview_stage_available && doc.schedule_interview == 'Yes'",
+   "fieldname": "schedule_interview_yes_status",
+   "fieldtype": "Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "default": "\u26a0 Prepare Student - Set Reminder for Follow Up Interview Schedule",
+   "depends_on": "eval:doc.interview_stage_available && doc.schedule_interview == 'No'",
+   "fieldname": "schedule_interview_no_status",
+   "fieldtype": "Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "fieldname": "interview_status",
+   "fieldtype": "Select",
+   "label": "Interview Status",
+   "options": "\nPending\nApproved\nRejected"
+  },
+  {
+   "fieldname": "interview_second_chance",
+   "fieldtype": "Select",
+   "label": "2nd Chance for Interview?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "funds_28_day_ok",
+   "fieldtype": "Select",
+   "label": "28-day Funds Rule Met?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "funds_meet_requirement",
+   "fieldtype": "Select",
+   "label": "Showing Amount Meets Requirements?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "medical_scheduled",
+   "fieldtype": "Select",
+   "label": "Medical Scheduled?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "financial_docs_submitted",
+   "fieldtype": "Select",
+   "label": "Financial Documents Submitted?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "financial_notes",
+   "fieldtype": "Small Text",
+   "label": "Financial Notes"
+  },
+  {
+   "depends_on": "eval:(1) && (1)",
+   "fieldname": "acceptance_tab",
+   "fieldtype": "Tab Break",
+   "label": "Acceptance"
+  },
+  {
+   "default": "0",
+   "fieldname": "acceptance_submitted",
+   "fieldtype": "Check",
+   "label": "Acceptance Submitted"
+  },
+  {
+   "default": "\u2713 Ok - Move to Acceptance Stage",
+   "depends_on": "eval:doc.acceptance_submitted",
+   "fieldname": "acceptance_submitted_status",
+   "fieldtype": "Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "default": "\u26a0 Set Reminder When Acceptance Will Be Submitted",
+   "depends_on": "eval:!doc.acceptance_submitted",
+   "fieldname": "acceptance_not_submitted_status",
+   "fieldtype": "Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "fieldname": "deposit_paid",
+   "fieldtype": "Select",
+   "label": "Deposit Paid?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "acceptance_docs",
+   "fieldtype": "Attach",
+   "label": "Acceptance Documents"
+  },
+  {
+   "fieldname": "cas_tab",
+   "fieldtype": "Tab Break",
+   "label": "CAS"
+  },
+  {
+   "fieldname": "cas_section",
+   "fieldtype": "Section Break",
+   "label": "CAS"
+  },
+  {
+   "fieldname": "cas_letter_received",
+   "fieldtype": "Select",
+   "label": "CAS Letter Received?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "cas_any_pendency",
+   "fieldtype": "Select",
+   "label": "Any CAS Pendency?",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.cas_letter_received=='No'"
+  },
+  {
+   "fieldname": "cas_pendency_details",
+   "fieldtype": "Small Text",
+   "label": "CAS Pendency Details",
+   "depends_on": "eval:doc.cas_any_pendency=='Yes'"
+  },
+  {
+   "fieldname": "cas_pendency_completed",
+   "fieldtype": "Select",
+   "label": "CAS Pendency Completed?",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.cas_any_pendency=='Yes'"
+  },
+  {
+   "fieldname": "cas_received",
+   "fieldtype": "Select",
+   "label": "CAS Received?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "cas_number",
+   "fieldtype": "Data",
+   "label": "CAS Number"
+  },
+  {
+   "fieldname": "cas_upload",
+   "fieldtype": "Attach",
+   "label": "CAS Letter Upload"
+  },
+  {
+   "fieldname": "cas_notes",
+   "fieldtype": "Small Text",
+   "label": "CAS Notes"
+  },
+  {
+   "fieldname": "sponsor_license_number",
+   "fieldtype": "Data",
+   "label": "Sponsor License Number"
+  },
+  {
+   "fieldname": "cas_extension_required",
+   "fieldtype": "Select",
+   "label": "CAS Extension Required?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "who_lodges_visa",
+   "fieldtype": "Select",
+   "label": "Who Lodges Visa",
+   "options": "\nOur Team\nAgent\nStudent"
+  },
+  {
+   "fieldname": "ihs_number",
+   "fieldtype": "Data",
+   "label": "IHS Number"
+  },
+  {
+   "fieldname": "ihs_upload",
+   "fieldtype": "Attach",
+   "label": "IHS Upload"
+  },
+  {
+   "depends_on": "eval:(1) && (1)",
+   "fieldname": "file_lodged_tab",
+   "fieldtype": "Tab Break",
+   "label": "File Lodged"
+  },
+  {
+   "bold": 1,
+   "fieldname": "file_lodged_section",
+   "fieldtype": "Section Break",
+   "label": "File Lodged"
+  },
+  {
+   "fieldname": "visa_file_lodged",
+   "fieldtype": "Select",
+   "label": "Visa File Lodged?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "gwf_number",
+   "fieldtype": "Data",
+   "label": "GWF / Application Number"
+  },
+  {
+   "fieldname": "biometrics_done",
+   "fieldtype": "Select",
+   "label": "Biometrics Done?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "visa_lodge_docs",
+   "fieldtype": "Attach",
+   "label": "Visa Lodge Documents"
+  },
+  {
+   "fieldname": "biometric_date",
+   "fieldtype": "Date",
+   "label": "Biometric Appointment Date"
+  },
+  {
+   "fieldname": "biometric_place",
+   "fieldtype": "Data",
+   "label": "Biometric Place"
+  },
+  {
+   "fieldname": "expected_visa_decision",
+   "fieldtype": "Date",
+   "label": "Expected Visa Decision Date"
+  },
+  {
+   "fieldname": "trn_number",
+   "fieldtype": "Text",
+   "label": "TRN Number"
+  },
+  {
+   "fieldname": "immi_acknowledgement_upload",
+   "fieldtype": "Attach",
+   "label": "IMMI Acknowledgement Upload"
+  },
+  {
+   "depends_on": "eval:(1) && (doc.visa_status == 'Visa Approved' && (1))",
+   "fieldname": "visa_tab",
+   "fieldtype": "Tab Break",
+   "label": "Visa"
+  },
+  {
+   "bold": 1,
+   "fieldname": "visa_section",
+   "fieldtype": "Section Break",
+   "label": "Visa"
+  },
+  {
+   "fieldname": "visa_decision",
+   "fieldtype": "Select",
+   "label": "Decision",
+   "options": "\nVisa Approved\nVisa Refused"
+  },
+  {
+   "fieldname": "visa_copy_upload",
+   "fieldtype": "Attach",
+   "label": "Visa Copy Upload"
+  },
+  {
+   "fieldname": "visa_notes",
+   "fieldtype": "Small Text",
+   "label": "Visa Notes"
+  },
+  {
+   "fieldname": "evisa_activated",
+   "fieldtype": "Select",
+   "label": "e-Visa Activated?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "share_code_received",
+   "fieldtype": "Select",
+   "label": "Share Code Received?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "share_code_verified",
+   "fieldtype": "Select",
+   "label": "Verified with Share Code?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:(1) && (doc.visa_status == 'Visa Approved' && (1))",
+   "fieldname": "enrollment_tab",
+   "fieldtype": "Tab Break",
+   "label": "Enrolled"
+  },
+  {
+   "fieldname": "enrollment_section",
+   "fieldtype": "Section Break",
+   "label": "Enrolment"
+  },
+  {
+   "default": "0",
+   "fieldname": "student_enrolled",
+   "fieldtype": "Check",
+   "label": "Student Enrolled"
+  },
+  {
+   "default": "\u2713 Move to Enrollment Stage",
+   "depends_on": "eval:doc.student_enrolled",
+   "fieldname": "student_enrolled_yes_status",
+   "fieldtype": "Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "default": "\u26a0 Set Reminder to Enroll Student",
+   "depends_on": "eval:!doc.student_enrolled",
+   "fieldname": "student_enrolled_no_status",
+   "fieldtype": "Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "fieldname": "enrolment_docs",
+   "fieldtype": "Attach",
+   "label": "Enrolment Documents"
+  },
+  {
+   "fieldname": "student_id_card",
+   "fieldtype": "Attach",
+   "label": "Student ID Card"
+  },
+  {
+   "depends_on": "eval:(1) && (doc.visa_status == 'Visa Refused' && (1))",
+   "fieldname": "visa_refused_tab",
+   "fieldtype": "Tab Break",
+   "label": "Visa Refused"
+  },
+  {
+   "fieldname": "refusal_reason",
+   "fieldtype": "Small Text",
+   "label": "Refusal Reason"
+  },
+  {
+   "fieldname": "refusal_letter_upload",
+   "fieldtype": "Attach",
+   "label": "Refusal Letter"
+  },
+  {
+   "default": "0",
+   "fieldname": "process_other_country",
+   "fieldtype": "Check",
+   "label": "Want to Process in Any Other Country"
+  },
+  {
+   "depends_on": "eval:doc.process_other_country",
+   "fieldname": "other_country_name",
+   "fieldtype": "Text",
+   "label": "Country Name"
+  },
+  {
+   "fieldname": "applied_for_refund",
+   "fieldtype": "Select",
+   "label": "Applied for Refund?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:(1) && (doc.visa_status == 'Visa Refused' && (1))",
+   "fieldname": "refund_processing_tab",
+   "fieldtype": "Tab Break",
+   "label": "Refund Processing"
+  },
+  {
+   "fieldname": "refund_status",
+   "fieldtype": "Select",
+   "label": "Refund Status",
+   "options": "\nNot Applicable\nPending\nProcessed"
+  },
+  {
+   "fieldname": "refund_docs",
+   "fieldtype": "Attach",
+   "label": "Refund Documents"
+  },
+  {
+   "fieldname": "tuition_refund_received",
+   "fieldtype": "Select",
+   "label": "Tuition Refund Received?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "ihs_refund_received",
+   "fieldtype": "Select",
+   "label": "IHS Refund Received?",
+   "options": "\nYes\nNo"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "is_submittable": 0,
+ "links": [],
+ "modified": "2026-07-28 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Application UK",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "create": 1,
+   "read": 1,
+   "write": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1
+  },
+  {
+   "role": "CRM Admin",
+   "create": 1,
+   "read": 1,
+   "write": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "report": 1
+  },
+  {
+   "role": "Team Lead",
+   "create": 1,
+   "read": 1,
+   "write": 1,
+   "email": 1,
+   "print": 1
+  },
+  {
+   "role": "Team Executive",
+   "create": 1,
+   "read": 1,
+   "write": 1,
+   "email": 1,
+   "print": 1
+  },
+  {
+   "role": "CRM Sales Staff",
+   "create": 1,
+   "read": 1,
+   "write": 1,
+   "email": 1,
+   "print": 1
+  },
+  {
+   "role": "CRO Head",
+   "read": 1,
+   "write": 1,
+   "email": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1
+  },
+  {
+   "role": "CRO",
+   "read": 1,
+   "write": 1,
+   "email": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1
+  },
+  {
+   "role": "Country Head",
+   "read": 1,
+   "write": 1,
+   "email": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1
+  },
+  {
+   "role": "Admission 1",
+   "create": 1,
+   "read": 1,
+   "write": 1,
+   "email": 1,
+   "print": 1
+  },
+  {
+   "role": "Admission 2",
+   "read": 1,
+   "write": 1,
+   "email": 1,
+   "print": 1
+  },
+  {
+   "role": "Marketing Head",
+   "read": 1,
+   "print": 1
+  },
+  {
+   "role": "Marketing Member",
+   "read": 1,
+   "print": 1
+  },
+  {
+   "role": "Telecalling Head",
+   "read": 1,
+   "print": 1
+  },
+  {
+   "role": "Telecalling Member",
+   "read": 1,
+   "print": 1
+  },
+  {
+   "role": "B2B Agent",
+   "create": 1,
+   "read": 1,
+   "write": 1,
+   "email": 1,
+   "print": 1
+  },
+  {
+   "role": "B2C Agent",
+   "create": 1,
+   "read": 1,
+   "write": 1,
+   "email": 1,
+   "print": 1
+  },
+  {
+   "role": "Agent",
+   "create": 1,
+   "read": 1,
+   "write": 1,
+   "email": 1,
+   "print": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "student",
+ "track_changes": 1
+}

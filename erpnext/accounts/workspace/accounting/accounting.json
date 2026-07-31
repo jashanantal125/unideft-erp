@@ -1,5 +1,4 @@
 {
- "app": "erpnext",
  "charts": [
   {
    "chart_name": "Profit and Loss",
@@ -587,7 +586,11 @@
    "type": "Link"
   }
  ],
+<<<<<<< HEAD
  "modified": "2026-03-14 12:25:14.156262",
+=======
+ "modified": "2024-01-18 22:15:40.941711",
+>>>>>>> jashans-updates
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Accounting",
@@ -614,11 +617,15 @@
  "public": 1,
  "quick_lists": [],
  "restrict_to_domain": "",
+<<<<<<< HEAD
  "roles": [
   {
    "role": "Accounts User"
   }
  ],
+=======
+ "roles": [],
+>>>>>>> jashans-updates
  "sequence_id": 2.0,
  "shortcuts": [
   {
@@ -656,19 +663,28 @@
   {
    "label": "Accounts Receivable",
    "link_to": "Accounts Receivable",
+<<<<<<< HEAD
    "report_ref_doctype": "Sales Invoice",
+=======
+>>>>>>> jashans-updates
    "type": "Report"
   },
   {
    "label": "General Ledger",
    "link_to": "General Ledger",
+<<<<<<< HEAD
    "report_ref_doctype": "GL Entry",
+=======
+>>>>>>> jashans-updates
    "type": "Report"
   },
   {
    "label": "Trial Balance",
    "link_to": "Trial Balance",
+<<<<<<< HEAD
    "report_ref_doctype": "GL Entry",
+=======
+>>>>>>> jashans-updates
    "type": "Report"
   },
   {
@@ -677,6 +693,10 @@
    "type": "Dashboard"
   }
  ],
+<<<<<<< HEAD
  "title": "Accounting",
  "type": "Workspace"
+=======
+ "title": "Accounting"
+>>>>>>> jashans-updates
 }

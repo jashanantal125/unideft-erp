@@ -49,7 +49,46 @@
   "toefl_verified",
   "toefl_upload",
   "toefl_not_accepted",
+<<<<<<< HEAD
   "toefl_home_not_accepted"
+=======
+  "toefl_home_not_accepted",
+  "waiver_section",
+  "english_12th_marks",
+  "ukvi_ielts_section",
+  "ukvi_listening",
+  "ukvi_reading",
+  "ukvi_writing",
+  "ukvi_speaking",
+  "ukvi_overall",
+  "ukvi_login_id",
+  "ukvi_password",
+  "ukvi_verified",
+  "ukvi_upload",
+  "ukvi_pte_section",
+  "ukvi_pte_listening",
+  "ukvi_pte_reading",
+  "ukvi_pte_writing",
+  "ukvi_pte_speaking",
+  "ukvi_pte_overall",
+  "ukvi_pte_login_id",
+  "ukvi_pte_password",
+  "ukvi_pte_verified",
+  "ukvi_pte_upload",
+  "duolingo_section",
+  "duo_speaking",
+  "duo_writing",
+  "duo_reading",
+  "duo_listening",
+  "duo_literacy",
+  "duo_conversation",
+  "duo_comprehension",
+  "duo_production",
+  "duo_overall",
+  "duo_verification_link",
+  "duo_verified",
+  "duo_upload"
+>>>>>>> jashans-updates
  ],
  "fields": [
   {
@@ -57,7 +96,11 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Test Type",
+<<<<<<< HEAD
    "options": "\nIELTS\nPTE\nTOEFL",
+=======
+   "options": "\nIELTS Waiver\nIELTS\nUKVI IELTS\nPTE\nUKVI PTE\nDuolingo\nTOEFL",
+>>>>>>> jashans-updates
    "reqd": 1
   },
   {
@@ -165,7 +208,11 @@
    "label": "Upload Score Report"
   },
   {
+<<<<<<< HEAD
    "default": "\u26a0 Not Accepted - Needs Verification",
+=======
+   "default": "⚠ Not Accepted - Needs Verification",
+>>>>>>> jashans-updates
    "depends_on": "eval:doc.test_type == 'IELTS' && doc.ielts_verified == 0",
    "fieldname": "ielts_not_accepted",
    "fieldtype": "Text",
@@ -242,7 +289,11 @@
    "label": "Upload Score Report"
   },
   {
+<<<<<<< HEAD
    "default": "\u26a0 Not Accepted - Needs Verification",
+=======
+   "default": "⚠ Not Accepted - Needs Verification",
+>>>>>>> jashans-updates
    "depends_on": "eval:doc.test_type == 'PTE' && doc.pte_verified == 0",
    "fieldname": "pte_not_accepted",
    "fieldtype": "Text",
@@ -331,7 +382,11 @@
    "label": "Upload Score Report"
   },
   {
+<<<<<<< HEAD
    "default": "\u26a0 Not Accepted - Needs Verification",
+=======
+   "default": "⚠ Not Accepted - Needs Verification",
+>>>>>>> jashans-updates
    "depends_on": "eval:doc.test_type == 'TOEFL' && doc.toefl_type == 'IBT Center Based' && doc.toefl_verified == 0",
    "fieldname": "toefl_not_accepted",
    "fieldtype": "Text",
@@ -345,10 +400,230 @@
    "fieldtype": "Text",
    "label": "Status",
    "read_only": 1
+<<<<<<< HEAD
   }
  ],
  "istable": 1,
  "modified": "2026-07-23 00:00:00.000000",
+=======
+  },
+  {
+   "depends_on": "eval:doc.test_type=='IELTS Waiver'",
+   "fieldname": "waiver_section",
+   "fieldtype": "Section Break",
+   "label": "IELTS Waiver"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='IELTS Waiver'",
+   "fieldname": "english_12th_marks",
+   "fieldtype": "Data",
+   "label": "Marks in English (12th)"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='UKVI IELTS'",
+   "fieldname": "ukvi_ielts_section",
+   "fieldtype": "Section Break",
+   "label": "UKVI IELTS Scores"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='UKVI IELTS'",
+   "fieldname": "ukvi_listening",
+   "fieldtype": "Float",
+   "label": "Listening"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='UKVI IELTS'",
+   "fieldname": "ukvi_reading",
+   "fieldtype": "Float",
+   "label": "Reading"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='UKVI IELTS'",
+   "fieldname": "ukvi_writing",
+   "fieldtype": "Float",
+   "label": "Writing"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='UKVI IELTS'",
+   "fieldname": "ukvi_speaking",
+   "fieldtype": "Float",
+   "label": "Speaking"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='UKVI IELTS'",
+   "fieldname": "ukvi_overall",
+   "fieldtype": "Float",
+   "label": "Overall",
+   "in_list_view": 1
+  },
+  {
+   "depends_on": "eval:doc.test_type=='UKVI IELTS'",
+   "fieldname": "ukvi_login_id",
+   "fieldtype": "Data",
+   "label": "Login ID"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='UKVI IELTS'",
+   "fieldname": "ukvi_password",
+   "fieldtype": "Password",
+   "label": "Password"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='UKVI IELTS'",
+   "fieldname": "ukvi_verified",
+   "fieldtype": "Check",
+   "label": "Verified"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='UKVI IELTS' && doc.ukvi_verified",
+   "fieldname": "ukvi_upload",
+   "fieldtype": "Attach",
+   "label": "Upload Score Report"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='UKVI PTE'",
+   "fieldname": "ukvi_pte_section",
+   "fieldtype": "Section Break",
+   "label": "UKVI PTE Scores"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='UKVI PTE'",
+   "fieldname": "ukvi_pte_listening",
+   "fieldtype": "Int",
+   "label": "Listening"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='UKVI PTE'",
+   "fieldname": "ukvi_pte_reading",
+   "fieldtype": "Int",
+   "label": "Reading"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='UKVI PTE'",
+   "fieldname": "ukvi_pte_writing",
+   "fieldtype": "Int",
+   "label": "Writing"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='UKVI PTE'",
+   "fieldname": "ukvi_pte_speaking",
+   "fieldtype": "Int",
+   "label": "Speaking"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='UKVI PTE'",
+   "fieldname": "ukvi_pte_overall",
+   "fieldtype": "Int",
+   "label": "Overall",
+   "in_list_view": 1
+  },
+  {
+   "depends_on": "eval:doc.test_type=='UKVI PTE'",
+   "fieldname": "ukvi_pte_login_id",
+   "fieldtype": "Data",
+   "label": "Login ID"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='UKVI PTE'",
+   "fieldname": "ukvi_pte_password",
+   "fieldtype": "Password",
+   "label": "Password"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='UKVI PTE'",
+   "fieldname": "ukvi_pte_verified",
+   "fieldtype": "Check",
+   "label": "Verified"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='UKVI PTE' && doc.ukvi_pte_verified",
+   "fieldname": "ukvi_pte_upload",
+   "fieldtype": "Attach",
+   "label": "Upload Score Report"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='Duolingo'",
+   "fieldname": "duolingo_section",
+   "fieldtype": "Section Break",
+   "label": "Duolingo Scores"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='Duolingo'",
+   "fieldname": "duo_speaking",
+   "fieldtype": "Int",
+   "label": "Speaking"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='Duolingo'",
+   "fieldname": "duo_writing",
+   "fieldtype": "Int",
+   "label": "Writing"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='Duolingo'",
+   "fieldname": "duo_reading",
+   "fieldtype": "Int",
+   "label": "Reading"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='Duolingo'",
+   "fieldname": "duo_listening",
+   "fieldtype": "Int",
+   "label": "Listening"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='Duolingo'",
+   "fieldname": "duo_literacy",
+   "fieldtype": "Int",
+   "label": "Literacy"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='Duolingo'",
+   "fieldname": "duo_conversation",
+   "fieldtype": "Int",
+   "label": "Conversation"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='Duolingo'",
+   "fieldname": "duo_comprehension",
+   "fieldtype": "Int",
+   "label": "Comprehension"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='Duolingo'",
+   "fieldname": "duo_production",
+   "fieldtype": "Int",
+   "label": "Production"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='Duolingo'",
+   "fieldname": "duo_overall",
+   "fieldtype": "Int",
+   "label": "Overall",
+   "in_list_view": 1
+  },
+  {
+   "depends_on": "eval:doc.test_type=='Duolingo'",
+   "fieldname": "duo_verification_link",
+   "fieldtype": "Data",
+   "label": "Login Verification Link"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='Duolingo'",
+   "fieldname": "duo_verified",
+   "fieldtype": "Check",
+   "label": "Verified"
+  },
+  {
+   "depends_on": "eval:doc.test_type=='Duolingo' && doc.duo_verified",
+   "fieldname": "duo_upload",
+   "fieldtype": "Attach",
+   "label": "Upload Score Report"
+  }
+ ],
+ "istable": 1,
+ "modified": "2026-07-23 20:30:00.000000",
+>>>>>>> jashans-updates
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Application English Test",

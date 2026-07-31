@@ -1,5 +1,6 @@
 {
  "app": "erpnext",
+<<<<<<< HEAD
  "charts": [
   {
    "chart_name": "Lead Source",
@@ -7,6 +8,10 @@
   }
  ],
  "content": "[{\"id\":\"LAKRmpYMRA\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"XGIwEUStw_\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Your Shortcuts</b></span>\",\"col\":12}},{\"id\":\"69RN0XsiJK\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Leads\",\"col\":3}},{\"id\":\"PwOrJl9iyB\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Applications\",\"col\":3}},{\"id\":\"-I9HhcgUKE\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"ttpROKW9vk\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Reports &amp; Masters</b></span>\",\"col\":12}},{\"id\":\"aldI0pFsUz\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Lead Source\",\"col\":12}},{\"id\":\"XtkjU9utEL\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"g-V-9L698O\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Recents</b></span>\",\"col\":12}},{\"id\":\"3U8ckN5ogr\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Recent Applications\",\"col\":6}},{\"id\":\"a_YQVEN-OC\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Counsellings\",\"col\":6}}]",
+=======
+ "charts": [],
+ "content": "[{\"id\":\"LAKRmpYMRA\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"XGIwEUStw_\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Your Shortcuts</b></span>\",\"col\":12}},{\"id\":\"wdROEmB_XG\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Dashboard\",\"col\":3}},{\"id\":\"69RN0XsiJK\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Leads\",\"col\":3}},{\"id\":\"6UH-6i2zWH\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Applications\",\"col\":3}},{\"id\":\"5FiSddf9Kh\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Counsellings\",\"col\":3}},{\"id\":\"-I9HhcgUKE\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"ttpROKW9vk\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Reports &amp; Masters</b></span>\",\"col\":12}},{\"id\":\"qamF8iFp7U\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Courses\",\"col\":3}},{\"id\":\"5hnxnBRrAk\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Universities\",\"col\":3}},{\"id\":\"OClawfbye9\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Students\",\"col\":3}},{\"id\":\"XtkjU9utEL\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"g-V-9L698O\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Recents</b></span>\",\"col\":12}},{\"id\":\"3U8ckN5ogr\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Recent Applications\",\"col\":6}},{\"id\":\"a_YQVEN-OC\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Counsellings\",\"col\":6}}]",
+>>>>>>> jashans-updates
  "creation": "2020-01-23 14:48:30.183272",
  "custom_blocks": [],
  "docstatus": 0,
@@ -28,6 +33,7 @@
    "link_type": "Report",
    "onboard": 1,
    "type": "Link"
+<<<<<<< HEAD
   }
  ],
  "modified": "2026-07-23 16:41:03.610257",
@@ -35,6 +41,143 @@
  "module": "CRM",
  "name": "CRM",
  "number_cards": [],
+=======
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Sales Pipeline Analytics",
+   "link_count": 0,
+   "link_to": "Sales Pipeline Analytics",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Opportunity Summary by Sales Stage",
+   "link_count": 0,
+   "link_to": "Opportunity Summary by Sales Stage",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Sales Funnel",
+   "link_count": 0,
+   "link_to": "sales-funnel",
+   "link_type": "Page",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "Lead",
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Prospects Engaged But Not Converted",
+   "link_count": 0,
+   "link_to": "Prospects Engaged But Not Converted",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "Opportunity",
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "First Response Time for Opportunity",
+   "link_count": 0,
+   "link_to": "First Response Time for Opportunity",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "Sales Order",
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Inactive Customers",
+   "link_count": 0,
+   "link_to": "Inactive Customers",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "Lead",
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Campaign Efficiency",
+   "link_count": 0,
+   "link_to": "Campaign Efficiency",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "Lead",
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Lead Owner Efficiency",
+   "link_count": 0,
+   "link_to": "Lead Owner Efficiency",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Maintenance Schedule",
+   "link_count": 0,
+   "link_to": "Maintenance Schedule",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Maintenance Visit",
+   "link_count": 0,
+   "link_to": "Maintenance Visit",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Warranty Claim",
+   "link_count": 0,
+   "link_to": "Warranty Claim",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-01-20 18:57:26.824681",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "CRM",
+ "number_cards": [
+  {
+   "label": "Pending applications (Total)",
+   "number_card_name": "Pending Applications"
+  },
+  {
+   "label": "New Applications",
+   "number_card_name": "New Applications"
+  }
+ ],
+>>>>>>> jashans-updates
  "owner": "Administrator",
  "parent_page": "",
  "public": 1,
@@ -53,23 +196,46 @@
  "restrict_to_domain": "",
  "roles": [
   {
+<<<<<<< HEAD
    "role": "agents"
+=======
+   "role": "System Manager"
+>>>>>>> jashans-updates
   },
   {
    "role": "Administrator"
   },
   {
+<<<<<<< HEAD
    "role": "Sales User"
+=======
+   "role": "CRM Admin"
+  },
+  {
+   "role": "CRM Sales Staff"
+  },
+  {
+   "role": "Team Lead"
+  },
+  {
+   "role": "Team Executive"
+>>>>>>> jashans-updates
   }
  ],
  "sequence_id": 17.0,
  "shortcuts": [
   {
+<<<<<<< HEAD
    "color": "Blue",
    "doc_view": "List",
    "format": "{} Open",
    "icon": "fa fa-user",
    "label": "Applications",
+=======
+   "color": "Red",
+   "doc_view": "New",
+   "label": "+ Add new  applications",
+>>>>>>> jashans-updates
    "link_to": "Application",
    "stats_filter": "[]",
    "type": "DocType"
@@ -83,6 +249,24 @@
    "link_to": "Lead",
    "stats_filter": "[]",
    "type": "DocType"
+<<<<<<< HEAD
+=======
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "icon": "fa fa-book",
+   "label": "Courses",
+   "link_to": "Course",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "icon": "fa fa-dashboard",
+   "label": "Dashboard",
+   "link_to": "CRM",
+   "type": "Dashboard"
+>>>>>>> jashans-updates
   }
  ],
  "title": "CRM",

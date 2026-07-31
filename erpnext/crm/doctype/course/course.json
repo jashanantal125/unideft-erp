@@ -24,6 +24,10 @@
   "intake_3",
   "campus",
   "application_fee",
+<<<<<<< HEAD
+=======
+  "minimum_requirement",
+>>>>>>> jashans-updates
   "column_break_ioqb",
   "ielts_score",
   "pte_score",
@@ -47,7 +51,12 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Course Name",
+<<<<<<< HEAD
    "reqd": 1
+=======
+   "reqd": 1,
+   "unique": 1
+>>>>>>> jashans-updates
   },
   {
    "fieldname": "course_code",
@@ -83,14 +92,23 @@
   },
   {
    "fieldname": "description",
+<<<<<<< HEAD
    "fieldtype": "Small Text",
+=======
+   "fieldtype": "Text Editor",
+>>>>>>> jashans-updates
    "label": "Description"
   },
   {
    "fieldname": "entry_requirements",
+<<<<<<< HEAD
    "fieldtype": "Small Text",
    "label": "Entry Requirements",
    "length": 300
+=======
+   "fieldtype": "Text Editor",
+   "label": "Entry Requirements"
+>>>>>>> jashans-updates
   },
   {
    "fieldname": "column_break_ncgr",
@@ -133,7 +151,11 @@
    "fieldname": "duration_type",
    "fieldtype": "Select",
    "label": "Duration Type",
+<<<<<<< HEAD
    "options": "Hours\nMonth\nMonths\nWeeks\nYear\nYears"
+=======
+   "options": "Months\nDays"
+>>>>>>> jashans-updates
   },
   {
    "fieldname": "application_fee",
@@ -146,6 +168,14 @@
    "label": "Program Link"
   },
   {
+<<<<<<< HEAD
+=======
+   "fieldname": "minimum_requirement",
+   "fieldtype": "Data",
+   "label": "Minimum Requirement"
+  },
+  {
+>>>>>>> jashans-updates
    "fieldname": "select_oghe",
    "fieldtype": "Select",
    "label": "Attendance",
@@ -195,7 +225,11 @@
  "icon": "fa fa-graduation-cap",
  "index_web_pages_for_search": 1,
  "links": [],
+<<<<<<< HEAD
  "modified": "2026-03-16 10:04:51.596791",
+=======
+ "modified": "2026-01-18 19:14:49.502865",
+>>>>>>> jashans-updates
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Course",

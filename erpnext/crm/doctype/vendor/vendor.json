@@ -1,6 +1,10 @@
 {
  "actions": [],
  "allow_rename": 1,
+<<<<<<< HEAD
+=======
+ "autoname": "field:name1",
+>>>>>>> jashans-updates
  "creation": "2025-11-28 13:57:32.776570",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -18,6 +22,7 @@
   "last_name",
   "email",
   "phone_number",
+<<<<<<< HEAD
   "contracts_tab",
   "table_ocev"
  ],
@@ -26,6 +31,53 @@
    "fieldname": "name1",
    "fieldtype": "Data",
    "label": "Name"
+=======
+  "admission_contacts_tab",
+  "admission_contacts",
+  "portal_tab",
+  "portal_available",
+  "portal_link",
+  "portal_login_id",
+  "portal_password",
+  "commission_tab",
+  "overall_commission_percentage",
+  "country_wise_commission",
+  "country_commissions",
+  "extra_bonus_available",
+  "country_wise_bonus",
+  "country_bonuses",
+  "university_wise_bonus",
+  "university_bonuses",
+  "commission_info_source",
+  "use_existing_portal_credentials",
+  "commission_portal_link",
+  "commission_login_id",
+  "commission_password",
+  "commission_email_attachment",
+  "contract_tab",
+  "contract_start_date",
+  "contract_end_date",
+  "renewal_reminder_date",
+  "contract_document",
+  "table_ocev",
+  "recruitment_tab",
+  "countries_recruited_for",
+  "universities_represented"
+ ],
+ "fields": [
+  {
+   "fieldname": "vendor_info_section",
+   "fieldtype": "Section Break",
+   "label": "Vendor Details"
+  },
+  {
+   "fieldname": "name1",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Vendor Name",
+   "reqd": 1,
+   "unique": 1
+>>>>>>> jashans-updates
   },
   {
    "fieldname": "short_name",
@@ -34,7 +86,11 @@
   },
   {
    "fieldname": "address",
+<<<<<<< HEAD
    "fieldtype": "Data",
+=======
+   "fieldtype": "Small Text",
+>>>>>>> jashans-updates
    "label": "Address"
   },
   {
@@ -45,7 +101,11 @@
   {
    "fieldname": "state",
    "fieldtype": "Data",
+<<<<<<< HEAD
    "label": "State"
+=======
+   "label": "State/Province"
+>>>>>>> jashans-updates
   },
   {
    "fieldname": "column_break_ttxn",
@@ -53,15 +113,27 @@
   },
   {
    "fieldname": "country",
+<<<<<<< HEAD
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Country",
+=======
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Country",
+   "options": "Country",
+>>>>>>> jashans-updates
    "reqd": 1
   },
   {
    "fieldname": "contact_person_details",
+<<<<<<< HEAD
    "fieldtype": "Heading",
    "label": "Contact Person Details"
+=======
+   "fieldtype": "Section Break",
+   "label": "Primary Contact Person Details"
+>>>>>>> jashans-updates
   },
   {
    "fieldname": "first_name",
@@ -76,6 +148,7 @@
   {
    "fieldname": "email",
    "fieldtype": "Data",
+<<<<<<< HEAD
    "label": "Email"
   },
   {
@@ -92,20 +165,225 @@
    "fieldname": "contracts_tab",
    "fieldtype": "Tab Break",
    "label": "Contracts"
+=======
+   "label": "Email Address",
+   "options": "Email"
+  },
+  {
+   "fieldname": "phone_number",
+   "fieldtype": "Data",
+   "label": "Phone Number",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "admission_contacts_tab",
+   "fieldtype": "Tab Break",
+   "label": "Admission Contacts"
+  },
+  {
+   "description": "Add one or more admission contacts per country (Canada, Australia, UK, NZ, Ireland, etc.).",
+   "fieldname": "admission_contacts",
+   "fieldtype": "Table",
+   "label": "Admission Team Contact Details",
+   "options": "Vendor Admission Contact"
+  },
+  {
+   "fieldname": "portal_tab",
+   "fieldtype": "Tab Break",
+   "label": "Portal Access"
+  },
+  {
+   "fieldname": "portal_available",
+   "fieldtype": "Select",
+   "label": "Portal Available",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.portal_available == 'Yes'",
+   "fieldname": "portal_link",
+   "fieldtype": "Data",
+   "label": "Portal Link",
+   "options": "URL"
+  },
+  {
+   "depends_on": "eval:doc.portal_available == 'Yes'",
+   "fieldname": "portal_login_id",
+   "fieldtype": "Data",
+   "label": "Login ID"
+  },
+  {
+   "depends_on": "eval:doc.portal_available == 'Yes'",
+   "fieldname": "portal_password",
+   "fieldtype": "Password",
+   "label": "Password"
+  },
+  {
+   "fieldname": "commission_tab",
+   "fieldtype": "Tab Break",
+   "label": "Commission"
+  },
+  {
+   "fieldname": "overall_commission_percentage",
+   "fieldtype": "Percent",
+   "label": "Overall Commission Sharing Percentage"
+  },
+  {
+   "fieldname": "country_wise_commission",
+   "fieldtype": "Select",
+   "label": "Country-wise Commission Sharing",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.country_wise_commission == 'Yes'",
+   "fieldname": "country_commissions",
+   "fieldtype": "Table",
+   "label": "Country-wise Commission",
+   "options": "Vendor Country Commission"
+  },
+  {
+   "fieldname": "extra_bonus_available",
+   "fieldtype": "Select",
+   "label": "Extra Bonus Available",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.extra_bonus_available == 'Yes'",
+   "fieldname": "country_wise_bonus",
+   "fieldtype": "Select",
+   "label": "Country-wise Bonus",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.extra_bonus_available == 'Yes' && doc.country_wise_bonus == 'Yes'",
+   "fieldname": "country_bonuses",
+   "fieldtype": "Table",
+   "label": "Country-wise Bonus Details",
+   "options": "Vendor Country Bonus"
+  },
+  {
+   "depends_on": "eval:doc.extra_bonus_available == 'Yes'",
+   "fieldname": "university_wise_bonus",
+   "fieldtype": "Select",
+   "label": "University-wise Bonus",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.extra_bonus_available == 'Yes' && doc.university_wise_bonus == 'Yes'",
+   "fieldname": "university_bonuses",
+   "fieldtype": "Table",
+   "label": "University-wise Bonus Details",
+   "options": "Vendor University Bonus"
+  },
+  {
+   "fieldname": "commission_info_source",
+   "fieldtype": "Select",
+   "label": "Commission Information Source",
+   "options": "\nPortal\nEmail"
+  },
+  {
+   "depends_on": "eval:doc.commission_info_source == 'Portal'",
+   "fieldname": "use_existing_portal_credentials",
+   "fieldtype": "Select",
+   "label": "Use Existing Portal Credentials",
+   "options": "\nSame\nDifferent"
+  },
+  {
+   "depends_on": "eval:doc.commission_info_source == 'Portal' && doc.use_existing_portal_credentials == 'Different'",
+   "fieldname": "commission_portal_link",
+   "fieldtype": "Data",
+   "label": "Portal Link",
+   "options": "URL"
+  },
+  {
+   "depends_on": "eval:doc.commission_info_source == 'Portal' && doc.use_existing_portal_credentials == 'Different'",
+   "fieldname": "commission_login_id",
+   "fieldtype": "Data",
+   "label": "Login ID"
+  },
+  {
+   "depends_on": "eval:doc.commission_info_source == 'Portal' && doc.use_existing_portal_credentials == 'Different'",
+   "fieldname": "commission_password",
+   "fieldtype": "Password",
+   "label": "Password"
+  },
+  {
+   "depends_on": "eval:doc.commission_info_source == 'Email'",
+   "fieldname": "commission_email_attachment",
+   "fieldtype": "Attach",
+   "label": "Commission Structure Attachment"
+  },
+  {
+   "fieldname": "contract_tab",
+   "fieldtype": "Tab Break",
+   "label": "Contract"
+  },
+  {
+   "fieldname": "contract_start_date",
+   "fieldtype": "Date",
+   "label": "Contract Start Date"
+  },
+  {
+   "fieldname": "contract_end_date",
+   "fieldtype": "Date",
+   "label": "Contract End Date"
+  },
+  {
+   "description": "Auto-set to 30 days before Contract End Date",
+   "fieldname": "renewal_reminder_date",
+   "fieldtype": "Date",
+   "label": "Renewal Reminder Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "contract_document",
+   "fieldtype": "Attach",
+   "label": "Contract Document"
+>>>>>>> jashans-updates
   },
   {
    "fieldname": "table_ocev",
    "fieldtype": "Table",
+<<<<<<< HEAD
    "options": "Vendor Contracts"
+=======
+   "label": "Contract History",
+   "options": "Vendor Contracts"
+  },
+  {
+   "fieldname": "recruitment_tab",
+   "fieldtype": "Tab Break",
+   "label": "Recruitment Coverage"
+  },
+  {
+   "fieldname": "countries_recruited_for",
+   "fieldtype": "Table",
+   "label": "Countries Recruited For",
+   "options": "Vendor Recruitment Country"
+  },
+  {
+   "description": "If a university is missing, create it from University list first.",
+   "fieldname": "universities_represented",
+   "fieldtype": "Table",
+   "label": "Universities Represented",
+   "options": "Vendor Partner University"
+>>>>>>> jashans-updates
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
+<<<<<<< HEAD
  "modified": "2026-01-05 13:56:56.765076",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "vendor",
+=======
+ "modified": "2026-07-31 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "vendor",
+ "naming_rule": "By fieldname",
+>>>>>>> jashans-updates
  "owner": "Administrator",
  "permissions": [
   {
@@ -119,6 +397,7 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
+<<<<<<< HEAD
   }
  ],
  "row_format": "Dynamic",
@@ -126,4 +405,54 @@
  "sort_field": "creation",
  "sort_order": "DESC",
  "states": []
+=======
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "CRM Admin",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Admission 1"
+  },
+  {
+   "read": 1,
+   "role": "Admission 2"
+  },
+  {
+   "read": 1,
+   "role": "CRO"
+  },
+  {
+   "read": 1,
+   "role": "Country Head"
+  },
+  {
+   "read": 1,
+   "role": "Agent"
+  },
+  {
+   "read": 1,
+   "role": "B2B Agent"
+  },
+  {
+   "read": 1,
+   "role": "B2C Agent"
+  }
+ ],
+ "row_format": "Dynamic",
+ "search_fields": "name1,short_name,email,city",
+ "show_title_field_in_link": 1,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "name1",
+ "track_changes": 1
+>>>>>>> jashans-updates
 }

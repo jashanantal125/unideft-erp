@@ -38,7 +38,42 @@
   }
  ],
  "restrict_to_domain": "",
+<<<<<<< HEAD
  "roles": [],
+=======
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Administrator"
+  },
+  {
+   "role": "CRM Admin"
+  },
+  {
+   "role": "CRM Sales Staff"
+  },
+  {
+   "role": "Team Lead"
+  },
+  {
+   "role": "Team Executive"
+  },
+  {
+   "role": "Agent"
+  },
+  {
+   "role": "B2B Agent"
+  },
+  {
+   "role": "B2C Agent"
+  },
+  {
+   "role": "agents"
+  }
+ ],
+>>>>>>> jashans-updates
  "sequence_id": 19.0,
  "shortcuts": [
   {

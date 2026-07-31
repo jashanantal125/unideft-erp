@@ -12,6 +12,10 @@
   "company_name",
   "user",
   "sales_team",
+<<<<<<< HEAD
+=======
+  "cro_head",
+>>>>>>> jashans-updates
   "no_of_employees",
   "country",
   "state",
@@ -64,6 +68,16 @@
    "options": "Team"
   },
   {
+<<<<<<< HEAD
+=======
+   "fieldname": "cro_head",
+   "fieldtype": "Link",
+   "label": "CRO Head",
+   "options": "User",
+   "description": "CRO Head who manages this CRO / Agent"
+  },
+  {
+>>>>>>> jashans-updates
    "fieldname": "no_of_employees",
    "fieldtype": "Int",
    "label": "No. of employees",
@@ -163,7 +177,11 @@
  "icon": "fa fa-users",
  "index_web_pages_for_search": 1,
  "links": [],
+<<<<<<< HEAD
  "modified": "2026-01-20 18:56:13.369677",
+=======
+ "modified": "2026-07-29 12:00:00.000000",
+>>>>>>> jashans-updates
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Agent",

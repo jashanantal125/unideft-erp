@@ -24,7 +24,11 @@ class Course(Document):
 		discipline: DF.Data | None
 		duolingo_score: DF.Float
 		duration: DF.Int
+<<<<<<< HEAD
 		duration_type: DF.Literal["Hours", "Month", "Months", "Weeks", "Year", "Years"]
+=======
+		duration_type: DF.Literal["Months", "Days"]
+>>>>>>> jashans-updates
 		entry_requirements: DF.TextEditor | None
 		ielts_score: DF.Float
 		intake_2: DF.Data | None
@@ -32,6 +36,10 @@ class Course(Document):
 		intake_months: DF.Data | None
 		is_full_time: DF.Check
 		is_shortlisted: DF.Check
+<<<<<<< HEAD
+=======
+		minimum_requirement: DF.Data | None
+>>>>>>> jashans-updates
 		naming_series: DF.Literal["COURSE-.YYYY.-"]
 		program_link: DF.Data | None
 		pte_score: DF.Float

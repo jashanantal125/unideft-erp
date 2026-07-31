@@ -1,0 +1,296 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "autoname": "naming_series:",
+ "creation": "2026-07-31 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "status",
+  "assigned_team",
+  "column_break_meta",
+  "requested_by",
+  "request_date",
+  "student_section",
+  "student_already_registered",
+  "student",
+  "column_break_student",
+  "first_name",
+  "middle_name",
+  "last_name",
+  "mobile_number",
+  "email_address",
+  "preferences_section",
+  "preferred_countries",
+  "preferred_course_area",
+  "attachments_section",
+  "attachments",
+  "assessment_workflow_tab",
+  "assessment_vendors_section",
+  "assessment_vendors"
+ ],
+ "fields": [
+  {
+   "default": "ASR-.YYYY.-",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Series",
+   "options": "ASR-.YYYY.-",
+   "reqd": 1
+  },
+  {
+   "default": "Open",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Open\nIn Progress\nClosed\nConverted to Application"
+  },
+  {
+   "fieldname": "assigned_team",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Assigned Team",
+   "options": "Team",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_meta",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "User",
+   "fieldname": "requested_by",
+   "fieldtype": "Link",
+   "label": "Requested By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "request_date",
+   "fieldtype": "Date",
+   "label": "Request Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "student_section",
+   "fieldtype": "Section Break",
+   "label": "Student Information"
+  },
+  {
+   "fieldname": "student_already_registered",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Student Already Registered",
+   "options": "\nYes\nNo",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.student_already_registered == 'Yes'",
+   "fieldname": "student",
+   "fieldtype": "Link",
+   "label": "Student ID / Student Name",
+   "options": "Student",
+   "mandatory_depends_on": "eval:doc.student_already_registered == 'Yes'"
+  },
+  {
+   "fieldname": "column_break_student",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "first_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "First Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "middle_name",
+   "fieldtype": "Data",
+   "label": "Middle Name"
+  },
+  {
+   "fieldname": "last_name",
+   "fieldtype": "Data",
+   "label": "Last Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "mobile_number",
+   "fieldtype": "Data",
+   "label": "Mobile Number",
+   "mandatory_depends_on": "eval:doc.student_already_registered == 'Yes'",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "email_address",
+   "fieldtype": "Data",
+   "label": "Email Address",
+   "mandatory_depends_on": "eval:doc.student_already_registered == 'Yes'",
+   "options": "Email"
+  },
+  {
+   "fieldname": "preferences_section",
+   "fieldtype": "Section Break",
+   "label": "Additional Information"
+  },
+  {
+   "fieldname": "preferred_countries",
+   "fieldtype": "Table",
+   "label": "Preferred Countries",
+   "options": "Assessment Request Country",
+   "reqd": 1
+  },
+  {
+   "fieldname": "preferred_course_area",
+   "fieldtype": "Data",
+   "label": "Preferred Course Area",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.student_already_registered == 'No'",
+   "fieldname": "attachments_section",
+   "fieldtype": "Section Break",
+   "label": "Attach Documents"
+  },
+  {
+   "depends_on": "eval:doc.student_already_registered == 'No'",
+   "fieldname": "attachments",
+   "fieldtype": "Table",
+   "label": "Documents",
+   "options": "Assessment Request Document"
+  },
+  {
+   "fieldname": "assessment_workflow_tab",
+   "fieldtype": "Tab Break",
+   "label": "Assessment Workflow"
+  },
+  {
+   "fieldname": "assessment_vendors_section",
+   "fieldtype": "Section Break",
+   "label": "Assessment Grid"
+  },
+  {
+   "description": "Backend team tracks assessment receipt, student options, confirmation, and conversion here.",
+   "fieldname": "assessment_vendors",
+   "fieldtype": "Table",
+   "label": "Assessment Vendors",
+   "options": "Need Assessment Vendor"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-07-31 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Assessment Request",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "CRM Admin",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Agent",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "B2B Agent",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "B2C Agent",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "CRO",
+   "write": 1
+  },
+  {
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "CRO Head",
+   "write": 1
+  },
+  {
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Country Head",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Admission 1",
+   "write": 1
+  },
+  {
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Admission 2",
+   "write": 1
+  },
+  {
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Team Lead",
+   "write": 1
+  },
+  {
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Team Executive",
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "first_name",
+ "track_changes": 1
+}

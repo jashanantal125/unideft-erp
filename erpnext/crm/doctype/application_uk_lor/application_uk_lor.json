@@ -1,0 +1,51 @@
+{
+ "actions": [],
+ "creation": "2026-07-23 20:30:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "lor_no",
+  "issuing_authority",
+  "position",
+  "upload"
+ ],
+ "fields": [
+  {
+   "fieldname": "lor_no",
+   "fieldtype": "Select",
+   "label": "LOR",
+   "options": "\nLOR1\nLOR2",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "issuing_authority",
+   "fieldtype": "Data",
+   "label": "Issuing Authority",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "position",
+   "fieldtype": "Data",
+   "label": "Position",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "upload",
+   "fieldtype": "Attach",
+   "label": "Upload",
+   "in_list_view": 1
+  }
+ ],
+ "istable": 1,
+ "modified": "2026-07-23 20:30:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Application UK LOR",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
