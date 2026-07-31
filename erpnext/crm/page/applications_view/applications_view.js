@@ -351,7 +351,9 @@ function loadApplications() {
                 'creation',
                 'modified',
                 'owner',
-                'higher_education'
+                'higher_education',
+                'uk_data',
+                'country_flow_case'
             ],
             limit_page_length: 1000,
             order_by: 'creation desc'
@@ -396,6 +398,39 @@ function getUniversityLabel(app) {
         app.university_name ||
         'N/A'
     );
+}
+
+function getCountryFlagHtml(country) {
+    if (!country) return '';
+    const codeMap = {
+        australia: 'au',
+        'united kingdom': 'gb',
+        uk: 'gb',
+        'great britain': 'gb',
+        britain: 'gb',
+        england: 'gb',
+        canada: 'ca',
+        'united states': 'us',
+        'united states of america': 'us',
+        usa: 'us',
+        'new zealand': 'nz',
+        ireland: 'ie',
+        germany: 'de',
+        france: 'fr',
+        italy: 'it',
+        spain: 'es',
+        netherlands: 'nl',
+        singapore: 'sg',
+        malaysia: 'my',
+        dubai: 'ae',
+        uae: 'ae',
+        'united arab emirates': 'ae',
+        india: 'in',
+    };
+    const code = codeMap[String(country).trim().toLowerCase()];
+    if (!code) return '';
+    const safe = escapeHtml(country);
+    return `<img class="country-flag" src="https://flagcdn.com/w40/${code}.png" alt="${safe}" title="${safe}" width="20" height="15" loading="lazy" />`;
 }
 
 function fetchUniversityNames(applications) {
@@ -664,13 +699,13 @@ function createApplicationCard(app) {
 			<div class="program-details">
 				<h3 class="degree-name">
 					${escapeHtml(degreeName)}
-					<i class="fa fa-external-link program-external-link" aria-hidden="true" onclick="viewApplication('${app.name}')"></i>
+					<i class="fa fa-external-link program-external-link" aria-hidden="true" onclick="viewApplication('${app.name}', '${app.uk_data || ''}', '${(app.destination_country || '').replace(/'/g, "\\'")}')"></i>
 				</h3>
 				<div class="program-meta">
 					${(app.preferred_university || app.university_name || app.university_display_name) || app.destination_country ? `
 						<span class="program-university">
 							${escapeHtml(getUniversityLabel(app))}
-							${app.destination_country ? `In ${escapeHtml(app.destination_country)}` : ''}
+							${app.destination_country ? `${getCountryFlagHtml(app.destination_country)} In ${escapeHtml(app.destination_country)}` : ''}
 						</span>
 					` : ''}
 					${app.intake ? `<span class="intake-date"><strong>Intake:</strong> ${escapeHtml(app.intake)}</span>` : ''}
@@ -1424,7 +1459,18 @@ function getInitials(name) {
     return name.substring(0, 2).toUpperCase();
 }
 
-function viewApplication(name) {
+function viewApplication(name, ukData, destinationCountry) {
+    if (ukData || (destinationCountry && String(destinationCountry).toLowerCase().includes('kingdom'))) {
+        frappe.db.get_value('Application', name, 'uk_data').then((r) => {
+            const uk_name = (r.message && r.message.uk_data) || ukData;
+            if (uk_name) {
+                frappe.set_route('Form', 'Application UK', uk_name);
+            } else {
+                frappe.set_route('Form', 'Application', name);
+            }
+        });
+        return;
+    }
     frappe.set_route('Form', 'Application', name);
 }
 

@@ -395,14 +395,14 @@ function maybe_prompt_financial_completion_reminder(frm) {
 }
 
 function sync_gs_interview_stage_from_financials(frm) {
-	// Client rule: GS Processing interview block comes directly when
-	// Financials Interview condition timing = Before Acceptance
+	// Interview Before Acceptance section shows when Interview condition is selected
 	const has_interview = has_offer_letter_condition(frm, "Interview");
-	const before_acceptance = frm.doc.interview_timing === "Before Acceptance";
-	const should_enable = has_interview && before_acceptance;
+	const should_enable = !!has_interview;
 
 	if (should_enable && !frm.doc.interview_stage_available) {
 		frm.set_value("interview_stage_available", 1);
+	} else if (!should_enable && frm.doc.interview_stage_available) {
+		frm.set_value("interview_stage_available", 0);
 	}
 }
 
@@ -509,6 +509,190 @@ function refresh_application_country_flag(frm) {
 	});
 }
 
+function is_uk_destination(country) {
+	const c = (country || "").trim().toLowerCase();
+	return ["united kingdom", "uk", "great britain", "britain", "england"].includes(c);
+}
+
+function is_au_destination(country) {
+	return (country || "").toLowerCase().includes("australia");
+}
+
+const AU_STAGE_TABS = [
+	"information_tab",
+	"submitted_tab",
+	"offer_tab",
+	"financials_tab",
+	"gs_tab",
+	"gs_approved_tab",
+	"acceptance_tab",
+	"coe_tab",
+	"file_lodged_tab",
+	"visa_tab",
+	"enrollment_tab",
+	"on_shore_college_change_tab",
+	"visa_refused_tab",
+	"refund_processing_tab",
+	"refunded_tab",
+	"closed_tab",
+];
+
+function redirect_uk_index_to_native(frm) {
+	if (!is_uk_destination(frm.doc.destination_country)) {
+		return false;
+	}
+	if (frm.is_new()) {
+		frappe.new_doc("Application UK", {
+			application_type: frm.doc.application_type || "B2B",
+			uk_current_stage: "Details",
+			country_flow_case: "UK Case 2",
+			student: frm.doc.student,
+			agent: frm.doc.agent,
+		});
+		return true;
+	}
+	if (frm.doc.uk_data) {
+		frappe.set_route("Form", "Application UK", frm.doc.uk_data);
+		return true;
+	}
+	return false;
+}
+
+// AU-only blocks on Details (Aus/NZ refusal cascade, Case 4 spouse, need assessment)
+const AU_DETAILS_ONLY = [
+	"visa_refused_ok",
+	"visa_refused_country",
+	"visa_refused_type",
+	"visa_refused_not_able_to_process",
+	"visa_refused_can_process",
+	"visa_refused_go_ahead_status",
+	"visa_refused_other_country",
+	"visa_refused_other_country_name",
+	"visa_refused_create_new_application",
+	"visa_refused_new_application",
+	"visa_refused_close_reason",
+	"visa_refused_closed_status",
+	"study_gap_upto_1_year",
+	"study_gap_status",
+	"study_gap_not_accepted_status",
+	"details_need_assessment_section",
+	"need_assessment",
+	"need_assessment_university",
+	"need_assessment_course",
+	"details_vendors_section",
+	"need_assessment_vendors",
+	"section_case_4_spouse",
+	"case_4_spouse_qualification",
+	"case_4_marriage_duration",
+	"case_4_proceed_below_graduate",
+	"case_4_proceed_below_1_year",
+	"case_4_proceed_above_1_year",
+	"case_4_note_wait",
+	"case_4_note_convince",
+	"case_4_close_reason",
+];
+
+function apply_country_flow_ui(frm) {
+	if (redirect_uk_index_to_native(frm)) {
+		return;
+	}
+
+	const country = frm.doc.destination_country;
+	const au = is_au_destination(country);
+
+	AU_STAGE_TABS.forEach((tab) => {
+		if (frm.fields_dict[tab]) {
+			frm.set_df_property(tab, "hidden", au ? 0 : 1);
+		}
+	});
+	AU_DETAILS_ONLY.forEach((fieldname) => {
+		if (frm.fields_dict[fieldname]) {
+			frm.set_df_property(fieldname, "hidden", au ? 0 : 1);
+		}
+	});
+
+	if (frm.fields_dict.details_tab) {
+		frm.set_df_property("details_tab", "hidden", 0);
+	}
+
+	if (frm.fields_dict.country_flow_case) {
+		frm.set_df_property("country_flow_case", "hidden", 1);
+	}
+
+	if (frm.fields_dict.uk_data) {
+		frm.set_df_property("uk_data", "hidden", 1);
+		frm.set_df_property("uk_data", "read_only", 1);
+	}
+
+	frm.dashboard.clear_headline();
+	frm.refresh_fields();
+
+	if (frm.is_new() && !frm._country_confirmed) {
+		if (!frm._country_cleared_default && !frm._country_from_dialog) {
+			frm._country_cleared_default = true;
+			if (frm.doc.destination_country) {
+				frm.doc.destination_country = "";
+				frm.refresh_field("destination_country");
+			}
+			if (frm.doc.country_flow_case) {
+				frm.doc.country_flow_case = "";
+				frm.refresh_field("country_flow_case");
+			}
+		}
+		if (!frm._country_dialog_shown) {
+			frm._country_dialog_shown = true;
+			show_application_country_dialog(frm);
+		}
+	}
+}
+
+function show_application_country_dialog(frm) {
+	const d = new frappe.ui.Dialog({
+		title: __("New Application — Select Country"),
+		fields: [
+			{
+				fieldname: "destination_country",
+				fieldtype: "Link",
+				options: "Country",
+				label: __("Destination Country"),
+				reqd: 1,
+				description: __("Australia opens here. United Kingdom opens on Application UK."),
+				get_query: () => ({
+					filters: {
+						name: ["in", ["Australia", "United Kingdom"]],
+					},
+				}),
+			},
+		],
+		primary_action_label: __("Continue"),
+		primary_action(values) {
+			d.hide();
+			if (is_uk_destination(values.destination_country)) {
+				frappe.new_doc("Application UK", {
+					application_type: frm.doc.application_type || "B2B",
+					uk_current_stage: "Details",
+					country_flow_case: "UK Case 2",
+					student: frm.doc.student,
+					agent: frm.doc.agent,
+				});
+				return;
+			}
+			frm._country_from_dialog = true;
+			frm._country_confirmed = true;
+			frm.set_value("destination_country", values.destination_country).then(() => {
+				frm.set_value("country_flow_case", "AU Default");
+				if (!frm.doc.offer_currency) {
+					frm.set_value("offer_currency", "AUD");
+				}
+				apply_country_flow_ui(frm);
+				refresh_application_country_flag(frm);
+			});
+		},
+	});
+	d.$wrapper.find(".btn-modal-close, .modal-header .close").hide();
+	d.show();
+}
+
 frappe.ui.form.on("Application", {
 	onload(frm) {
 		// Force form view (modal) for child tables that should open in dialog on Add Row
@@ -522,10 +706,24 @@ frappe.ui.form.on("Application", {
 				});
 			}
 		});
+
+		// Country was chosen via list dialog → trust it; otherwise force country picker
+		if (frm.is_new()) {
+			if (frm.doc.destination_country && is_au_destination(frm.doc.destination_country)) {
+				frm._country_from_dialog = true;
+				frm._country_confirmed = true;
+			} else if (frm.doc.destination_country && is_uk_destination(frm.doc.destination_country)) {
+				redirect_uk_index_to_native(frm);
+			} else {
+				frm._country_confirmed = false;
+			}
+		} else {
+			frm._country_confirmed = true;
+		}
 	},
 
 	refresh(frm) {
-		// Force Spouse Details and C. Sponsors tables to open in form/modal on Add Row
+		// Force Spouse / AU sponsors / UK child tables to open in form/modal on Add Row
 		["spouse_details_list", "table_ihmq"].forEach((fieldname) => {
 			const control = frm.fields_dict[fieldname];
 			if (control && control.grid && !control.grid._form_view_patched) {
@@ -660,12 +858,17 @@ frappe.ui.form.on("Application", {
 		// Auto-populate university and course from Details tab
 		populateOfferUniversityAndCourse(frm);
 
-		// Set default currency if not set
-		if (!frm.doc.offer_currency) {
+		// Default currency by destination (do not force AUD on UK / unset country)
+		if (!frm.doc.offer_currency && is_au_destination(frm.doc.destination_country)) {
 			frm.set_value("offer_currency", "AUD");
+		} else if (!frm.doc.offer_currency && is_uk_destination(frm.doc.destination_country)) {
+			frm.set_value("offer_currency", "GBP");
 		}
 		if (is_defer_offer_required(frm.doc) && !frm.doc.defer_offer_currency) {
-			frm.set_value("defer_offer_currency", frm.doc.offer_currency || "AUD");
+			frm.set_value(
+				"defer_offer_currency",
+				frm.doc.offer_currency || (is_uk_destination(frm.doc.destination_country) ? "GBP" : "AUD")
+			);
 		}
 
 		// Update all currency fields to use selected currency
@@ -684,11 +887,30 @@ frappe.ui.form.on("Application", {
 		sync_gs_interview_stage_from_financials(frm);
 		// Documents-by-stage UI lives on Card/List views; Details tab no longer shows it.
 		refresh_application_country_flag(frm);
+		apply_country_flow_ui(frm);
 	},
 
 	destination_country(frm) {
 		refresh_application_country_flag(frm);
+		if (is_uk_destination(frm.doc.destination_country)) {
+			redirect_uk_index_to_native(frm);
+			return;
+		}
+		if (is_au_destination(frm.doc.destination_country)) {
+			if (!frm.doc.country_flow_case || !String(frm.doc.country_flow_case).startsWith("AU")) {
+				frm.set_value("country_flow_case", "AU Default");
+			}
+		}
+		apply_country_flow_ui(frm);
 	},
+
+	higher_education(frm) {
+		// AU-only case routing handled in Python validate
+	},
+	martial_status(frm) {
+		// AU-only case routing handled in Python validate
+	},
+
 
 	// Currency selector handler - update all currency fields when currency changes
 	offer_currency(frm) {
@@ -871,8 +1093,49 @@ frappe.ui.form.on("Application", {
 			frm.set_value("study_gap_upto_1_year", "");
 			frm.set_value("study_gap_status", "");
 			frm.set_value("study_gap_not_accepted_status", "");
+			frm.set_value("gap_duration", "");
+			frm.set_value("gap_duration_status", "");
+			frm.set_value("gap_duration_not_accepted", "");
 			frm.clear_table("study_gap_proof");
 			frm.refresh_field("study_gap_proof");
+			frm.clear_table("study_gap_proof_list");
+			frm.refresh_field("study_gap_proof_list");
+		}
+	},
+
+	gap_duration(frm) {
+		if (frm.doc.gap_duration === "Below 1 Year" || frm.doc.gap_duration === "Below 2 Years") {
+			frm.set_value("gap_duration_status", "Accepted");
+			frm.set_value("gap_duration_not_accepted", "");
+		} else if (frm.doc.gap_duration === "Above 2 Years") {
+			frm.set_value("gap_duration_status", "");
+			frm.set_value("gap_duration_not_accepted", "Not Accepted");
+		} else {
+			frm.set_value("gap_duration_status", "");
+			frm.set_value("gap_duration_not_accepted", "");
+		}
+	},
+
+	application_submitted(frm) {
+		if (frm.doc.application_submitted === "Yes") {
+			if (!frm.doc.submitted_date) {
+				frm.set_value("submitted_date", frappe.datetime.get_today());
+			}
+			setTimeout(() => {
+				if (typeof activate_application_tab === "function") {
+					activate_application_tab(frm, "submitted_tab", "Submitted");
+				}
+			}, 250);
+			frappe.show_alert({
+				message: __("Application moved to Submitted stage"),
+				indicator: "green",
+			});
+		} else if (frm.doc.application_submitted === "No" && frm.doc.name && !frm.doc.__islocal) {
+			prompt_application_reminder(frm, {
+				title: __("Application Submission Reminder"),
+				default_description: "Expected application submission date",
+				trigger_key: `app_submitted_${frm.doc.name}`,
+			});
 		}
 	},
 
@@ -1082,10 +1345,6 @@ frappe.ui.form.on("Application", {
 		// Submitted reminders are set interactively via field change handlers
 	},
 
-	after_save(frm) {
-		// Intake reminders are prompted when intake date fields change
-	},
-
 	// Funds Required calculation for main offer
 	funds_required_type(frm) {
 		calculateFundsRequired(frm, false);
@@ -1133,6 +1392,14 @@ frappe.ui.form.on("Application", {
 	case_4_proceed_above_1_year(frm) {
 		calculateFundsRequired(frm, false);
 		calculateFundsRequired(frm, true);
+		if (frm.doc.case_4_proceed_above_1_year === "with Spouse") {
+			frm.set_value("country_flow_case", "AU Case 4 Spouse");
+		} else if (
+			frm.doc.case_4_proceed_above_1_year === "On single basis" &&
+			(!frm.doc.country_flow_case || frm.doc.country_flow_case === "AU Case 4 Spouse")
+		) {
+			frm.set_value("country_flow_case", "AU Default");
+		}
 	},
 
 	martial_status(frm) {
@@ -2477,16 +2744,35 @@ frappe.ui.form.on("Need Assessment Vendor", {
 	},
 	student_confirmed_to_apply(frm, cdt, cdn) {
 		const row = locals[cdt][cdn];
-		if (row.student_confirmed_to_apply !== "Yes") {
+		if (row.student_confirmed_to_apply === "Yes") {
+			frappe.model.set_value(cdt, cdn, "denial_reason", "");
+		} else if (row.student_confirmed_to_apply === "No") {
 			frappe.model.set_value(cdt, cdn, "university", "");
 			frappe.model.set_value(cdt, cdn, "course", "");
+			frappe.model.set_value(cdt, cdn, "assessment_status", "Closed");
+			if (frm.doc.name && !frm.doc.__islocal) {
+				prompt_application_reminder(frm, {
+					title: __("Student Confirmation to Apply"),
+					default_description: "Student declined — capture denial reason",
+					trigger_key: `na_confirm_${frm.doc.name}_${cdn}`,
+				});
+			}
+		} else {
+			frappe.model.set_value(cdt, cdn, "university", "");
+			frappe.model.set_value(cdt, cdn, "course", "");
+			frappe.model.set_value(cdt, cdn, "denial_reason", "");
 		}
-		if (row.student_confirmed_to_apply === "No" && frm.doc.name && !frm.doc.__islocal) {
-			prompt_application_reminder(frm, {
-				title: __("Student Confirmation to Apply"),
-				default_description: "Follow up — when will the student confirm to apply?",
-				trigger_key: `na_confirm_${frm.doc.name}_${cdn}`,
-			});
+	},
+	university(frm, cdt, cdn) {
+		const row = locals[cdt][cdn];
+		if (row.student_confirmed_to_apply === "Yes" && row.university && row.course) {
+			frappe.model.set_value(cdt, cdn, "assessment_status", "Converted to Application");
+		}
+	},
+	course(frm, cdt, cdn) {
+		const row = locals[cdt][cdn];
+		if (row.student_confirmed_to_apply === "Yes" && row.university && row.course) {
+			frappe.model.set_value(cdt, cdn, "assessment_status", "Converted to Application");
 		}
 	},
 });

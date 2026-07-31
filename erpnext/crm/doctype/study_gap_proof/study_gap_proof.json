@@ -29,6 +29,8 @@
         "company_name",
         "position",
         "duration",
+        "duration_from",
+        "duration_to",
         "employer_domain_id",
         "work_attachments_sb",
         "itr_upload",
@@ -202,13 +204,26 @@
             "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
             "fieldname": "duration",
             "fieldtype": "Small Text",
-            "label": "Duration"
+            "label": "Duration (From – To)",
+            "description": "e.g. Jan 2022 – Mar 2023"
+        },
+        {
+            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+            "fieldname": "duration_from",
+            "fieldtype": "Date",
+            "label": "Duration From"
+        },
+        {
+            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+            "fieldname": "duration_to",
+            "fieldtype": "Date",
+            "label": "Duration To"
         },
         {
             "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
             "fieldname": "employer_domain_id",
             "fieldtype": "Small Text",
-            "label": "Employer Domain ID"
+            "label": "Employer Domain / Official Email ID"
         },
         {
             "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
@@ -320,7 +335,7 @@
         },
         {
             "bold": 1,
-            "default": "\u2713 Checked Accordingly",
+            "default": "✓ Checked Accordingly",
             "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.itr_value_matched_salary == 0 && doc.other_income_source == 1",
             "fieldname": "other_income_yes_status",
             "fieldtype": "Small Text",
@@ -329,7 +344,7 @@
         },
         {
             "bold": 1,
-            "default": "\u26a0 Set Reminder to Revise ITR",
+            "default": "⚠ Set Reminder to Revise ITR",
             "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.itr_value_matched_salary == 0 && doc.other_income_source == 0",
             "fieldname": "other_income_no_status",
             "fieldtype": "Small Text",
@@ -351,7 +366,7 @@
         },
         {
             "bold": 1,
-            "default": "\u26a0 Set Reminder to Correct Computation",
+            "default": "⚠ Set Reminder to Correct Computation",
             "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.company_details_computation == 0",
             "fieldname": "company_details_no_status",
             "fieldtype": "Small Text",
@@ -367,7 +382,7 @@
         },
         {
             "bold": 1,
-            "default": "\u26a0 Need to Correct",
+            "default": "⚠ Need to Correct",
             "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.dob_matched_ac_pc == 0",
             "fieldname": "dob_no_status",
             "fieldtype": "Small Text",
@@ -383,7 +398,7 @@
         },
         {
             "bold": 1,
-            "default": "\u26a0 Need to Correct",
+            "default": "⚠ Need to Correct",
             "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.name_matched_ac_pc == 0",
             "fieldname": "name_no_status",
             "fieldtype": "Small Text",
@@ -392,7 +407,7 @@
         },
         {
             "bold": 1,
-            "default": "\u26a0 Needs to Verify and Set Reminder",
+            "default": "⚠ Needs to Verify and Set Reminder",
             "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.itr_verified == 0",
             "fieldname": "itr_not_verified_status",
             "fieldtype": "Small Text",

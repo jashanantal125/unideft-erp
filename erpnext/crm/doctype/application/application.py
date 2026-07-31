@@ -10,42 +10,137 @@ from frappe.model.document import Document
 class Application(Document):
 	@staticmethod
 	def get_list_query(query):
-		"""Filter applications based on user role hierarchy"""
-		user_roles = frappe.get_roles()
-		ApplicationDoc = frappe.qb.DocType("Application")
-		
-		# System Manager, Administrator, and CRM Admin see all applications
-		if "System Manager" in user_roles or "Administrator" in user_roles or "CRM Admin" in user_roles:
+		"""Filter applications based on user role hierarchy."""
+		user_roles = set(frappe.get_roles())
+		user = frappe.session.user
+		App = frappe.qb.DocType("Application")
+
+		if user_roles & {"System Manager", "Administrator", "CRM Admin"}:
 			return query
-		
-		# Team Lead sees applications assigned to their team(s)
-		if "Team Lead" in user_roles:
-			teams = frappe.get_all("Team", filters={"team_leader": frappe.session.user}, pluck="name")
+
+		if "CRO Head" in user_roles:
+			agent_names = _agents_under_cro_head(user)
+			if agent_names:
+				return query.where(App.agent.isin(agent_names))
+			return query.where(App.name == "__no_match__")
+
+		if "Country Head" in user_roles:
+			teams = frappe.get_all("Team", filters={"country_head": user}, pluck="name")
 			if teams:
-				query = query.where(ApplicationDoc.assigned_team.isin(teams))
-			else:
-				# Team Lead with no team sees nothing
-				query = query.where(ApplicationDoc.assigned_team == "__no_match__")
-			return query
-		
-		# Team Executive sees only applications assigned to them
+				return query.where(App.assigned_team.isin(teams))
+			return query.where(App.name == "__no_match__")
+
+		if "CRO" in user_roles:
+			agent_names = _agents_under_cro(user)
+			if agent_names:
+				return query.where(App.agent.isin(agent_names))
+			return query.where(App.name == "__no_match__")
+
+		if "Admission 1" in user_roles:
+			teams = frappe.get_all("Team", filters={"admission_1": user}, pluck="name")
+			if teams:
+				return query.where(App.assigned_team.isin(teams))
+			return query.where(App.name == "__no_match__")
+
+		if "Admission 2" in user_roles:
+			teams = frappe.get_all("Team", filters={"admission_2": user}, pluck="name")
+			if teams:
+				return query.where(App.assigned_team.isin(teams))
+			return query.where(App.name == "__no_match__")
+
+		if "Team Lead" in user_roles:
+			teams = frappe.get_all("Team", filters={"team_leader": user}, pluck="name")
+			if teams:
+				return query.where(App.assigned_team.isin(teams))
+			return query.where(App.name == "__no_match__")
+
 		if "Team Executive" in user_roles:
-			query = query.where(ApplicationDoc.assigned_executive == frappe.session.user)
-			return query
-		
-		# Agent sees only their own applications (where agent field matches logged-in user)
-		if "Agent" in user_roles or "B2B Agent" in user_roles or "B2C Agent" in user_roles:
-			query = query.where(ApplicationDoc.agent == frappe.session.user)
-			return query
-		
-		# Default: show nothing for unknown roles
-		query = query.where(ApplicationDoc.name == "__no_match__")
-		return query
+			return query.where(App.assigned_executive == user)
+
+		if user_roles & {"Agent", "B2B Agent", "B2C Agent"}:
+			return query.where(App.agent == user)
+
+		if user_roles & {"Marketing Head", "Marketing Member", "Telecalling Head", "Telecalling Member"}:
+			agent_names = _agents_under_cro_for_support(user)
+			if agent_names:
+				return query.where(App.agent.isin(agent_names))
+			return query.where(App.name == "__no_match__")
+
+		return query.where(App.name == "__no_match__")
+
+
+def _agents_under_cro_head(user):
+	"""All agents whose CRO's cro_head is this user."""
+	cro_agents = frappe.get_all("Agent", filters={"cro_head": user}, pluck="name")
+	return cro_agents or []
+
+
+def _agents_under_cro(user):
+	"""All agents linked to teams where this user is the CRO."""
+	teams = frappe.get_all("Team", filters={"cro": user}, pluck="name")
+	if not teams:
+		return []
+	agents = frappe.get_all(
+		"Agent", filters={"sales_team": ["in", teams]}, pluck="name"
+	)
+	return agents or []
+
+
+def _agents_under_cro_for_support(user):
+	"""Marketing/Telecalling see apps from agents under same CRO."""
+	cro_teams = frappe.get_all("Team", filters={"cro": user}, pluck="name")
+	if not cro_teams:
+		return []
+	return frappe.get_all(
+		"Agent", filters={"sales_team": ["in", cro_teams]}, pluck="name"
+	) or []
 	
 	def before_save(self):
 		"""Auto-assign team based on destination country"""
 		self.auto_assign_team()
-	
+		self.apply_country_flow_defaults()
+
+	def after_insert(self):
+		if not self.flags.get("skip_country_pack"):
+			self.link_uk_index()
+
+	def on_update(self):
+		if not self.flags.get("skip_country_pack"):
+			self.link_uk_index()
+
+	def link_uk_index(self):
+		"""UK applications are edited on Application UK — keep index row linked only."""
+		if not self.name or not self.is_united_kingdom():
+			return
+
+		existing = self.uk_data or frappe.db.get_value(
+			"Application UK", {"application": self.name}, "name"
+		)
+		if existing and self.uk_data != existing:
+			self.db_set("uk_data", existing, update_modified=False)
+
+	def apply_country_flow_defaults(self):
+		"""Set AU/UK default case when country is known and case empty."""
+		country = (self.destination_country or "").strip()
+		if not country:
+			return
+
+		if self.is_united_kingdom():
+			return
+		elif self.is_australia():
+			if not self.country_flow_case or not str(self.country_flow_case).startswith("AU"):
+				# Preserve AU Case 4 Spouse if already set by spouse gate
+				if self.country_flow_case != "AU Case 4 Spouse":
+					self.country_flow_case = "AU Default"
+
+	def is_united_kingdom(self):
+		c = (self.destination_country or "").strip().lower()
+		return c in {"united kingdom", "uk", "great britain", "britain", "england"}
+
+	def is_australia(self):
+		c = (self.destination_country or "").strip().lower()
+		return "australia" in c
+
 	def auto_assign_team(self):
 		"""Find the team that handles this destination country and assign it"""
 		if self.destination_country and not self.assigned_team:
@@ -64,16 +159,23 @@ class Application(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from erpnext.crm.doctype.academic_verification.academic_verification import AcademicVerification
 		from erpnext.crm.doctype.application_course.application_course import ApplicationCourse
 		from erpnext.crm.doctype.application_documents_10th_to_12th.application_documents_10th_to_12th import ApplicationDocuments10thTo12th
 		from erpnext.crm.doctype.application_english_test.application_english_test import ApplicationEnglishTest
 		from erpnext.crm.doctype.application_offer_letter_condition.application_offer_letter_condition import ApplicationOfferLetterCondition
-		from erpnext.crm.doctype.enrollment_document.enrollment_document import EnrollmentDocument
 		from erpnext.crm.doctype.application_sponsor_complete.application_sponsor_complete import ApplicationSponsorComplete
+		from erpnext.crm.doctype.enrollment_document.enrollment_document import EnrollmentDocument
+		from erpnext.crm.doctype.graduation_verification.graduation_verification import GraduationVerification
+		from erpnext.crm.doctype.need_assessment_vendor.need_assessment_vendor import NeedAssessmentVendor
 		from erpnext.crm.doctype.processing_agent_details.processing_agent_details import ProcessingAgentDetails
+		from erpnext.crm.doctype.spouse_details.spouse_details import SpouseDetails
 		from erpnext.crm.doctype.student_documents.student_documents import studentdocuments
+		from erpnext.crm.doctype.study_gap_proof.study_gap_proof import StudyGapProof
 		from frappe.types import DF
 
+		academic_transcript_details: DF.Text | None
+		academic_transcript_documents: DF.Table[studentdocuments]
 		acceptance_any_requirement: DF.Check
 		acceptance_before_coe_available: DF.Check
 		acceptance_interview_deadline: DF.Date | None
@@ -105,18 +207,27 @@ class Application(Document):
 		agent_policy_not_received_status: DF.Text | None
 		agent_policy_received: DF.Check
 		all_documents: DF.Table[studentdocuments]
-		any_further_requirement_offer_letter: DF.Check
-		any_visa_refused: DF.Check
+		any_further_requirement_offer_letter: DF.Literal["", "Yes", "No"]
+		any_visa_refused: DF.Literal["", "Yes", "No"]
 		application_closed: DF.Check
-		application_filled_by: DF.Text | None
+		application_filled_by: DF.Literal["", "Application filled by us", "Filled on portal", "Filled by Vendor"]
 		application_form_1_upload: DF.Attach | None
 		application_form_2_upload: DF.Attach | None
 		application_form_3_upload: DF.Attach | None
 		application_form_4_upload: DF.Attach | None
 		application_type: DF.Literal["B2B"]
-		asd: DF.Data | None
+		applied_for_defer_offer_letter: DF.Literal["", "Yes", "No"]
+		applied_for_defer_offer_no_note: DF.Text | None
 		assigned_executive: DF.Link | None
 		assigned_team: DF.Link | None
+		case_4_close_reason: DF.SmallText | None
+		case_4_marriage_duration: DF.Literal["", "1 year or above", "Below 1 year"]
+		case_4_note_convince: DF.Data | None
+		case_4_note_wait: DF.Data | None
+		case_4_proceed_above_1_year: DF.Literal["", "On single basis", "with Spouse"]
+		case_4_proceed_below_1_year: DF.Literal["", "on single basis", "wait to complete one year"]
+		case_4_proceed_below_graduate: DF.Literal["", "on single basis", "Don\u2019t want to procced"]
+		case_4_spouse_qualification: DF.Literal["", "Graduate or above Graduation", "Below Graduate"]
 		close_case: DF.Check
 		close_case_status: DF.Text | None
 		close_case_upload_issue_resolved: DF.Attach | None
@@ -125,30 +236,43 @@ class Application(Document):
 		conditions_note: DF.Text | None
 		conditions_on_offer_letter: DF.TableMultiSelect[ApplicationOfferLetterCondition]
 		convince_times: DF.Int
+		country_flow_case: DF.Literal["", "AU Default", "AU Case 4 Spouse", "UK Case 1", "UK Case 2", "UK Case 3", "UK Case 4", "UK Case 5", "UK Case 6", "UK Case 7", "UK Case 8"]
 		course_name: DF.Link | None
 		current_age: DF.Int
 		data_swym: DF.Text | None
+		defer_any_further_requirement: DF.Literal["", "Yes", "No"]
 		defer_conditions_on_offer_letter: DF.TableMultiSelect[ApplicationOfferLetterCondition]
 		defer_course_name: DF.Link | None
 		defer_full_year_tuition_fee: DF.Currency
 		defer_funds_required_amount: DF.Currency
-		defer_funds_required_type: DF.Literal["", "With Full Year Fee", "Without Full Year Fee"]
+		defer_funds_required_type: DF.Literal["", "With Full Year fee (single basis)", "Without Full Year fee (single basis)", "With Full Year fee (With spouse)", "Without Full Year fee (With spouse)", "With Full Year fee (With spouse and Kid)", "Without Full Year fee (With spouse and Kid)", "With Full Year fee (With Kid)", "Without Full Year fee (With Kid)"]
 		defer_living_expenses: DF.Currency
-		defer_offer_currency: DF.Literal["AUD", "CAD", "NZD", "USD", "INR"]
+		defer_living_expenses_kid_unit: DF.Currency
+		defer_living_expenses_spouse: DF.Currency
+		defer_no_further_requirement_note: DF.Text | None
+		defer_no_of_kids: DF.Int
+		defer_offer_currency: DF.Literal["AUD", "CAD", "NZD", "USD", "INR", "GBP"]
 		defer_offer_letter_upload: DF.Table[studentdocuments]
 		defer_offer_ok: DF.Text | None
-		defer_offer_required: DF.Check
+		defer_offer_required: DF.Literal["", "Yes", "No"]
 		defer_oshc: DF.Currency
 		defer_other_documents: DF.Table[studentdocuments]
 		defer_payable_fee: DF.Currency
+		defer_pending_requirement_details: DF.Text | None
+		defer_pending_requirements_completed: DF.Literal["", "Yes", "No"]
+		defer_pending_requirements_completed_yes_note: DF.Text | None
+		defer_pending_requirements_reminder_note: DF.Text | None
+		defer_process_with_kids: DF.Check
 		defer_scholarship: DF.Currency
+		defer_supporting_documents: DF.Table[studentdocuments]
 		defer_travel_expenses: DF.Currency
+		defer_travel_expenses_kid_unit: DF.Currency
+		defer_travel_expenses_spouse: DF.Currency
 		defer_university_intake: DF.Date | None
 		defer_university_name: DF.Link | None
 		destination_country: DF.Link
 		dob: DF.Date
 		documents_10th_to_12th: DF.Table[ApplicationDocuments10thTo12th]
-		documents_10th_to_12thgraduation_copy: DF.Table[studentdocuments]
 		documents_not_accepted_alert: DF.Text | None
 		documents_passport_application_form_sop: DF.Table[studentdocuments]
 		documents_verified: DF.Check
@@ -169,12 +293,10 @@ class Application(Document):
 		form_956a_filled_yes_status: DF.Text | None
 		form_956a_upload: DF.Attach | None
 		from_where_change: DF.Literal["", "Others", "Ganpati House of Achievers"]
-		full_notarized_passport_upload: DF.Attach | None
 		full_year_tuition_fee: DF.Currency
 		funds_required_amount: DF.Currency
-		funds_required_type: DF.Literal["", "With Full Year Fee", "Without Full Year Fee"]
+		funds_required_type: DF.Literal["", "With Full Year fee (single basis)", "Without Full Year fee (single basis)", "With Full Year fee (With spouse)", "Without Full Year fee (With spouse)", "With Full Year fee (With spouse and Kid)", "Without Full Year fee (With spouse and Kid)", "With Full Year fee (With Kid)", "Without Full Year fee (With Kid)"]
 		ganpati_new_app_status: DF.Text | None
-		gap_docs_notarized_upload: DF.Attach | None
 		gap_justification_details: DF.Text | None
 		gap_justification_documents: DF.Table[studentdocuments]
 		gha_oshc_company_name: DF.Text | None
@@ -182,16 +304,18 @@ class Application(Document):
 		gha_oshc_upload: DF.Attach | None
 		gha_policy_not_received_status: DF.Text | None
 		gha_policy_received: DF.Check
-		gs_any_requirement: DF.Check
-		gs_approved_check: DF.Check
+		graduation_verification_documents: DF.Table[GraduationVerification]
+		gs_any_requirement: DF.Literal["", "Yes", "No"]
+		gs_approved_check: DF.Literal["", "Yes", "No"]
 		gs_approved_yes_status: DF.Text | None
 		gs_form_1_upload: DF.Attach | None
 		gs_form_2_upload: DF.Attach | None
 		gs_sop_upload: DF.Attach | None
-		gs_submitted: DF.Check
+		gs_submitted: DF.Literal["", "Yes", "No"]
+		gs_submitted_no_note: DF.Text | None
 		gs_submitted_reminder_date: DF.Date | None
 		hap_id_upload: DF.Attach | None
-		higher_education: DF.Literal["", "12th pass", "Graduation", "Others"]
+		higher_education: DF.Literal["", "12th pass", "Graduation", "Post-graduation", "Others"]
 		immi_acknowledgement_upload: DF.Attach | None
 		intake: DF.Literal["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 		intake_date: DF.Date | None
@@ -203,18 +327,27 @@ class Application(Document):
 		is_package_case: DF.Check
 		issue_not_resolved_reminder: DF.Text | None
 		living_expenses: DF.Currency
+		living_expenses_kid_unit: DF.Currency
+		living_expenses_spouse: DF.Currency
 		login_contact_no: DF.Phone | None
 		martial_status: DF.Literal["", "Married", "Single"]
 		medical_arranged_by: DF.Literal["", "Our Side", "Agent", "Student"]
 		naming_series: DF.Literal["APP-.YYYY.-"]
+		need_another_application: DF.Literal["", "Yes", "No"]
+		need_another_application_yes_note: DF.Text | None
+		need_assessment: DF.Literal["", "Yes", "No"]
+		need_assessment_course: DF.Link | None
+		need_assessment_university: DF.Link | None
+		need_assessment_vendors: DF.Table[NeedAssessmentVendor]
 		new_app_handling_person: DF.Text | None
 		new_app_handling_team: DF.Text | None
+		no_further_requirement_note: DF.Text | None
+		no_of_kids: DF.Int
 		no_process_comments: DF.Text | None
 		no_process_reason: DF.Text | None
 		no_requirement_status: DF.Text | None
-		notarize_docs_required: DF.Check
-		notarized_academic_docs_upload: DF.Attach | None
-		offer_currency: DF.Literal["AUD", "CAD", "NZD", "USD", "INR"]
+		not_processing_another_application_reason: DF.Text | None
+		offer_currency: DF.Literal["AUD", "CAD", "NZD", "USD", "INR", "GBP"]
 		offer_letter_upload: DF.Table[studentdocuments]
 		original_funds_upload: DF.Attach | None
 		oscg_status: DF.Literal["", "Processing", "On Offer Letter", "On COE", "On Enrolled"]
@@ -229,6 +362,8 @@ class Application(Document):
 		oshc_refund_received: DF.Check
 		oshc_refund_received_issue_resolved: DF.Check
 		oshc_required: DF.Check
+		other_condition_details: DF.Text | None
+		other_condition_documents: DF.Table[studentdocuments]
 		other_country_name: DF.Text | None
 		other_documents_offer: DF.Table[studentdocuments]
 		others_reason: DF.Text | None
@@ -239,23 +374,17 @@ class Application(Document):
 		our_side_medical_scheduled: DF.Check
 		our_side_medical_scheduled_no_status: DF.Text | None
 		our_side_medical_scheduled_yes_status: DF.Text | None
-		parents_name_academics_affidavit_upload: DF.Attach | None
-		parents_name_academics_status: DF.Text | None
-		parents_name_matched_academics: DF.Check
-		parents_name_matched_passport: DF.Check
-		parents_name_passport_affidavit_upload: DF.Attach | None
-		parents_name_passport_status: DF.Text | None
-		passport_documents: DF.Table[studentdocuments]
-		passport_stamp_check_details: DF.Text | None
-		passport_stamp_or_immigration_history: DF.Check
-		passport_uploaded: DF.Check
+		passport_upload: DF.Attach | None
 		password: DF.Password | None
 		payable_fee: DF.Currency
 		pending_requirement_details: DF.Text | None
 		pending_requirements_completed: DF.Literal["", "Yes", "No"]
+		pending_requirements_completed_yes_note: DF.Text | None
+		pending_requirements_reminder_note: DF.Text | None
 		preferred_courses: DF.Table[ApplicationCourse]
 		preferred_university: DF.Link | None
 		process_other_country: DF.Check
+		process_with_kids: DF.Check
 		processing_agent_details: DF.Table[ProcessingAgentDetails]
 		recovery_email_id: DF.Text | None
 		refund_declaration: DF.Text | None
@@ -269,39 +398,33 @@ class Application(Document):
 		requirements_completed: DF.Check
 		requirements_completed_no_status: DF.Text | None
 		requirements_completed_yes_status: DF.Text | None
-		schedule_interview: DF.Check
+		schedule_interview: DF.Literal["", "Yes", "No"]
 		schedule_interview_no_status: DF.Text | None
 		schedule_interview_yes_status: DF.Text | None
 		scholarship: DF.Currency
+		school_digi_locker_id: DF.Data | None
+		school_digi_locker_password: DF.Password | None
+		school_docs_pdf: DF.Attach | None
+		school_docs_status: DF.Data | None
+		school_docs_verified: DF.Literal["", "Yes", "No"]
 		send_offer_to_chat: DF.Check
-		shop_act_additional_document: DF.Attach
+		shop_act_additional_document: DF.Attach | None
 		shop_act_uploaded: DF.Check
-		sop_upload: DF.Attach | None
 		sop_portal_or_vendor_upload: DF.Attach | None
+		sop_upload: DF.Attach | None
 		sponsor_1_docs_pdf_upload: DF.Attach | None
 		sponsor_2_docs_pdf_upload: DF.Attach | None
 		sponsor_3_docs_pdf_upload: DF.Attach | None
 		sponsorship_affidavit_upload: DF.Attach | None
-		spouse_dob: DF.Date | None
-		spouse_documents: DF.Table[studentdocuments]
-		spouse_gap_type: DF.Text | None
-		spouse_itr_verified_as_per_work_exp: DF.Check
-		spouse_name: DF.Text | None
-		spouse_qualification: DF.Literal["10th Pass", "12th Pass", "Bachelors", "Masters", "Diploma", "certificate", "Others"]
-		spouse_result_verification_link_if_applicable_copy: DF.Text | None
-		spouse_salary_mode: DF.Literal["Cash", "Bank Account"]
-		spouse_salary_slips_verified_6_months: DF.Check
-		spouse_salary_statements_verified_3_months: DF.Check
-		spouse_study_gap: DF.Check
-		spouse_university_domain_email_id_optional_copy: DF.Text | None
-		spouse_work_experience: DF.Check
-		spouse_work_experience_details: DF.LongText | None
-		spouse_work_experience_verified: DF.Check
+		spouse_academic_verification: DF.Table[AcademicVerification]
+		spouse_details_list: DF.Table[SpouseDetails]
+		spouse_visa_upload: DF.Attach | None
 		status: DF.Literal["Pending", "Processing", "Offer Letter Received", "Financial", "GS Processing", "GS Approved", "Acceptance", "COE", "File Lodged", "Visa", "Enrollment", "On Shore College change", "Visa Refused", "Closed"]
 		student: DF.Link
+		student_academic_verification: DF.Table[AcademicVerification]
 		student_affidavit_upload: DF.Attach | None
 		student_contact_no: DF.Phone | None
-		student_email: DF.Text | None
+		student_email: DF.Data | None
 		student_enrolled: DF.Check
 		student_enrolled_no_status: DF.Text | None
 		student_enrolled_yes_status: DF.Text | None
@@ -316,18 +439,25 @@ class Application(Document):
 		student_oshc_upload: DF.Attach | None
 		student_policy_not_received_status: DF.Text | None
 		student_policy_received: DF.Check
-		student_prepare: DF.Check
+		student_prepare: DF.Literal["", "Yes", "No"]
 		student_prepare_no_status: DF.Text | None
 		student_prepare_yes_status: DF.Text | None
 		student_wants_college_change: DF.Literal["", "No", "Yes"]
-		study_gap: DF.Check
+		study_gap: DF.Literal["", "Yes", "No"]
+		study_gap_not_accepted_status: DF.Data | None
 		study_gap_ok: DF.Text | None
 		study_gap_proof: DF.Table[studentdocuments]
-		study_gap_proof_details: DF.Table[studentdocuments]
+		study_gap_proof_list: DF.Table[StudyGapProof]
+		study_gap_status: DF.Data | None
+		study_gap_upto_1_year: DF.Literal["", "Yes", "No"]
+		submitted_another_application: DF.Literal["", "Yes", "No"]
+		submitted_another_application_yes_note: DF.Text | None
 		submitted_date: DF.Date | None
 		supporting_documents: DF.Table[studentdocuments]
 		table_ihmq: DF.Table[ApplicationSponsorComplete]
 		travel_expenses: DF.Currency
+		travel_expenses_kid_unit: DF.Currency
+		travel_expenses_spouse: DF.Currency
 		trn_number: DF.Text | None
 		tuition_fee_issue: DF.Check
 		tuition_fee_issue_details: DF.Text | None
@@ -340,6 +470,7 @@ class Application(Document):
 		tuition_fee_refund_yes: DF.Text | None
 		tuition_fee_upload: DF.Attach | None
 		twelfth_admit_card_uploaded: DF.Check
+		uk_data: DF.Link | None
 		university_intake: DF.Date | None
 		university_name: DF.Link | None
 		vendor_file_lodged_no_status: DF.Text | None
@@ -352,20 +483,29 @@ class Application(Document):
 		visa_approved_status: DF.Text | None
 		visa_copy_upload: DF.Attach | None
 		visa_decision: DF.Literal["", "Visa Approved", "Visa Refused"]
+		visa_refused_can_process: DF.Literal["", "Yes", "No"]
+		visa_refused_close_reason: DF.SmallText | None
+		visa_refused_closed_status: DF.Text | None
+		visa_refused_country: DF.Literal["", "Australia", "New Zealand"]
+		visa_refused_go_ahead_status: DF.Text | None
+		visa_refused_new_application: DF.Link | None
 		visa_refused_not_able_to_process: DF.Text | None
 		visa_refused_ok: DF.Text | None
+		visa_refused_other_country: DF.Literal["", "Yes", "No"]
+		visa_refused_other_country_name: DF.Link | None
 		visa_refused_status: DF.Text | None
+		visa_refused_type: DF.Literal["", "Study Visa", "Tourist Visa", "Work Visa", "Other Visa"]
 		visa_sop_upload: DF.Attach | None
 		visa_status: DF.Literal["File Lodged", "Visa Approved", "Visa Refused"]
 	# end: auto-generated types
 
 	def validate(self):
-		# Validate that maximum 3 courses are selected
-		if not self.flags.get("skip_preferred_course_validation"):
-			if len(self.preferred_courses) > 3:
+		# Preferred courses are Australia Details flow — skip for UK (university/course live on UK Offer)
+		if not self.is_united_kingdom() and not self.flags.get("skip_preferred_course_validation"):
+			if len(self.preferred_courses or []) > 3:
 				frappe.throw("You can select a maximum of 3 courses only.")
 
-			if len(self.preferred_courses) == 0:
+			if len(self.preferred_courses or []) == 0:
 				frappe.throw("Please select at least one course.")
 		
 		# For B2C: Auto-set agent to Unideft if not set or if wrong agent selected
@@ -379,6 +519,98 @@ class Application(Document):
 				frappe.throw("Unideft agent not found. Please create it first.")
 		
 		# For B2B: No validation - can select any agent or leave empty
+
+
+def _map_au_qualification_to_uk(higher_education):
+	"""Map Application.higher_education options to UK assessment qualification."""
+	he = (higher_education or "").strip()
+	if he in ("12th pass", "12th"):
+		return "12th"
+	if he in ("Graduation", "Bachelors", "Diploma"):
+		return "Graduation"
+	if he in ("Masters", "Post-graduation", "Post Graduation"):
+		return "Post-graduation"
+	return ""
+
+
+def resolve_uk_case(uk_qualification=None, uk_marital_status=None):
+	"""UK Cases 1–6 router from assessment inputs."""
+	qual = (uk_qualification or "").strip()
+	marital = (uk_marital_status or "").strip()
+	married = marital == "Married"
+
+	if qual == "12th":
+		return "UK Case 1" if married else "UK Case 2"
+	if qual == "Graduation":
+		return "UK Case 3" if married else "UK Case 4"
+	if qual == "Post-graduation":
+		return "UK Case 5" if married else "UK Case 6"
+	return "UK Case 2"
+
+
+@frappe.whitelist()
+def recompute_uk_case(application=None, uk_qualification=None, uk_marital_status=None, uk_application=None):
+	"""Recompute UK case — supports legacy Application index or Application UK."""
+	if uk_application:
+		return frappe.get_attr(
+			"erpnext.crm.doctype.application_uk.application_uk.recompute_uk_case"
+		)(uk_application, uk_qualification, uk_marital_status)
+
+	if not application:
+		frappe.throw("Application is required")
+
+	doc = frappe.get_doc("Application", application)
+	if not doc.is_united_kingdom():
+		frappe.throw("Application destination is not United Kingdom")
+
+	case = resolve_uk_case(uk_qualification, uk_marital_status)
+	doc.db_set("country_flow_case", case, update_modified=False)
+
+	if doc.uk_data:
+		frappe.db.set_value(
+			"Application UK",
+			doc.uk_data,
+			{
+				"country_flow_case": case,
+				"single_basis_only": 1 if case in ("UK Case 1", "UK Case 3", "UK Case 5") else 0,
+				"higher_education": uk_qualification,
+				"martial_status": uk_marital_status,
+			},
+			update_modified=False,
+		)
+
+	return case
+
+
+@frappe.whitelist()
+def create_uk_application(student, dob=None, application_type="B2B"):
+	"""Create Application UK + index row; open the UK native form."""
+	if not student:
+		frappe.throw("Student is required")
+
+	stu = frappe.get_doc("Student", student)
+	uk = frappe.new_doc("Application UK")
+	uk.student = student
+	uk.application_type = application_type or "B2B"
+	uk.uk_current_stage = "Details"
+	uk.country_flow_case = "UK Case 2"
+	uk.dob = dob or getattr(stu, "dob", None) or getattr(stu, "date_of_birth", None)
+	uk.student_email = getattr(stu, "email", None) or getattr(stu, "student_email", None)
+	uk.student_contact_no = (
+		getattr(stu, "mobile_no", None)
+		or getattr(stu, "phone", None)
+		or getattr(stu, "contact_no", None)
+	)
+	uk.flags.ignore_permissions = True
+	uk.insert(ignore_mandatory=True)
+	uk.reload()
+
+	return {
+		"application": uk.application,
+		"uk_application": uk.name,
+		"uk_data": uk.name,
+		"country_flow_case": uk.country_flow_case,
+	}
 
 
 @frappe.whitelist()

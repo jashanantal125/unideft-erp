@@ -21,7 +21,26 @@
  "owner": "Administrator",
  "public": 1,
  "quick_lists": [],
- "roles": [],
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Administrator"
+  },
+  {
+   "role": "CRM Admin"
+  },
+  {
+   "role": "CRM Sales Staff"
+  },
+  {
+   "role": "Team Lead"
+  },
+  {
+   "role": "Team Executive"
+  }
+ ],
  "sequence_id": 0.0,
  "shortcuts": [],
  "title": "bnn",

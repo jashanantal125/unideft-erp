@@ -12,6 +12,7 @@
   "company_name",
   "user",
   "sales_team",
+  "cro_head",
   "no_of_employees",
   "country",
   "state",
@@ -62,6 +63,13 @@
    "fieldtype": "Link",
    "label": "Sales Team",
    "options": "Team"
+  },
+  {
+   "fieldname": "cro_head",
+   "fieldtype": "Link",
+   "label": "CRO Head",
+   "options": "User",
+   "description": "CRO Head who manages this CRO / Agent"
   },
   {
    "fieldname": "no_of_employees",
@@ -163,7 +171,7 @@
  "icon": "fa fa-users",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-20 18:56:13.369677",
+ "modified": "2026-07-29 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Agent",

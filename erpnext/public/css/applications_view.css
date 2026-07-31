@@ -777,6 +777,16 @@
 	color: rgba(255, 255, 255, 0.9);
 }
 
+.applications-container .country-flag{
+	width: 20px;
+	height: 15px;
+	object-fit: cover;
+	border-radius: 2px;
+	vertical-align: -2px;
+	margin: 0 4px 0 6px;
+	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
+}
+
 .applications-container .intake-date strong{
 	color: var(--unideft-white);
 }

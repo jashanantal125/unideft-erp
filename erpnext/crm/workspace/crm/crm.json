@@ -174,7 +174,26 @@
   }
  ],
  "restrict_to_domain": "",
- "roles": [],
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Administrator"
+  },
+  {
+   "role": "CRM Admin"
+  },
+  {
+   "role": "CRM Sales Staff"
+  },
+  {
+   "role": "Team Lead"
+  },
+  {
+   "role": "Team Executive"
+  }
+ ],
  "sequence_id": 17.0,
  "shortcuts": [
   {

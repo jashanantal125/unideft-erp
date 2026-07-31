@@ -14,7 +14,7 @@
  "label": "nhnn",
  "link_type": "DocType",
  "links": [],
- "modified": "2026-01-17 23:27:21.102709",
+ "modified": "2026-07-29 14:41:34.233270",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "nhnn",
@@ -22,7 +22,26 @@
  "owner": "Administrator",
  "public": 1,
  "quick_lists": [],
- "roles": [],
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Administrator"
+  },
+  {
+   "role": "CRM Admin"
+  },
+  {
+   "role": "CRM Sales Staff"
+  },
+  {
+   "role": "Team Lead"
+  },
+  {
+   "role": "Team Executive"
+  }
+ ],
  "sequence_id": 0.0,
  "shortcuts": [],
  "title": "nhnn",

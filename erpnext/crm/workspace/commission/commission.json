@@ -34,6 +34,15 @@
    "role": "Administrator"
   },
   {
+   "role": "Agent"
+  },
+  {
+   "role": "B2B Agent"
+  },
+  {
+   "role": "B2C Agent"
+  },
+  {
    "role": "agents"
   }
  ],

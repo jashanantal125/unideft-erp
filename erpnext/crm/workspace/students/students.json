@@ -38,7 +38,38 @@
   }
  ],
  "restrict_to_domain": "",
- "roles": [],
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Administrator"
+  },
+  {
+   "role": "CRM Admin"
+  },
+  {
+   "role": "CRM Sales Staff"
+  },
+  {
+   "role": "Team Lead"
+  },
+  {
+   "role": "Team Executive"
+  },
+  {
+   "role": "Agent"
+  },
+  {
+   "role": "B2B Agent"
+  },
+  {
+   "role": "B2C Agent"
+  },
+  {
+   "role": "agents"
+  }
+ ],
  "sequence_id": 19.0,
  "shortcuts": [
   {

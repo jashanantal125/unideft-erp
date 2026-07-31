@@ -1,0 +1,191 @@
+{
+ "actions": [],
+ "creation": "2026-07-23 20:30:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "field_order": [
+  "sponsor_who",
+  "funds_type",
+  "column_break_1",
+  "bank_name",
+  "amount_gbp",
+  "nationalized_bank",
+  "section_bank",
+  "balance_certificate",
+  "statement_upload",
+  "funds_28_day_ok",
+  "cert_same_date",
+  "section_fd",
+  "fd_upload",
+  "section_loan",
+  "loan_for_education",
+  "loan_holder_is_student",
+  "loan_letter",
+  "collateral_details",
+  "section_birth",
+  "birth_cert_available",
+  "birth_cert_language",
+  "birth_cert_upload",
+  "parents_support_affidavit"
+ ],
+ "fields": [
+  {
+   "fieldname": "sponsor_who",
+   "fieldtype": "Select",
+   "label": "Sponsor",
+   "options": "\nStudent\nFather\nMother",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "funds_type",
+   "fieldtype": "Select",
+   "label": "Funds Type",
+   "options": "\nBank statement\nFD\nEducation loan",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bank_name",
+   "fieldtype": "Data",
+   "label": "Bank Name",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "amount_gbp",
+   "fieldtype": "Currency",
+   "label": "Amount (GBP)",
+   "options": "GBP",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "nationalized_bank",
+   "fieldtype": "Select",
+   "label": "Nationalized Bank?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "section_bank",
+   "fieldtype": "Section Break",
+   "label": "Bank Statement",
+   "depends_on": "eval:doc.funds_type=='Bank statement'"
+  },
+  {
+   "fieldname": "balance_certificate",
+   "fieldtype": "Attach",
+   "label": "Balance Certificate",
+   "depends_on": "eval:doc.funds_type=='Bank statement' || doc.funds_type=='FD'"
+  },
+  {
+   "fieldname": "statement_upload",
+   "fieldtype": "Attach",
+   "label": "Bank Statement Upload",
+   "depends_on": "eval:doc.funds_type=='Bank statement'"
+  },
+  {
+   "fieldname": "funds_28_day_ok",
+   "fieldtype": "Select",
+   "label": "28-day Rule Met?",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.funds_type=='Bank statement' || doc.funds_type=='FD'"
+  },
+  {
+   "fieldname": "cert_same_date",
+   "fieldtype": "Select",
+   "label": "Cert Date Matches Statement?",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.funds_type=='Bank statement'"
+  },
+  {
+   "fieldname": "section_fd",
+   "fieldtype": "Section Break",
+   "label": "Fixed Deposit",
+   "depends_on": "eval:doc.funds_type=='FD'"
+  },
+  {
+   "fieldname": "fd_upload",
+   "fieldtype": "Attach",
+   "label": "FD Document",
+   "depends_on": "eval:doc.funds_type=='FD'"
+  },
+  {
+   "fieldname": "section_loan",
+   "fieldtype": "Section Break",
+   "label": "Education Loan",
+   "depends_on": "eval:doc.funds_type=='Education loan'"
+  },
+  {
+   "fieldname": "loan_for_education",
+   "fieldtype": "Select",
+   "label": "Loan for Education?",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.funds_type=='Education loan'"
+  },
+  {
+   "fieldname": "loan_holder_is_student",
+   "fieldtype": "Select",
+   "label": "Holder is Student?",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.funds_type=='Education loan'"
+  },
+  {
+   "fieldname": "loan_letter",
+   "fieldtype": "Attach",
+   "label": "Loan Letter",
+   "depends_on": "eval:doc.funds_type=='Education loan'"
+  },
+  {
+   "fieldname": "collateral_details",
+   "fieldtype": "Small Text",
+   "label": "Collateral Details",
+   "depends_on": "eval:doc.funds_type=='Education loan'"
+  },
+  {
+   "fieldname": "section_birth",
+   "fieldtype": "Section Break",
+   "label": "Parent Documents",
+   "depends_on": "eval:doc.sponsor_who=='Father' || doc.sponsor_who=='Mother'"
+  },
+  {
+   "fieldname": "birth_cert_available",
+   "fieldtype": "Select",
+   "label": "Birth Certificate Available?",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.sponsor_who=='Father' || doc.sponsor_who=='Mother'"
+  },
+  {
+   "fieldname": "birth_cert_language",
+   "fieldtype": "Select",
+   "label": "Birth Cert Language",
+   "options": "\nHindi\nEnglish\nOther",
+   "depends_on": "eval:doc.birth_cert_available=='Yes'"
+  },
+  {
+   "fieldname": "birth_cert_upload",
+   "fieldtype": "Attach",
+   "label": "Birth Certificate",
+   "depends_on": "eval:doc.birth_cert_available=='Yes'"
+  },
+  {
+   "fieldname": "parents_support_affidavit",
+   "fieldtype": "Attach",
+   "label": "Parents Support Affidavit",
+   "depends_on": "eval:doc.birth_cert_available=='No'"
+  }
+ ],
+ "istable": 1,
+ "modified": "2026-07-23 20:30:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Application UK Sponsor",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

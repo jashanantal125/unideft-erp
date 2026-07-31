@@ -242,6 +242,39 @@ function getUniversityLabel(app) {
 	);
 }
 
+function getCountryFlagHtml(country) {
+	if (!country) return '';
+	const codeMap = {
+		australia: 'au',
+		'united kingdom': 'gb',
+		uk: 'gb',
+		'great britain': 'gb',
+		britain: 'gb',
+		england: 'gb',
+		canada: 'ca',
+		'united states': 'us',
+		'united states of america': 'us',
+		usa: 'us',
+		'new zealand': 'nz',
+		ireland: 'ie',
+		germany: 'de',
+		france: 'fr',
+		italy: 'it',
+		spain: 'es',
+		netherlands: 'nl',
+		singapore: 'sg',
+		malaysia: 'my',
+		dubai: 'ae',
+		uae: 'ae',
+		'united arab emirates': 'ae',
+		india: 'in',
+	};
+	const code = codeMap[String(country).trim().toLowerCase()];
+	if (!code) return '';
+	const safe = escapeHtml(country);
+	return `<img class="country-flag" src="https://flagcdn.com/w40/${code}.png" alt="${safe}" title="${safe}" width="20" height="15" loading="lazy" />`;
+}
+
 function fetchUniversityNames(applications) {
 	const universityIds = [];
 	applications.forEach((app) => {
@@ -513,7 +546,7 @@ function createApplicationCard(app) {
 					${(app.preferred_university || app.university_name || app.university_display_name) || app.destination_country ? `
 						<span class="program-university">
 							${escapeHtml(getUniversityLabel(app))}
-							${app.destination_country ? `In ${escapeHtml(app.destination_country)}` : ''}
+							${app.destination_country ? `${getCountryFlagHtml(app.destination_country)} In ${escapeHtml(app.destination_country)}` : ''}
 						</span>
 					` : ''}
 					${app.intake ? `<span class="intake-date"><strong>Intake:</strong> ${escapeHtml(app.intake)}</span>` : ''}

@@ -23,7 +23,26 @@
  "public": 1,
  "quick_lists": [],
  "restrict_to_domain": "",
- "roles": [],
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Administrator"
+  },
+  {
+   "role": "CRM Admin"
+  },
+  {
+   "role": "CRM Sales Staff"
+  },
+  {
+   "role": "Team Lead"
+  },
+  {
+   "role": "Team Executive"
+  }
+ ],
  "sequence_id": 21.0,
  "shortcuts": [],
  "title": "Task Manager",
@@ -31,4 +50,3 @@
  "link_type": "DocType",
  "link_to": "Task"
 }
-

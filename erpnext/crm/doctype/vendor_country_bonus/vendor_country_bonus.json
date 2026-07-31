@@ -1,0 +1,40 @@
+{
+ "actions": [],
+ "creation": "2026-07-31 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": ["country", "bonus_amount", "attachment"],
+ "fields": [
+  {
+   "fieldname": "country",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Country",
+   "options": "Country",
+   "reqd": 1
+  },
+  {
+   "fieldname": "bonus_amount",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Bonus Amount",
+   "reqd": 1
+  },
+  {
+   "fieldname": "attachment",
+   "fieldtype": "Attach",
+   "in_list_view": 1,
+   "label": "Attachment"
+  }
+ ],
+ "istable": 1,
+ "modified": "2026-07-31 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Vendor Country Bonus",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

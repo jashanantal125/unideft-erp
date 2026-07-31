@@ -9,7 +9,16 @@
  "field_order": [
   "team_section",
   "team_name",
+  "team_type",
+  "column_break_team_1",
   "team_leader",
+  "country",
+  "admission_section",
+  "admission_1",
+  "admission_2",
+  "column_break_admission_1",
+  "country_head",
+  "cro",
   "territories_section",
   "territories",
   "team_members_section",
@@ -30,10 +39,66 @@
    "unique": 1
   },
   {
+   "fieldname": "team_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Type",
+   "options": "\nB2B\nB2C"
+  },
+  {
+   "fieldname": "column_break_team_1",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "team_leader",
    "fieldtype": "Link",
    "label": "Team Leader",
    "options": "User"
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Country",
+   "options": "Country",
+   "description": "Destination country this admission group handles"
+  },
+  {
+   "fieldname": "admission_section",
+   "fieldtype": "Section Break",
+   "label": "Admission Group"
+  },
+  {
+   "fieldname": "admission_1",
+   "fieldtype": "Link",
+   "label": "Admission 1",
+   "options": "User",
+   "description": "Processes applications for this group"
+  },
+  {
+   "fieldname": "admission_2",
+   "fieldtype": "Link",
+   "label": "Admission 2",
+   "options": "User",
+   "description": "Reviews / verifies applications for this group"
+  },
+  {
+   "fieldname": "column_break_admission_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "country_head",
+   "fieldtype": "Link",
+   "label": "Country Head",
+   "options": "User",
+   "description": "Oversees all groups for the assigned country"
+  },
+  {
+   "fieldname": "cro",
+   "fieldtype": "Link",
+   "label": "CRO",
+   "options": "User",
+   "description": "CRO / Branch Head associated with this group"
   },
   {
    "fieldname": "territories_section",
@@ -60,7 +125,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-04 00:00:00",
+ "modified": "2026-07-29 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Team",
@@ -88,6 +153,23 @@
    "role": "CRM Admin",
    "share": 1,
    "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Country Head"
+  },
+  {
+   "read": 1,
+   "role": "CRO"
+  },
+  {
+   "read": 1,
+   "write": 1,
+   "role": "Admission 1"
+  },
+  {
+   "read": 1,
+   "role": "Admission 2"
   }
  ],
  "sort_field": "creation",
