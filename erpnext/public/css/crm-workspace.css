@@ -82,22 +82,17 @@ header.navbar .nav-link:hover,
 	background-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-/* Navbar Icons */
+/* Navbar Icons
+   NOTE: only tint via --icon-stroke; explicit fill/stroke turns
+   Frappe's stroke-based line icons into solid blobs */
 header.navbar svg,
 .navbar svg,
 .navbar .icon,
 .navbar .es-icon,
 .navbar .notifications-icon svg {
 	--icon-stroke: #FFFFFF !important;
+	--icon-fill: transparent !important;
 	color: #FFFFFF !important;
-	fill: #FFFFFF !important;
-	stroke: #FFFFFF !important;
-}
-
-header.navbar svg use,
-.navbar svg use {
-	--icon-stroke: #FFFFFF !important;
-	stroke: #FFFFFF !important;
 }
 
 .navbar .text-muted {
@@ -130,7 +125,7 @@ header.navbar svg use,
 
 .navbar .search-bar .search-icon svg,
 .navbar .search-icon svg {
-	stroke: #FFFFFF !important;
+	--icon-stroke: #FFFFFF !important;
 	color: #FFFFFF !important;
 }
 

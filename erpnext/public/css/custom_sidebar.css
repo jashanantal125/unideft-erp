@@ -55,23 +55,24 @@ body .body-sidebar {
 	color: #ffffff !important;
 }
 
-/* Sidebar icons */
+/* Sidebar icons
+   NOTE: only tint via --icon-stroke; explicit fill/stroke turns
+   Frappe's stroke-based line icons into solid blobs */
+.body-sidebar,
 .body-sidebar .standard-sidebar-item .item-anchor svg,
 .body-sidebar .standard-sidebar-item .item-anchor .sidebar-item-icon svg,
 .body-sidebar .standard-sidebar-item .sidebar-item-icon svg {
 	color: #ffffff !important;
-	fill: #ffffff !important;
-	stroke: #ffffff !important;
 	--icon-stroke: #ffffff !important;
+	--icon-fill: transparent !important;
 }
 
 .body-sidebar .standard-sidebar-item .item-anchor:hover svg,
 .body-sidebar .standard-sidebar-item .item-anchor:hover .sidebar-item-icon svg,
 .body-sidebar .standard-sidebar-item .sidebar-item-icon:hover svg {
 	color: #ffffff !important;
-	fill: #ffffff !important;
-	stroke: #ffffff !important;
 	--icon-stroke: #ffffff !important;
+	--icon-fill: transparent !important;
 }
 
 /* Sidebar item icon container */
@@ -81,9 +82,8 @@ body .body-sidebar {
 
 .body-sidebar .sidebar-item-icon svg {
 	color: #ffffff !important;
-	fill: #ffffff !important;
-	stroke: #ffffff !important;
 	--icon-stroke: #ffffff !important;
+	--icon-fill: transparent !important;
 }
 
 /* Child menu items (nested items) */
@@ -106,8 +106,8 @@ body .body-sidebar {
 /* Sidebar item control (dropdown arrows) */
 .body-sidebar .standard-sidebar-item .sidebar-item-control svg {
 	color: #ffffff !important;
-	fill: #ffffff !important;
-	stroke: #ffffff !important;
+	--icon-stroke: #ffffff !important;
+	--icon-fill: transparent !important;
 }
 
 /* Divider color */
@@ -128,13 +128,12 @@ body .body-sidebar {
 	color: #ffffff !important;
 }
 
-/* App switcher menu icons */
+/* App switcher menu icons (menu has white background, use dark icons) */
 .app-switcher-menu .app-item .sidebar-item-icon svg,
 .app-switcher-menu .app-item svg {
-	color: #ffffff !important;
-	fill: #ffffff !important;
-	stroke: #ffffff !important;
-	--icon-stroke: #ffffff !important;
+	color: #282828 !important;
+	--icon-stroke: #282828 !important;
+	--icon-fill: transparent !important;
 }
 
 /* Collapse sidebar link */
@@ -144,9 +143,8 @@ body .body-sidebar {
 
 .body-sidebar .collapse-sidebar-link svg {
 	color: #ffffff !important;
-	fill: #ffffff !important;
-	stroke: #ffffff !important;
 	--icon-stroke: #ffffff !important;
+	--icon-fill: transparent !important;
 }
 
 /* App title */
@@ -173,9 +171,8 @@ body .body-sidebar {
 .body-sidebar .standard-sidebar-item:hover .sidebar-item-icon svg,
 .body-sidebar .standard-sidebar-item:hover .item-anchor svg {
 	color: #ffffff !important;
-	fill: #ffffff !important;
-	stroke: #ffffff !important;
 	--icon-stroke: #ffffff !important;
+	--icon-fill: transparent !important;
 }
 
 /* Active Sidebar Item - Orange Background */
@@ -191,8 +188,7 @@ body .body-sidebar {
 .active-sidebar .sidebar-item-icon svg,
 .active-sidebar .item-anchor svg {
 	color: #ffffff !important;
-	fill: #ffffff !important;
-	stroke: #ffffff !important;
 	--icon-stroke: #ffffff !important;
+	--icon-fill: transparent !important;
 }
 

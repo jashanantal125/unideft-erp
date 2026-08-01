@@ -443,8 +443,8 @@
 .applications-container .standard-sidebar-item.selected .sidebar-item-icon svg,
 .applications-container .standard-sidebar-item.selected .item-anchor svg{
 	color: #fff !important;
-	fill: #fff !important;
-	stroke: #fff !important;
+	--icon-stroke: #fff !important;
+	--icon-fill: transparent !important;
 }
 
 .applications-container .standard-sidebar-item:hover{
@@ -458,8 +458,8 @@
 .applications-container .standard-sidebar-item:hover .sidebar-item-icon svg,
 .applications-container .standard-sidebar-item:hover .item-anchor svg{
 	color: #fff !important;
-	fill: #fff !important;
-	stroke: #fff !important;
+	--icon-stroke: #fff !important;
+	--icon-fill: transparent !important;
 }
 
 .applications-container .sidebar-child-item{
