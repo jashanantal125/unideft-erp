@@ -3,16 +3,44 @@
 
 const UK_REMINDER_SESSION = {};
 const UK_LIVING = { "Inner London": 13347, "Outer London": 10224 };
+// UKVI-style dependent maintenance (approx. 9 months) when Funds Required includes spouse/kid
+const UK_DEPENDENT_LIVING = { "Inner London": 7605, "Outer London": 6120 };
 const UK_FORM_VIEW_TABLES = [
 	"english_test_details",
 	"study_gap_proof_list",
 	"uk_sponsors",
 	"academic_lor_list",
-	"processing_agent_details",
+	"experience_lor_list",
 	"conditions_on_offer_letter",
 	"supporting_documents",
+	"documents_10th_to_pg",
+	"documents_10th_to_12th",
 ];
 
+const UK_ENGLISH_BASE_TYPES =
+	"\nIELTS Waiver\nIELTS\nUKVI IELTS\nPTE\nUKVI PTE\nDuolingo\nTOEFL";
+const UK_ENGLISH_GRAD_TYPES = UK_ENGLISH_BASE_TYPES + "\nMOI";
+
+function apply_uk_english_test_options(frm) {
+	const allow_moi =
+		frm.doc.higher_education === "Graduation" || frm.doc.higher_education === "Post-graduation";
+	const opts = allow_moi ? UK_ENGLISH_GRAD_TYPES : UK_ENGLISH_BASE_TYPES;
+	if (frm.fields_dict.english_test_details) {
+		frm.set_df_property(
+			"english_test_details",
+			"description",
+			allow_moi
+				? __("Cases 3–6: includes MOI (Medium of Instruction)")
+				: __("Click Add Row for IELTS / PTE / TOEFL / etc.")
+		);
+	}
+	// Restrict MOI on child rows when not Graduation / Post-graduation
+	frappe.model.with_doctype("Application English Test", () => {
+		const meta = frappe.get_meta("Application English Test");
+		const df = meta && meta.fields.find((f) => f.fieldname === "test_type");
+		if (df) df.options = opts;
+	});
+}
 function uk_format_reminder_datetime(date_str, time_str) {
 	const time = (time_str || "09:00:00").length === 5 ? `${time_str}:00` : time_str;
 	return `${date_str} ${time}`;
@@ -140,7 +168,15 @@ function sync_uk_case(frm) {
 	if (!frm.doc.higher_education && !frm.doc.martial_status) return;
 	const case_label = resolve_uk_case_local(frm.doc.higher_education, frm.doc.martial_status);
 	frm.set_value("country_flow_case", case_label);
-	frm.set_value("single_basis_only", ["UK Case 1", "UK Case 3", "UK Case 5"].includes(case_label) ? 1 : 0);
+	// Case 5 allows spouse track (Case 7&8 PDF). Cases 1 & 3 stay single-basis only.
+	// Research gate can still force single_basis_only via wants_process_single_basis.
+	const force_single = ["UK Case 1", "UK Case 3"].includes(case_label);
+	if (force_single) {
+		frm.set_value("single_basis_only", 1);
+	} else if (frm.doc.wants_process_single_basis !== "Yes") {
+		frm.set_value("single_basis_only", 0);
+	}
+	apply_uk_sponsor_for_options(frm);
 	if (!frm.is_new() && frm.doc.name) {
 		frappe.call({
 			method: "erpnext.crm.doctype.application_uk.application_uk.recompute_uk_case",
@@ -153,19 +189,196 @@ function sync_uk_case(frm) {
 	}
 }
 
-function recalculate_uk_funds(frm) {
-	const living = UK_LIVING[frm.doc.living_expenses_location] || 0;
-	if (frm.doc.living_expenses_location) {
-		frm.set_value("living_expenses", living);
+function uk_funds_from_type(frm, is_defer) {
+	const prefix = is_defer ? "defer_" : "";
+	const loc_field = prefix + "living_expenses_location";
+	const living_field = prefix + "living_expenses";
+	const funds_type = frm.doc[prefix + "funds_required_type"] || "";
+	const location = frm.doc[loc_field];
+	const living = UK_LIVING[location] || flt(frm.doc[living_field]) || 0;
+	if (location && frm.doc[living_field] !== living) {
+		frm.set_value(living_field, living);
 	}
-	const tuition = flt(frm.doc.full_year_tuition_fee);
-	const scholarship = flt(frm.doc.scholarship);
-	const payable = flt(frm.doc.payable_fee);
-	frm.set_value("funds_required_amount", Math.max(tuition - scholarship, 0) + living - payable);
+
+	const tuition = flt(frm.doc[prefix + "full_year_tuition_fee"]);
+	const scholarship = flt(frm.doc[prefix + "scholarship"]);
+	const payable = flt(frm.doc[prefix + "payable_fee"]);
+	const without_full_year = funds_type.includes("Without Full Year fee");
+
+	// With Full Year: net tuition + living − payable CAS
+	// Without Full Year: payable CAS + living (tuition already represented by payable)
+	let amount = without_full_year
+		? payable + living
+		: Math.max(tuition - scholarship, 0) + living - payable;
+
+	const type_l = funds_type.toLowerCase();
+	const dependent = UK_DEPENDENT_LIVING[location] || 0;
+	const allow_dependents = !frm.doc.single_basis_only;
+
+	// Kid add-on stays on main funds amount. Spouse living is a separate field.
+	if (allow_dependents && type_l.includes("kid")) {
+		amount += dependent;
+	}
+
+	return amount > 0 ? amount : 0;
+}
+
+function uk_spouse_track(frm) {
+	return frm.doc.martial_status === "Married" && !frm.doc.single_basis_only;
+}
+
+function recalculate_uk_spouse_funds(frm) {
+	const living = flt(frm.doc.living_expenses) || UK_LIVING[frm.doc.living_expenses_location] || 0;
+	if (uk_spouse_track(frm)) {
+		if (frm.doc.funds_required_for_spouse !== living) {
+			frm.set_value("funds_required_for_spouse", living);
+		}
+	} else if (frm.doc.funds_required_for_spouse) {
+		frm.set_value("funds_required_for_spouse", 0);
+	}
+
+	if (frm.doc.defer_offer_required === "Yes") {
+		const d_living =
+			flt(frm.doc.defer_living_expenses) || UK_LIVING[frm.doc.defer_living_expenses_location] || 0;
+		if (uk_spouse_track(frm)) {
+			if (frm.doc.defer_funds_required_for_spouse !== d_living) {
+				frm.set_value("defer_funds_required_for_spouse", d_living);
+			}
+		} else if (frm.doc.defer_funds_required_for_spouse) {
+			frm.set_value("defer_funds_required_for_spouse", 0);
+		}
+	}
+}
+
+function recalculate_uk_funds(frm) {
+	frm.set_value("funds_required_amount", uk_funds_from_type(frm, false));
+	recalculate_uk_spouse_funds(frm);
+}
+
+function recalculate_uk_defer_funds(frm) {
+	if (frm.doc.defer_offer_required !== "Yes") return;
+	frm.set_value("defer_funds_required_amount", uk_funds_from_type(frm, true));
+	recalculate_uk_spouse_funds(frm);
+}
+
+function apply_uk_sponsor_for_options(frm) {
+	if (!frm.fields_dict.uk_sponsors || !frm.fields_dict.uk_sponsors.grid) return;
+	const allow_spouse = frm.doc.martial_status === "Married" && !cint(frm.doc.single_basis_only);
+	const opts = allow_spouse ? "\nApplicant\nSpouse" : "\nApplicant";
+	frm.fields_dict.uk_sponsors.grid.update_docfield_property("sponsor_for", "options", opts);
+	(frm.doc.uk_sponsors || []).forEach((row) => {
+		if (!allow_spouse && row.sponsor_for === "Spouse") {
+			frappe.model.set_value(row.doctype, row.name, "sponsor_for", "Applicant");
+		}
+		if (!row.sponsor_for) {
+			frappe.model.set_value(row.doctype, row.name, "sponsor_for", "Applicant");
+		}
+	});
+}
+
+function apply_uk_package_mandatory(frm) {
+	const reqd = !!frm.doc.is_package_case;
+	["data_swym", "password", "recovery_email_id", "login_contact_no"].forEach((fieldname) => {
+		if (frm.fields_dict[fieldname]) {
+			frm.set_df_property(fieldname, "reqd", reqd ? 1 : 0);
+		}
+	});
+}
+
+function populate_uk_offer_defaults(frm) {
+	if (frm.doc.preferred_university && !frm.doc.university_name) {
+		frm.set_value("university_name", frm.doc.preferred_university);
+	}
+	if (
+		(!frm.doc.course_name || frm.doc.course_name === "") &&
+		frm.doc.preferred_courses &&
+		frm.doc.preferred_courses.length
+	) {
+		const first = frm.doc.preferred_courses[0];
+		if (first && first.course) frm.set_value("course_name", first.course);
+	}
+	if (frm.doc.defer_offer_required === "Yes") {
+		if (frm.doc.preferred_university && !frm.doc.defer_university_name) {
+			frm.set_value("defer_university_name", frm.doc.preferred_university);
+		}
+		if (
+			(!frm.doc.defer_course_name || frm.doc.defer_course_name === "") &&
+			frm.doc.preferred_courses &&
+			frm.doc.preferred_courses.length
+		) {
+			const first = frm.doc.preferred_courses[0];
+			if (first && first.course) frm.set_value("defer_course_name", first.course);
+		}
+	}
+}
+
+const UK_OFFER_CURRENCY_FIELDS = [
+	"full_year_tuition_fee",
+	"scholarship",
+	"payable_fee",
+	"living_expenses",
+	"funds_required_amount",
+	"initial_deposit_amount_payable",
+];
+const UK_DEFER_CURRENCY_FIELDS = [
+	"defer_full_year_tuition_fee",
+	"defer_scholarship",
+	"defer_payable_fee",
+	"defer_living_expenses",
+	"defer_funds_required_amount",
+];
+
+function update_uk_currency_fields(frm, is_defer) {
+	const currency_field = is_defer ? "defer_offer_currency" : "offer_currency";
+	const fields = is_defer ? UK_DEFER_CURRENCY_FIELDS : UK_OFFER_CURRENCY_FIELDS;
+	fields.forEach((fieldname) => {
+		if (frm.fields_dict[fieldname]) {
+			frm.set_df_property(fieldname, "options", currency_field);
+			frm.refresh_field(fieldname);
+		}
+	});
+	const amount_field = is_defer ? "defer_funds_required_amount" : "funds_required_amount";
+	const code = frm.doc[currency_field] || "GBP";
+	if (frm.fields_dict[amount_field]) {
+		frm.set_df_property(amount_field, "label", __("Funds Required ({0})", [code]));
+		frm.refresh_field(amount_field);
+	}
+}
+
+function deactivate_uk_reminders(frm, description_like) {
+	const app = frm.doc.application;
+	if (!app) return;
+	frappe.db
+		.get_list("Reminder", {
+			filters: {
+				reminder_doctype: "Application",
+				reminder_docname: app,
+				description: ["like", description_like],
+				notified: 0,
+			},
+			fields: ["name"],
+			limit: 20,
+		})
+		.then((rows) => {
+			(rows || []).forEach((row) => frappe.db.set_value("Reminder", row.name, "notified", 1));
+			if (rows && rows.length) {
+				frappe.show_alert(
+					{ message: __("Reminder deactivated"), indicator: "blue" },
+					3
+				);
+			}
+		});
 }
 
 function set_uk_stage(frm, stage) {
 	frm.set_value("uk_current_stage", stage);
+}
+
+function maybe_uk_reminder(frm, field_value, expect, options) {
+	if (field_value !== expect) return;
+	const key = options.trigger_key || options.default_description;
+	UK_REMINDER_SESSION[key] = false;
+	prompt_uk_reminder(frm, options);
 }
 
 function apply_b2c_agent(frm) {
@@ -196,6 +409,20 @@ function patch_form_view_tables(frm) {
 	});
 }
 
+function sync_processing_agent_row(cdt, cdn) {
+	const row = locals[cdt][cdn];
+	if (!row) return;
+	// Avoid grid.reset / refresh_field here — that was wiping the child table mid-edit.
+	if (row.processing_agent_type === "Direct") {
+		frappe.model.set_value(cdt, cdn, "processing_agent_direct", "Unideft");
+		if (row.processing_agent_vendor) {
+			frappe.model.set_value(cdt, cdn, "processing_agent_vendor", "");
+		}
+	} else if (row.processing_agent_type === "Vendor" && row.processing_agent_vendor) {
+		frappe.model.set_value(cdt, cdn, "processing_agent_direct", row.processing_agent_vendor);
+	}
+}
+
 frappe.ui.form.on("Application UK", {
 	onload(frm) {
 		patch_form_view_tables(frm);
@@ -219,7 +446,18 @@ frappe.ui.form.on("Application UK", {
 		}
 
 		apply_b2c_agent(frm);
+		if (!frm.doc.offer_currency) frm.set_value("offer_currency", "GBP");
+		update_uk_currency_fields(frm, false);
+		if (frm.doc.defer_offer_required === "Yes") {
+			if (!frm.doc.defer_offer_currency) frm.set_value("defer_offer_currency", "GBP");
+			update_uk_currency_fields(frm, true);
+		}
 		recalculate_uk_funds(frm);
+		recalculate_uk_defer_funds(frm);
+		apply_uk_package_mandatory(frm);
+		apply_uk_sponsor_for_options(frm);
+		populate_uk_offer_defaults(frm);
+		apply_uk_english_test_options(frm);
 
 		if (frm.is_new() && !frm._landed_details_tab) {
 			frm._landed_details_tab = true;
@@ -230,6 +468,39 @@ frappe.ui.form.on("Application UK", {
 				}
 			}, 200);
 		}
+	},
+
+	is_package_case(frm) {
+		apply_uk_package_mandatory(frm);
+	},
+
+	dob(frm) {
+		if (frm.doc.dob) {
+			const dob = frappe.datetime.str_to_obj(frm.doc.dob);
+			const today = new Date();
+			let age = today.getFullYear() - dob.getFullYear();
+			const month_diff = today.getMonth() - dob.getMonth();
+			if (month_diff < 0 || (month_diff === 0 && today.getDate() < dob.getDate())) {
+				age--;
+			}
+			frm.set_value("current_age", age > 0 ? age : "");
+		} else {
+			frm.set_value("current_age", "");
+		}
+	},
+
+	preferred_university(frm) {
+		populate_uk_offer_defaults(frm);
+	},
+
+	offer_currency(frm) {
+		update_uk_currency_fields(frm, false);
+		recalculate_uk_funds(frm);
+	},
+
+	defer_offer_currency(frm) {
+		update_uk_currency_fields(frm, true);
+		recalculate_uk_defer_funds(frm);
 	},
 
 	student(frm) {
@@ -249,10 +520,103 @@ frappe.ui.form.on("Application UK", {
 
 	higher_education(frm) {
 		sync_uk_case(frm);
+		apply_uk_english_test_options(frm);
 	},
 
 	martial_status(frm) {
 		sync_uk_case(frm);
+	},
+
+	bachelor_university_accepted(frm) {
+		if (frm.doc.bachelor_university_accepted === "No") {
+			frappe.show_alert(
+				{
+					message: __("If not accepted by any other UK university, capture reason and close the case."),
+					indicator: "orange",
+				},
+				6
+			);
+		}
+	},
+
+	bachelor_other_uk_uni_accepted(frm) {
+		if (frm.doc.bachelor_other_uk_uni_accepted === "Yes") {
+			frappe.msgprint({
+				title: __("Separate Application"),
+				message: __("Process a separate application for the other UK university that accepts these documents."),
+				indicator: "blue",
+			});
+		} else if (frm.doc.bachelor_other_uk_uni_accepted === "No") {
+			frappe.msgprint({
+				title: __("Close Case"),
+				message: __("Capture the reason below, then mark Application Closed."),
+				indicator: "orange",
+			});
+			if (frm.fields_dict.application_closed) {
+				// nudge — user confirms close after reason
+			}
+		}
+	},
+
+	bachelor_close_reason(frm) {
+		if (
+			frm.doc.bachelor_close_reason &&
+			frm.doc.bachelor_university_accepted === "No" &&
+			frm.doc.bachelor_other_uk_uni_accepted === "No"
+		) {
+			frm.set_value("application_closed", 1);
+			set_uk_stage(frm, "Closed");
+			if (frm.doc.status !== "Closed") frm.set_value("status", "Closed");
+		}
+	},
+
+	eligible_for_research_program(frm) {
+		if (frm.doc.eligible_for_research_program === "Yes") {
+			frappe.show_alert({ message: __("Research eligible — continue Processing."), indicator: "green" }, 4);
+		}
+		frm.refresh_fields();
+	},
+
+	wants_process_single_basis(frm) {
+		if (frm.doc.wants_process_single_basis === "Yes") {
+			frm.set_value("single_basis_only", 1);
+			frappe.show_alert(
+				{ message: __("Single-basis processing — continue below."), indicator: "green" },
+				4
+			);
+		}
+		frm.refresh_fields();
+	},
+
+	wants_process_another_country(frm) {
+		if (frm.doc.wants_process_another_country === "Yes") {
+			frappe.msgprint({
+				title: __("Another Country"),
+				message: __("Enter the country below and process that country separately. UK Processing stays hidden on this form."),
+				indicator: "blue",
+			});
+		} else if (frm.doc.wants_process_another_country === "No") {
+			frappe.msgprint({
+				title: __("Close Case"),
+				message: __("Capture the reason below, then the case will be marked Closed."),
+				indicator: "orange",
+			});
+		}
+		frm.refresh_fields();
+	},
+
+	research_close_reason(frm) {
+		if (
+			frm.doc.research_close_reason &&
+			frm.doc.higher_education === "Post-graduation" &&
+			frm.doc.eligible_for_research_program === "No" &&
+			frm.doc.wants_process_single_basis === "No" &&
+			frm.doc.wants_process_another_country === "No"
+		) {
+			frm.set_value("application_closed", 1);
+			set_uk_stage(frm, "Closed");
+			if (frm.doc.status !== "Closed") frm.set_value("status", "Closed");
+		}
 	},
 
 	any_visa_refused(frm) {
@@ -268,6 +632,9 @@ frappe.ui.form.on("Application UK", {
 		}
 	},
 
+	living_expenses_location(frm) {
+		recalculate_uk_funds(frm);
+	},
 	full_year_tuition_fee(frm) {
 		recalculate_uk_funds(frm);
 	},
@@ -277,8 +644,108 @@ frappe.ui.form.on("Application UK", {
 	payable_fee(frm) {
 		recalculate_uk_funds(frm);
 	},
-	living_expenses_location(frm) {
+	funds_required_type(frm) {
 		recalculate_uk_funds(frm);
+	},
+
+	deposit_deadline(frm) {
+		if (frm.doc.deposit_deadline) {
+			const key = `uk_deposit_${frm.doc.name}`;
+			UK_REMINDER_SESSION[key] = false;
+			prompt_uk_reminder(frm, {
+				title: __("Deposit / tuition deadline"),
+				default_description: "UK — Decide deadline for deposit / tuition fee payment",
+				default_date: frm.doc.deposit_deadline,
+				trigger_key: key,
+			});
+		}
+	},
+
+	tuition_paid_before_deadline(frm) {
+		if (frm.doc.tuition_paid_before_deadline === "Yes") {
+			deactivate_uk_reminders(frm, "UK — Decide deadline for deposit%");
+			deactivate_uk_reminders(frm, "UK — Deposit / tuition%");
+			deactivate_uk_reminders(frm, "UK — Intake deposit%");
+		}
+	},
+
+	university_intake(frm) {
+		if (frm.doc.university_intake) {
+			// Deposit / tuition reminder lives on deposit_deadline only (not intake)
+			set_uk_stage(frm, "Offer Letter");
+			populate_uk_offer_defaults(frm);
+		}
+	},
+
+	offer_letter_upload(frm) {
+		if (frm.doc.offer_letter_upload && frm.doc.offer_letter_upload.length) {
+			set_uk_stage(frm, "Offer Letter");
+		}
+	},
+
+	applied_for_defer_offer_letter(frm) {
+		if (frm.doc.applied_for_defer_offer_letter === "Yes") {
+			maybe_uk_reminder(frm, "Yes", "Yes", {
+				title: __("Defer offer letter received"),
+				default_description: "UK — Follow up: Defer offer letter received",
+				trigger_key: `uk_defer_recv_wait_${frm.doc.name}`,
+			});
+		} else if (frm.doc.applied_for_defer_offer_letter === "No") {
+			maybe_uk_reminder(frm, "No", "No", {
+				title: __("Apply for defer offer letter"),
+				default_description: "UK — Apply for defer offer letter",
+				trigger_key: `uk_defer_apply_${frm.doc.name}`,
+			});
+		}
+	},
+
+	defer_offer_received(frm) {
+		if (frm.doc.defer_offer_received === "No") {
+			maybe_uk_reminder(frm, "No", "No", {
+				title: __("Expect defer offer letter"),
+				default_description: "UK — When expect defer offer letter will be received",
+				trigger_key: `uk_defer_expect_${frm.doc.name}`,
+			});
+		} else if (frm.doc.defer_offer_received === "Yes") {
+			populate_uk_offer_defaults(frm);
+			recalculate_uk_defer_funds(frm);
+		}
+	},
+
+	defer_living_expenses_location(frm) {
+		recalculate_uk_defer_funds(frm);
+	},
+	defer_full_year_tuition_fee(frm) {
+		recalculate_uk_defer_funds(frm);
+	},
+	defer_scholarship(frm) {
+		recalculate_uk_defer_funds(frm);
+	},
+	defer_payable_fee(frm) {
+		recalculate_uk_defer_funds(frm);
+	},
+	defer_funds_required_type(frm) {
+		recalculate_uk_defer_funds(frm);
+	},
+	defer_deposit_deadline(frm) {
+		if (frm.doc.defer_deposit_deadline) {
+			prompt_uk_reminder(frm, {
+				title: __("Defer deposit deadline"),
+				default_description: "UK — Decide deadline for deposit (defer offer)",
+				default_date: frm.doc.defer_deposit_deadline,
+				trigger_key: `uk_defer_dep_${frm.doc.name}`,
+			});
+		}
+	},
+
+	defer_university_intake(frm) {
+		// Deposit reminder for defer is on defer_deposit_deadline only
+	},
+
+	processing_agent_details_add(frm, cdt, cdn) {
+		frappe.model.set_value(cdt, cdn, "processing_agent_type", "Direct");
+		frappe.model.set_value(cdt, cdn, "processing_agent_direct", "Unideft");
+		frappe.model.set_value(cdt, cdn, "processing_agent_vendor", "");
 	},
 
 	application_submitted(frm) {
@@ -328,32 +795,6 @@ frappe.ui.form.on("Application UK", {
 		}
 	},
 
-	deposit_deadline(frm) {
-		if (frm.doc.deposit_deadline) {
-			const key = `uk_deposit_${frm.doc.name}`;
-			UK_REMINDER_SESSION[key] = false;
-			prompt_uk_reminder(frm, {
-				title: __("Deposit / tuition deadline"),
-				default_description: "UK — Deposit / tuition fee payment follow-up",
-				default_date: frm.doc.deposit_deadline,
-				trigger_key: key,
-			});
-		}
-	},
-
-	university_intake(frm) {
-		if (frm.doc.university_intake) {
-			const key = `uk_intake_${frm.doc.name}`;
-			UK_REMINDER_SESSION[key] = false;
-			prompt_uk_reminder(frm, {
-				title: __("Intake / deposit follow-up"),
-				default_description: "UK — Intake deposit deadline follow-up",
-				default_date: frm.doc.university_intake,
-				trigger_key: key,
-			});
-		}
-	},
-
 	interview_deadline_date(frm) {
 		if (frm.doc.interview_deadline_date) {
 			const key = `uk_interview_dl_${frm.doc.name}`;
@@ -365,6 +806,141 @@ frappe.ui.form.on("Application UK", {
 				trigger_key: key,
 			});
 		}
+	},
+
+	initial_amount_paid(frm) {
+		maybe_uk_reminder(frm, frm.doc.initial_amount_paid, "No", {
+			title: __("Pay initial deposit"),
+			default_description: "UK — Pay initial deposit amount",
+			trigger_key: `uk_init_dep_${frm.doc.name}`,
+		});
+	},
+
+	student_prepare(frm) {
+		maybe_uk_reminder(frm, frm.doc.student_prepare, "No", {
+			title: __("Prepare student for interview"),
+			default_description: "UK — Prepare student for interview",
+			trigger_key: `uk_prep_${frm.doc.name}`,
+		});
+	},
+
+	interview_scheduled(frm) {
+		if (frm.doc.interview_scheduled === "Yes") {
+			deactivate_uk_reminders(frm, "UK — Interview deadline%");
+			deactivate_uk_reminders(frm, "UK — Schedule interview%");
+			if (frm.doc.interview_date) {
+				maybe_uk_reminder(frm, "Yes", "Yes", {
+					title: __("Interview reminder"),
+					default_description: "UK — Interview scheduled",
+					default_date: frm.doc.interview_date,
+					trigger_key: `uk_int_sched_${frm.doc.name}`,
+				});
+			}
+		} else if (frm.doc.interview_scheduled === "No") {
+			maybe_uk_reminder(frm, "No", "No", {
+				title: __("Schedule interview"),
+				default_description: "UK — Schedule interview",
+				trigger_key: `uk_sched_int_${frm.doc.name}`,
+			});
+		}
+	},
+
+	interview_date(frm) {
+		if (frm.doc.interview_date && frm.doc.interview_scheduled === "Yes") {
+			deactivate_uk_reminders(frm, "UK — Interview deadline%");
+			maybe_uk_reminder(frm, "Yes", "Yes", {
+				title: __("Interview date"),
+				default_description: "UK — Interview scheduled",
+				default_date: frm.doc.interview_date,
+				trigger_key: `uk_int_date_${frm.doc.name}`,
+			});
+		}
+	},
+
+	schedule_interview(frm) {
+		if (frm.doc.schedule_interview === "Yes") {
+			maybe_uk_reminder(frm, "Yes", "Yes", {
+				title: __("Interview date reminder"),
+				default_description: "UK — Prepare strongly / interview date",
+				default_date: frm.doc.interview_date || frm.doc.interview_deadline_date || frappe.datetime.get_today(),
+				trigger_key: `uk_sched_yes_${frm.doc.name}`,
+			});
+		} else if (frm.doc.schedule_interview === "No") {
+			maybe_uk_reminder(frm, "No", "No", {
+				title: __("Follow up interview schedule"),
+				default_description: "UK — Follow up interview schedule",
+				trigger_key: `uk_sched_no_${frm.doc.name}`,
+			});
+		}
+	},
+
+	tuition_fee_paid_interview(frm) {
+		maybe_uk_reminder(frm, frm.doc.tuition_fee_paid_interview, "No", {
+			title: __("Pay tuition fee"),
+			default_description: "UK — Pay tuition fee (interview / before deposit)",
+			trigger_key: `uk_tui_int_${frm.doc.name}`,
+		});
+	},
+
+	interview_second_chance(frm) {
+		if (frm.doc.interview_second_chance === "No" && frm.doc.interview_status === "Rejected") {
+			frappe.msgprint({
+				title: __("Close Case"),
+				message: __("Close case for this university (2nd interview chance declined)."),
+				indicator: "orange",
+			});
+		}
+	},
+
+	second_chance_student_prepare(frm) {
+		maybe_uk_reminder(frm, frm.doc.second_chance_student_prepare, "No", {
+			title: __("Prepare student (2nd chance)"),
+			default_description: "UK — Prepare student for 2nd chance interview",
+			trigger_key: `uk_prep2_${frm.doc.name}`,
+		});
+	},
+
+	second_chance_interview_scheduled(frm) {
+		if (frm.doc.second_chance_interview_scheduled === "Yes") {
+			deactivate_uk_reminders(frm, "UK — Interview deadline%");
+			maybe_uk_reminder(frm, "Yes", "Yes", {
+				title: __("2nd chance interview"),
+				default_description: "UK — 2nd chance interview scheduled",
+				default_date: frm.doc.second_chance_interview_date || frappe.datetime.get_today(),
+				trigger_key: `uk_int2_${frm.doc.name}`,
+			});
+		} else if (frm.doc.second_chance_interview_scheduled === "No") {
+			maybe_uk_reminder(frm, "No", "No", {
+				title: __("Schedule 2nd chance interview"),
+				default_description: "UK — Schedule 2nd chance interview",
+				trigger_key: `uk_sched2_${frm.doc.name}`,
+			});
+		}
+	},
+
+	second_chance_schedule_interview(frm) {
+		if (frm.doc.second_chance_schedule_interview === "Yes") {
+			maybe_uk_reminder(frm, "Yes", "Yes", {
+				title: __("2nd chance interview date"),
+				default_description: "UK — Prepare strongly / 2nd chance interview date",
+				default_date: frm.doc.second_chance_interview_date || frappe.datetime.get_today(),
+				trigger_key: `uk_sched2_yes_${frm.doc.name}`,
+			});
+		} else if (frm.doc.second_chance_schedule_interview === "No") {
+			maybe_uk_reminder(frm, "No", "No", {
+				title: __("Follow up 2nd chance schedule"),
+				default_description: "UK — Follow up 2nd chance interview schedule",
+				trigger_key: `uk_sched2_no_${frm.doc.name}`,
+			});
+		}
+	},
+
+	pending_amount_for_cas(frm) {
+		maybe_uk_reminder(frm, frm.doc.pending_amount_for_cas, "Yes", {
+			title: __("Pending tuition for CAS"),
+			default_description: "UK — Pay pending tuition fee for CAS",
+			trigger_key: `uk_pend_cas_${frm.doc.name}`,
+		});
 	},
 
 	funds_28_day_ok(frm) {
@@ -394,7 +970,21 @@ frappe.ui.form.on("Application UK", {
 				default_description: "UK — Schedule medical",
 				trigger_key: `uk_medical_${frm.doc.name}`,
 			});
+		} else if (frm.doc.medical_scheduled === "Yes") {
+			prompt_uk_reminder(frm, {
+				title: __("Receive medical"),
+				default_description: "UK — Receive medical and upload",
+				trigger_key: `uk_medical_recv_${frm.doc.name}`,
+			});
 		}
+	},
+
+	medical_done(frm) {
+		maybe_uk_reminder(frm, frm.doc.medical_done, "No", {
+			title: __("Medical"),
+			default_description: "UK — When will medical be done",
+			trigger_key: `uk_med_done_${frm.doc.name}`,
+		});
 	},
 
 	financial_docs_submitted(frm) {
@@ -412,14 +1002,74 @@ frappe.ui.form.on("Application UK", {
 	cas_letter_received(frm) {
 		if (frm.doc.cas_letter_received === "Yes") {
 			set_uk_stage(frm, "CAS");
-			frm.set_value("cas_received", "Yes");
+			if (frm.doc.cas_received !== undefined) frm.set_value("cas_received", "Yes");
 		} else if (frm.doc.cas_letter_received === "No") {
-			prompt_uk_reminder(frm, {
+			if (frm.doc.cas_any_pendency === "No") {
+				maybe_uk_reminder(frm, "No", "No", {
+					title: __("Waiting for CAS letter"),
+					default_description: "UK — Follow up for CAS letter",
+					trigger_key: `uk_cas_wait_${frm.doc.name}`,
+				});
+			}
+		}
+	},
+
+	cas_any_pendency(frm) {
+		if (frm.doc.cas_letter_received === "No" && frm.doc.cas_any_pendency === "No") {
+			maybe_uk_reminder(frm, "No", "No", {
 				title: __("Waiting for CAS letter"),
 				default_description: "UK — Follow up for CAS letter",
 				trigger_key: `uk_cas_wait_${frm.doc.name}`,
 			});
 		}
+	},
+
+	cas_pendency_completed(frm) {
+		if (frm.doc.cas_pendency_completed === "Yes") {
+			maybe_uk_reminder(frm, "Yes", "Yes", {
+				title: __("CAS letter follow-up"),
+				default_description: "UK — Follow up for CAS letter after pendency",
+				trigger_key: `uk_cas_after_pend_${frm.doc.name}`,
+			});
+		} else if (frm.doc.cas_pendency_completed === "No") {
+			maybe_uk_reminder(frm, "No", "No", {
+				title: __("Complete CAS pendency"),
+				default_description: "UK — Complete CAS pendency",
+				trigger_key: `uk_cas_pend_${frm.doc.name}`,
+			});
+		}
+	},
+
+	cas_extension_required(frm) {
+		maybe_uk_reminder(frm, frm.doc.cas_extension_required, "Yes", {
+			title: __("CAS extension"),
+			default_description: "UK — Complete CAS extension",
+			trigger_key: `uk_cas_ext_${frm.doc.name}`,
+		});
+	},
+
+	national_id_name_match(frm) {
+		maybe_uk_reminder(frm, frm.doc.national_id_name_match, "No", {
+			title: __("Student name affidavit"),
+			default_description: "UK — Upload same name affidavit (student / Aadhar)",
+			trigger_key: `uk_aff_stu_${frm.doc.name}`,
+		});
+	},
+
+	mother_aadhar_name_match(frm) {
+		maybe_uk_reminder(frm, frm.doc.mother_aadhar_name_match, "No", {
+			title: __("Mother name affidavit"),
+			default_description: "UK — Upload same name affidavit (mother)",
+			trigger_key: `uk_aff_mom_${frm.doc.name}`,
+		});
+	},
+
+	father_aadhar_name_match(frm) {
+		maybe_uk_reminder(frm, frm.doc.father_aadhar_name_match, "No", {
+			title: __("Father name affidavit"),
+			default_description: "UK — Upload same name affidavit (father)",
+			trigger_key: `uk_aff_dad_${frm.doc.name}`,
+		});
 	},
 
 	visa_file_lodged(frm) {
@@ -434,6 +1084,14 @@ frappe.ui.form.on("Application UK", {
 		}
 	},
 
+	visa_application_uploaded(frm) {
+		maybe_uk_reminder(frm, frm.doc.visa_application_uploaded, "No", {
+			title: __("Upload visa application"),
+			default_description: "UK — Upload visa application",
+			trigger_key: `uk_visa_app_${frm.doc.name}`,
+		});
+	},
+
 	biometrics_done(frm) {
 		if (frm.doc.biometrics_done === "No") {
 			prompt_uk_reminder(frm, {
@@ -441,6 +1099,13 @@ frappe.ui.form.on("Application UK", {
 				default_description: "UK — Biometrics completion follow-up",
 				default_date: frm.doc.biometric_date || frappe.datetime.get_today(),
 				trigger_key: `uk_bio_${frm.doc.name}`,
+			});
+		} else if (frm.doc.biometrics_done === "Yes") {
+			maybe_uk_reminder(frm, "Yes", "Yes", {
+				title: __("Expected visa decision"),
+				default_description: "UK — Expected visa decision follow-up",
+				default_date: frm.doc.expected_visa_decision || frappe.datetime.get_today(),
+				trigger_key: `uk_visa_dec_bio_${frm.doc.name}`,
 			});
 		}
 	},
@@ -459,15 +1124,70 @@ frappe.ui.form.on("Application UK", {
 	visa_decision(frm) {
 		if (frm.doc.visa_decision === "Visa Approved" || frm.doc.visa_decision === "Granted") {
 			set_uk_stage(frm, "Visa");
+			frappe.show_alert(
+				{
+					message: __("Visa approved — Accounts should be notified with documents."),
+					indicator: "green",
+				},
+				6
+			);
 		} else if (frm.doc.visa_decision === "Visa Refused" || frm.doc.visa_decision === "Refused") {
 			set_uk_stage(frm, "Visa Refused");
 		}
 	},
 
+	evisa_activated(frm) {
+		maybe_uk_reminder(frm, frm.doc.evisa_activated, "No", {
+			title: __("Activate e-Visa"),
+			default_description: "UK — Activate e-Visa (main applicant)",
+			trigger_key: `uk_evisa_${frm.doc.name}`,
+		});
+	},
+
+	share_code_received(frm) {
+		maybe_uk_reminder(frm, frm.doc.share_code_received, "No", {
+			title: __("Receive share code"),
+			default_description: "UK — Receive share code (main applicant)",
+			trigger_key: `uk_share_${frm.doc.name}`,
+		});
+	},
+
+	share_code_verified(frm) {
+		maybe_uk_reminder(frm, frm.doc.share_code_verified, "No", {
+			title: __("Verify e-Visa"),
+			default_description: "UK — Verify e-Visa with share code (main applicant)",
+			trigger_key: `uk_share_ver_${frm.doc.name}`,
+		});
+	},
+
+	spouse_evisa_activated(frm) {
+		maybe_uk_reminder(frm, frm.doc.spouse_evisa_activated, "No", {
+			title: __("Activate spouse e-Visa"),
+			default_description: "UK — Activate e-Visa (spouse)",
+			trigger_key: `uk_spouse_evisa_${frm.doc.name}`,
+		});
+	},
+
+	spouse_share_code_received(frm) {
+		maybe_uk_reminder(frm, frm.doc.spouse_share_code_received, "No", {
+			title: __("Receive spouse share code"),
+			default_description: "UK — Receive share code (spouse)",
+			trigger_key: `uk_spouse_share_${frm.doc.name}`,
+		});
+	},
+
+	spouse_share_code_verified(frm) {
+		maybe_uk_reminder(frm, frm.doc.spouse_share_code_verified, "No", {
+			title: __("Verify spouse e-Visa"),
+			default_description: "UK — Verify e-Visa with share code (spouse)",
+			trigger_key: `uk_spouse_share_ver_${frm.doc.name}`,
+		});
+	},
+
 	student_enrolled(frm) {
-		if (frm.doc.student_enrolled) {
+		if (frm.doc.student_enrolled === "Yes" || frm.doc.student_enrolled === 1) {
 			set_uk_stage(frm, "Enrolment");
-		} else {
+		} else if (frm.doc.student_enrolled === "No" || frm.doc.student_enrolled === 0) {
 			prompt_uk_reminder(frm, {
 				title: __("Enrolment follow-up"),
 				default_description: "UK — Student enrolment follow-up",
@@ -478,7 +1198,7 @@ frappe.ui.form.on("Application UK", {
 
 	applied_for_refund(frm) {
 		if (frm.doc.applied_for_refund === "Yes") {
-			set_uk_stage(frm, "Refund");
+			set_uk_stage(frm, "Refund Processing");
 		} else if (frm.doc.applied_for_refund === "No") {
 			prompt_uk_reminder(frm, {
 				title: __("Apply for refund"),
@@ -486,5 +1206,86 @@ frappe.ui.form.on("Application UK", {
 				trigger_key: `uk_refund_app_${frm.doc.name}`,
 			});
 		}
+	},
+
+	tuition_refund_received(frm) {
+		if (frm.doc.tuition_refund_received === "Yes") {
+			set_uk_stage(frm, "Refunded");
+		} else if (frm.doc.tuition_refund_received === "No") {
+			prompt_uk_reminder(frm, {
+				title: __("Expected tuition refund"),
+				default_description: "UK — Expected tuition fee refund follow-up",
+				trigger_key: `uk_tui_ref_${frm.doc.name}`,
+			});
+		}
+	},
+
+	ihs_refund_received(frm) {
+		if (frm.doc.ihs_refund_received === "No") {
+			prompt_uk_reminder(frm, {
+				title: __("Expected IHS refund"),
+				default_description: "UK — Expected IHS refund follow-up",
+				trigger_key: `uk_ihs_ref_${frm.doc.name}`,
+			});
+		}
+	},
+
+	ihs_refund_received_no_issue(frm) {
+		if (frm.doc.ihs_refund_received_no_issue === "No") {
+			prompt_uk_reminder(frm, {
+				title: __("Expected IHS refund"),
+				default_description: "UK — Expected IHS refund received (Refunded / no tuition issue)",
+				trigger_key: `uk_ihs_no_iss_${frm.doc.name}`,
+			});
+		} else if (frm.doc.ihs_refund_received_no_issue === "Yes") {
+			frappe.show_alert(
+				{ message: __("Upload tuition fee refund invoice and close this case."), indicator: "blue" },
+				5
+			);
+		}
+	},
+
+	tuition_fee_issue_resolved(frm) {
+		if (frm.doc.tuition_fee_issue_resolved === "No") {
+			prompt_uk_reminder(frm, {
+				title: __("Refund issue resolution"),
+				default_description: "UK — Expect refund issue resolved",
+				trigger_key: `uk_ref_iss_${frm.doc.name}`,
+			});
+		}
+	},
+
+	ihs_refund_received_after_issue(frm) {
+		if (frm.doc.ihs_refund_received_after_issue === "No") {
+			prompt_uk_reminder(frm, {
+				title: __("Expected IHS refund"),
+				default_description: "UK — Expected IHS refund received (after issue resolved)",
+				trigger_key: `uk_ihs_aft_iss_${frm.doc.name}`,
+			});
+		} else if (frm.doc.ihs_refund_received_after_issue === "Yes") {
+			frappe.show_alert(
+				{ message: __("Upload tuition fee refund invoice and close this case."), indicator: "blue" },
+				5
+			);
+		}
+	},
+
+	application_closed(frm) {
+		if (frm.doc.application_closed) {
+			set_uk_stage(frm, "Closed");
+			if (frm.doc.status !== "Closed") {
+				frm.set_value("status", "Closed");
+			}
+		}
+	},
+});
+
+// Child table handlers — keep in parent JS so they always load with Application UK
+frappe.ui.form.on("Processing Agent Details", {
+	processing_agent_type(frm, cdt, cdn) {
+		sync_processing_agent_row(cdt, cdn);
+	},
+	processing_agent_vendor(frm, cdt, cdn) {
+		sync_processing_agent_row(cdt, cdn);
 	},
 });

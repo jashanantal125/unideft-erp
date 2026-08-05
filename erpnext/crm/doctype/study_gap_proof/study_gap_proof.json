@@ -3,10 +3,13 @@
     "allow_rename": 1,
     "creation": "2026-02-07 18:40:00.000000",
     "doctype": "DocType",
-    "editable_grid": 1,
+    "editable_grid": 0,
     "engine": "InnoDB",
     "field_order": [
         "study_gap_proof_type",
+        "section_other",
+        "other_details",
+        "other_supporting_documents",
         "educational_reason",
         "subject_of_reappear",
         "month_year",
@@ -58,9 +61,7 @@
         "dob_no_status",
         "name_matched_ac_pc",
         "name_no_status",
-        "itr_not_verified_status",
-        "other_details",
-        "other_supporting_documents"
+        "itr_not_verified_status"
     ],
     "fields": [
         {
@@ -70,6 +71,26 @@
             "label": "Study Gap Proof",
             "options": "\nEducational\nWork\nOther",
             "reqd": 1
+        },
+        {
+            "fieldname": "section_other",
+            "fieldtype": "Section Break",
+            "label": "Other Details",
+            "depends_on": "eval:doc.study_gap_proof_type == 'Other'"
+        },
+        {
+            "depends_on": "eval:doc.study_gap_proof_type == 'Other'",
+            "fieldname": "other_details",
+            "fieldtype": "Small Text",
+            "in_list_view": 1,
+            "label": "Details",
+            "reqd": 0
+        },
+        {
+            "depends_on": "eval:doc.study_gap_proof_type == 'Other'",
+            "fieldname": "other_supporting_documents",
+            "fieldtype": "Attach",
+            "label": "Supporting Documents"
         },
         {
             "depends_on": "eval:doc.study_gap_proof_type == 'Educational'",
@@ -413,23 +434,11 @@
             "fieldtype": "Small Text",
             "label": "Status",
             "read_only": 1
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Other'",
-            "fieldname": "other_details",
-            "fieldtype": "Text",
-            "label": "Details"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Other'",
-            "fieldname": "other_supporting_documents",
-            "fieldtype": "Attach",
-            "label": "Supporting Documents"
         }
     ],
     "index_web_pages_for_search": 1,
     "istable": 1,
-    "modified": "2026-02-07 18:40:00.000000",
+    "modified": "2026-08-03 12:11:31.000000",
     "modified_by": "Administrator",
     "module": "CRM",
     "name": "Study Gap Proof",

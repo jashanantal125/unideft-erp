@@ -613,7 +613,7 @@
   },
   {
    "bold": 1,
-   "default": "✓ OK",
+   "default": "\u2713 OK",
    "depends_on": "eval:(doc.destination_country=='Australia') && (doc.any_visa_refused == 'No')",
    "fieldname": "visa_refused_ok",
    "fieldtype": "Text",
@@ -656,7 +656,7 @@
   },
   {
    "bold": 1,
-   "default": "✓ Go Ahead",
+   "default": "\u2713 Go Ahead",
    "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_refused_can_process == 'Yes')",
    "fieldname": "visa_refused_go_ahead_status",
    "fieldtype": "Text",
@@ -756,7 +756,7 @@
   },
   {
    "bold": 1,
-   "default": "✓ OK",
+   "default": "\u2713 OK",
    "depends_on": "eval:(doc.destination_country=='Australia') && doc.study_gap=='No'",
    "fieldname": "study_gap_ok",
    "fieldtype": "Text",
@@ -874,7 +874,7 @@
    "fieldname": "case_4_proceed_below_graduate",
    "fieldtype": "Select",
    "label": "Student wants to proceed (Below Graduate)",
-   "options": "\non single basis\nDon’t want to procced"
+   "options": "\non single basis\nDon\u2019t want to procced"
   },
   {
    "fieldname": "column_break_spouse_2",
@@ -904,14 +904,14 @@
   },
   {
    "default": "Convince to process on single basis otherwise Close case",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.case_4_proceed_below_graduate == 'Don’t want to procced' && doc.higher_education == 'Graduation' && doc.martial_status == 'Married')",
+   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.case_4_proceed_below_graduate == 'Don\u2019t want to procced' && doc.higher_education == 'Graduation' && doc.martial_status == 'Married')",
    "fieldname": "case_4_note_convince",
    "fieldtype": "Data",
    "label": "Instruction",
    "read_only": 1
   },
   {
-   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.case_4_proceed_below_graduate == 'Don’t want to procced' && doc.higher_education == 'Graduation' && doc.martial_status == 'Married')",
+   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.case_4_proceed_below_graduate == 'Don\u2019t want to procced' && doc.higher_education == 'Graduation' && doc.martial_status == 'Married')",
    "fieldname": "case_4_close_reason",
    "fieldtype": "Small Text",
    "label": "Close Case Reason"
@@ -994,7 +994,7 @@
   },
   {
    "bold": 1,
-   "default": "⚠️ NOT ACCEPTED - Documents need to be verified",
+   "default": "\u26a0\ufe0f NOT ACCEPTED - Documents need to be verified",
    "depends_on": "eval:doc.documents_verified == 0 && doc.higher_education == '12th pass'",
    "fieldname": "documents_not_accepted_alert",
    "fieldtype": "Text",
@@ -1221,7 +1221,7 @@
   },
   {
    "bold": 1,
-   "default": "✓ Another application will do process",
+   "default": "\u2713 Another application will do process",
    "depends_on": "eval:doc.submitted_another_application == 'Yes'",
    "fieldname": "submitted_another_application_yes_note",
    "fieldtype": "Text",
@@ -1237,7 +1237,7 @@
   },
   {
    "bold": 1,
-   "default": "⚠ Set reminder when you will process another application",
+   "default": "\u26a0 Set reminder when you will process another application",
    "depends_on": "eval:doc.submitted_another_application == 'No' && doc.need_another_application == 'Yes'",
    "fieldname": "need_another_application_yes_note",
    "fieldtype": "Text",
@@ -1258,7 +1258,7 @@
   },
   {
    "bold": 1,
-   "default": "If no → Set reminder: Follow up on Offer Letter",
+   "default": "If no \u2192 Set reminder: Follow up on Offer Letter",
    "depends_on": "eval:doc.any_further_requirement_offer_letter == 'No'",
    "fieldname": "no_further_requirement_note",
    "fieldtype": "Text",
@@ -1280,7 +1280,7 @@
   },
   {
    "bold": 1,
-   "default": "→ Set reminder: To Complete Pending requirements",
+   "default": "\u2192 Set reminder: To Complete Pending requirements",
    "depends_on": "eval:doc.any_further_requirement_offer_letter == 'Yes' && doc.pending_requirements_completed == 'No'",
    "fieldname": "pending_requirements_reminder_note",
    "fieldtype": "Text",
@@ -1289,7 +1289,7 @@
   },
   {
    "bold": 1,
-   "default": "→ Set reminder: Follow up on Offer Letter",
+   "default": "\u2192 Set reminder: Follow up on Offer Letter",
    "depends_on": "eval:doc.any_further_requirement_offer_letter == 'Yes' && doc.pending_requirements_completed == 'Yes'",
    "fieldname": "pending_requirements_completed_yes_note",
    "fieldtype": "Text",
@@ -1482,7 +1482,7 @@
   },
   {
    "bold": 1,
-   "default": "✓ OK",
+   "default": "\u2713 OK",
    "depends_on": "eval:doc.defer_offer_required == 'No'",
    "fieldname": "defer_offer_ok",
    "fieldtype": "Text",
@@ -1511,7 +1511,7 @@
   },
   {
    "bold": 1,
-   "default": "If no → Set reminder: Follow up on Defer Offer Letter",
+   "default": "If no \u2192 Set reminder: Follow up on Defer Offer Letter",
    "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes' && doc.defer_any_further_requirement == 'No'",
    "fieldname": "defer_no_further_requirement_note",
    "fieldtype": "Text",
@@ -1533,7 +1533,7 @@
   },
   {
    "bold": 1,
-   "default": "→ Set reminder: To Complete Pending requirements",
+   "default": "\u2192 Set reminder: To Complete Pending requirements",
    "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes' && doc.defer_any_further_requirement == 'Yes' && doc.defer_pending_requirements_completed == 'No'",
    "fieldname": "defer_pending_requirements_reminder_note",
    "fieldtype": "Text",
@@ -1542,7 +1542,7 @@
   },
   {
    "bold": 1,
-   "default": "→ Set reminder: Follow up on Offer Letter",
+   "default": "\u2192 Set reminder: Follow up on Offer Letter",
    "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes' && doc.defer_any_further_requirement == 'Yes' && doc.defer_pending_requirements_completed == 'Yes'",
    "fieldname": "defer_pending_requirements_completed_yes_note",
    "fieldtype": "Text",
@@ -1558,7 +1558,7 @@
   },
   {
    "bold": 1,
-   "default": "→ Set reminder: Follow up on Defer Offer Letter",
+   "default": "\u2192 Set reminder: Follow up on Defer Offer Letter",
    "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'No'",
    "fieldname": "applied_for_defer_offer_no_note",
    "fieldtype": "Text",
@@ -1763,7 +1763,7 @@
   },
   {
    "bold": 1,
-   "default": "✓ Financial stage completed → Move to GS Processing",
+   "default": "\u2713 Financial stage completed \u2192 Move to GS Processing",
    "depends_on": "eval:doc.gs_submitted == 'Yes'",
    "fieldname": "financial_stage_completed",
    "fieldtype": "Text",
@@ -1772,7 +1772,7 @@
   },
   {
    "bold": 1,
-   "default": "⚠ Set reminder when financials will be completed (calendar + remarks)",
+   "default": "\u26a0 Set reminder when financials will be completed (calendar + remarks)",
    "depends_on": "eval:doc.gs_submitted == 'No'",
    "fieldname": "gs_submitted_no_note",
    "fieldtype": "Text",
@@ -2025,7 +2025,7 @@
    "label": "Interview Before Acceptance (This stage available)"
   },
   {
-   "default": "ℹ Check this if interview is at this stage, otherwise proceed to next stage",
+   "default": "\u2139 Check this if interview is at this stage, otherwise proceed to next stage",
    "depends_on": "eval:!doc.interview_stage_available",
    "fieldname": "interview_not_available_status",
    "fieldtype": "Text",
@@ -2046,7 +2046,7 @@
    "options": "\nYes\nNo"
   },
   {
-   "default": "✓ Schedule Interview (if not scheduled)",
+   "default": "\u2713 Schedule Interview (if not scheduled)",
    "depends_on": "eval:doc.interview_stage_available && doc.student_prepare == 'Yes'",
    "fieldname": "student_prepare_yes_status",
    "fieldtype": "Text",
@@ -2054,7 +2054,7 @@
    "read_only": 1
   },
   {
-   "default": "⚠ Prepare Student - Set Reminder to Prepare Student",
+   "default": "\u26a0 Prepare Student - Set Reminder to Prepare Student",
    "depends_on": "eval:doc.interview_stage_available && doc.student_prepare == 'No'",
    "fieldname": "student_prepare_no_status",
    "fieldtype": "Text",
@@ -2069,7 +2069,7 @@
    "options": "\nYes\nNo"
   },
   {
-   "default": "✓ Prepare Student Strongly - Reminder Set for Interview Date",
+   "default": "\u2713 Prepare Student Strongly - Reminder Set for Interview Date",
    "depends_on": "eval:doc.interview_stage_available && doc.schedule_interview == 'Yes'",
    "fieldname": "schedule_interview_yes_status",
    "fieldtype": "Text",
@@ -2077,7 +2077,7 @@
    "read_only": 1
   },
   {
-   "default": "⚠ Prepare Student - Set Reminder for Follow Up Interview Schedule",
+   "default": "\u26a0 Prepare Student - Set Reminder for Follow Up Interview Schedule",
    "depends_on": "eval:doc.interview_stage_available && doc.schedule_interview == 'No'",
    "fieldname": "schedule_interview_no_status",
    "fieldtype": "Text",
@@ -2092,7 +2092,7 @@
    "options": "\nYes\nNo"
   },
   {
-   "default": "✓ Go to GS Approved Stage",
+   "default": "\u2713 Go to GS Approved Stage",
    "depends_on": "eval:doc.interview_stage_available && (doc.gs_approved_check == 'Yes')",
    "fieldname": "gs_approved_yes_status",
    "fieldtype": "Text",
@@ -2107,7 +2107,7 @@
    "options": "\nYes\nNo"
   },
   {
-   "default": "⚠ Set Reminder When Expecting GS Approved",
+   "default": "\u26a0 Set Reminder When Expecting GS Approved",
    "depends_on": "eval:doc.interview_stage_available && (doc.gs_approved_check != 'Yes' && doc.gs_any_requirement == 'No')",
    "fieldname": "no_requirement_status",
    "fieldtype": "Text",
@@ -2134,7 +2134,7 @@
    "label": "Requirements Completed"
   },
   {
-   "default": "✓ Set Reminder When Expecting GS Approved",
+   "default": "\u2713 Set Reminder When Expecting GS Approved",
    "depends_on": "eval:doc.interview_stage_available && (doc.gs_approved_check != 'Yes' && doc.gs_any_requirement == 'Yes' && doc.requirements_completed)",
    "fieldname": "requirements_completed_yes_status",
    "fieldtype": "Text",
@@ -2142,7 +2142,7 @@
    "read_only": 1
   },
   {
-   "default": "⚠ Set Reminder When Requirement Will Be Completed",
+   "default": "\u26a0 Set Reminder When Requirement Will Be Completed",
    "depends_on": "eval:doc.interview_stage_available && (doc.gs_approved_check != 'Yes' && doc.gs_any_requirement == 'Yes' && !doc.requirements_completed)",
    "fieldname": "requirements_completed_no_status",
    "fieldtype": "Text",
@@ -2174,7 +2174,7 @@
    "label": "Tuition Fee Paid"
   },
   {
-   "default": "✓ Ok",
+   "default": "\u2713 Ok",
    "depends_on": "eval:doc.tuition_fee_paid",
    "fieldname": "tuition_fee_paid_status",
    "fieldtype": "Text",
@@ -2182,7 +2182,7 @@
    "read_only": 1
   },
   {
-   "default": "⚠ Set Reminder for Fee Payment Follow Up",
+   "default": "\u26a0 Set Reminder for Fee Payment Follow Up",
    "depends_on": "eval:!doc.tuition_fee_paid",
    "fieldname": "tuition_fee_not_paid_status",
    "fieldtype": "Text",
@@ -2234,7 +2234,7 @@
    "label": "Upload OSHC"
   },
   {
-   "default": "⚠ Set Reminder When Policy Will Be Received",
+   "default": "\u26a0 Set Reminder When Policy Will Be Received",
    "depends_on": "eval:doc.oshc_required && doc.oshc_arranged_by_type == 'GHA' && !doc.gha_policy_received",
    "fieldname": "gha_policy_not_received_status",
    "fieldtype": "Text",
@@ -2273,7 +2273,7 @@
    "label": "Upload OSHC"
   },
   {
-   "default": "⚠ Set Reminder When Policy Will Be Received",
+   "default": "\u26a0 Set Reminder When Policy Will Be Received",
    "depends_on": "eval:doc.oshc_required && doc.oshc_arranged_by_type == 'Agent' && !doc.agent_policy_received",
    "fieldname": "agent_policy_not_received_status",
    "fieldtype": "Text",
@@ -2312,7 +2312,7 @@
    "label": "Upload OSHC"
   },
   {
-   "default": "⚠ Set Reminder When Policy Will Be Received",
+   "default": "\u26a0 Set Reminder When Policy Will Be Received",
    "depends_on": "eval:doc.oshc_required && doc.oshc_arranged_by_type == 'Student' && !doc.student_policy_received",
    "fieldname": "student_policy_not_received_status",
    "fieldtype": "Text",
@@ -2326,7 +2326,7 @@
    "label": "Acceptance Submitted"
   },
   {
-   "default": "✓ Ok - Move to Acceptance Stage",
+   "default": "\u2713 Ok - Move to Acceptance Stage",
    "depends_on": "eval:doc.acceptance_submitted",
    "fieldname": "acceptance_submitted_status",
    "fieldtype": "Text",
@@ -2334,7 +2334,7 @@
    "read_only": 1
   },
   {
-   "default": "⚠ Set Reminder When Acceptance Will Be Submitted",
+   "default": "\u26a0 Set Reminder When Acceptance Will Be Submitted",
    "depends_on": "eval:!doc.acceptance_submitted",
    "fieldname": "acceptance_not_submitted_status",
    "fieldtype": "Text",
@@ -2360,7 +2360,7 @@
    "label": "Before COE (This stage available)"
   },
   {
-   "default": "ℹ Check this if interview is at this stage, otherwise proceed to COE stage",
+   "default": "\u2139 Check this if interview is at this stage, otherwise proceed to COE stage",
    "depends_on": "eval:!doc.acceptance_before_coe_available",
    "fieldname": "acceptance_not_available_status",
    "fieldtype": "Text",
@@ -2381,7 +2381,7 @@
    "label": "Student Prepare"
   },
   {
-   "default": "✓ Schedule Interview",
+   "default": "\u2713 Schedule Interview",
    "depends_on": "eval:doc.acceptance_before_coe_available && doc.acceptance_student_prepare",
    "fieldname": "acceptance_student_prepare_yes_status",
    "fieldtype": "Text",
@@ -2389,7 +2389,7 @@
    "read_only": 1
   },
   {
-   "default": "⚠ Prepare Student - Reminder Set",
+   "default": "\u26a0 Prepare Student - Reminder Set",
    "depends_on": "eval:doc.acceptance_before_coe_available && !doc.acceptance_student_prepare",
    "fieldname": "acceptance_student_prepare_no_status",
    "fieldtype": "Text",
@@ -2404,7 +2404,7 @@
    "label": "Schedule Interview"
   },
   {
-   "default": "✓ Prepare Student Strongly - Reminder Set for Interview Date",
+   "default": "\u2713 Prepare Student Strongly - Reminder Set for Interview Date",
    "depends_on": "eval:doc.acceptance_before_coe_available && doc.acceptance_schedule_interview",
    "fieldname": "acceptance_schedule_interview_yes_status",
    "fieldtype": "Text",
@@ -2412,7 +2412,7 @@
    "read_only": 1
   },
   {
-   "default": "⚠ Prepare Student - Set Reminder for Follow Up Interview Schedule",
+   "default": "\u26a0 Prepare Student - Set Reminder for Follow Up Interview Schedule",
    "depends_on": "eval:doc.acceptance_before_coe_available && !doc.acceptance_schedule_interview",
    "fieldname": "acceptance_schedule_interview_no_status",
    "fieldtype": "Text",
@@ -2426,7 +2426,7 @@
    "label": "Is There Any Requirement"
   },
   {
-   "default": "⚠ Set Reminder When Expecting COE Will Receive",
+   "default": "\u26a0 Set Reminder When Expecting COE Will Receive",
    "depends_on": "eval:!doc.acceptance_any_requirement",
    "fieldname": "acceptance_no_requirement_status",
    "fieldtype": "Text",
@@ -2447,7 +2447,7 @@
    "label": "Requirements Completed"
   },
   {
-   "default": "✓ Set Reminder When Expecting COE Will Receive",
+   "default": "\u2713 Set Reminder When Expecting COE Will Receive",
    "depends_on": "eval:doc.acceptance_any_requirement && doc.acceptance_requirements_completed",
    "fieldname": "acceptance_requirements_completed_yes_status",
    "fieldtype": "Text",
@@ -2455,7 +2455,7 @@
    "read_only": 1
   },
   {
-   "default": "⚠ Set Reminder When Requirement Will Be Completed",
+   "default": "\u26a0 Set Reminder When Requirement Will Be Completed",
    "depends_on": "eval:doc.acceptance_any_requirement && !doc.acceptance_requirements_completed",
    "fieldname": "acceptance_requirements_completed_no_status",
    "fieldtype": "Text",
@@ -2504,7 +2504,7 @@
    "label": "Medical Scheduled"
   },
   {
-   "default": "⚠ Set Reminder for Medical to Receive",
+   "default": "\u26a0 Set Reminder for Medical to Receive",
    "depends_on": "eval:doc.medical_arranged_by == 'Our Side' && doc.our_side_medical_scheduled",
    "fieldname": "our_side_medical_scheduled_yes_status",
    "fieldtype": "Text",
@@ -2512,7 +2512,7 @@
    "read_only": 1
   },
   {
-   "default": "⚠ Set Reminder to Schedule Medical",
+   "default": "\u26a0 Set Reminder to Schedule Medical",
    "depends_on": "eval:doc.medical_arranged_by == 'Our Side' && !doc.our_side_medical_scheduled",
    "fieldname": "our_side_medical_scheduled_no_status",
    "fieldtype": "Text",
@@ -2538,7 +2538,7 @@
    "label": "956A Form Filled"
   },
   {
-   "default": "✓ Ok",
+   "default": "\u2713 Ok",
    "depends_on": "eval:doc.form_956a_filled",
    "fieldname": "form_956a_filled_yes_status",
    "fieldtype": "Text",
@@ -2546,7 +2546,7 @@
    "read_only": 1
   },
   {
-   "default": "⚠ Set Reminder to Complete 956A Form",
+   "default": "\u26a0 Set Reminder to Complete 956A Form",
    "depends_on": "eval:!doc.form_956a_filled",
    "fieldname": "form_956a_filled_no_status",
    "fieldtype": "Text",
@@ -2613,7 +2613,7 @@
    "label": "Visa File Lodged"
   },
   {
-   "default": "✓ Move to File Lodged Stage",
+   "default": "\u2713 Move to File Lodged Stage",
    "depends_on": "eval:doc.file_lodged_by == 'Our Side' && doc.file_lodged_status",
    "fieldname": "our_side_file_lodged_yes_status",
    "fieldtype": "Text",
@@ -2621,7 +2621,7 @@
    "read_only": 1
   },
   {
-   "default": "⚠ Set Reminder to Submit File Lodgement",
+   "default": "\u26a0 Set Reminder to Submit File Lodgement",
    "depends_on": "eval:doc.file_lodged_by == 'Our Side' && !doc.file_lodged_status",
    "fieldname": "our_side_file_lodged_no_status",
    "fieldtype": "Text",
@@ -2636,7 +2636,7 @@
    "label": "Visa File Lodged"
   },
   {
-   "default": "✓ Move to File Lodged Stage",
+   "default": "\u2713 Move to File Lodged Stage",
    "depends_on": "eval:doc.file_lodged_by == 'Agent' && doc.agent_file_lodged_status",
    "fieldname": "agent_file_lodged_yes_status",
    "fieldtype": "Text",
@@ -2644,7 +2644,7 @@
    "read_only": 1
   },
   {
-   "default": "⚠ Set Reminder to Submit File Lodgement",
+   "default": "\u26a0 Set Reminder to Submit File Lodgement",
    "depends_on": "eval:doc.file_lodged_by == 'Agent' && !doc.agent_file_lodged_status",
    "fieldname": "agent_file_lodged_no_status",
    "fieldtype": "Text",
@@ -2659,7 +2659,7 @@
    "label": "Visa File Lodged"
   },
   {
-   "default": "✓ Move to File Lodged Stage",
+   "default": "\u2713 Move to File Lodged Stage",
    "depends_on": "eval:doc.file_lodged_by == 'Student' && doc.student_file_lodged_status",
    "fieldname": "student_file_lodged_yes_status",
    "fieldtype": "Text",
@@ -2667,7 +2667,7 @@
    "read_only": 1
   },
   {
-   "default": "⚠ Set Reminder to Submit File Lodgement",
+   "default": "\u26a0 Set Reminder to Submit File Lodgement",
    "depends_on": "eval:doc.file_lodged_by == 'Student' && !doc.student_file_lodged_status",
    "fieldname": "student_file_lodged_no_status",
    "fieldtype": "Text",
@@ -2682,7 +2682,7 @@
    "label": "Visa File Lodged"
   },
   {
-   "default": "✓ Move to File Lodged Stage",
+   "default": "\u2713 Move to File Lodged Stage",
    "depends_on": "eval:doc.file_lodged_by == 'Vendor' && doc.vendor_file_lodged_status",
    "fieldname": "vendor_file_lodged_yes_status",
    "fieldtype": "Text",
@@ -2690,7 +2690,7 @@
    "read_only": 1
   },
   {
-   "default": "⚠ Set Reminder to Submit File Lodgement",
+   "default": "\u26a0 Set Reminder to Submit File Lodgement",
    "depends_on": "eval:doc.file_lodged_by == 'Vendor' && !doc.vendor_file_lodged_status",
    "fieldname": "vendor_file_lodged_no_status",
    "fieldtype": "Text",
@@ -2738,7 +2738,7 @@
    "read_only": 1
   },
   {
-   "default": "✓ Move to Visa Stage - Notification Sent to Account Department",
+   "default": "\u2713 Move to Visa Stage - Notification Sent to Account Department",
    "depends_on": "eval:doc.visa_decision == 'Visa Approved'",
    "fieldname": "visa_approved_status",
    "fieldtype": "Text",
@@ -2746,7 +2746,7 @@
    "read_only": 1
   },
   {
-   "default": "📧 Account Department notified with visa approval and documents",
+   "default": "\ud83d\udce7 Account Department notified with visa approval and documents",
    "depends_on": "eval:doc.visa_decision == 'Visa Approved'",
    "fieldname": "visa_approved_notification_status",
    "fieldtype": "Text",
@@ -2754,7 +2754,7 @@
    "read_only": 1
   },
   {
-   "default": "✓ Move to Visa Refused Stage",
+   "default": "\u2713 Move to Visa Refused Stage",
    "depends_on": "eval:doc.visa_decision == 'Visa Refused'",
    "fieldname": "visa_refused_status",
    "fieldtype": "Text",
@@ -2782,7 +2782,7 @@
    "depends_on": "eval:doc.martial_status == 'Married' && doc.case_4_proceed_above_1_year == 'with Spouse'",
    "fieldname": "spouse_visa_upload",
    "fieldtype": "Attach",
-   "label": "With spouse – visa upload"
+   "label": "With spouse \u2013 visa upload"
   },
   {
    "default": "0",
@@ -2791,7 +2791,7 @@
    "label": "Student Enrolled"
   },
   {
-   "default": "✓ Move to Enrollment Stage",
+   "default": "\u2713 Move to Enrollment Stage",
    "depends_on": "eval:doc.student_enrolled",
    "fieldname": "student_enrolled_yes_status",
    "fieldtype": "Text",
@@ -2799,7 +2799,7 @@
    "read_only": 1
   },
   {
-   "default": "⚠ Set Reminder to Enroll Student",
+   "default": "\u26a0 Set Reminder to Enroll Student",
    "depends_on": "eval:!doc.student_enrolled",
    "fieldname": "student_enrolled_no_status",
    "fieldtype": "Text",
@@ -2886,7 +2886,7 @@
    "label": "Upload Refund Form"
   },
   {
-   "default": "⚠ Refund form not filled by you otherwise you will be responsible for refund issue if occurred",
+   "default": "\u26a0 Refund form not filled by you otherwise you will be responsible for refund issue if occurred",
    "depends_on": "eval:doc.refund_processed_by == 'Our Side'",
    "fieldname": "refund_declaration",
    "fieldtype": "Text",
@@ -2948,7 +2948,7 @@
    "options": "\nNo\nYes"
   },
   {
-   "default": "✓ Ok",
+   "default": "\u2713 Ok",
    "depends_on": "eval:doc.student_wants_college_change == 'No'",
    "fieldname": "student_no_change_status",
    "fieldtype": "Text",
@@ -2982,7 +2982,7 @@
    "label": "Close Case"
   },
   {
-   "default": "✓ Case Closed",
+   "default": "\u2713 Case Closed",
    "depends_on": "eval:doc.student_wants_college_change == 'Yes' && doc.from_where_change == 'Others' && doc.close_case",
    "fieldname": "close_case_status",
    "fieldtype": "Text",
@@ -2990,7 +2990,7 @@
    "read_only": 1
   },
   {
-   "default": "✓ Create New Application for This Student",
+   "default": "\u2713 Create New Application for This Student",
    "depends_on": "eval:doc.student_wants_college_change == 'Yes' && doc.from_where_change == 'Ganpati House of Achievers'",
    "fieldname": "ganpati_new_app_status",
    "fieldtype": "Text",
@@ -3023,7 +3023,7 @@
    "label": "Tuition Fee - Refund Received"
   },
   {
-   "default": "✓ Move to Refunded Stage",
+   "default": "\u2713 Move to Refunded Stage",
    "depends_on": "eval:doc.tuition_fee_refund_received",
    "fieldname": "tuition_fee_refund_yes",
    "fieldtype": "Text",
@@ -3031,7 +3031,7 @@
    "read_only": 1
   },
   {
-   "default": "⚠ Set Reminder When Refund Expected",
+   "default": "\u26a0 Set Reminder When Refund Expected",
    "depends_on": "eval:!doc.tuition_fee_refund_received",
    "fieldname": "tuition_fee_refund_no",
    "fieldtype": "Text",
@@ -3051,7 +3051,7 @@
    "label": "Upload Invoice"
   },
   {
-   "default": "⚠ Set Reminder When OSHC Refund Expected",
+   "default": "\u26a0 Set Reminder When OSHC Refund Expected",
    "depends_on": "eval:!doc.oshc_refund_received",
    "fieldname": "oshc_refund_no",
    "fieldtype": "Text",
@@ -3097,7 +3097,7 @@
    "label": "OSHC - Refund Received"
   },
   {
-   "default": "⚠ Set Reminder When OSHC Refund Expected",
+   "default": "\u26a0 Set Reminder When OSHC Refund Expected",
    "depends_on": "eval:doc.tuition_fee_issue && doc.tuition_fee_issue_resolved && !doc.oshc_refund_received_issue_resolved",
    "fieldname": "oshc_no_reminder_issue_resolved",
    "fieldtype": "Text",
@@ -3111,7 +3111,7 @@
    "label": "Upload Tuition Fee Refund Invoice"
   },
   {
-   "default": "⚠ Set Reminder When Refund Issue Expected to Resolve",
+   "default": "\u26a0 Set Reminder When Refund Issue Expected to Resolve",
    "depends_on": "eval:doc.tuition_fee_issue && !doc.tuition_fee_issue_resolved",
    "fieldname": "issue_not_resolved_reminder",
    "fieldtype": "Text",
@@ -3126,7 +3126,7 @@
    "label": "OSHC - Refund Received"
   },
   {
-   "default": "⚠ Set Reminder When OSHC Refund Expected",
+   "default": "\u26a0 Set Reminder When OSHC Refund Expected",
    "depends_on": "eval:!doc.tuition_fee_issue && !doc.oshc_refund_no_issue",
    "fieldname": "oshc_no_reminder_no_issue",
    "fieldtype": "Text",
@@ -3230,7 +3230,8 @@
    "report": 1,
    "role": "CRM Sales Staff",
    "share": 1,
-   "write": 1
+   "write": 1,
+   "delete": 1
   },
   {
    "create": 1,
@@ -3238,7 +3239,8 @@
    "print": 1,
    "read": 1,
    "role": "B2B Agent",
-   "write": 1
+   "write": 1,
+   "delete": 1
   },
   {
    "create": 1,
@@ -3246,7 +3248,8 @@
    "print": 1,
    "read": 1,
    "role": "B2C Agent",
-   "write": 1
+   "write": 1,
+   "delete": 1
   },
   {
    "create": 1,
@@ -3254,7 +3257,8 @@
    "print": 1,
    "read": 1,
    "role": "Agent",
-   "write": 1
+   "write": 1,
+   "delete": 1
   },
   {
    "print": 1,
@@ -3267,14 +3271,16 @@
    "read": 1,
    "role": "Team Lead",
    "share": 1,
-   "write": 1
+   "write": 1,
+   "delete": 1
   },
   {
    "email": 1,
    "print": 1,
    "read": 1,
    "role": "Team Executive",
-   "write": 1
+   "write": 1,
+   "delete": 1
   },
   {
    "email": 1,
@@ -3283,7 +3289,8 @@
    "report": 1,
    "role": "CRO Head",
    "share": 1,
-   "write": 1
+   "write": 1,
+   "delete": 1
   },
   {
    "email": 1,
@@ -3292,7 +3299,8 @@
    "report": 1,
    "role": "CRO",
    "share": 1,
-   "write": 1
+   "write": 1,
+   "delete": 1
   },
   {
    "email": 1,
@@ -3301,7 +3309,8 @@
    "report": 1,
    "role": "Country Head",
    "share": 1,
-   "write": 1
+   "write": 1,
+   "delete": 1
   },
   {
    "create": 1,
@@ -3309,14 +3318,16 @@
    "print": 1,
    "read": 1,
    "role": "Admission 1",
-   "write": 1
+   "write": 1,
+   "delete": 1
   },
   {
    "email": 1,
    "print": 1,
    "read": 1,
    "role": "Admission 2",
-   "write": 1
+   "write": 1,
+   "delete": 1
   },
   {
    "print": 1,

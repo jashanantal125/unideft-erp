@@ -14,7 +14,7 @@ class studentdocuments(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		document_type: DF.Literal["Education", "Work Experience", "English Test", "Passport & Travel", "Visa", "LOA", "Tuition Fee Receipt", "Refusal Letter"]
+		document_type: DF.Data | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data

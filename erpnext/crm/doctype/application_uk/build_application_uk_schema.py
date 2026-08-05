@@ -450,12 +450,12 @@ def _patch_field(field, fieldname):
 		f["options"] = "\nInner London\nOuter London"
 	elif fieldname == "living_expenses":
 		f["label"] = "Living Expense"
-		f["options"] = "GBP"
+		f["options"] = "offer_currency"
 	elif fieldname == "payable_fee":
 		f["label"] = "Payable Fee for CAS"
 	elif fieldname == "funds_required_amount":
 		f["label"] = "Funds Required"
-		f["options"] = "GBP"
+		f["options"] = "offer_currency"
 		f["read_only"] = 1
 	elif fieldname == "english_test_details":
 		f["options"] = "Application English Test"

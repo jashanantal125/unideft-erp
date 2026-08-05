@@ -459,3 +459,6 @@ erpnext.patches.v16_0.rename_application_uk_data
 erpnext.patches.v16_0.migrate_application_uk_field_names
 erpnext.patches.v16_0.setup_org_roles_and_users
 erpnext.patches.v16_0.apply_client_assessment_processing_vendor_updates
+erpnext.patches.v16_0.normalize_application_uk_student_enrolled
+erpnext.patches.v16_0.normalize_application_uk_process_other_country
+erpnext.patches.v16_0.normalize_application_uk_documents_verified
