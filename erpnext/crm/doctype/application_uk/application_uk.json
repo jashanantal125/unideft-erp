@@ -410,7 +410,8 @@
    "options": "APP-UK-.YYYY.-",
    "set_only_once": 1,
    "default": "APP-UK-.YYYY.-",
-   "hidden": 1
+   "hidden": 1,
+   "length": 64
   },
   {
    "fieldname": "application",
@@ -428,7 +429,8 @@
    "options": "\nDetails\nProcessing\nSubmitted\nOffer Letter\nFinancial\nAcceptance\nCAS\nVisa Lodged\nVisa\nEnrolment\nVisa Refused\nRefund Processing\nRefunded\nClosed",
    "default": "Details",
    "in_list_view": 1,
-   "reqd": 1
+   "reqd": 1,
+   "length": 64
   },
   {
    "fieldname": "single_basis_only",
@@ -456,12 +458,15 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Student Email",
-   "options": "Email"
+   "options": "Email",
+   "length": 140
   },
   {
    "fieldname": "student_contact_no",
-   "fieldtype": "Phone",
-   "label": "Student Contact No"
+   "fieldtype": "Data",
+   "label": "Student Contact No",
+   "length": 64,
+   "options": "Phone"
   },
   {
    "default": "__user",
@@ -484,7 +489,8 @@
    "label": "Application Type",
    "options": "B2B",
    "read_only": 1,
-   "reqd": 1
+   "reqd": 1,
+   "length": 64
   },
   {
    "default": "Pending",
@@ -493,7 +499,8 @@
    "in_list_view": 1,
    "label": "Status",
    "options": "Pending\nProcessing\nOffer Letter Received\nFinancial\nGS Processing\nGS Approved\nAcceptance\nCOE\nFile Lodged\nVisa\nEnrollment\nOn Shore College change\nVisa Refused\nClosed",
-   "reqd": 1
+   "reqd": 1,
+   "length": 64
   },
   {
    "description": "Auto-set from destination country + assessment (UK router / AU spouse gate).",
@@ -503,7 +510,8 @@
    "in_list_view": 1,
    "label": "UK Case",
    "options": "\nAU Default\nAU Case 4 Spouse\nUK Case 1\nUK Case 2\nUK Case 3\nUK Case 4\nUK Case 5\nUK Case 6\nUK Case 7\nUK Case 8",
-   "read_only": 1
+   "read_only": 1,
+   "length": 64
   },
   {
    "fieldname": "column_break_ilyf",
@@ -526,13 +534,15 @@
    "fieldname": "martial_status",
    "fieldtype": "Select",
    "label": "Marital Status",
-   "options": "\nMarried\nSingle\nNot Married"
+   "options": "\nMarried\nSingle\nNot Married",
+   "length": 64
   },
   {
    "fieldname": "higher_education",
    "fieldtype": "Select",
    "label": "Qualification",
-   "options": "\n12th pass\nGraduation\nPost-graduation\nOthers"
+   "options": "\n12th pass\nGraduation\nPost-graduation\nOthers",
+   "length": 64
   },
   {
    "fieldname": "details_program_section",
@@ -554,7 +564,8 @@
    "fieldname": "intake",
    "fieldtype": "Select",
    "label": "Intake",
-   "options": "\nJanuary\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember"
+   "options": "\nJanuary\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember",
+   "length": 64
   },
   {
    "fieldname": "column_break_details_program_2",
@@ -597,7 +608,8 @@
    "fieldname": "any_visa_refused",
    "fieldtype": "Select",
    "label": "Refused from UK or any other country?",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "length": 64
   },
   {
    "fieldname": "column_break_details_visa_1",
@@ -629,7 +641,8 @@
    "fieldname": "study_gap",
    "fieldtype": "Select",
    "label": "Study Gap?",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "length": 64
   },
   {
    "fieldname": "column_break_details_gap_1",
@@ -750,9 +763,11 @@
   },
   {
    "fieldname": "recovery_email_id",
-   "fieldtype": "Text",
+   "fieldtype": "Data",
    "label": "Recovery Email Id",
-   "mandatory_depends_on": "eval:doc.is_package_case"
+   "mandatory_depends_on": "eval:doc.is_package_case",
+   "options": "Email",
+   "length": 140
   },
   {
    "fieldname": "column_break_section_a",
@@ -766,9 +781,11 @@
   },
   {
    "fieldname": "login_contact_no",
-   "fieldtype": "Phone",
+   "fieldtype": "Data",
    "label": "Login Contact No",
-   "mandatory_depends_on": "eval:doc.is_package_case"
+   "mandatory_depends_on": "eval:doc.is_package_case",
+   "length": 64,
+   "options": "Phone"
   },
   {
    "fieldname": "section_b_documents",
@@ -796,7 +813,8 @@
    "fieldname": "documents_verified",
    "fieldtype": "Select",
    "label": "Document Verified",
-   "options": "\nYes\nStill Processing\nNot Accepted"
+   "options": "\nYes\nStill Processing\nNot Accepted",
+   "length": 64
   },
   {
    "depends_on": "eval:doc.documents_verified == 'Yes' && doc.higher_education == '12th pass'",
@@ -879,14 +897,16 @@
    "fieldtype": "Select",
    "label": "University Accepted?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:(doc.higher_education == 'Graduation' || doc.higher_education == 'Post-graduation') && (doc.higher_education != 'Post-graduation' || doc.eligible_for_research_program == 'Yes' || (doc.eligible_for_research_program == 'No' && doc.wants_process_single_basis == 'Yes'))"
+   "depends_on": "eval:(doc.higher_education == 'Graduation' || doc.higher_education == 'Post-graduation') && (doc.higher_education != 'Post-graduation' || doc.eligible_for_research_program == 'Yes' || (doc.eligible_for_research_program == 'No' && doc.wants_process_single_basis == 'Yes'))",
+   "length": 64
   },
   {
    "fieldname": "bachelor_documents_verified",
    "fieldtype": "Select",
    "label": "Documents Verified",
    "options": "\nYes\nNo",
-   "depends_on": "eval:(doc.higher_education == 'Graduation' || doc.higher_education == 'Post-graduation') && (doc.higher_education != 'Post-graduation' || doc.eligible_for_research_program == 'Yes' || (doc.eligible_for_research_program == 'No' && doc.wants_process_single_basis == 'Yes')) && doc.bachelor_university_accepted == 'Yes'"
+   "depends_on": "eval:(doc.higher_education == 'Graduation' || doc.higher_education == 'Post-graduation') && (doc.higher_education != 'Post-graduation' || doc.eligible_for_research_program == 'Yes' || (doc.eligible_for_research_program == 'No' && doc.wants_process_single_basis == 'Yes')) && doc.bachelor_university_accepted == 'Yes'",
+   "length": 64
   },
   {
    "fieldname": "bachelor_documents_pdf",
@@ -906,7 +926,8 @@
    "fieldtype": "Select",
    "label": "Is this university accepted by any other UK university?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:(doc.higher_education == 'Graduation' || doc.higher_education == 'Post-graduation') && (doc.higher_education != 'Post-graduation' || doc.eligible_for_research_program == 'Yes' || (doc.eligible_for_research_program == 'No' && doc.wants_process_single_basis == 'Yes')) && doc.bachelor_university_accepted == 'No'"
+   "depends_on": "eval:(doc.higher_education == 'Graduation' || doc.higher_education == 'Post-graduation') && (doc.higher_education != 'Post-graduation' || doc.eligible_for_research_program == 'Yes' || (doc.eligible_for_research_program == 'No' && doc.wants_process_single_basis == 'Yes')) && doc.bachelor_university_accepted == 'No'",
+   "length": 64
   },
   {
    "fieldname": "bachelor_other_uk_uni_yes_note",
@@ -941,7 +962,8 @@
    "fieldname": "school_domain_email",
    "fieldtype": "Data",
    "label": "School Domain Email Id",
-   "options": "Email"
+   "options": "Email",
+   "length": 140
   },
   {
    "fieldname": "column_break_school_digi",
@@ -1053,7 +1075,8 @@
    "fieldname": "application_filled_by",
    "fieldtype": "Select",
    "label": "Application Filled By",
-   "options": "\nApplication filled by us\nFilled on portal\nFilled by Vendor"
+   "options": "\nApplication filled by us\nFilled on portal\nFilled by Vendor",
+   "length": 64
   },
   {
    "depends_on": "eval:doc.application_filled_by == 'Application filled by us'",
@@ -1095,7 +1118,8 @@
    "fieldname": "application_submitted",
    "fieldtype": "Select",
    "label": "Application Submitted?",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "length": 64
   },
   {
    "depends_on": "eval:1",
@@ -1113,7 +1137,8 @@
    "fieldname": "any_further_requirement_offer_letter",
    "fieldtype": "Select",
    "label": "Any Further Requirement for offer letter?",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "length": 64
   },
   {
    "bold": 1,
@@ -1135,7 +1160,8 @@
    "fieldname": "pending_requirements_completed",
    "fieldtype": "Select",
    "label": "Pending requirements Completed?",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "length": 64
   },
   {
    "bold": 1,
@@ -1178,7 +1204,8 @@
    "fieldname": "offer_currency",
    "fieldtype": "Select",
    "label": "Currency",
-   "options": "AUD\nCAD\nNZD\nUSD\nINR\nGBP"
+   "options": "AUD\nCAD\nNZD\nUSD\nINR\nGBP",
+   "length": 64
   },
   {
    "fieldname": "university_name",
@@ -1223,7 +1250,8 @@
    "fieldname": "living_expenses_location",
    "fieldtype": "Select",
    "label": "Living Expense Location",
-   "options": "\nInner London\nOuter London"
+   "options": "\nInner London\nOuter London",
+   "length": 64
   },
   {
    "fieldname": "living_expenses",
@@ -1236,7 +1264,8 @@
    "fieldname": "funds_required_type",
    "fieldtype": "Select",
    "label": "Funds Required",
-   "options": "\nWith Full Year fee (single basis)\nWithout Full Year fee (single basis)\nWith Full Year fee (With spouse)\nWithout Full Year fee (With spouse)\nWith Full Year fee (With spouse and Kid)\nWithout Full Year fee (With spouse and Kid)\nWith Full Year fee (With Kid)\nWithout Full Year fee (With Kid)"
+   "options": "\nWith Full Year fee (single basis)\nWithout Full Year fee (single basis)\nWith Full Year fee (With spouse)\nWithout Full Year fee (With spouse)\nWith Full Year fee (With spouse and Kid)\nWithout Full Year fee (With spouse and Kid)\nWith Full Year fee (With Kid)\nWithout Full Year fee (With Kid)",
+   "length": 64
   },
   {
    "description": "Automatically calculated based on Funds Required selection",
@@ -1264,7 +1293,8 @@
    "fieldname": "tuition_paid_before_deadline",
    "fieldtype": "Select",
    "label": "Tuition Paid Before Deadline?",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "length": 64
   },
   {
    "fieldname": "conditions_on_offer_letter",
@@ -1299,7 +1329,8 @@
    "fieldname": "defer_offer_required",
    "fieldtype": "Select",
    "label": "Defer Offer Required",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "length": 64
   },
   {
    "bold": 1,
@@ -1315,14 +1346,16 @@
    "fieldname": "applied_for_defer_offer_letter",
    "fieldtype": "Select",
    "label": "Have you applied for Defer Offer letter?",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "length": 64
   },
   {
    "fieldname": "defer_offer_received",
    "fieldtype": "Select",
    "label": "Defer Offer Letter Received?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes'"
+   "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes'",
+   "length": 64
   },
   {
    "fieldname": "defer_offer_received_no_note",
@@ -1373,7 +1406,8 @@
    "fieldname": "defer_any_further_requirement",
    "fieldtype": "Select",
    "label": "Any Further Requirement for Defer offer letter?",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "length": 64
   },
   {
    "bold": 1,
@@ -1395,7 +1429,8 @@
    "fieldname": "defer_pending_requirements_completed",
    "fieldtype": "Select",
    "label": "Pending requirements Completed?",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "length": 64
   },
   {
    "bold": 1,
@@ -1443,7 +1478,8 @@
    "fieldname": "defer_offer_currency",
    "fieldtype": "Select",
    "label": "Currency",
-   "options": "AUD\nCAD\nNZD\nUSD\nINR\nGBP"
+   "options": "AUD\nCAD\nNZD\nUSD\nINR\nGBP",
+   "length": 64
   },
   {
    "depends_on": "eval:doc.defer_offer_required == 'Yes' && (doc.defer_offer_received == 'Yes' || doc.applied_for_defer_offer_letter == 'Yes')",
@@ -1496,7 +1532,8 @@
    "fieldtype": "Select",
    "label": "Living Expense Location",
    "options": "\nInner London\nOuter London",
-   "depends_on": "eval:doc.defer_offer_required == 'Yes' && (doc.defer_offer_received == 'Yes' || doc.applied_for_defer_offer_letter == 'Yes')"
+   "depends_on": "eval:doc.defer_offer_required == 'Yes' && (doc.defer_offer_received == 'Yes' || doc.applied_for_defer_offer_letter == 'Yes')",
+   "length": 64
   },
   {
    "default": "29710",
@@ -1516,7 +1553,8 @@
    "fieldname": "defer_funds_required_type",
    "fieldtype": "Select",
    "label": "Funds Required",
-   "options": "\nWith Full Year fee (single basis)\nWithout Full Year fee (single basis)\nWith Full Year fee (With spouse)\nWithout Full Year fee (With spouse)\nWith Full Year fee (With spouse and Kid)\nWithout Full Year fee (With spouse and Kid)\nWith Full Year fee (With Kid)\nWithout Full Year fee (With Kid)"
+   "options": "\nWith Full Year fee (single basis)\nWithout Full Year fee (single basis)\nWith Full Year fee (With spouse)\nWithout Full Year fee (With spouse)\nWith Full Year fee (With spouse and Kid)\nWithout Full Year fee (With spouse and Kid)\nWith Full Year fee (With Kid)\nWithout Full Year fee (With Kid)",
+   "length": 64
   },
   {
    "depends_on": "eval:doc.defer_offer_required == 'Yes' && (doc.defer_offer_received == 'Yes' || doc.applied_for_defer_offer_letter == 'Yes')",
@@ -1587,14 +1625,16 @@
    "label": "Interview Timing",
    "options": "\nBefore Deposit\nAfter Deposit\nOther",
    "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; })",
-   "description": "When the interview is required relative to deposit / CAS."
+   "description": "When the interview is required relative to deposit / CAS.",
+   "length": 64
   },
   {
    "fieldname": "before_deposit_method",
    "fieldtype": "Select",
    "label": "Before Deposit Method",
    "options": "\nCAS Shield\nManual",
-   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before Deposit'"
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before Deposit'",
+   "length": 64
   },
   {
    "fieldname": "interview_deadline_date",
@@ -1615,7 +1655,8 @@
    "fieldtype": "Select",
    "label": "Initial Amount Paid?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'After Deposit'"
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'After Deposit'",
+   "length": 64
   },
   {
    "fieldname": "initial_amount_paid_no_note",
@@ -1637,7 +1678,8 @@
    "fieldtype": "Select",
    "label": "Student Prepare for Interview?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:((doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before Deposit') || (doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'After Deposit' && doc.initial_amount_paid == 'Yes') || (doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Other'))"
+   "depends_on": "eval:((doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before Deposit') || (doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'After Deposit' && doc.initial_amount_paid == 'Yes') || (doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Other'))",
+   "length": 64
   },
   {
    "fieldname": "student_prepare_yes_status",
@@ -1662,7 +1704,8 @@
    "fieldtype": "Select",
    "label": "Interview Scheduled?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:((doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before Deposit') || (doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'After Deposit' && doc.initial_amount_paid == 'Yes') || (doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Other')) && doc.student_prepare == 'Yes'"
+   "depends_on": "eval:((doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before Deposit') || (doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'After Deposit' && doc.initial_amount_paid == 'Yes') || (doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Other')) && doc.student_prepare == 'Yes'",
+   "length": 64
   },
   {
    "fieldname": "interview_date",
@@ -1684,7 +1727,8 @@
    "fieldtype": "Select",
    "label": "Schedule Interview?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:((doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before Deposit') || (doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'After Deposit' && doc.initial_amount_paid == 'Yes') || (doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Other'))"
+   "depends_on": "eval:((doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before Deposit') || (doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'After Deposit' && doc.initial_amount_paid == 'Yes') || (doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Other'))",
+   "length": 64
   },
   {
    "fieldname": "schedule_interview_yes_status",
@@ -1709,7 +1753,8 @@
    "fieldtype": "Select",
    "label": "Tuition Fee Paid?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before Deposit'"
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before Deposit'",
+   "length": 64
   },
   {
    "fieldname": "tuition_fee_paid_interview_ok_note",
@@ -1734,14 +1779,16 @@
    "fieldtype": "Select",
    "label": "Interview Status",
    "options": "\nApproved\nRejected",
-   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; })"
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; })",
+   "length": 64
   },
   {
    "fieldname": "interview_second_chance",
    "fieldtype": "Select",
    "label": "2nd Chance for Interview?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_status == 'Rejected'"
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_status == 'Rejected'",
+   "length": 64
   },
   {
    "fieldname": "interview_close_case_note",
@@ -1757,14 +1804,16 @@
    "fieldtype": "Select",
    "label": "Student Prepare for Interview? (2nd Chance)",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_status == 'Rejected' && doc.interview_second_chance == 'Yes'"
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_status == 'Rejected' && doc.interview_second_chance == 'Yes'",
+   "length": 64
   },
   {
    "fieldname": "second_chance_interview_scheduled",
    "fieldtype": "Select",
    "label": "Interview Scheduled? (2nd Chance)",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_status == 'Rejected' && doc.interview_second_chance == 'Yes' && doc.second_chance_student_prepare == 'Yes'"
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_status == 'Rejected' && doc.interview_second_chance == 'Yes' && doc.second_chance_student_prepare == 'Yes'",
+   "length": 64
   },
   {
    "fieldname": "second_chance_interview_date",
@@ -1777,14 +1826,16 @@
    "fieldtype": "Select",
    "label": "Schedule Interview? (2nd Chance)",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_status == 'Rejected' && doc.interview_second_chance == 'Yes'"
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_status == 'Rejected' && doc.interview_second_chance == 'Yes'",
+   "length": 64
   },
   {
    "fieldname": "pending_amount_for_cas",
    "fieldtype": "Select",
    "label": "Any Pending Amount for CAS?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_status == 'Approved'"
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_status == 'Approved'",
+   "length": 64
   },
   {
    "fieldname": "pending_amount_for_cas_yes_note",
@@ -1870,7 +1921,8 @@
    "fieldname": "verification_type",
    "fieldtype": "Select",
    "label": "Verification Type",
-   "options": "\nAcademics"
+   "options": "\nAcademics",
+   "length": 64
   },
   {
    "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Academic Transcript') !== -1; })",
@@ -1918,13 +1970,15 @@
    "fieldname": "funds_28_day_ok",
    "fieldtype": "Select",
    "label": "28-day Funds Rule Met?",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "length": 64
   },
   {
    "fieldname": "funds_meet_requirement",
    "fieldtype": "Select",
    "label": "Showing Amount Meets Requirements?",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "length": 64
   },
   {
    "fieldname": "funds_meet_ok_note",
@@ -1948,7 +2002,8 @@
    "fieldname": "medical_scheduled",
    "fieldtype": "Select",
    "label": "Medical Scheduled?",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "length": 64
   },
   {
    "fieldname": "medical_scheduled_yes_note",
@@ -1978,7 +2033,8 @@
    "fieldname": "financial_docs_submitted",
    "fieldtype": "Select",
    "label": "Financial Documents Submitted?",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "length": 64
   },
   {
    "fieldname": "financial_docs_yes_note",
@@ -2017,7 +2073,8 @@
    "fieldname": "cas_letter_received",
    "fieldtype": "Select",
    "label": "Have you received CAS letter?",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "length": 64
   },
   {
    "fieldname": "cas_letter_received_yes_note",
@@ -2033,7 +2090,8 @@
    "fieldtype": "Select",
    "label": "Is there any Pendency?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.cas_letter_received == 'No'"
+   "depends_on": "eval:doc.cas_letter_received == 'No'",
+   "length": 64
   },
   {
    "fieldname": "cas_pendency_details",
@@ -2046,7 +2104,8 @@
    "fieldtype": "Select",
    "label": "Pendency Completed?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.cas_letter_received == 'No' && doc.cas_any_pendency == 'Yes'"
+   "depends_on": "eval:doc.cas_letter_received == 'No' && doc.cas_any_pendency == 'Yes'",
+   "length": 64
   },
   {
    "fieldname": "cas_pendency_upload",
@@ -2086,7 +2145,8 @@
    "fieldtype": "Select",
    "label": "Deposit Paid?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.cas_letter_received == 'Yes'"
+   "depends_on": "eval:doc.cas_letter_received == 'Yes'",
+   "length": 64
   },
   {
    "fieldname": "acceptance_docs",
@@ -2129,7 +2189,8 @@
    "fieldtype": "Select",
    "label": "Extension Required?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.cas_letter_received == 'Yes'"
+   "depends_on": "eval:doc.cas_letter_received == 'Yes'",
+   "length": 64
   },
   {
    "fieldname": "cas_extension_yes_note",
@@ -2160,7 +2221,8 @@
    "fieldtype": "Select",
    "label": "Who will lodge visa application at embassy?",
    "options": "\nOur Team\nAgent\nStudent",
-   "depends_on": "eval:doc.cas_letter_received == 'Yes'"
+   "depends_on": "eval:doc.cas_letter_received == 'Yes'",
+   "length": 64
   },
   {
    "fieldname": "visa_lodge_docs_section",
@@ -2179,7 +2241,8 @@
    "fieldtype": "Select",
    "label": "Any stamp on passport or immigration history?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.cas_letter_received == 'Yes' && doc.who_lodges_visa == 'Our Team'"
+   "depends_on": "eval:doc.cas_letter_received == 'Yes' && doc.who_lodges_visa == 'Our Team'",
+   "length": 64
   },
   {
    "fieldname": "passport_stamp_details",
@@ -2216,7 +2279,8 @@
    "fieldtype": "Select",
    "label": "National ID (Aadhar) — Student Name Match with Passport?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.cas_letter_received == 'Yes' && doc.who_lodges_visa == 'Our Team'"
+   "depends_on": "eval:doc.cas_letter_received == 'Yes' && doc.who_lodges_visa == 'Our Team'",
+   "length": 64
   },
   {
    "fieldname": "national_id_upload",
@@ -2244,7 +2308,8 @@
    "fieldtype": "Select",
    "label": "Mother Aadhar — Name Match with Passport & Academics?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.cas_letter_received == 'Yes' && doc.who_lodges_visa == 'Our Team'"
+   "depends_on": "eval:doc.cas_letter_received == 'Yes' && doc.who_lodges_visa == 'Our Team'",
+   "length": 64
   },
   {
    "fieldname": "mother_aadhar_upload",
@@ -2272,7 +2337,8 @@
    "fieldtype": "Select",
    "label": "Father Aadhar — Name Match with Passport & Academics?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.cas_letter_received == 'Yes' && doc.who_lodges_visa == 'Our Team'"
+   "depends_on": "eval:doc.cas_letter_received == 'Yes' && doc.who_lodges_visa == 'Our Team'",
+   "length": 64
   },
   {
    "fieldname": "father_aadhar_upload",
@@ -2300,7 +2366,8 @@
    "fieldtype": "Select",
    "label": "Medical Done?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.cas_letter_received == 'Yes' && doc.who_lodges_visa == 'Our Team'"
+   "depends_on": "eval:doc.cas_letter_received == 'Yes' && doc.who_lodges_visa == 'Our Team'",
+   "length": 64
   },
   {
    "fieldname": "medical_upload",
@@ -2389,7 +2456,8 @@
    "fieldtype": "Select",
    "label": "Have visa file lodged?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.cas_letter_received == 'Yes'"
+   "depends_on": "eval:doc.cas_letter_received == 'Yes'",
+   "length": 64
   },
   {
    "fieldname": "visa_file_lodged_yes_note",
@@ -2427,7 +2495,8 @@
    "fieldtype": "Select",
    "label": "Have you uploaded Visa application?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.visa_file_lodged == 'Yes' && doc.who_lodges_visa == 'Our Team'"
+   "depends_on": "eval:doc.visa_file_lodged == 'Yes' && doc.who_lodges_visa == 'Our Team'",
+   "length": 64
   },
   {
    "fieldname": "visa_application_uploaded_ok",
@@ -2476,7 +2545,8 @@
    "fieldtype": "Select",
    "label": "Biometric Completed?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.visa_file_lodged == 'Yes' && doc.who_lodges_visa == 'Our Team'"
+   "depends_on": "eval:doc.visa_file_lodged == 'Yes' && doc.who_lodges_visa == 'Our Team'",
+   "length": 64
   },
   {
    "fieldname": "biometrics_done_no_note",
@@ -2508,7 +2578,8 @@
    "fieldtype": "Select",
    "label": "Decision",
    "options": "\nVisa Approved\nVisa Refused",
-   "depends_on": "eval:doc.visa_file_lodged == 'Yes'"
+   "depends_on": "eval:doc.visa_file_lodged == 'Yes'",
+   "length": 64
   },
   {
    "fieldname": "visa_decision_approved_note",
@@ -2555,7 +2626,8 @@
    "fieldtype": "Select",
    "label": "Main Applicant — Have you activated e-Visa?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.visa_decision == 'Visa Approved' && doc.who_lodges_visa == 'Our Team'"
+   "depends_on": "eval:doc.visa_decision == 'Visa Approved' && doc.who_lodges_visa == 'Our Team'",
+   "length": 64
   },
   {
    "fieldname": "evisa_activated_no_note",
@@ -2571,7 +2643,8 @@
    "fieldtype": "Select",
    "label": "Main Applicant — Have you received share code?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.visa_decision == 'Visa Approved' && doc.who_lodges_visa == 'Our Team' && doc.evisa_activated == 'Yes'"
+   "depends_on": "eval:doc.visa_decision == 'Visa Approved' && doc.who_lodges_visa == 'Our Team' && doc.evisa_activated == 'Yes'",
+   "length": 64
   },
   {
    "fieldname": "share_code_received_no_note",
@@ -2587,7 +2660,8 @@
    "fieldtype": "Select",
    "label": "Main Applicant — Have you verified e-Visa with share code?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.visa_decision == 'Visa Approved' && doc.who_lodges_visa == 'Our Team' && doc.evisa_activated == 'Yes' && doc.share_code_received == 'Yes'"
+   "depends_on": "eval:doc.visa_decision == 'Visa Approved' && doc.who_lodges_visa == 'Our Team' && doc.evisa_activated == 'Yes' && doc.share_code_received == 'Yes'",
+   "length": 64
   },
   {
    "fieldname": "share_code_verified_no_note",
@@ -2688,7 +2762,8 @@
    "fieldtype": "Select",
    "label": "Student Enrolled?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.visa_decision == 'Visa Approved'"
+   "depends_on": "eval:doc.visa_decision == 'Visa Approved'",
+   "length": 64
   },
   {
    "fieldname": "student_enrolled_yes_status",
@@ -2763,7 +2838,8 @@
    "fieldtype": "Select",
    "label": "Want to process in any other country?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.visa_decision == 'Visa Refused'"
+   "depends_on": "eval:doc.visa_decision == 'Visa Refused'",
+   "length": 64
   },
   {
    "fieldname": "no_process_comments",
@@ -2786,7 +2862,7 @@
   },
   {
    "fieldname": "new_app_handling_team",
-   "fieldtype": "Data",
+   "fieldtype": "Small Text",
    "label": "Concern Handling Team",
    "depends_on": "eval:doc.visa_decision == 'Visa Refused' && doc.process_other_country == 'Yes'",
    "description": "New application will be created with this handling team"
@@ -2802,21 +2878,24 @@
    "fieldtype": "Select",
    "label": "Refund Processed By",
    "options": "\nOur Side\nAgent\nStudent",
-   "depends_on": "eval:doc.visa_decision == 'Visa Refused'"
+   "depends_on": "eval:doc.visa_decision == 'Visa Refused'",
+   "length": 64
   },
   {
    "fieldname": "refund_form_filled_by",
    "fieldtype": "Select",
    "label": "Refund Form Filled By",
    "options": "\nStudent\nAgent",
-   "depends_on": "eval:doc.visa_decision == 'Visa Refused' && doc.refund_processed_by == 'Our Side'"
+   "depends_on": "eval:doc.visa_decision == 'Visa Refused' && doc.refund_processed_by == 'Our Side'",
+   "length": 64
   },
   {
    "fieldname": "refund_form_cross_checked",
    "fieldtype": "Select",
    "label": "Refund Form Cross Checked?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.visa_decision == 'Visa Refused' && doc.refund_processed_by == 'Our Side'"
+   "depends_on": "eval:doc.visa_decision == 'Visa Refused' && doc.refund_processed_by == 'Our Side'",
+   "length": 64
   },
   {
    "fieldname": "refund_form_upload",
@@ -2856,7 +2935,8 @@
    "fieldtype": "Select",
    "label": "Have you applied for refund?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.visa_decision == 'Visa Refused'"
+   "depends_on": "eval:doc.visa_decision == 'Visa Refused'",
+   "length": 64
   },
   {
    "fieldname": "applied_for_refund_yes_note",
@@ -2894,7 +2974,8 @@
    "fieldtype": "Select",
    "label": "Tuition Fee — Refund Received?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.visa_decision == 'Visa Refused' && doc.applied_for_refund == 'Yes'"
+   "depends_on": "eval:doc.visa_decision == 'Visa Refused' && doc.applied_for_refund == 'Yes'",
+   "length": 64
   },
   {
    "fieldname": "tuition_refund_yes_note",
@@ -2919,7 +3000,8 @@
    "fieldtype": "Select",
    "label": "IHS — Refund Received?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.visa_decision == 'Visa Refused' && doc.applied_for_refund == 'Yes'"
+   "depends_on": "eval:doc.visa_decision == 'Visa Refused' && doc.applied_for_refund == 'Yes'",
+   "length": 64
   },
   {
    "fieldname": "ihs_refund_invoice_upload",
@@ -2948,7 +3030,8 @@
    "label": "Refund Status",
    "options": "\nNot Applicable\nPending\nProcessed",
    "depends_on": "eval:doc.visa_decision == 'Visa Refused' && doc.applied_for_refund == 'Yes'",
-   "hidden": 1
+   "hidden": 1,
+   "length": 64
   },
   {
    "fieldname": "refusal_reason",
@@ -2974,14 +3057,16 @@
    "fieldtype": "Select",
    "label": "Tuition Fee — Is There Any Issue in Fee Refund?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.tuition_refund_received == 'Yes'"
+   "depends_on": "eval:doc.tuition_refund_received == 'Yes'",
+   "length": 64
   },
   {
    "fieldname": "ihs_refund_received_no_issue",
    "fieldtype": "Select",
    "label": "IHS Refund Received?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.tuition_refund_received == 'Yes' && doc.tuition_fee_issue == 'No'"
+   "depends_on": "eval:doc.tuition_refund_received == 'Yes' && doc.tuition_fee_issue == 'No'",
+   "length": 64
   },
   {
    "fieldname": "ihs_refund_no_issue_reminder",
@@ -3019,7 +3104,8 @@
    "fieldtype": "Select",
    "label": "Refund Issue Resolved?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.tuition_refund_received == 'Yes' && doc.tuition_fee_issue == 'Yes'"
+   "depends_on": "eval:doc.tuition_refund_received == 'Yes' && doc.tuition_fee_issue == 'Yes'",
+   "length": 64
   },
   {
    "fieldname": "issue_not_resolved_reminder",
@@ -3035,7 +3121,8 @@
    "fieldtype": "Select",
    "label": "IHS Refund Received?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.tuition_refund_received == 'Yes' && doc.tuition_fee_issue == 'Yes' && doc.tuition_fee_issue_resolved == 'Yes'"
+   "depends_on": "eval:doc.tuition_refund_received == 'Yes' && doc.tuition_fee_issue == 'Yes' && doc.tuition_fee_issue_resolved == 'Yes'",
+   "length": 64
   },
   {
    "fieldname": "ihs_refund_after_issue_reminder",
