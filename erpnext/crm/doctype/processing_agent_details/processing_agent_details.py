@@ -15,9 +15,6 @@ class ProcessingAgentDetails(Document):
 			self.processing_agent_direct = "Unideft"
 			self.processing_agent_vendor = None
 		elif self.processing_agent_type == "Vendor":
-			if self.processing_agent_vendor:
-				self.processing_agent_direct = self.processing_agent_vendor
-			elif not self.processing_agent_direct:
-				self.processing_agent_direct = ""
+			self.processing_agent_direct = self.processing_agent_vendor or ""
 		else:
 			self.processing_agent_direct = self.processing_agent_direct or ""

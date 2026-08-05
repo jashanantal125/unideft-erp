@@ -418,8 +418,13 @@ function sync_processing_agent_row(cdt, cdn) {
 		if (row.processing_agent_vendor) {
 			frappe.model.set_value(cdt, cdn, "processing_agent_vendor", "");
 		}
-	} else if (row.processing_agent_type === "Vendor" && row.processing_agent_vendor) {
-		frappe.model.set_value(cdt, cdn, "processing_agent_direct", row.processing_agent_vendor);
+	} else if (row.processing_agent_type === "Vendor") {
+		frappe.model.set_value(
+			cdt,
+			cdn,
+			"processing_agent_direct",
+			row.processing_agent_vendor || ""
+		);
 	}
 }
 

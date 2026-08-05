@@ -135,11 +135,21 @@ class ApplicationUK(Document):
 		self.recompute_case()
 		self.sync_case_flags()
 		self.sync_funds_required()
+		self.sync_processing_agents()
 		if not self.uk_current_stage:
 			self.uk_current_stage = "Details"
 		stage_status = STAGE_TO_STATUS.get(self.uk_current_stage)
 		if stage_status and self.status in ("", None) and self.is_new():
 			self.status = stage_status
+
+	def sync_processing_agents(self):
+		"""Ensure Direct/Vendor name columns stay filled when parent is saved."""
+		for row in self.get("processing_agent_details") or []:
+			if row.processing_agent_type == "Direct":
+				row.processing_agent_direct = "Unideft"
+				row.processing_agent_vendor = None
+			elif row.processing_agent_type == "Vendor":
+				row.processing_agent_direct = row.processing_agent_vendor or ""
 
 	def after_insert(self):
 		self.ensure_application_index()
@@ -185,12 +195,19 @@ class ApplicationUK(Document):
 			return
 		case = resolve_uk_case(self.higher_education, self.martial_status)
 		self.country_flow_case = case
-		self.single_basis_only = 1 if case in SINGLE_BASIS_CASES else 0
+		self._apply_single_basis_flag(case)
 
 	def sync_case_flags(self):
 		case = self.country_flow_case or resolve_uk_case(self.higher_education, self.martial_status)
 		self.country_flow_case = case
-		self.single_basis_only = 1 if case in SINGLE_BASIS_CASES else 0
+		self._apply_single_basis_flag(case)
+
+	def _apply_single_basis_flag(self, case):
+		# Cases 1 & 3 always single-basis; Case 5/PG can force via research gate.
+		if case in SINGLE_BASIS_CASES or self.wants_process_single_basis == "Yes":
+			self.single_basis_only = 1
+		else:
+			self.single_basis_only = 0
 
 	def sync_funds_required(self):
 		living = UK_LIVING.get(self.living_expenses_location) or 0

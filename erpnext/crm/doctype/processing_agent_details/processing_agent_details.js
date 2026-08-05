@@ -8,6 +8,9 @@ frappe.ui.form.on("Processing Agent Details", {
 		if (row.processing_agent_type === "Direct") {
 			frappe.model.set_value(cdt, cdn, "processing_agent_direct", "Unideft");
 			frappe.model.set_value(cdt, cdn, "processing_agent_vendor", "");
+		} else if (row.processing_agent_type === "Vendor") {
+			// Clear Direct default until a vendor is chosen
+			frappe.model.set_value(cdt, cdn, "processing_agent_direct", row.processing_agent_vendor || "");
 		}
 	},
 	processing_agent_vendor(frm, cdt, cdn) {
