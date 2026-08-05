@@ -3,7 +3,7 @@
  "allow_rename": 1,
  "creation": "2026-02-01 00:00:00.000000",
  "doctype": "DocType",
- "editable_grid": 0,
+ "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
   "processing_agent_type",
@@ -12,32 +12,35 @@
  ],
  "fields": [
   {
+   "columns": 2,
    "fieldname": "processing_agent_type",
    "fieldtype": "Select",
    "in_list_view": 1,
-   "label": "Processing Agent",
-   "options": "\nDirect\nVendor"
+   "label": "Type",
+   "options": "\nDirect\nVendor",
+   "reqd": 1
   },
   {
-   "depends_on": "eval:doc.processing_agent_type == 'Direct'",
-   "description": "Auto-pick company names associated with the university",
+   "bold": 1,
+   "columns": 4,
+   "description": "Auto-filled: Unideft for Direct, or the selected Vendor name.",
    "fieldname": "processing_agent_direct",
-   "fieldtype": "Text",
-   "label": "Processing Agent Name",
-   "options": "Company"
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Processing Agent Name"
   },
   {
-   "depends_on": "eval:doc.processing_agent_type == 'Vendor'",
-   "description": "Select vendor as per priority (only 3 priorities visible)",
+   "depends_on": "eval:doc.processing_agent_type=='Vendor'",
+   "description": "Select when Type is Vendor",
    "fieldname": "processing_agent_vendor",
-   "fieldtype": "Text",
-   "label": "Vendor Name",
+   "fieldtype": "Link",
+   "label": "Vendor",
    "options": "vendor"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
- "modified": "2026-02-01 00:00:00.000000",
+ "modified": "2026-08-03 17:15:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Processing Agent Details",

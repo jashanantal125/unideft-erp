@@ -12,9 +12,9 @@
  "fields": [
   {
    "fieldname": "document_type",
-   "fieldtype": "Select",
-   "label": "Document Type",
-   "options": "Education\nWork Experience\nEnglish Test\nPassport & Travel\nVisa\nLOA\nTuition Fee Receipt\nRefusal Letter"
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Document Type"
   },
   {
    "fieldname": "upload_document",

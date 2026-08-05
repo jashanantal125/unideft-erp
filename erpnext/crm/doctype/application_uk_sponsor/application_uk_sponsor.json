@@ -5,31 +5,69 @@
  "editable_grid": 0,
  "engine": "InnoDB",
  "field_order": [
+  "sponsor_for",
   "sponsor_who",
+  "section_student_funds",
   "funds_type",
-  "column_break_1",
+  "column_break_student_1",
   "bank_name",
   "amount_gbp",
   "nationalized_bank",
+  "nationalized_bank_ok",
+  "nationalized_bank_no",
   "section_bank",
-  "balance_certificate",
-  "statement_upload",
-  "funds_28_day_ok",
+  "balance_certificate_available",
   "cert_same_date",
+  "cert_same_date_ok",
+  "cert_same_date_no",
+  "balance_cert_needed_note",
+  "balance_certificate",
+  "funds_28_day_ok",
+  "funds_28_day_ok_note",
+  "funds_28_day_wait_note",
+  "statement_upload",
   "section_fd",
+  "fd_balance_certificate_available",
+  "fd_balance_cert_ok",
+  "fd_balance_cert_no",
   "fd_upload",
   "section_loan",
   "loan_for_education",
+  "loan_for_education_ok",
+  "loan_for_education_no",
   "loan_holder_is_student",
-  "loan_letter",
+  "loan_holder_ok",
+  "loan_holder_no",
+  "loan_amount",
+  "loan_bank_name",
+  "loan_covers_funds",
+  "loan_covers_ok",
+  "loan_covers_no",
+  "has_collateral_security",
   "collateral_details",
+  "collateral_no_ok",
+  "loan_letter",
   "section_birth",
   "birth_cert_available",
   "birth_cert_language",
+  "birth_cert_translate_note",
+  "birth_cert_english_ok",
   "birth_cert_upload",
+  "parents_affidavit_note",
   "parents_support_affidavit"
  ],
  "fields": [
+  {
+   "fieldname": "sponsor_for",
+   "fieldtype": "Select",
+   "label": "For",
+   "options": "\nApplicant\nSpouse",
+   "default": "Applicant",
+   "reqd": 1,
+   "in_list_view": 1,
+   "columns": 1,
+   "description": "Applicant or Spouse track — same Student/Father/Mother logic"
+  },
   {
    "fieldname": "sponsor_who",
    "fieldtype": "Select",
@@ -39,147 +77,369 @@
    "in_list_view": 1
   },
   {
+   "fieldname": "section_student_funds",
+   "fieldtype": "Section Break",
+   "label": "Funds (Student)",
+   "depends_on": "eval:doc.sponsor_who == 'Student'"
+  },
+  {
    "fieldname": "funds_type",
    "fieldtype": "Select",
    "label": "Funds Type",
    "options": "\nBank statement\nFD\nEducation loan",
-   "reqd": 1,
-   "in_list_view": 1
+   "depends_on": "eval:doc.sponsor_who == 'Student'",
+   "in_list_view": 1,
+   "mandatory_depends_on": "eval:doc.sponsor_who == 'Student'"
   },
   {
-   "fieldname": "column_break_1",
+   "fieldname": "column_break_student_1",
    "fieldtype": "Column Break"
   },
   {
    "fieldname": "bank_name",
    "fieldtype": "Data",
-   "label": "Bank Name",
+   "label": "Name of Bank",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && (doc.funds_type == 'Bank statement' || doc.funds_type == 'FD')",
    "in_list_view": 1
   },
   {
    "fieldname": "amount_gbp",
    "fieldtype": "Currency",
-   "label": "Amount (GBP)",
-   "options": "GBP",
-   "in_list_view": 1
+   "label": "Amount",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && (doc.funds_type == 'Bank statement' || doc.funds_type == 'FD' || doc.funds_type == 'Education loan')",
+   "in_list_view": 1,
+   "description": "Enter amount in GBP"
   },
   {
    "fieldname": "nationalized_bank",
    "fieldtype": "Select",
-   "label": "Nationalized Bank?",
-   "options": "\nYes\nNo"
+   "label": "Is this a nationalized bank?",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && (doc.funds_type == 'Bank statement' || doc.funds_type == 'FD')"
+  },
+  {
+   "fieldname": "nationalized_bank_ok",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "✓ OK",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && (doc.funds_type == 'Bank statement' || doc.funds_type == 'FD') && doc.nationalized_bank == 'Yes'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "nationalized_bank_no",
+   "fieldtype": "Small Text",
+   "label": "Note",
+   "default": "⚠ Cannot accept — transfer funds to a nationalized bank",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && (doc.funds_type == 'Bank statement' || doc.funds_type == 'FD') && doc.nationalized_bank == 'No'",
+   "read_only": 1,
+   "bold": 1
   },
   {
    "fieldname": "section_bank",
    "fieldtype": "Section Break",
    "label": "Bank Statement",
-   "depends_on": "eval:doc.funds_type=='Bank statement'"
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'Bank statement'"
+  },
+  {
+   "fieldname": "balance_certificate_available",
+   "fieldtype": "Select",
+   "label": "Is Balance Certificate Available?",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'Bank statement'"
+  },
+  {
+   "fieldname": "cert_same_date",
+   "fieldtype": "Select",
+   "label": "Is date of issue of Bank statement and balance certificate the same?",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'Bank statement' && doc.balance_certificate_available == 'Yes'"
+  },
+  {
+   "fieldname": "cert_same_date_ok",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "✓ OK",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'Bank statement' && doc.balance_certificate_available == 'Yes' && doc.cert_same_date == 'Yes'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "cert_same_date_no",
+   "fieldtype": "Small Text",
+   "label": "Note",
+   "default": "→ Both documents should be of the same date — set reminder",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'Bank statement' && doc.balance_certificate_available == 'Yes' && doc.cert_same_date == 'No'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "balance_cert_needed_note",
+   "fieldtype": "Small Text",
+   "label": "Note",
+   "default": "→ Need Balance Certificate also — set reminder",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'Bank statement' && doc.balance_certificate_available == 'No'",
+   "read_only": 1,
+   "bold": 1
   },
   {
    "fieldname": "balance_certificate",
    "fieldtype": "Attach",
-   "label": "Balance Certificate",
-   "depends_on": "eval:doc.funds_type=='Bank statement' || doc.funds_type=='FD'"
+   "label": "Balance Certificate Upload",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && ((doc.funds_type == 'Bank statement' && doc.balance_certificate_available == 'Yes') || doc.funds_type == 'FD')"
+  },
+  {
+   "fieldname": "funds_28_day_ok",
+   "fieldtype": "Select",
+   "label": "Is statement being 28 days old?",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && (doc.funds_type == 'Bank statement' || doc.funds_type == 'FD')"
+  },
+  {
+   "fieldname": "funds_28_day_ok_note",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "✓ OK — Upload statement / FD",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && (doc.funds_type == 'Bank statement' || doc.funds_type == 'FD') && doc.funds_28_day_ok == 'Yes'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "funds_28_day_wait_note",
+   "fieldtype": "Small Text",
+   "label": "Note",
+   "default": "→ Wait for 28 days old — set reminder",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && (doc.funds_type == 'Bank statement' || doc.funds_type == 'FD') && doc.funds_28_day_ok == 'No'",
+   "read_only": 1,
+   "bold": 1
   },
   {
    "fieldname": "statement_upload",
    "fieldtype": "Attach",
    "label": "Bank Statement Upload",
-   "depends_on": "eval:doc.funds_type=='Bank statement'"
-  },
-  {
-   "fieldname": "funds_28_day_ok",
-   "fieldtype": "Select",
-   "label": "28-day Rule Met?",
-   "options": "\nYes\nNo",
-   "depends_on": "eval:doc.funds_type=='Bank statement' || doc.funds_type=='FD'"
-  },
-  {
-   "fieldname": "cert_same_date",
-   "fieldtype": "Select",
-   "label": "Cert Date Matches Statement?",
-   "options": "\nYes\nNo",
-   "depends_on": "eval:doc.funds_type=='Bank statement'"
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'Bank statement' && doc.funds_28_day_ok == 'Yes'"
   },
   {
    "fieldname": "section_fd",
    "fieldtype": "Section Break",
    "label": "Fixed Deposit",
-   "depends_on": "eval:doc.funds_type=='FD'"
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'FD'"
+  },
+  {
+   "fieldname": "fd_balance_certificate_available",
+   "fieldtype": "Select",
+   "label": "Is Balance Certificate Available?",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'FD'"
+  },
+  {
+   "fieldname": "fd_balance_cert_ok",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "✓ OK",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'FD' && doc.fd_balance_certificate_available == 'Yes'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "fd_balance_cert_no",
+   "fieldtype": "Small Text",
+   "label": "Note",
+   "default": "→ Set reminder to receive balance certificate",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'FD' && doc.fd_balance_certificate_available == 'No'",
+   "read_only": 1,
+   "bold": 1
   },
   {
    "fieldname": "fd_upload",
    "fieldtype": "Attach",
-   "label": "FD Document",
-   "depends_on": "eval:doc.funds_type=='FD'"
+   "label": "FD Document Upload",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'FD' && doc.funds_28_day_ok == 'Yes'"
   },
   {
    "fieldname": "section_loan",
    "fieldtype": "Section Break",
    "label": "Education Loan",
-   "depends_on": "eval:doc.funds_type=='Education loan'"
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'Education loan'"
   },
   {
    "fieldname": "loan_for_education",
    "fieldtype": "Select",
-   "label": "Loan for Education?",
+   "label": "Loan is only for education purpose?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.funds_type=='Education loan'"
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'Education loan'"
+  },
+  {
+   "fieldname": "loan_for_education_ok",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "✓ OK",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'Education loan' && doc.loan_for_education == 'Yes'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "loan_for_education_no",
+   "fieldtype": "Small Text",
+   "label": "Note",
+   "default": "→ Need revised Education Loan Letter — set reminder",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'Education loan' && doc.loan_for_education == 'No'",
+   "read_only": 1,
+   "bold": 1
   },
   {
    "fieldname": "loan_holder_is_student",
    "fieldtype": "Select",
-   "label": "Holder is Student?",
+   "label": "Education Loan Holder Name should be student name?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.funds_type=='Education loan'"
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'Education loan'"
   },
   {
-   "fieldname": "loan_letter",
-   "fieldtype": "Attach",
-   "label": "Loan Letter",
-   "depends_on": "eval:doc.funds_type=='Education loan'"
+   "fieldname": "loan_holder_ok",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "✓ OK",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'Education loan' && doc.loan_holder_is_student == 'Yes'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "loan_holder_no",
+   "fieldtype": "Small Text",
+   "label": "Note",
+   "default": "→ Need revised Education Loan Letter — set reminder",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'Education loan' && doc.loan_holder_is_student == 'No'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "loan_amount",
+   "fieldtype": "Currency",
+   "label": "Loan Amount",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'Education loan'",
+   "description": "GBP"
+  },
+  {
+   "fieldname": "loan_bank_name",
+   "fieldtype": "Data",
+   "label": "Bank Name",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'Education loan'"
+  },
+  {
+   "fieldname": "loan_covers_funds",
+   "fieldtype": "Select",
+   "label": "Is Loan Amount Covering Funds Requirements?",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'Education loan'"
+  },
+  {
+   "fieldname": "loan_covers_ok",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "✓ OK",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'Education loan' && doc.loan_covers_funds == 'Yes'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "loan_covers_no",
+   "fieldtype": "Small Text",
+   "label": "Note",
+   "default": "→ Need revised Education Loan Letter — set reminder",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'Education loan' && doc.loan_covers_funds == 'No'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "has_collateral_security",
+   "fieldtype": "Select",
+   "label": "Collateral Security?",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'Education loan'"
   },
   {
    "fieldname": "collateral_details",
    "fieldtype": "Small Text",
-   "label": "Collateral Details",
-   "depends_on": "eval:doc.funds_type=='Education loan'"
+   "label": "Collateral Security Details",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'Education loan' && doc.has_collateral_security == 'Yes'"
+  },
+  {
+   "fieldname": "collateral_no_ok",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "✓ OK",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'Education loan' && doc.has_collateral_security == 'No'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "loan_letter",
+   "fieldtype": "Attach",
+   "label": "Loan Letter Upload",
+   "depends_on": "eval:doc.sponsor_who == 'Student' && doc.funds_type == 'Education loan'"
   },
   {
    "fieldname": "section_birth",
    "fieldtype": "Section Break",
    "label": "Parent Documents",
-   "depends_on": "eval:doc.sponsor_who=='Father' || doc.sponsor_who=='Mother'"
+   "depends_on": "eval:doc.sponsor_who == 'Father' || doc.sponsor_who == 'Mother'"
   },
   {
    "fieldname": "birth_cert_available",
    "fieldtype": "Select",
-   "label": "Birth Certificate Available?",
+   "label": "Student Birth Certificate Available?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.sponsor_who=='Father' || doc.sponsor_who=='Mother'"
+   "depends_on": "eval:doc.sponsor_who == 'Father' || doc.sponsor_who == 'Mother'"
   },
   {
    "fieldname": "birth_cert_language",
    "fieldtype": "Select",
-   "label": "Birth Cert Language",
+   "label": "Birth Certificate Language",
    "options": "\nHindi\nEnglish\nOther",
-   "depends_on": "eval:doc.birth_cert_available=='Yes'"
+   "depends_on": "eval:(doc.sponsor_who == 'Father' || doc.sponsor_who == 'Mother') && doc.birth_cert_available == 'Yes'"
+  },
+  {
+   "fieldname": "birth_cert_translate_note",
+   "fieldtype": "Small Text",
+   "label": "Note",
+   "default": "→ Translate to English and set reminder",
+   "depends_on": "eval:(doc.sponsor_who == 'Father' || doc.sponsor_who == 'Mother') && doc.birth_cert_available == 'Yes' && (doc.birth_cert_language == 'Hindi' || doc.birth_cert_language == 'Other')",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "birth_cert_english_ok",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "✓ OK — Upload birth certificate",
+   "depends_on": "eval:(doc.sponsor_who == 'Father' || doc.sponsor_who == 'Mother') && doc.birth_cert_available == 'Yes' && doc.birth_cert_language == 'English'",
+   "read_only": 1,
+   "bold": 1
   },
   {
    "fieldname": "birth_cert_upload",
    "fieldtype": "Attach",
-   "label": "Birth Certificate",
-   "depends_on": "eval:doc.birth_cert_available=='Yes'"
+   "label": "Upload Birth Certificate",
+   "depends_on": "eval:(doc.sponsor_who == 'Father' || doc.sponsor_who == 'Mother') && doc.birth_cert_available == 'Yes'"
+  },
+  {
+   "fieldname": "parents_affidavit_note",
+   "fieldtype": "Small Text",
+   "label": "Note",
+   "default": "→ Need Parents Support Affidavit — set reminder and upload",
+   "depends_on": "eval:(doc.sponsor_who == 'Father' || doc.sponsor_who == 'Mother') && doc.birth_cert_available == 'No'",
+   "read_only": 1,
+   "bold": 1
   },
   {
    "fieldname": "parents_support_affidavit",
    "fieldtype": "Attach",
-   "label": "Parents Support Affidavit",
-   "depends_on": "eval:doc.birth_cert_available=='No'"
+   "label": "Upload Parents Support Affidavit",
+   "depends_on": "eval:(doc.sponsor_who == 'Father' || doc.sponsor_who == 'Mother') && doc.birth_cert_available == 'No'"
   }
  ],
  "istable": 1,
- "modified": "2026-07-23 20:30:00.000000",
+ "modified": "2026-08-03 12:09:02.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Application UK Sponsor",

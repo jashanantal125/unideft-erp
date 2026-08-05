@@ -62,6 +62,7 @@
   "ukvi_password",
   "ukvi_verified",
   "ukvi_upload",
+  "ukvi_not_accepted",
   "ukvi_pte_section",
   "ukvi_pte_listening",
   "ukvi_pte_reading",
@@ -72,6 +73,7 @@
   "ukvi_pte_password",
   "ukvi_pte_verified",
   "ukvi_pte_upload",
+  "ukvi_pte_not_accepted",
   "duolingo_section",
   "duo_speaking",
   "duo_writing",
@@ -84,7 +86,17 @@
   "duo_overall",
   "duo_verification_link",
   "duo_verified",
-  "duo_upload"
+  "duo_upload",
+  "duo_not_accepted",
+  "moi_section",
+  "moi_english_12th_marks",
+  "moi_issue_date",
+  "moi_issuing_authority",
+  "moi_verification_email",
+  "moi_verified",
+  "moi_verified_ok",
+  "moi_not_verified_reason",
+  "moi_upload"
  ],
  "fields": [
   {
@@ -92,22 +104,24 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Test Type",
-   "options": "\nIELTS Waiver\nIELTS\nUKVI IELTS\nPTE\nUKVI PTE\nDuolingo\nTOEFL",
+   "options": "\nIELTS Waiver\nIELTS\nUKVI IELTS\nPTE\nUKVI PTE\nDuolingo\nTOEFL\nMOI",
    "reqd": 1
   },
   {
-   "description": "Validity is calculated as 24 months from this date",
+   "description": "Validity is calculated from this date using Validity Period (Months)",
    "fieldname": "exam_date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "Result Date"
+   "label": "Result Date",
+   "depends_on": "eval:doc.test_type=='IELTS' || doc.test_type=='UKVI IELTS' || doc.test_type=='PTE' || doc.test_type=='UKVI PTE' || doc.test_type=='TOEFL' || doc.test_type=='Duolingo'"
   },
   {
    "default": "24",
+   "description": "Default 24 months for score tests; change if the board/test type differs. Cleared for Waiver / MOI.",
    "fieldname": "validity_months",
    "fieldtype": "Int",
    "label": "Validity Period (Months)",
-   "read_only": 1
+   "depends_on": "eval:doc.test_type=='IELTS' || doc.test_type=='UKVI IELTS' || doc.test_type=='PTE' || doc.test_type=='UKVI PTE' || doc.test_type=='TOEFL' || doc.test_type=='Duolingo'"
   },
   {
    "fieldname": "validity_until",
@@ -374,7 +388,7 @@
    "read_only": 1
   },
   {
-   "default": "This test type is not accepted",
+   "default": "⚠ Conditional Accepted (IBT Home Edition)",
    "depends_on": "eval:doc.test_type == 'TOEFL' && doc.toefl_type == 'IBT Home Edition Based'",
    "fieldname": "toefl_home_not_accepted",
    "fieldtype": "Text",
@@ -455,6 +469,15 @@
    "label": "Upload Score Report"
   },
   {
+   "fieldname": "ukvi_not_accepted",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "⚠ Not Accepted — Needs Verification",
+   "depends_on": "eval:doc.test_type == 'UKVI IELTS' && doc.ukvi_verified == 0",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
    "depends_on": "eval:doc.test_type=='UKVI PTE'",
    "fieldname": "ukvi_pte_section",
    "fieldtype": "Section Break",
@@ -514,6 +537,15 @@
    "fieldname": "ukvi_pte_upload",
    "fieldtype": "Attach",
    "label": "Upload Score Report"
+  },
+  {
+   "fieldname": "ukvi_pte_not_accepted",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "⚠ Not Accepted — Needs Verification",
+   "depends_on": "eval:doc.test_type == 'UKVI PTE' && doc.ukvi_pte_verified == 0",
+   "read_only": 1,
+   "bold": 1
   },
   {
    "depends_on": "eval:doc.test_type=='Duolingo'",
@@ -593,6 +625,74 @@
    "fieldname": "duo_upload",
    "fieldtype": "Attach",
    "label": "Upload Score Report"
+  },
+  {
+   "fieldname": "duo_not_accepted",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "⚠ Not Accepted — Needs Verification",
+   "depends_on": "eval:doc.test_type == 'Duolingo' && doc.duo_verified == 0",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "moi_section",
+   "fieldtype": "Section Break",
+   "label": "MOI (Medium of Instruction)",
+   "depends_on": "eval:doc.test_type == 'MOI'"
+  },
+  {
+   "fieldname": "moi_english_12th_marks",
+   "fieldtype": "Data",
+   "label": "Marks in English (12th)",
+   "depends_on": "eval:doc.test_type == 'MOI'"
+  },
+  {
+   "fieldname": "moi_issue_date",
+   "fieldtype": "Date",
+   "label": "Issue Date",
+   "depends_on": "eval:doc.test_type == 'MOI'"
+  },
+  {
+   "fieldname": "moi_issuing_authority",
+   "fieldtype": "Data",
+   "label": "Issuing Authority",
+   "depends_on": "eval:doc.test_type == 'MOI'"
+  },
+  {
+   "fieldname": "moi_verification_email",
+   "fieldtype": "Data",
+   "label": "Email ID for Verification (optional)",
+   "options": "Email",
+   "depends_on": "eval:doc.test_type == 'MOI'"
+  },
+  {
+   "fieldname": "moi_verified",
+   "fieldtype": "Select",
+   "label": "MOI Verified",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.test_type == 'MOI'"
+  },
+  {
+   "fieldname": "moi_verified_ok",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "✓ OK",
+   "depends_on": "eval:doc.test_type == 'MOI' && doc.moi_verified == 'Yes'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "moi_not_verified_reason",
+   "fieldtype": "Small Text",
+   "label": "Reason (optional)",
+   "depends_on": "eval:doc.test_type == 'MOI' && doc.moi_verified == 'No'"
+  },
+  {
+   "fieldname": "moi_upload",
+   "fieldtype": "Attach",
+   "label": "Upload MOI",
+   "depends_on": "eval:doc.test_type == 'MOI'"
   }
  ],
  "istable": 1,

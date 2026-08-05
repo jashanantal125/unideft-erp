@@ -4,7 +4,9 @@
 import frappe
 from frappe.model.document import Document
 
-SINGLE_BASIS_CASES = {"UK Case 1", "UK Case 3", "UK Case 5"}
+# Case 5 (Post-grad married) allows spouse track per Case 7&8 PDF.
+# Single-basis only for Case 1 & 3, or when research gate forces it.
+SINGLE_BASIS_CASES = {"UK Case 1", "UK Case 3"}
 
 STAGE_TO_STATUS = {
 	"Details": "Pending",
@@ -144,6 +146,23 @@ class ApplicationUK(Document):
 
 	def on_update(self):
 		self.sync_application_index()
+
+	def on_trash(self):
+		"""Delete paired Application index row when UK application is removed."""
+		if self.flags.get("skip_paired_delete"):
+			return
+		app_name = self.application or frappe.db.get_value("Application", {"uk_data": self.name}, "name")
+		if not app_name:
+			return
+		# Unlink both sides before deleting the pair (link check runs after on_trash)
+		frappe.db.set_value("Application", app_name, "uk_data", None, update_modified=False)
+		frappe.db.set_value("Application UK", self.name, "application", None, update_modified=False)
+		self.application = None
+		if frappe.db.exists("Application", app_name):
+			app = frappe.get_doc("Application", app_name)
+			app.flags.skip_paired_delete = True
+			app.flags.ignore_permissions = True
+			app.delete()
 
 	def apply_student_defaults(self):
 		if not self.student:

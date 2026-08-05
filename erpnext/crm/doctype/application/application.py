@@ -68,33 +68,25 @@ class Application(Document):
 
 		return query.where(App.name == "__no_match__")
 
+	def on_trash(self):
+		"""Delete paired Application UK when this index row is removed."""
+		if self.flags.get("skip_paired_delete"):
+			return
+		uk_name = self.uk_data or frappe.db.get_value(
+			"Application UK", {"application": self.name}, "name"
+		)
+		if not uk_name:
+			return
+		# Unlink both sides before deleting the pair (link check runs after on_trash)
+		frappe.db.set_value("Application UK", uk_name, "application", None, update_modified=False)
+		frappe.db.set_value("Application", self.name, "uk_data", None, update_modified=False)
+		self.uk_data = None
+		if frappe.db.exists("Application UK", uk_name):
+			uk = frappe.get_doc("Application UK", uk_name)
+			uk.flags.skip_paired_delete = True
+			uk.flags.ignore_permissions = True
+			uk.delete()
 
-def _agents_under_cro_head(user):
-	"""All agents whose CRO's cro_head is this user."""
-	cro_agents = frappe.get_all("Agent", filters={"cro_head": user}, pluck="name")
-	return cro_agents or []
-
-
-def _agents_under_cro(user):
-	"""All agents linked to teams where this user is the CRO."""
-	teams = frappe.get_all("Team", filters={"cro": user}, pluck="name")
-	if not teams:
-		return []
-	agents = frappe.get_all(
-		"Agent", filters={"sales_team": ["in", teams]}, pluck="name"
-	)
-	return agents or []
-
-
-def _agents_under_cro_for_support(user):
-	"""Marketing/Telecalling see apps from agents under same CRO."""
-	cro_teams = frappe.get_all("Team", filters={"cro": user}, pluck="name")
-	if not cro_teams:
-		return []
-	return frappe.get_all(
-		"Agent", filters={"sales_team": ["in", cro_teams]}, pluck="name"
-	) or []
-	
 	def before_save(self):
 		"""Auto-assign team based on destination country"""
 		self.auto_assign_team()
@@ -520,6 +512,33 @@ def _agents_under_cro_for_support(user):
 		
 		# For B2B: No validation - can select any agent or leave empty
 
+
+
+def _agents_under_cro_head(user):
+	"""All agents whose CRO's cro_head is this user."""
+	cro_agents = frappe.get_all("Agent", filters={"cro_head": user}, pluck="name")
+	return cro_agents or []
+
+
+def _agents_under_cro(user):
+	"""All agents linked to teams where this user is the CRO."""
+	teams = frappe.get_all("Team", filters={"cro": user}, pluck="name")
+	if not teams:
+		return []
+	agents = frappe.get_all(
+		"Agent", filters={"sales_team": ["in", teams]}, pluck="name"
+	)
+	return agents or []
+
+
+def _agents_under_cro_for_support(user):
+	"""Marketing/Telecalling see apps from agents under same CRO."""
+	cro_teams = frappe.get_all("Team", filters={"cro": user}, pluck="name")
+	if not cro_teams:
+		return []
+	return frappe.get_all(
+		"Agent", filters={"sales_team": ["in", cro_teams]}, pluck="name"
+	) or []
 
 def _map_au_qualification_to_uk(higher_education):
 	"""Map Application.higher_education options to UK assessment qualification."""
