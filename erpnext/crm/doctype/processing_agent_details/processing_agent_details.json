@@ -7,8 +7,9 @@
  "engine": "InnoDB",
  "field_order": [
   "processing_agent_type",
-  "processing_agent_direct",
-  "processing_agent_vendor"
+  "our_company",
+  "processing_agent_vendor",
+  "processing_agent_direct"
  ],
  "fields": [
   {
@@ -21,26 +22,41 @@
    "reqd": 1
   },
   {
-   "bold": 1,
-   "columns": 4,
-   "description": "Auto-filled: Unideft for Direct, or the selected Vendor name.",
-   "fieldname": "processing_agent_direct",
-   "fieldtype": "Data",
+   "columns": 3,
+   "depends_on": "eval:doc.processing_agent_type=='Direct'",
+   "description": "Select one of our direct companies",
+   "fieldname": "our_company",
+   "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Processing Agent Name"
+   "label": "Our Company",
+   "options": "Our Company",
+   "mandatory_depends_on": "eval:doc.processing_agent_type=='Direct'"
   },
   {
+   "columns": 3,
    "depends_on": "eval:doc.processing_agent_type=='Vendor'",
    "description": "Select when Type is Vendor",
    "fieldname": "processing_agent_vendor",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Vendor",
-   "options": "vendor"
+   "options": "vendor",
+   "mandatory_depends_on": "eval:doc.processing_agent_type=='Vendor'"
+  },
+  {
+   "bold": 1,
+   "columns": 3,
+   "description": "Auto-filled from Our Company (Direct) or Vendor name.",
+   "fieldname": "processing_agent_direct",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Processing Agent Name",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
- "modified": "2026-08-03 17:15:00.000000",
+ "modified": "2026-08-06 14:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Processing Agent Details",

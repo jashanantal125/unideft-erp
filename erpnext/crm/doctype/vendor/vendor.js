@@ -19,6 +19,9 @@ frappe.ui.form.on("vendor", {
 			frm.set_value("portal_login_id", "");
 			frm.set_value("portal_password", "");
 		}
+		if (frm.doc.portal_available !== "No") {
+			frm.set_value("portal_unavailable_details", "");
+		}
 	},
 
 	country_wise_commission(frm) {
@@ -69,6 +72,27 @@ frappe.ui.form.on("vendor", {
 		if (frm.doc.use_existing_portal_credentials === "Same") {
 			frm.set_value("commission_portal_link", frm.doc.portal_link || "");
 			frm.set_value("commission_login_id", frm.doc.portal_login_id || "");
+			// Password cannot be read client-side; server syncs on save from Portal Access.
+		} else if (frm.doc.use_existing_portal_credentials !== "Different") {
+			frm.set_value("commission_portal_link", "");
+			frm.set_value("commission_login_id", "");
+			frm.set_value("commission_password", "");
+		}
+	},
+});
+
+frappe.ui.form.on("Vendor Admission Contact", {
+	countries(frm, cdt, cdn) {
+		// Normalize comma / newline lists after edit
+		const row = locals[cdt][cdn];
+		if (!row) return;
+		const parts = String(row.countries || "")
+			.split(/[\n,;]+/)
+			.map((p) => p.trim())
+			.filter(Boolean);
+		const unique = [...new Set(parts)];
+		if (unique.join(", ") !== row.countries) {
+			frappe.model.set_value(cdt, cdn, "countries", unique.join(", "));
 		}
 	},
 });

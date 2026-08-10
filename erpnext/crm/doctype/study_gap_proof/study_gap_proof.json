@@ -1,450 +1,463 @@
 {
-    "actions": [],
-    "allow_rename": 1,
-    "creation": "2026-02-07 18:40:00.000000",
-    "doctype": "DocType",
-    "editable_grid": 0,
-    "engine": "InnoDB",
-    "field_order": [
-        "study_gap_proof_type",
-        "section_other",
-        "other_details",
-        "other_supporting_documents",
-        "educational_reason",
-        "subject_of_reappear",
-        "month_year",
-        "reappear_admit_card",
-        "dmc_document",
-        "university_name",
-        "course",
-        "admit_card",
-        "fee_receipt",
-        "hs_dmc_document",
-        "proof_of_enrollment",
-        "institute_name",
-        "course_name",
-        "course_duration",
-        "supporting_documents",
-        "verification_link_or_email_id",
-        "docs_verified",
-        "date_of_issue",
-        "score_card",
-        "company_name",
-        "position",
-        "duration",
-        "duration_from",
-        "duration_to",
-        "employer_domain_id",
-        "work_attachments_sb",
-        "itr_upload",
-        "salary_slips_upload",
-        "experience_letter_upload",
-        "bank_statement_upload",
-        "work_verification_sb",
-        "work_experience_verified",
-        "itr_verified",
-        "salary_slips_verified_6_months",
-        "bank_statement_verified",
-        "salary_amount",
-        "work_experience_verified_attachment",
-        "work_experience_not_verified_comment",
-        "assessment_year",
-        "itr_value",
-        "itr_value_matched_salary",
-        "other_income_source",
-        "other_income_yes_status",
-        "other_income_no_status",
-        "acknowledgement_no",
-        "company_details_computation",
-        "company_details_no_status",
-        "dob_matched_ac_pc",
-        "dob_no_status",
-        "name_matched_ac_pc",
-        "name_no_status",
-        "itr_not_verified_status"
-    ],
-    "fields": [
-        {
-            "fieldname": "study_gap_proof_type",
-            "fieldtype": "Select",
-            "in_list_view": 1,
-            "label": "Study Gap Proof",
-            "options": "\nEducational\nWork\nOther",
-            "reqd": 1
-        },
-        {
-            "fieldname": "section_other",
-            "fieldtype": "Section Break",
-            "label": "Other Details",
-            "depends_on": "eval:doc.study_gap_proof_type == 'Other'"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Other'",
-            "fieldname": "other_details",
-            "fieldtype": "Small Text",
-            "in_list_view": 1,
-            "label": "Details",
-            "reqd": 0
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Other'",
-            "fieldname": "other_supporting_documents",
-            "fieldtype": "Attach",
-            "label": "Supporting Documents"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Educational'",
-            "fieldname": "educational_reason",
-            "fieldtype": "Select",
-            "in_list_view": 1,
-            "label": "Educational Reason",
-            "options": "\nReappear Exam\nPursuing Higher Studies\nDiploma / Certificate\nIELTS / PTE"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Reappear Exam'",
-            "fieldname": "subject_of_reappear",
-            "fieldtype": "Small Text",
-            "label": "Subject of Reappear"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Reappear Exam'",
-            "fieldname": "month_year",
-            "fieldtype": "Date",
-            "label": "Month / Year"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Reappear Exam'",
-            "fieldname": "reappear_admit_card",
-            "fieldtype": "Attach",
-            "label": "Reappear Admit Card"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Reappear Exam'",
-            "fieldname": "dmc_document",
-            "fieldtype": "Attach",
-            "label": "DMC Document"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Pursuing Higher Studies'",
-            "fieldname": "university_name",
-            "fieldtype": "Small Text",
-            "label": "University Name"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Pursuing Higher Studies'",
-            "fieldname": "course",
-            "fieldtype": "Small Text",
-            "label": "Course"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Pursuing Higher Studies'",
-            "fieldname": "admit_card",
-            "fieldtype": "Attach",
-            "label": "Admit Card"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Pursuing Higher Studies'",
-            "fieldname": "fee_receipt",
-            "fieldtype": "Attach",
-            "label": "Fee Receipt"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Pursuing Higher Studies'",
-            "fieldname": "hs_dmc_document",
-            "fieldtype": "Attach",
-            "label": "DMC Document"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Pursuing Higher Studies'",
-            "fieldname": "proof_of_enrollment",
-            "fieldtype": "Attach",
-            "label": "Proof of Enrollment"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Diploma / Certificate'",
-            "fieldname": "institute_name",
-            "fieldtype": "Small Text",
-            "label": "Institute Name"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Diploma / Certificate'",
-            "fieldname": "course_name",
-            "fieldtype": "Small Text",
-            "label": "Course Name"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Diploma / Certificate'",
-            "fieldname": "course_duration",
-            "fieldtype": "Small Text",
-            "label": "Course Duration"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Diploma / Certificate'",
-            "fieldname": "supporting_documents",
-            "fieldtype": "Attach",
-            "label": "Supporting Documents"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Diploma / Certificate'",
-            "fieldname": "verification_link_or_email_id",
-            "fieldtype": "Small Text",
-            "label": "Verification Link or Email ID"
-        },
-        {
-            "default": "0",
-            "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Diploma / Certificate'",
-            "fieldname": "docs_verified",
-            "fieldtype": "Check",
-            "label": "Docs Verified"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'IELTS / PTE'",
-            "fieldname": "date_of_issue",
-            "fieldtype": "Date",
-            "label": "Date of Issue"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'IELTS / PTE'",
-            "fieldname": "score_card",
-            "fieldtype": "Attach",
-            "label": "Score Card"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "company_name",
-            "fieldtype": "Small Text",
-            "label": "Company Name"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "position",
-            "fieldtype": "Small Text",
-            "label": "Position"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "duration",
-            "fieldtype": "Small Text",
-            "label": "Duration (From – To)",
-            "description": "e.g. Jan 2022 – Mar 2023"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "duration_from",
-            "fieldtype": "Date",
-            "label": "Duration From"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "duration_to",
-            "fieldtype": "Date",
-            "label": "Duration To"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "employer_domain_id",
-            "fieldtype": "Small Text",
-            "label": "Employer Domain / Official Email ID"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "work_attachments_sb",
-            "fieldtype": "Section Break",
-            "label": "Attachments"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "itr_upload",
-            "fieldtype": "Attach",
-            "label": "ITR"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "salary_slips_upload",
-            "fieldtype": "Attach",
-            "label": "Salary Slips"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "experience_letter_upload",
-            "fieldtype": "Attach",
-            "label": "Experience Letter"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "bank_statement_upload",
-            "fieldtype": "Attach",
-            "label": "Bank Statement"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "work_verification_sb",
-            "fieldtype": "Section Break",
-            "label": "Verification"
-        },
-        {
-            "default": "0",
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "work_experience_verified",
-            "fieldtype": "Check",
-            "label": "Work Experience Verified"
-        },
-        {
-            "default": "0",
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "itr_verified",
-            "fieldtype": "Check",
-            "label": "ITR Verified (as per Work Experience)"
-        },
-        {
-            "default": "0",
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "salary_slips_verified_6_months",
-            "fieldtype": "Check",
-            "label": "Salary Slips Verified (6 Months)"
-        },
-        {
-            "default": "0",
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "bank_statement_verified",
-            "fieldtype": "Check",
-            "label": "Bank Statement Verified"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "salary_amount",
-            "fieldtype": "Currency",
-            "label": "Salary Amount"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.work_experience_verified == 1",
-            "fieldname": "work_experience_verified_attachment",
-            "fieldtype": "Attach",
-            "label": "Work Experience Verified Attachment"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.work_experience_verified == 0",
-            "fieldname": "work_experience_not_verified_comment",
-            "fieldtype": "Small Text",
-            "label": "Comment - Why Not Verified"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "assessment_year",
-            "fieldtype": "Small Text",
-            "label": "Assessment Year"
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "itr_value",
-            "fieldtype": "Currency",
-            "label": "ITR Value"
-        },
-        {
-            "default": "0",
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "itr_value_matched_salary",
-            "fieldtype": "Check",
-            "label": "ITR Value Matched with Salary"
-        },
-        {
-            "default": "0",
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.itr_value_matched_salary == 0",
-            "fieldname": "other_income_source",
-            "fieldtype": "Check",
-            "label": "Any Other Source of Income"
-        },
-        {
-            "bold": 1,
-            "default": "✓ Checked Accordingly",
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.itr_value_matched_salary == 0 && doc.other_income_source == 1",
-            "fieldname": "other_income_yes_status",
-            "fieldtype": "Small Text",
-            "label": "Status",
-            "read_only": 1
-        },
-        {
-            "bold": 1,
-            "default": "⚠ Set Reminder to Revise ITR",
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.itr_value_matched_salary == 0 && doc.other_income_source == 0",
-            "fieldname": "other_income_no_status",
-            "fieldtype": "Small Text",
-            "label": "Status",
-            "read_only": 1
-        },
-        {
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "acknowledgement_no",
-            "fieldtype": "Small Text",
-            "label": "Acknowledgement No"
-        },
-        {
-            "default": "0",
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "company_details_computation",
-            "fieldtype": "Check",
-            "label": "Company Details Mentioned on Computation"
-        },
-        {
-            "bold": 1,
-            "default": "⚠ Set Reminder to Correct Computation",
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.company_details_computation == 0",
-            "fieldname": "company_details_no_status",
-            "fieldtype": "Small Text",
-            "label": "Status",
-            "read_only": 1
-        },
-        {
-            "default": "0",
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "dob_matched_ac_pc",
-            "fieldtype": "Check",
-            "label": "DOB on ITR Matched with AC & PC"
-        },
-        {
-            "bold": 1,
-            "default": "⚠ Need to Correct",
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.dob_matched_ac_pc == 0",
-            "fieldname": "dob_no_status",
-            "fieldtype": "Small Text",
-            "label": "Status",
-            "read_only": 1
-        },
-        {
-            "default": "0",
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
-            "fieldname": "name_matched_ac_pc",
-            "fieldtype": "Check",
-            "label": "Name on ITR Matched with AC/PC"
-        },
-        {
-            "bold": 1,
-            "default": "⚠ Need to Correct",
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.name_matched_ac_pc == 0",
-            "fieldname": "name_no_status",
-            "fieldtype": "Small Text",
-            "label": "Status",
-            "read_only": 1
-        },
-        {
-            "bold": 1,
-            "default": "⚠ Needs to Verify and Set Reminder",
-            "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.itr_verified == 0",
-            "fieldname": "itr_not_verified_status",
-            "fieldtype": "Small Text",
-            "label": "Status",
-            "read_only": 1
-        }
-    ],
-    "index_web_pages_for_search": 1,
-    "istable": 1,
-    "modified": "2026-08-03 12:11:31.000000",
-    "modified_by": "Administrator",
-    "module": "CRM",
-    "name": "Study Gap Proof",
-    "owner": "Administrator",
-    "permissions": [],
-    "sort_field": "modified",
-    "sort_order": "DESC",
-    "states": []
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-02-07 18:40:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "field_order": [
+  "study_gap_proof_type",
+  "section_educational",
+  "educational_reason",
+  "subject_of_reappear",
+  "month_year",
+  "reappear_admit_card",
+  "dmc_document",
+  "university_name",
+  "course",
+  "admit_card",
+  "fee_receipt",
+  "hs_dmc_document",
+  "proof_of_enrollment",
+  "institute_name",
+  "course_name",
+  "course_duration",
+  "supporting_documents",
+  "verification_link_or_email_id",
+  "docs_verified",
+  "date_of_issue",
+  "score_card",
+  "section_work",
+  "company_name",
+  "position",
+  "duration",
+  "duration_from",
+  "duration_to",
+  "employer_domain_id",
+  "work_attachments_sb",
+  "itr_upload",
+  "salary_slips_upload",
+  "experience_letter_upload",
+  "bank_statement_upload",
+  "work_verification_sb",
+  "work_experience_verified",
+  "itr_verified",
+  "salary_slips_verified_6_months",
+  "bank_statement_verified",
+  "salary_amount",
+  "work_experience_verified_attachment",
+  "work_experience_not_verified_comment",
+  "assessment_year",
+  "itr_value",
+  "itr_value_matched_salary",
+  "other_income_source",
+  "other_income_yes_status",
+  "other_income_no_status",
+  "acknowledgement_no",
+  "company_details_computation",
+  "company_details_no_status",
+  "dob_matched_ac_pc",
+  "dob_no_status",
+  "name_matched_ac_pc",
+  "name_no_status",
+  "itr_not_verified_status",
+  "section_other",
+  "other_details",
+  "other_supporting_documents"
+ ],
+ "fields": [
+  {
+   "fieldname": "study_gap_proof_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Study Gap Proof",
+   "options": "\nEducational\nWork\nOther",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Educational'",
+   "fieldname": "section_educational",
+   "fieldtype": "Section Break",
+   "label": "Educational Details"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Educational'",
+   "fieldname": "educational_reason",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Educational Reason",
+   "options": "\nReappear Exam\nPursuing Higher Studies\nDiploma / Certificate\nIELTS / PTE"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Reappear Exam'",
+   "fieldname": "subject_of_reappear",
+   "fieldtype": "Small Text",
+   "label": "Subject of Reappear"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Reappear Exam'",
+   "fieldname": "month_year",
+   "fieldtype": "Date",
+   "label": "Month / Year"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Reappear Exam'",
+   "fieldname": "reappear_admit_card",
+   "fieldtype": "Attach",
+   "label": "Reappear Admit Card"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Reappear Exam'",
+   "fieldname": "dmc_document",
+   "fieldtype": "Attach",
+   "label": "DMC Document"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Pursuing Higher Studies'",
+   "fieldname": "university_name",
+   "fieldtype": "Small Text",
+   "label": "University Name"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Pursuing Higher Studies'",
+   "fieldname": "course",
+   "fieldtype": "Small Text",
+   "label": "Course"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Pursuing Higher Studies'",
+   "fieldname": "admit_card",
+   "fieldtype": "Attach",
+   "label": "Admit Card"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Pursuing Higher Studies'",
+   "fieldname": "fee_receipt",
+   "fieldtype": "Attach",
+   "label": "Fee Receipt"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Pursuing Higher Studies'",
+   "fieldname": "hs_dmc_document",
+   "fieldtype": "Attach",
+   "label": "DMC Document"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Pursuing Higher Studies'",
+   "fieldname": "proof_of_enrollment",
+   "fieldtype": "Attach",
+   "label": "Proof of Enrollment"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Diploma / Certificate'",
+   "fieldname": "institute_name",
+   "fieldtype": "Small Text",
+   "label": "Institute Name"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Diploma / Certificate'",
+   "fieldname": "course_name",
+   "fieldtype": "Small Text",
+   "label": "Course Name"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Diploma / Certificate'",
+   "fieldname": "course_duration",
+   "fieldtype": "Small Text",
+   "label": "Course Duration"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Diploma / Certificate'",
+   "fieldname": "supporting_documents",
+   "fieldtype": "Attach",
+   "label": "Supporting Documents"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Diploma / Certificate'",
+   "fieldname": "verification_link_or_email_id",
+   "fieldtype": "Small Text",
+   "label": "Verification Link or Email ID"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'Diploma / Certificate'",
+   "fieldname": "docs_verified",
+   "fieldtype": "Check",
+   "label": "Docs Verified"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'IELTS / PTE'",
+   "fieldname": "date_of_issue",
+   "fieldtype": "Date",
+   "label": "Date of Issue"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Educational' && doc.educational_reason == 'IELTS / PTE'",
+   "fieldname": "score_card",
+   "fieldtype": "Attach",
+   "label": "Score Card"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+   "fieldname": "section_work",
+   "fieldtype": "Section Break",
+   "label": "Work Experience Details"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+   "fieldname": "company_name",
+   "fieldtype": "Small Text",
+   "label": "Company Name"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+   "fieldname": "position",
+   "fieldtype": "Small Text",
+   "label": "Position"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+   "description": "e.g. Jan 2022 – Mar 2023",
+   "fieldname": "duration",
+   "fieldtype": "Small Text",
+   "label": "Duration (From – To)"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+   "fieldname": "duration_from",
+   "fieldtype": "Date",
+   "label": "Duration From"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+   "fieldname": "duration_to",
+   "fieldtype": "Date",
+   "label": "Duration To"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+   "fieldname": "employer_domain_id",
+   "fieldtype": "Small Text",
+   "label": "Employer Domain / Official Email ID"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+   "fieldname": "work_attachments_sb",
+   "fieldtype": "Section Break",
+   "label": "Attachments"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+   "fieldname": "itr_upload",
+   "fieldtype": "Attach",
+   "label": "ITR"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+   "fieldname": "salary_slips_upload",
+   "fieldtype": "Attach",
+   "label": "Salary Slips"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+   "fieldname": "experience_letter_upload",
+   "fieldtype": "Attach",
+   "label": "Experience Letter"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+   "fieldname": "bank_statement_upload",
+   "fieldtype": "Attach",
+   "label": "Bank Statement"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+   "fieldname": "work_verification_sb",
+   "fieldtype": "Section Break",
+   "label": "Verification"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+   "fieldname": "work_experience_verified",
+   "fieldtype": "Check",
+   "label": "Work Experience Verified"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+   "fieldname": "itr_verified",
+   "fieldtype": "Check",
+   "label": "ITR Verified (as per Work Experience)"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+   "fieldname": "salary_slips_verified_6_months",
+   "fieldtype": "Check",
+   "label": "Salary Slips Verified (6 Months)"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+   "fieldname": "bank_statement_verified",
+   "fieldtype": "Check",
+   "label": "Bank Statement Verified"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+   "fieldname": "salary_amount",
+   "fieldtype": "Currency",
+   "label": "Salary Amount"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.work_experience_verified == 1",
+   "fieldname": "work_experience_verified_attachment",
+   "fieldtype": "Attach",
+   "label": "Work Experience Verified Attachment"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.work_experience_verified == 0",
+   "fieldname": "work_experience_not_verified_comment",
+   "fieldtype": "Small Text",
+   "label": "Comment - Why Not Verified"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+   "fieldname": "assessment_year",
+   "fieldtype": "Small Text",
+   "label": "Assessment Year"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+   "fieldname": "itr_value",
+   "fieldtype": "Currency",
+   "label": "ITR Value"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+   "fieldname": "itr_value_matched_salary",
+   "fieldtype": "Check",
+   "label": "ITR Value Matched with Salary"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.itr_value_matched_salary == 0",
+   "fieldname": "other_income_source",
+   "fieldtype": "Check",
+   "label": "Any Other Source of Income"
+  },
+  {
+   "bold": 1,
+   "default": "✓ Checked Accordingly",
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.itr_value_matched_salary == 0 && doc.other_income_source == 1",
+   "fieldname": "other_income_yes_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "bold": 1,
+   "default": "⚠ Set Reminder to Revise ITR",
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.itr_value_matched_salary == 0 && doc.other_income_source == 0",
+   "fieldname": "other_income_no_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+   "fieldname": "acknowledgement_no",
+   "fieldtype": "Small Text",
+   "label": "Acknowledgement No"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+   "fieldname": "company_details_computation",
+   "fieldtype": "Check",
+   "label": "Company Details Mentioned on Computation"
+  },
+  {
+   "bold": 1,
+   "default": "⚠ Set Reminder to Correct Computation",
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.company_details_computation == 0",
+   "fieldname": "company_details_no_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+   "fieldname": "dob_matched_ac_pc",
+   "fieldtype": "Check",
+   "label": "DOB on ITR Matched with AC & PC"
+  },
+  {
+   "bold": 1,
+   "default": "⚠ Need to Correct",
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.dob_matched_ac_pc == 0",
+   "fieldname": "dob_no_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work'",
+   "fieldname": "name_matched_ac_pc",
+   "fieldtype": "Check",
+   "label": "Name on ITR Matched with AC/PC"
+  },
+  {
+   "bold": 1,
+   "default": "⚠ Need to Correct",
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.name_matched_ac_pc == 0",
+   "fieldname": "name_no_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "bold": 1,
+   "default": "⚠ Needs to Verify and Set Reminder",
+   "depends_on": "eval:doc.study_gap_proof_type == 'Work' && doc.itr_verified == 0",
+   "fieldname": "itr_not_verified_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Other'",
+   "fieldname": "section_other",
+   "fieldtype": "Section Break",
+   "label": "Other Details"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Other'",
+   "fieldname": "other_details",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Details"
+  },
+  {
+   "depends_on": "eval:doc.study_gap_proof_type == 'Other'",
+   "fieldname": "other_supporting_documents",
+   "fieldtype": "Attach",
+   "label": "Supporting Documents"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "modified": "2026-08-08 16:40:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Study Gap Proof",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
 }

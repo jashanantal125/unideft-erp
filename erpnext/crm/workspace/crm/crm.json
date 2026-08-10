@@ -144,20 +144,11 @@
    "type": "Link"
   }
  ],
- "modified": "2026-01-20 18:57:26.824681",
+ "modified": "2026-08-08 14:14:02.819890",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "CRM",
- "number_cards": [
-  {
-   "label": "Pending applications (Total)",
-   "number_card_name": "Pending Applications"
-  },
-  {
-   "label": "New Applications",
-   "number_card_name": "New Applications"
-  }
- ],
+ "number_cards": [],
  "owner": "Administrator",
  "parent_page": "",
  "public": 1,
@@ -174,32 +165,41 @@
   }
  ],
  "restrict_to_domain": "",
- "roles": [
-  {
-   "role": "System Manager"
-  },
-  {
-   "role": "Administrator"
-  },
-  {
-   "role": "CRM Admin"
-  },
-  {
-   "role": "CRM Sales Staff"
-  },
-  {
-   "role": "Team Lead"
-  },
-  {
-   "role": "Team Executive"
-  }
- ],
+ "roles": [],
  "sequence_id": 17.0,
  "shortcuts": [
   {
-   "color": "Red",
-   "doc_view": "New",
-   "label": "+ Add new  applications",
+   "color": "Grey",
+   "doc_view": "List",
+   "icon": "fa fa-file-text",
+   "label": "Counsellings",
+   "link_to": "Counsellings",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "icon": "fa fa-book",
+   "label": "Universities",
+   "link_to": "University",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "icon": "fa fa-book",
+   "label": "Students",
+   "link_to": "Student",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "icon": "fa fa-file-text",
+   "label": "Applications",
    "link_to": "Application",
    "stats_filter": "[]",
    "type": "DocType"

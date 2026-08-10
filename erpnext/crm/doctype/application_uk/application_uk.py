@@ -132,14 +132,74 @@ class ApplicationUK(Document):
 
 	def validate(self):
 		self.apply_student_defaults()
+		self.compute_current_age()
 		self.recompute_case()
 		self.sync_case_flags()
 		self.sync_funds_required()
+		self.sync_processing_agents()
+		self.apply_study_gap_duration_rule()
 		if not self.uk_current_stage:
 			self.uk_current_stage = "Details"
 		stage_status = STAGE_TO_STATUS.get(self.uk_current_stage)
 		if stage_status and self.status in ("", None) and self.is_new():
 			self.status = stage_status
+
+	def apply_study_gap_duration_rule(self):
+		"""Details picks duration; Accepted opens Processing proof table (no duration there)."""
+		if self.study_gap != "Yes":
+			self.gap_duration = None
+			self.gap_duration_status = None
+			self.gap_duration_not_accepted = None
+			self.study_gap_upto_1_year = None
+			self.study_gap_status = None
+			self.study_gap_not_accepted_status = None
+			if self.study_gap == "No":
+				self.study_gap_ok = "✓ OK"
+			self.study_gap_proof_list = []
+			return
+
+		self.study_gap_ok = None
+		d = self.gap_duration
+		if d in ("Below 1 Year", "Below 2 Years"):
+			self.gap_duration_status = "Accepted"
+			self.gap_duration_not_accepted = None
+			self.study_gap_status = "Accepted"
+			self.study_gap_not_accepted_status = None
+			self.study_gap_upto_1_year = "Yes"
+		elif d == "Above 2 Years":
+			self.gap_duration_status = None
+			self.gap_duration_not_accepted = "Not Accepted"
+			self.study_gap_status = None
+			self.study_gap_not_accepted_status = "Not Accepted"
+			self.study_gap_upto_1_year = "No"
+			self.study_gap_proof_list = []
+		else:
+			self.gap_duration_status = None
+			self.gap_duration_not_accepted = None
+
+	def compute_current_age(self):
+		if not self.dob:
+			self.current_age = None
+			return
+		from frappe.utils import getdate, nowdate
+
+		dob = getdate(self.dob)
+		today = getdate(nowdate())
+		age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+		self.current_age = age if age >= 0 else None
+
+	def sync_processing_agents(self):
+		"""Ensure Direct/Vendor name columns stay filled when parent is saved."""
+		default_direct = "Unideft Education Services Pvt. Ltd."
+		for row in self.get("processing_agent_details") or []:
+			if row.processing_agent_type == "Direct":
+				if not row.our_company and frappe.db.exists("Our Company", default_direct):
+					row.our_company = default_direct
+				row.processing_agent_vendor = None
+				row.processing_agent_direct = row.our_company or ""
+			elif row.processing_agent_type == "Vendor":
+				row.our_company = None
+				row.processing_agent_direct = row.processing_agent_vendor or ""
 
 	def after_insert(self):
 		self.ensure_application_index()
@@ -172,7 +232,8 @@ class ApplicationUK(Document):
 			self.student_email = getattr(stu, "email", None) or getattr(stu, "student_email", None) or ""
 		if not self.student_contact_no:
 			self.student_contact_no = (
-				getattr(stu, "mobile_no", None)
+				getattr(stu, "mobile", None)
+				or getattr(stu, "mobile_no", None)
 				or getattr(stu, "phone", None)
 				or getattr(stu, "contact_no", None)
 				or ""
@@ -185,12 +246,19 @@ class ApplicationUK(Document):
 			return
 		case = resolve_uk_case(self.higher_education, self.martial_status)
 		self.country_flow_case = case
-		self.single_basis_only = 1 if case in SINGLE_BASIS_CASES else 0
+		self._apply_single_basis_flag(case)
 
 	def sync_case_flags(self):
 		case = self.country_flow_case or resolve_uk_case(self.higher_education, self.martial_status)
 		self.country_flow_case = case
-		self.single_basis_only = 1 if case in SINGLE_BASIS_CASES else 0
+		self._apply_single_basis_flag(case)
+
+	def _apply_single_basis_flag(self, case):
+		# Cases 1 & 3 always single-basis; Case 5/PG can force via research gate.
+		if case in SINGLE_BASIS_CASES or self.wants_process_single_basis == "Yes":
+			self.single_basis_only = 1
+		else:
+			self.single_basis_only = 0
 
 	def sync_funds_required(self):
 		living = UK_LIVING.get(self.living_expenses_location) or 0
@@ -214,12 +282,19 @@ class ApplicationUK(Document):
 		app.student = self.student
 		app.agent = self.agent
 		app.preferred_university = self.preferred_university
+		app.course = getattr(self, "course", None)
 		app.dob = self.dob
 		app.martial_status = self.martial_status
 		app.higher_education = self.higher_education
 		app.student_email = self.student_email
 		app.student_contact_no = self.student_contact_no
 		app.study_gap = self.study_gap
+		app.gap_duration = getattr(self, "gap_duration", None)
+		app.gap_duration_status = getattr(self, "gap_duration_status", None)
+		app.gap_duration_not_accepted = getattr(self, "gap_duration_not_accepted", None)
+		app.study_gap_upto_1_year = getattr(self, "study_gap_upto_1_year", None)
+		app.study_gap_status = getattr(self, "study_gap_status", None)
+		app.study_gap_not_accepted_status = getattr(self, "study_gap_not_accepted_status", None)
 		app.any_visa_refused = self.any_visa_refused
 		app.intake = self.intake
 		app.flags.skip_country_pack = True
@@ -240,10 +315,17 @@ class ApplicationUK(Document):
 			"application_type": self.application_type or "B2B",
 			"country_flow_case": self.country_flow_case,
 			"preferred_university": self.preferred_university,
+			"course": getattr(self, "course", None),
 			"dob": self.dob,
 			"student_email": self.student_email,
 			"student_contact_no": self.student_contact_no,
 			"study_gap": self.study_gap,
+			"gap_duration": getattr(self, "gap_duration", None),
+			"gap_duration_status": getattr(self, "gap_duration_status", None),
+			"gap_duration_not_accepted": getattr(self, "gap_duration_not_accepted", None),
+			"study_gap_upto_1_year": getattr(self, "study_gap_upto_1_year", None),
+			"study_gap_status": getattr(self, "study_gap_status", None),
+			"study_gap_not_accepted_status": getattr(self, "study_gap_not_accepted_status", None),
 			"any_visa_refused": self.any_visa_refused,
 			"martial_status": self.martial_status,
 			"higher_education": self.higher_education,

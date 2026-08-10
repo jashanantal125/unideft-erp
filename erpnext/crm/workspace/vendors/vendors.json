@@ -1,28 +1,25 @@
 {
  "app": "erpnext",
  "charts": [],
- "content": "[{\"id\":\"spacer1\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"header2\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Quick Actions</b></span>\",\"col\":12}},{\"id\":\"kzvp_vro5o\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Vendors\",\"col\":3}},{\"id\":\"shortcut2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create New Vendor\",\"col\":5}},{\"id\":\"shortcut1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"View All Vendors\",\"col\":4}},{\"id\":\"quickList1\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Recent Vendors\",\"col\":6}}]",
- "creation": "2025-11-27 00:00:00",
+ "content": "[{\"id\": \"spacer1\", \"type\": \"spacer\", \"data\": {\"col\": 12}}, {\"id\": \"header2\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Quick Actions</b></span>\", \"col\": 12}}, {\"id\": \"shortcut1\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"View All Vendors\", \"col\": 6}}, {\"id\": \"shortcut2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Create New Vendor\", \"col\": 6}}, {\"id\": \"quickList1\", \"type\": \"quick_list\", \"data\": {\"quick_list_name\": \"Recent Vendors\", \"col\": 6}}]",
+ "creation": "2026-08-08 14:15:04.231715",
  "custom_blocks": [],
  "docstatus": 0,
  "doctype": "Workspace",
- "for_user": "",
  "hide_custom": 0,
- "icon": "organization",
+ "icon": "retail",
  "idx": 0,
+ "indicator_color": "blue",
  "is_hidden": 0,
  "label": "Vendors",
+ "link_to": "vendor",
+ "link_type": "DocType",
  "links": [],
- "modified": "2025-11-30 02:47:10.594749",
+ "modified": "2026-08-08 14:16:07.953049",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Vendors",
- "number_cards": [
-  {
-   "label": "Vendors",
-   "number_card_name": "vendors"
-  }
- ],
+ "number_cards": [],
  "owner": "Administrator",
  "parent_page": "",
  "public": 1,
@@ -33,10 +30,21 @@
    "quick_list_filter": "[]"
   }
  ],
- "restrict_to_domain": "",
  "roles": [
   {
-   "role": "Employee"
+   "role": "System Manager"
+  },
+  {
+   "role": "CRM Admin"
+  },
+  {
+   "role": "CRM Sales Staff"
+  },
+  {
+   "role": "Team Lead"
+  },
+  {
+   "role": "Team Executive"
   }
  ],
  "sequence_id": 20.0,
@@ -61,5 +69,5 @@
   }
  ],
  "title": "Vendors",
- "type": "Workspace"
+ "type": "Link"
 }
