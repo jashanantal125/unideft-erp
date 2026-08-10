@@ -5,21 +5,82 @@ const UK_REMINDER_SESSION = {};
 const UK_LIVING = { "Inner London": 13347, "Outer London": 10224 };
 // UKVI-style dependent maintenance (approx. 9 months) when Funds Required includes spouse/kid
 const UK_DEPENDENT_LIVING = { "Inner London": 7605, "Outer London": 6120 };
-const UK_FORM_VIEW_TABLES = [
-	"english_test_details",
-	"study_gap_proof_list",
-	"uk_sponsors",
-	"academic_lor_list",
-	"experience_lor_list",
-	"conditions_on_offer_letter",
-	"supporting_documents",
-	"documents_10th_to_pg",
-	"documents_10th_to_12th",
+const UK_LEGACY_GAP_HIDDEN = [
+	"study_gap_upto_1_year",
+	"study_gap_status",
+	"study_gap_not_accepted_status",
 ];
+
+/** Details duration → Accepted / Not Accepted. Processing shows proof only when Accepted. */
+function apply_uk_gap_duration_rule(frm) {
+	const d = frm.doc.gap_duration;
+	const accepted = d === "Below 1 Year" || d === "Below 2 Years";
+	const not_accepted = d === "Above 2 Years";
+	const set_if = (field, value) => {
+		if ((frm.doc[field] || "") !== (value || "")) {
+			frm.set_value(field, value || "");
+		}
+	};
+
+	if (frm.doc.study_gap !== "Yes") {
+		set_if("gap_duration_status", "");
+		set_if("gap_duration_not_accepted", "");
+		return;
+	}
+
+	if (accepted) {
+		set_if("gap_duration_status", "Accepted");
+		set_if("gap_duration_not_accepted", "");
+		set_if("study_gap_status", "Accepted");
+		set_if("study_gap_not_accepted_status", "");
+		set_if("study_gap_upto_1_year", "Yes");
+	} else if (not_accepted) {
+		set_if("gap_duration_status", "");
+		set_if("gap_duration_not_accepted", "Not Accepted");
+		set_if("study_gap_status", "");
+		set_if("study_gap_not_accepted_status", "Not Accepted");
+		set_if("study_gap_upto_1_year", "No");
+		if ((frm.doc.study_gap_proof_list || []).length) {
+			frm.clear_table("study_gap_proof_list");
+			frm.refresh_field("study_gap_proof_list");
+		}
+	} else {
+		set_if("gap_duration_status", "");
+		set_if("gap_duration_not_accepted", "");
+		set_if("study_gap_status", "");
+		set_if("study_gap_not_accepted_status", "");
+	}
+}
 
 const UK_ENGLISH_BASE_TYPES =
 	"\nIELTS Waiver\nIELTS\nUKVI IELTS\nPTE\nUKVI PTE\nDuolingo\nTOEFL";
 const UK_ENGLISH_GRAD_TYPES = UK_ENGLISH_BASE_TYPES + "\nMOI";
+
+function student_contact_from(stu) {
+	return stu.mobile || stu.mobile_no || stu.phone || stu.contact_no || "";
+}
+
+function calculate_age_from_dob(dob_str) {
+	if (!dob_str) return "";
+	const dob = frappe.datetime.str_to_obj(dob_str);
+	if (!dob) return "";
+	const today = new Date();
+	let age = today.getFullYear() - dob.getFullYear();
+	const month_diff = today.getMonth() - dob.getMonth();
+	if (month_diff < 0 || (month_diff === 0 && today.getDate() < dob.getDate())) {
+		age--;
+	}
+	return age >= 0 ? age : "";
+}
+
+function apply_age_from_dob(frm) {
+	if (!frm.fields_dict.current_age) return;
+	frm.set_df_property("current_age", "hidden", 0);
+	const age = calculate_age_from_dob(frm.doc.dob);
+	if (frm.doc.current_age !== age) {
+		frm.set_value("current_age", age === "" ? "" : age);
+	}
+}
 
 function apply_uk_english_test_options(frm) {
 	const allow_moi =
@@ -289,27 +350,30 @@ function populate_uk_offer_defaults(frm) {
 	if (frm.doc.preferred_university && !frm.doc.university_name) {
 		frm.set_value("university_name", frm.doc.preferred_university);
 	}
-	if (
-		(!frm.doc.course_name || frm.doc.course_name === "") &&
-		frm.doc.preferred_courses &&
-		frm.doc.preferred_courses.length
-	) {
-		const first = frm.doc.preferred_courses[0];
-		if (first && first.course) frm.set_value("course_name", first.course);
+	if (frm.doc.course && !frm.doc.course_name) {
+		frm.set_value("course_name", frm.doc.course);
 	}
 	if (frm.doc.defer_offer_required === "Yes") {
 		if (frm.doc.preferred_university && !frm.doc.defer_university_name) {
 			frm.set_value("defer_university_name", frm.doc.preferred_university);
 		}
-		if (
-			(!frm.doc.defer_course_name || frm.doc.defer_course_name === "") &&
-			frm.doc.preferred_courses &&
-			frm.doc.preferred_courses.length
-		) {
-			const first = frm.doc.preferred_courses[0];
-			if (first && first.course) frm.set_value("defer_course_name", first.course);
+		if (frm.doc.course && !frm.doc.defer_course_name) {
+			frm.set_value("defer_course_name", frm.doc.course);
 		}
 	}
+}
+
+function setup_uk_course_query(frm) {
+	frm.set_query("course", function () {
+		if (!frm.doc.preferred_university) {
+			return { filters: { name: ["in", []] } };
+		}
+		return {
+			filters: {
+				university: frm.doc.preferred_university,
+			},
+		};
+	});
 }
 
 const UK_OFFER_CURRENCY_FIELDS = [
@@ -391,34 +455,196 @@ function apply_b2c_agent(frm) {
 }
 
 function patch_form_view_tables(frm) {
-	UK_FORM_VIEW_TABLES.forEach((fieldname) => {
-		const doctype = frm.meta.fields.find((df) => df.fieldname === fieldname && df.fieldtype === "Table")?.options;
-		if (doctype) {
-			frappe.model.with_doctype(doctype, () => {
-				const meta = frappe.get_meta(doctype);
+	(frm.meta.fields || [])
+		.filter((df) => df.fieldtype === "Table" && df.options)
+		.forEach((df) => {
+			frappe.model.with_doctype(df.options, () => {
+				const meta = frappe.get_meta(df.options);
 				if (meta) meta.editable_grid = 0;
+				const grid = frm.fields_dict[df.fieldname]?.grid;
+				if (grid) {
+					grid.meta = meta;
+					try {
+						grid.setup_fields && grid.setup_fields();
+					} catch (e) {
+						/* ignore */
+					}
+					if (grid.meta) grid.meta.editable_grid = 0;
+					grid.allow_on_grid_editing = function () {
+						return false;
+					};
+					grid.set_focus_on_row = function () {};
+					patch_grid_row_toggle(grid, df.options);
+				}
 			});
-		}
-		const control = frm.fields_dict[fieldname];
-		if (control && control.grid && !control.grid._form_view_patched) {
-			control.grid.allow_on_grid_editing = function () {
+			const grid = frm.fields_dict[df.fieldname]?.grid;
+			if (grid) {
+				if (grid.meta) grid.meta.editable_grid = 0;
+				grid.allow_on_grid_editing = function () {
+					return false;
+				};
+				grid.set_focus_on_row = function () {};
+			}
+		});
+
+	if (frm._unideft_capture_add || !frm.wrapper) return;
+	frm._unideft_capture_add = true;
+
+	frm.wrapper.addEventListener(
+		"click",
+		(e) => {
+			const btn = e.target && e.target.closest && e.target.closest(".grid-add-row");
+			if (!btn || !frm.wrapper.contains(btn)) return;
+
+			const control_el = btn.closest("[data-fieldname]");
+			const fieldname = control_el && control_el.getAttribute("data-fieldname");
+			if (!fieldname || !frm.fields_dict[fieldname] || !frm.fields_dict[fieldname].grid) {
+				return;
+			}
+
+			const grid = frm.fields_dict[fieldname].grid;
+			if (!grid.wrapper || !grid.wrapper.get(0).contains(btn)) return;
+
+			e.preventDefault();
+			e.stopPropagation();
+			e.stopImmediatePropagation();
+
+			if (!grid.is_editable()) return;
+
+			const child_dt = grid.doctype || grid.df?.options;
+			if (!child_dt) return;
+
+			try {
+				const child = frappe.model.add_child(frm.doc, child_dt, fieldname);
+				child.__unedited = true;
+				frm.script_manager.trigger(fieldname + "_add", child.doctype, child.name);
+				grid.refresh();
+				open_child_row_form(frm, grid, child, child_dt);
+			} catch (err) {
+				console.error("add child row", fieldname, err);
+				frappe.msgprint({
+					title: __("Add Row failed"),
+					message: err.message || String(err),
+					indicator: "red",
+				});
+			}
+		},
+		true
+	);
+}
+
+function open_child_row_form(frm, grid, child, child_dt) {
+	const nested_from_meta = (meta) =>
+		(meta?.fields || [])
+			.filter((f) => f.fieldtype === "Table" && f.options)
+			.map((f) => f.options);
+
+	const open_row = () => {
+		try {
+			const row =
+				grid.grid_rows_by_docname?.[child.name] ||
+				(grid.grid_rows && grid.grid_rows[grid.grid_rows.length - 1]);
+			if (!row) return;
+
+			if (frappe.meta.docfield_copy?.[child_dt]) {
+				delete frappe.meta.docfield_copy[child_dt][child.name];
+			}
+			frappe.meta.make_docfield_copy_for(child_dt, child.name);
+			row.docfields = (frappe.meta.get_docfields(child_dt, child.name) || []).filter(
+				(df) => df && df.fieldname
+			);
+			if (!row.docfields.length) {
+				frappe.throw(__("No fields loaded for {0}. Hard-refresh and try again.", [child_dt]));
+			}
+			if (grid.meta) grid.meta.editable_grid = 0;
+			grid.allow_on_grid_editing = function () {
 				return false;
 			};
-			control.grid._form_view_patched = true;
+			patch_grid_row_toggle(grid, child_dt);
+			row.toggle_view(true);
+		} catch (err) {
+			console.error("open child form", child_dt, err);
+			frappe.show_alert({
+				message: __("Could not open {0} row form: {1}", [child_dt, err.message || err]),
+				indicator: "red",
+			});
 		}
+	};
+
+	const load_nested_then_open = (meta) => {
+		const nested = nested_from_meta(meta);
+		if (!nested.length) {
+			open_row();
+			return;
+		}
+		let left = nested.length;
+		nested.forEach((dt) => {
+			frappe.model.with_doctype(dt, () => {
+				left -= 1;
+				if (left <= 0) open_row();
+			});
+		});
+	};
+
+	frappe.model.with_doctype(child_dt, () => {
+		const meta = frappe.get_meta(child_dt);
+		if (meta) {
+			meta.editable_grid = 0;
+			grid.meta = meta;
+			try {
+				grid.setup_fields && grid.setup_fields();
+			} catch (e) {
+				/* continue */
+			}
+		}
+		load_nested_then_open(meta);
+	});
+}
+
+function patch_grid_row_toggle(grid, child_dt) {
+	(grid.grid_rows || []).forEach((row) => {
+		if (row._unideft_toggle_patched) return;
+		const original = row.toggle_view.bind(row);
+		row.toggle_view = function (show, callback) {
+			if (show !== false && show !== 0) {
+				try {
+					const name = row.doc?.name;
+					if (name && child_dt) {
+						if (frappe.meta.docfield_copy?.[child_dt]) {
+							delete frappe.meta.docfield_copy[child_dt][name];
+						}
+						frappe.meta.make_docfield_copy_for(child_dt, name);
+						row.docfields = (
+							frappe.meta.get_docfields(child_dt, name) || []
+						).filter((df) => df && df.fieldname);
+					}
+				} catch (e) {
+					console.error("rebuild row docfields", e);
+				}
+			}
+			return original(show, callback);
+		};
+		row._unideft_toggle_patched = true;
 	});
 }
 
 function sync_processing_agent_row(cdt, cdn) {
 	const row = locals[cdt][cdn];
 	if (!row) return;
+	const DEFAULT_DIRECT = "Unideft Education Services Pvt. Ltd.";
 	// Avoid grid.reset / refresh_field here — that was wiping the child table mid-edit.
 	if (row.processing_agent_type === "Direct") {
-		frappe.model.set_value(cdt, cdn, "processing_agent_direct", "Unideft");
+		if (!row.our_company) {
+			frappe.model.set_value(cdt, cdn, "our_company", DEFAULT_DIRECT);
+		}
 		if (row.processing_agent_vendor) {
 			frappe.model.set_value(cdt, cdn, "processing_agent_vendor", "");
 		}
+		frappe.model.set_value(cdt, cdn, "processing_agent_direct", row.our_company || DEFAULT_DIRECT);
 	} else if (row.processing_agent_type === "Vendor") {
+		if (row.our_company) {
+			frappe.model.set_value(cdt, cdn, "our_company", "");
+		}
 		frappe.model.set_value(
 			cdt,
 			cdn,
@@ -440,6 +666,15 @@ frappe.ui.form.on("Application UK", {
 
 	refresh(frm) {
 		patch_form_view_tables(frm);
+		setTimeout(() => patch_form_view_tables(frm), 300);
+		apply_age_from_dob(frm);
+		apply_uk_gap_duration_rule(frm);
+		setup_uk_course_query(frm);
+		UK_LEGACY_GAP_HIDDEN.forEach((fieldname) => {
+			if (frm.fields_dict[fieldname]) {
+				frm.set_df_property(fieldname, "hidden", 1);
+			}
+		});
 		["application", "naming_series", "country_flow_case", "single_basis_only"].forEach((fieldname) => {
 			if (frm.fields_dict[fieldname]) {
 				frm.set_df_property(fieldname, "hidden", 1);
@@ -480,21 +715,18 @@ frappe.ui.form.on("Application UK", {
 	},
 
 	dob(frm) {
-		if (frm.doc.dob) {
-			const dob = frappe.datetime.str_to_obj(frm.doc.dob);
-			const today = new Date();
-			let age = today.getFullYear() - dob.getFullYear();
-			const month_diff = today.getMonth() - dob.getMonth();
-			if (month_diff < 0 || (month_diff === 0 && today.getDate() < dob.getDate())) {
-				age--;
-			}
-			frm.set_value("current_age", age > 0 ? age : "");
-		} else {
-			frm.set_value("current_age", "");
-		}
+		apply_age_from_dob(frm);
 	},
 
 	preferred_university(frm) {
+		if (frm.doc.course) {
+			frm.set_value("course", "");
+		}
+		setup_uk_course_query(frm);
+		populate_uk_offer_defaults(frm);
+	},
+
+	course(frm) {
 		populate_uk_offer_defaults(frm);
 	},
 
@@ -512,10 +744,14 @@ frappe.ui.form.on("Application UK", {
 		if (!frm.doc.student) return;
 		frappe.db.get_doc("Student", frm.doc.student).then((stu) => {
 			if (stu.email && !frm.doc.student_email) frm.set_value("student_email", stu.email);
-			const contact = stu.mobile_no || stu.phone || stu.contact_no;
+			const contact = student_contact_from(stu);
 			if (contact && !frm.doc.student_contact_no) frm.set_value("student_contact_no", contact);
 			const dob = stu.dob || stu.date_of_birth;
-			if (dob && !frm.doc.dob) frm.set_value("dob", dob);
+			if (dob && !frm.doc.dob) {
+				frm.set_value("dob", dob).then(() => apply_age_from_dob(frm));
+			} else {
+				apply_age_from_dob(frm);
+			}
 		});
 	},
 
@@ -634,7 +870,28 @@ frappe.ui.form.on("Application UK", {
 	study_gap(frm) {
 		if (frm.doc.study_gap === "No") {
 			frm.set_value("study_gap_ok", "✓ OK");
+			frm.set_value("gap_duration", "");
+			frm.set_value("gap_duration_status", "");
+			frm.set_value("gap_duration_not_accepted", "");
+			frm.set_value("study_gap_upto_1_year", "");
+			frm.set_value("study_gap_status", "");
+			frm.set_value("study_gap_not_accepted_status", "");
+			frm.clear_table("study_gap_proof_list");
+			frm.refresh_field("study_gap_proof_list");
+		} else if (frm.doc.study_gap === "Yes") {
+			frm.set_value("study_gap_ok", "");
+			apply_uk_gap_duration_rule(frm);
+		} else {
+			frm.set_value("study_gap_ok", "");
 		}
+	},
+
+	gap_duration(frm) {
+		apply_uk_gap_duration_rule(frm);
+	},
+
+	study_gap_upto_1_year(frm) {
+		// Legacy — use gap_duration
 	},
 
 	living_expenses_location(frm) {
@@ -749,7 +1006,8 @@ frappe.ui.form.on("Application UK", {
 
 	processing_agent_details_add(frm, cdt, cdn) {
 		frappe.model.set_value(cdt, cdn, "processing_agent_type", "Direct");
-		frappe.model.set_value(cdt, cdn, "processing_agent_direct", "Unideft");
+		frappe.model.set_value(cdt, cdn, "our_company", "Unideft Education Services Pvt. Ltd.");
+		frappe.model.set_value(cdt, cdn, "processing_agent_direct", "Unideft Education Services Pvt. Ltd.");
 		frappe.model.set_value(cdt, cdn, "processing_agent_vendor", "");
 	},
 
@@ -1289,6 +1547,11 @@ frappe.ui.form.on("Application UK", {
 frappe.ui.form.on("Processing Agent Details", {
 	processing_agent_type(frm, cdt, cdn) {
 		sync_processing_agent_row(cdt, cdn);
+	},
+	our_company(frm, cdt, cdn) {
+		const row = locals[cdt][cdn];
+		if (!row || row.processing_agent_type !== "Direct") return;
+		frappe.model.set_value(cdt, cdn, "processing_agent_direct", row.our_company || "");
 	},
 	processing_agent_vendor(frm, cdt, cdn) {
 		sync_processing_agent_row(cdt, cdn);

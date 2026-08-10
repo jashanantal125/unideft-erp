@@ -89,8 +89,40 @@ class Application(Document):
 
 	def before_save(self):
 		"""Auto-assign team based on destination country"""
+		self.apply_student_defaults()
+		self.compute_current_age()
 		self.auto_assign_team()
 		self.apply_country_flow_defaults()
+
+	def apply_student_defaults(self):
+		"""Pull email / contact / DOB from Student when blank (all countries)."""
+		if not self.student:
+			return
+		stu = frappe.get_cached_doc("Student", self.student)
+		if not self.student_email:
+			self.student_email = getattr(stu, "email", None) or getattr(stu, "student_email", None) or ""
+		if not self.student_contact_no:
+			self.student_contact_no = (
+				getattr(stu, "mobile", None)
+				or getattr(stu, "mobile_no", None)
+				or getattr(stu, "phone", None)
+				or getattr(stu, "contact_no", None)
+				or ""
+			)
+		if not self.dob:
+			self.dob = getattr(stu, "dob", None) or getattr(stu, "date_of_birth", None)
+
+	def compute_current_age(self):
+		"""Keep Age in sync with DOB on save."""
+		if not self.dob:
+			self.current_age = None
+			return
+		from frappe.utils import getdate, nowdate
+
+		dob = getdate(self.dob)
+		today = getdate(nowdate())
+		age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+		self.current_age = age if age >= 0 else None
 
 	def after_insert(self):
 		if not self.flags.get("skip_country_pack"):
@@ -152,7 +184,6 @@ class Application(Document):
 
 	if TYPE_CHECKING:
 		from erpnext.crm.doctype.academic_verification.academic_verification import AcademicVerification
-		from erpnext.crm.doctype.application_course.application_course import ApplicationCourse
 		from erpnext.crm.doctype.application_documents_10th_to_12th.application_documents_10th_to_12th import ApplicationDocuments10thTo12th
 		from erpnext.crm.doctype.application_english_test.application_english_test import ApplicationEnglishTest
 		from erpnext.crm.doctype.application_offer_letter_condition.application_offer_letter_condition import ApplicationOfferLetterCondition
@@ -185,7 +216,7 @@ class Application(Document):
 		acceptance_student_prepare: DF.Check
 		acceptance_student_prepare_no_status: DF.Text | None
 		acceptance_student_prepare_yes_status: DF.Text | None
-		acceptance_submitted: DF.Check
+		acceptance_submitted: DF.Literal["", "Yes", "No"]
 		acceptance_submitted_status: DF.Text | None
 		agent: DF.Link | None
 		agent_file_lodged_no_status: DF.Text | None
@@ -353,7 +384,7 @@ class Application(Document):
 		oshc_refund_no_issue: DF.Check
 		oshc_refund_received: DF.Check
 		oshc_refund_received_issue_resolved: DF.Check
-		oshc_required: DF.Check
+		oshc_required: DF.Literal["", "Yes", "No"]
 		other_condition_details: DF.Text | None
 		other_condition_documents: DF.Table[studentdocuments]
 		other_country_name: DF.Text | None
@@ -373,8 +404,8 @@ class Application(Document):
 		pending_requirements_completed: DF.Literal["", "Yes", "No"]
 		pending_requirements_completed_yes_note: DF.Text | None
 		pending_requirements_reminder_note: DF.Text | None
-		preferred_courses: DF.Table[ApplicationCourse]
 		preferred_university: DF.Link | None
+		course: DF.Link | None
 		process_other_country: DF.Check
 		process_with_kids: DF.Check
 		processing_agent_details: DF.Table[ProcessingAgentDetails]
@@ -455,7 +486,7 @@ class Application(Document):
 		tuition_fee_issue_details: DF.Text | None
 		tuition_fee_issue_resolved: DF.Check
 		tuition_fee_not_paid_status: DF.Text | None
-		tuition_fee_paid: DF.Check
+		tuition_fee_paid: DF.Literal["", "Yes", "No"]
 		tuition_fee_paid_status: DF.Text | None
 		tuition_fee_refund_no: DF.Text | None
 		tuition_fee_refund_received: DF.Check
@@ -492,14 +523,15 @@ class Application(Document):
 	# end: auto-generated types
 
 	def validate(self):
-		# Preferred courses are Australia Details flow — skip for UK (university/course live on UK Offer)
+		# Course is required on Australia Details (single Course Link, not child table)
 		if not self.is_united_kingdom() and not self.flags.get("skip_preferred_course_validation"):
-			if len(self.preferred_courses or []) > 3:
-				frappe.throw("You can select a maximum of 3 courses only.")
+			if not self.course:
+				frappe.throw("Please select a Course.")
 
-			if len(self.preferred_courses or []) == 0:
-				frappe.throw("Please select at least one course.")
-		
+		self.apply_study_gap_duration_rule()
+		self.validate_submitted_another_application()
+		self.validate_gs_submitted_financials_branch()
+
 		# For B2C: Auto-set agent to Unideft if not set or if wrong agent selected
 		if self.application_type == "B2C":
 			unideft_agent = frappe.db.get_value("Agent", {"company_name": "Unideft"}, "name")
@@ -511,6 +543,96 @@ class Application(Document):
 				frappe.throw("Unideft agent not found. Please create it first.")
 		
 		# For B2B: No validation - can select any agent or leave empty
+
+	def validate_submitted_another_application(self):
+		"""Submitted stage: another app id / reason rules."""
+		if self.submitted_another_application == "Yes":
+			if not (self.another_application_id or "").strip():
+				frappe.throw("Please enter Another Application ID.")
+			self.need_another_application = None
+			self.not_processing_another_application_reason = None
+		elif self.submitted_another_application == "No":
+			self.another_application_id = None
+			if self.need_another_application == "No" and not (
+				self.not_processing_another_application_reason or ""
+			).strip():
+				frappe.throw(
+					"Please enter a reason why another application will not be processed."
+				)
+			if self.need_another_application != "No":
+				self.not_processing_another_application_reason = None
+		else:
+			self.another_application_id = None
+
+	def validate_gs_submitted_financials_branch(self):
+		"""Financials → GS Submitted close/cascade rules."""
+		if self.gs_submitted == "Yes":
+			self.financial_stage_completed = "✓ Financial stage completed → Moved to GS Processing"
+			self.gs_submitted_reminder_date = None
+			self.student_will_process_gs = None
+			self.will_process_gs_another_university = None
+			self.gs_another_university_application_id = None
+			self.will_process_another_country = None
+			self.gs_another_country_application_id = None
+			self.gs_not_process_reason = None
+			if self.status in ("Financial", "Offer Letter Received", "Pending", "Processing"):
+				self.status = "GS Processing"
+			return
+
+		if self.gs_submitted != "No":
+			return
+
+		if self.student_will_process_gs != "No":
+			return
+
+		if self.will_process_gs_another_university == "Yes":
+			if not (self.gs_another_university_application_id or "").strip():
+				frappe.throw("Please enter Another Application ID.")
+			self.status = "Closed"
+			return
+
+		if self.will_process_gs_another_university == "No":
+			if self.will_process_another_country == "Yes":
+				if not (self.gs_another_country_application_id or "").strip():
+					frappe.throw("Please enter Details Application ID.")
+				self.status = "Closed"
+			elif self.will_process_another_country == "No":
+				if not (self.gs_not_process_reason or "").strip():
+					frappe.throw("Please enter reason why student don't want to process.")
+				self.status = "Closed"
+
+	def apply_study_gap_duration_rule(self):
+		"""Details picks duration; Accepted opens Processing proof table (no duration there)."""
+		if self.study_gap != "Yes":
+			self.gap_duration = None
+			self.gap_duration_status = None
+			self.gap_duration_not_accepted = None
+			self.study_gap_upto_1_year = None
+			self.study_gap_status = None
+			self.study_gap_not_accepted_status = None
+			if self.study_gap == "No":
+				self.study_gap_ok = "✓ OK"
+			self.study_gap_proof_list = []
+			return
+
+		self.study_gap_ok = None
+		d = self.gap_duration
+		if d in ("Below 1 Year", "Below 2 Years", "Up to 1 Year"):
+			self.gap_duration_status = "Accepted"
+			self.gap_duration_not_accepted = None
+			self.study_gap_status = "Accepted"
+			self.study_gap_not_accepted_status = None
+			self.study_gap_upto_1_year = "Yes"
+		elif d in ("Above 2 Years", "More than 1 Year"):
+			self.gap_duration_status = None
+			self.gap_duration_not_accepted = "Not Accepted"
+			self.study_gap_status = None
+			self.study_gap_not_accepted_status = "Not Accepted"
+			self.study_gap_upto_1_year = "No"
+			self.study_gap_proof_list = []
+		else:
+			self.gap_duration_status = None
+			self.gap_duration_not_accepted = None
 
 
 
@@ -616,7 +738,8 @@ def create_uk_application(student, dob=None, application_type="B2B"):
 	uk.dob = dob or getattr(stu, "dob", None) or getattr(stu, "date_of_birth", None)
 	uk.student_email = getattr(stu, "email", None) or getattr(stu, "student_email", None)
 	uk.student_contact_no = (
-		getattr(stu, "mobile_no", None)
+		getattr(stu, "mobile", None)
+		or getattr(stu, "mobile_no", None)
 		or getattr(stu, "phone", None)
 		or getattr(stu, "contact_no", None)
 	)
@@ -656,13 +779,11 @@ def create_application_for_other_country(source_name, destination_country):
 	new_app.martial_status = source.martial_status
 	new_app.higher_education = source.higher_education
 	new_app.preferred_university = source.preferred_university
+	new_app.course = source.course
 	new_app.intake = source.intake
 	new_app.status = "Pending"
 
-	for row in source.preferred_courses or []:
-		new_app.append("preferred_courses", {"course": row.course})
-
-	new_app.flags.skip_preferred_course_validation = not bool(new_app.preferred_courses)
+	new_app.flags.skip_preferred_course_validation = not bool(new_app.course)
 	new_app.insert(ignore_permissions=True)
 
 	source.visa_refused_new_application = new_app.name
@@ -723,7 +844,6 @@ APPLICATION_CHILD_TABLE_STAGE_MAP = {
 	"documents_10th_to_12th": "Processing — Academics",
 	"documents_verified_pdf": "Processing — Academics",
 	"graduation_verification_documents": "Processing — Academics",
-	"study_gap_proof": "Details — Study Gap",
 	"study_gap_proof_list": "Processing — Study Gap",
 	"documents_passport_application_form_sop": "Processing — Applications",
 	"english_test_details": "Processing — English Test",
@@ -735,10 +855,8 @@ APPLICATION_CHILD_TABLE_STAGE_MAP = {
 	"all_documents": "Financials",
 	"financial_documents": "Financials",
 	"offer_letter_upload": "Offer Letter",
-	"other_documents_offer": "Offer Letter",
 	"defer_supporting_documents": "Offer Letter — Defer",
 	"defer_offer_letter_upload": "Offer Letter — Defer",
-	"defer_other_documents": "Offer Letter — Defer",
 	"english_requirement_documents": "Financials — Conditions",
 	"gap_justification_documents": "Financials — Conditions",
 	"academic_transcript_documents": "Financials — Conditions",

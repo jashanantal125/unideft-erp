@@ -9,6 +9,17 @@ from frappe.utils import add_days, getdate
 class vendor(Document):
 	def validate(self):
 		self.set_renewal_reminder()
+		self.clear_portal_fields_by_availability()
+		self.sync_commission_portal_credentials()
+
+	def clear_portal_fields_by_availability(self):
+		"""Yes → credentials; No → details only; blank → neither."""
+		if self.portal_available != "Yes":
+			self.portal_link = None
+			self.portal_login_id = None
+			self.portal_password = None
+		if self.portal_available != "No":
+			self.portal_unavailable_details = None
 
 	def set_renewal_reminder(self):
 		"""Auto schedule renewal reminder 30 days before contract end."""
@@ -16,6 +27,26 @@ class vendor(Document):
 			self.renewal_reminder_date = add_days(getdate(self.contract_end_date), -30)
 		else:
 			self.renewal_reminder_date = None
+
+	def sync_commission_portal_credentials(self):
+		"""If Same: reuse Portal Access. If Different: keep separate credentials."""
+		if self.commission_info_source != "Portal":
+			return
+		if self.use_existing_portal_credentials == "Same":
+			self.commission_portal_link = self.portal_link
+			self.commission_login_id = self.portal_login_id
+			pwd = self.portal_password
+			if not pwd and self.name and not self.is_new():
+				try:
+					pwd = self.get_password("portal_password")
+				except Exception:
+					pwd = None
+			if pwd:
+				self.commission_password = pwd
+		elif self.use_existing_portal_credentials != "Different":
+			self.commission_portal_link = None
+			self.commission_login_id = None
+			self.commission_password = None
 
 	def on_update(self):
 		self.ensure_renewal_reminder()

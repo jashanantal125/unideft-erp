@@ -28,12 +28,11 @@
   "details_program_section",
   "preferred_university",
   "column_break_details_program_1",
-  "intake",
+  "course",
   "column_break_details_program_2",
+  "intake",
   "assigned_team",
   "assigned_executive",
-  "details_courses_section",
-  "preferred_courses",
   "details_visa_section",
   "any_visa_refused",
   "column_break_details_visa_1",
@@ -42,6 +41,10 @@
   "details_study_gap_section",
   "study_gap",
   "column_break_details_gap_1",
+  "gap_duration",
+  "column_break_details_gap_2",
+  "gap_duration_status",
+  "gap_duration_not_accepted",
   "study_gap_ok",
   "study_gap_next_stage_note",
   "information_tab",
@@ -527,8 +530,9 @@
    "description": "Automatically calculated from Date of Birth",
    "fieldname": "current_age",
    "fieldtype": "Int",
-   "label": "Age (as of now)",
-   "read_only": 1
+   "label": "Age",
+   "read_only": 1,
+   "hidden": 0
   },
   {
    "fieldname": "martial_status",
@@ -561,15 +565,22 @@
    "fieldtype": "Column Break"
   },
   {
+   "fieldname": "course",
+   "fieldtype": "Link",
+   "label": "Course",
+   "options": "Course",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_details_program_2",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "intake",
    "fieldtype": "Select",
    "label": "Intake",
    "options": "\nJanuary\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember",
    "length": 64
-  },
-  {
-   "fieldname": "column_break_details_program_2",
-   "fieldtype": "Column Break"
   },
   {
    "description": "Auto-assigned based on destination country",
@@ -585,17 +596,6 @@
    "fieldtype": "Link",
    "label": "Assigned Executive",
    "options": "User"
-  },
-  {
-   "fieldname": "details_courses_section",
-   "fieldtype": "Section Break",
-   "label": "Preferred Courses"
-  },
-  {
-   "fieldname": "preferred_courses",
-   "fieldtype": "Table",
-   "label": "Preferred Course",
-   "options": "Application Course"
   },
   {
    "depends_on": "eval:(1) || ((doc.destination_country=='United Kingdom' || doc.destination_country=='UK'))",
@@ -645,13 +645,77 @@
    "length": 64
   },
   {
+   "depends_on": "eval:doc.study_gap == 'Yes'",
+   "description": "Below 1 Year / Below 2 Years → Accepted. Above 2 Years → Not Accepted.",
+   "fieldname": "gap_duration",
+   "fieldtype": "Select",
+   "label": "If study gap is",
+   "options": "\nBelow 1 Year\nBelow 2 Years\nAbove 2 Years",
+   "length": 64
+  },
+  {
+   "fieldname": "column_break_details_gap_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "bold": 1,
+   "default": "Accepted",
+   "depends_on": "eval:doc.study_gap == 'Yes' && (doc.gap_duration == 'Below 1 Year' || doc.gap_duration == 'Below 2 Years')",
+   "fieldname": "gap_duration_status",
+   "fieldtype": "Data",
+   "label": "Status",
+   "read_only": 1,
+   "length": 64
+  },
+  {
+   "bold": 1,
+   "default": "Not Accepted",
+   "depends_on": "eval:doc.study_gap == 'Yes' && doc.gap_duration == 'Above 2 Years'",
+   "fieldname": "gap_duration_not_accepted",
+   "fieldtype": "Data",
+   "label": "Status",
+   "read_only": 1,
+   "length": 64
+  },
+  {
+   "depends_on": "eval:doc.study_gap == 'Yes'",
+   "fieldname": "study_gap_upto_1_year",
+   "fieldtype": "Select",
+   "label": "Is study gap up to 1 year? (legacy)",
+   "options": "\nYes\nNo",
+   "length": 64,
+   "hidden": 1
+  },
+  {
+   "bold": 1,
+   "default": "Accepted",
+   "depends_on": "eval:doc.study_gap == 'Yes' && doc.study_gap_upto_1_year == 'Yes'",
+   "fieldname": "study_gap_status",
+   "fieldtype": "Data",
+   "label": "Study Gap Status",
+   "read_only": 1,
+   "length": 64,
+   "hidden": 1
+  },
+  {
+   "bold": 1,
+   "default": "Not Accepted",
+   "depends_on": "eval:doc.study_gap == 'Yes' && doc.study_gap_upto_1_year == 'No'",
+   "fieldname": "study_gap_not_accepted_status",
+   "fieldtype": "Data",
+   "label": "Study Gap Status",
+   "read_only": 1,
+   "length": 64,
+   "hidden": 1
+  },
+  {
    "fieldname": "column_break_details_gap_1",
    "fieldtype": "Column Break"
   },
   {
    "bold": 1,
    "default": "✓ OK",
-   "depends_on": "eval:doc.study_gap=='No'",
+   "depends_on": "eval:doc.study_gap == 'No'",
    "fieldname": "study_gap_ok",
    "fieldtype": "Text",
    "label": "Status",
@@ -661,8 +725,8 @@
    "fieldname": "study_gap_next_stage_note",
    "fieldtype": "HTML",
    "label": " ",
-   "depends_on": "eval:doc.study_gap=='Yes'",
-   "options": "<p class=\"text-muted\">Please fill in the study gap proof details in the <strong>Processing</strong> stage.</p>"
+   "depends_on": "eval:doc.study_gap == 'Yes' && (doc.gap_duration_status == 'Accepted' || doc.gap_duration == 'Below 1 Year' || doc.gap_duration == 'Below 2 Years')",
+   "options": "<p class=\"text-muted\">Study gap <b>Accepted</b>. Add Study Gap Proof in the <strong>Processing</strong> stage (proof table only — duration is already set here).</p>"
   },
   {
    "depends_on": "eval:(1) && (1)",
@@ -1001,15 +1065,17 @@
   {
    "fieldname": "section_d_study_gap_proof",
    "fieldtype": "Section Break",
-   "label": "Study Gap Proof",
-   "depends_on": "eval:doc.study_gap == 'Yes' && (doc.higher_education != 'Post-graduation' || doc.eligible_for_research_program == 'Yes' || (doc.eligible_for_research_program == 'No' && doc.wants_process_single_basis == 'Yes'))"
+   "label": "Study Gap",
+   "description": "Gap duration was set on Details (Accepted). Add Educational / Work / Other proof rows here — do not re-enter duration.",
+   "depends_on": "eval:doc.study_gap == 'Yes' && (doc.gap_duration_status == 'Accepted' || doc.gap_duration == 'Below 1 Year' || doc.gap_duration == 'Below 2 Years') && (doc.higher_education != 'Post-graduation' || doc.eligible_for_research_program == 'Yes' || (doc.eligible_for_research_program == 'No' && doc.wants_process_single_basis == 'Yes'))"
   },
   {
    "fieldname": "study_gap_proof_list",
    "fieldtype": "Table",
-   "label": "Study Gap Proof List",
+   "label": "Study Gap Proof",
    "options": "Study Gap Proof",
-   "depends_on": "eval:doc.study_gap == 'Yes' && (doc.higher_education != 'Post-graduation' || doc.eligible_for_research_program == 'Yes' || (doc.eligible_for_research_program == 'No' && doc.wants_process_single_basis == 'Yes'))"
+   "description": "Proof table only — duration is already set on Details.",
+   "depends_on": "eval:doc.study_gap == 'Yes' && (doc.gap_duration_status == 'Accepted' || doc.gap_duration == 'Below 1 Year' || doc.gap_duration == 'Below 2 Years') && (doc.higher_education != 'Post-graduation' || doc.eligible_for_research_program == 'Yes' || (doc.eligible_for_research_program == 'No' && doc.wants_process_single_basis == 'Yes'))"
   },
   {
    "fieldname": "section_d_passport",

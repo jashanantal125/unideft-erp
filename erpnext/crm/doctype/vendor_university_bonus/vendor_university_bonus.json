@@ -4,7 +4,7 @@
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
- "field_order": ["university", "bonus_amount", "attachment"],
+ "field_order": ["university", "bonus_amount", "attachment", "note"],
  "fields": [
   {
    "fieldname": "university",
@@ -19,13 +19,20 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Bonus Amount",
-   "reqd": 1
+   "reqd": 1,
+   "description": "e.g. 200 GBP per student"
   },
   {
    "fieldname": "attachment",
    "fieldtype": "Attach",
    "in_list_view": 1,
    "label": "Supporting Attachment"
+  },
+  {
+   "fieldname": "note",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Note"
   }
  ],
  "istable": 1,

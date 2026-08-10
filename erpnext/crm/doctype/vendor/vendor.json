@@ -19,13 +19,13 @@
   "last_name",
   "email",
   "phone_number",
-  "admission_contacts_tab",
-  "admission_contacts",
+  "position",
   "portal_tab",
   "portal_available",
   "portal_link",
   "portal_login_id",
   "portal_password",
+  "portal_unavailable_details",
   "commission_tab",
   "overall_commission_percentage",
   "country_wise_commission",
@@ -37,6 +37,7 @@
   "university_bonuses",
   "commission_info_source",
   "use_existing_portal_credentials",
+  "commission_same_credentials_note",
   "commission_portal_link",
   "commission_login_id",
   "commission_password",
@@ -49,7 +50,11 @@
   "table_ocev",
   "recruitment_tab",
   "countries_recruited_for",
-  "universities_represented"
+  "universities_represented",
+  "admission_contacts_tab",
+  "admission_contacts",
+  "admissions_portal_tab",
+  "admissions_portals"
  ],
  "fields": [
   {
@@ -125,16 +130,9 @@
    "options": "Phone"
   },
   {
-   "fieldname": "admission_contacts_tab",
-   "fieldtype": "Tab Break",
-   "label": "Admission Contacts"
-  },
-  {
-   "description": "Add one or more admission contacts per country (Canada, Australia, UK, NZ, Ireland, etc.).",
-   "fieldname": "admission_contacts",
-   "fieldtype": "Table",
-   "label": "Admission Team Contact Details",
-   "options": "Vendor Admission Contact"
+   "fieldname": "position",
+   "fieldtype": "Data",
+   "label": "Position"
   },
   {
    "fieldname": "portal_tab",
@@ -167,9 +165,16 @@
    "label": "Password"
   },
   {
+   "depends_on": "eval:doc.portal_available == 'No'",
+   "description": "Add any notes / details when portal access is not available.",
+   "fieldname": "portal_unavailable_details",
+   "fieldtype": "Small Text",
+   "label": "Details"
+  },
+  {
    "fieldname": "commission_tab",
    "fieldtype": "Tab Break",
-   "label": "Commission"
+   "label": "Commission Details"
   },
   {
    "fieldname": "overall_commission_percentage",
@@ -234,7 +239,15 @@
    "fieldname": "use_existing_portal_credentials",
    "fieldtype": "Select",
    "label": "Use Existing Portal Credentials",
-   "options": "\nSame\nDifferent"
+   "options": "\nSame\nDifferent",
+   "description": "Same = reuse Portal Access link / login / password. Different = enter separate commission portal credentials."
+  },
+  {
+   "depends_on": "eval:doc.commission_info_source == 'Portal' && doc.use_existing_portal_credentials == 'Same'",
+   "fieldname": "commission_same_credentials_note",
+   "fieldtype": "HTML",
+   "label": " ",
+   "options": "<p class=\"text-muted\">Using credentials from <b>Portal Access</b> (Portal Link, Login ID, Password).</p>"
   },
   {
    "depends_on": "eval:doc.commission_info_source == 'Portal' && doc.use_existing_portal_credentials == 'Different'",
@@ -300,17 +313,42 @@
    "label": "Recruitment Coverage"
   },
   {
+   "description": "Select all countries for which the vendor is authorized to recruit. Add one row per country.",
    "fieldname": "countries_recruited_for",
    "fieldtype": "Table",
    "label": "Countries Recruited For",
    "options": "Vendor Recruitment Country"
   },
   {
-   "description": "If a university is missing, create it from University list first.",
+   "description": "Select all universities associated with this vendor. If missing, create a new University from the link field (Create New).",
    "fieldname": "universities_represented",
    "fieldtype": "Table",
    "label": "Universities Represented",
    "options": "Vendor Partner University"
+  },
+  {
+   "fieldname": "admission_contacts_tab",
+   "fieldtype": "Tab Break",
+   "label": "Admission Team Contact Details"
+  },
+  {
+   "description": "Add multiple rows. Enter one or more countries comma-separated (e.g. Canada, United States). Same country may have multiple contacts.",
+   "fieldname": "admission_contacts",
+   "fieldtype": "Table",
+   "label": "Admission Team Contact Details",
+   "options": "Vendor Admission Contact"
+  },
+  {
+   "fieldname": "admissions_portal_tab",
+   "fieldtype": "Tab Break",
+   "label": "Admissions Portal"
+  },
+  {
+   "description": "Country-wise admissions portal credentials (if applicable).",
+   "fieldname": "admissions_portals",
+   "fieldtype": "Table",
+   "label": "Admissions Portal (Country-wise)",
+   "options": "Vendor Admissions Portal"
   }
  ],
  "grid_page_length": 50,

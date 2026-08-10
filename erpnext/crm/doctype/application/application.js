@@ -26,6 +26,9 @@ function refresh_financial_condition_sections(frm) {
 		"interview_condition_section",
 		"interview_timing",
 		"interview_deadline_date",
+		"financials_student_prepare",
+		"financials_schedule_interview",
+		"financials_interview_completed",
 		"english_requirement_section",
 		"english_requirement_details",
 		"english_requirement_documents",
@@ -33,6 +36,7 @@ function refresh_financial_condition_sections(frm) {
 		"gap_justification_details",
 		"gap_justification_documents",
 		"verification_section",
+		"verification_verified",
 		"verification_type",
 		"academic_transcript_section",
 		"academic_transcript_details",
@@ -50,7 +54,18 @@ function refresh_financial_condition_sections(frm) {
 
 function sync_financial_condition_visibility(frm) {
 	const condition_field_map = {
-		Interview: ["interview_condition_section", "interview_timing", "interview_deadline_date"],
+		Interview: [
+			"interview_condition_section",
+			"interview_timing",
+			"interview_deadline_date",
+			"financials_student_prepare",
+			"financials_student_prepare_yes_status",
+			"financials_student_prepare_no_status",
+			"financials_schedule_interview",
+			"financials_schedule_interview_yes_status",
+			"financials_schedule_interview_no_status",
+			"financials_interview_completed",
+		],
 		"English Requirement": [
 			"english_requirement_section",
 			"english_requirement_details",
@@ -61,7 +76,7 @@ function sync_financial_condition_visibility(frm) {
 			"gap_justification_details",
 			"gap_justification_documents",
 		],
-		Verification: ["verification_section", "verification_type"],
+		Verification: ["verification_section", "verification_verified", "verification_type"],
 		"Academic Transcript": [
 			"academic_transcript_section",
 			"academic_transcript_details",
@@ -78,6 +93,28 @@ function sync_financial_condition_visibility(frm) {
 			}
 		});
 	});
+
+	// Verification condition → default Verified = No; hide type until Not verified
+	const has_verification = has_offer_letter_condition(frm, "Verification");
+	if (has_verification) {
+		if (!frm.doc.verification_verified) {
+			frm.set_value("verification_verified", "No");
+		}
+		const show_type = frm.doc.verification_verified === "No";
+		if (frm.fields_dict.verification_type) {
+			frm.set_df_property("verification_type", "hidden", show_type ? 0 : 1);
+		}
+		if (frm.doc.verification_verified === "Yes" && frm.doc.verification_type) {
+			frm.set_value("verification_type", "");
+		}
+	} else {
+		if (frm.doc.verification_verified) {
+			frm.set_value("verification_verified", "");
+		}
+		if (frm.doc.verification_type) {
+			frm.set_value("verification_type", "");
+		}
+	}
 
 	const has_conditions = (frm.doc.conditions_on_offer_letter || []).length > 0;
 	if (frm.fields_dict.conditions_note) {
@@ -394,16 +431,71 @@ function maybe_prompt_financial_completion_reminder(frm) {
 	});
 }
 
-function sync_gs_interview_stage_from_financials(frm) {
-	// Interview Before Acceptance section shows when Interview condition is selected
-	const has_interview = has_offer_letter_condition(frm, "Interview");
-	const should_enable = !!has_interview;
+function clear_gs_submitted_no_branch(frm) {
+	[
+		"gs_submitted_reminder_date",
+		"student_will_process_gs",
+		"will_process_gs_another_university",
+		"gs_another_university_application_id",
+		"will_process_another_country",
+		"gs_another_country_application_id",
+		"gs_not_process_reason",
+	].forEach((field) => {
+		if (frm.doc[field]) {
+			frm.set_value(field, "");
+		}
+	});
+}
 
-	if (should_enable && !frm.doc.interview_stage_available) {
-		frm.set_value("interview_stage_available", 1);
-	} else if (!should_enable && frm.doc.interview_stage_available) {
-		frm.set_value("interview_stage_available", 0);
+function close_application_from_financials(frm, message) {
+	if (frm.doc.status !== "Closed") {
+		frm.set_value("status", "Closed");
 	}
+	frappe.show_alert({ message: message, indicator: "orange" }, 6);
+}
+
+function sync_gs_interview_stage_from_financials(frm) {
+	// Show interview detail sections based on Interview Timing (not only Interview selected)
+	const has_interview = has_offer_letter_condition(frm, "Interview");
+	const before_acceptance = has_interview && frm.doc.interview_timing === "Before Acceptance";
+	const before_coe = has_interview && frm.doc.interview_timing === "Before COE";
+
+	const next_gs = before_acceptance ? 1 : 0;
+	if (!!frm.doc.interview_stage_available !== !!next_gs) {
+		frm.set_value("interview_stage_available", next_gs);
+	}
+
+	const next_acc = before_coe ? 1 : 0;
+	if (!!frm.doc.acceptance_before_coe_available !== !!next_acc) {
+		frm.set_value("acceptance_before_coe_available", next_acc);
+	}
+}
+
+function deactivate_reminders_matching(frm, description_contains) {
+	if (!frm.doc.name || frm.doc.__islocal || !description_contains) {
+		return;
+	}
+	frappe.db
+		.get_list("Reminder", {
+			filters: {
+				reminder_doctype: "Application",
+				reminder_docname: frm.doc.name,
+				notified: 0,
+			},
+			fields: ["name", "description"],
+			limit: 50,
+		})
+		.then((rows) => {
+			(rows || []).forEach((row) => {
+				if (String(row.description || "").toLowerCase().includes(description_contains.toLowerCase())) {
+					frappe.db.set_value("Reminder", row.name, "notified", 1);
+				}
+			});
+			frappe.show_alert(
+				{ message: __("Interview deadline reminder deactivated"), indicator: "blue" },
+				3
+			);
+		});
 }
 
 function is_defer_offer_required(doc) {
@@ -518,6 +610,411 @@ function is_au_destination(country) {
 	return (country || "").toLowerCase().includes("australia");
 }
 
+/** Details: Below 1 / Below 2 Years → Accepted; Above 2 Years → Not Accepted.
+ *  Processing proof table shows only when Accepted (no duration re-entry). */
+function apply_gap_duration_rule(frm) {
+	const d = frm.doc.gap_duration;
+	const accepted = d === "Below 1 Year" || d === "Below 2 Years" || d === "Up to 1 Year";
+	const not_accepted = d === "Above 2 Years" || d === "More than 1 Year";
+
+	const set_if = (field, value) => {
+		if ((frm.doc[field] || "") !== (value || "")) {
+			frm.set_value(field, value || "");
+		}
+	};
+
+	if (frm.doc.study_gap !== "Yes") {
+		set_if("gap_duration_status", "");
+		set_if("gap_duration_not_accepted", "");
+		return;
+	}
+
+	if (accepted) {
+		set_if("gap_duration_status", "Accepted");
+		set_if("gap_duration_not_accepted", "");
+		set_if("study_gap_status", "Accepted");
+		set_if("study_gap_not_accepted_status", "");
+		set_if("study_gap_upto_1_year", "Yes");
+	} else if (not_accepted) {
+		set_if("gap_duration_status", "");
+		set_if("gap_duration_not_accepted", "Not Accepted");
+		set_if("study_gap_status", "");
+		set_if("study_gap_not_accepted_status", "Not Accepted");
+		set_if("study_gap_upto_1_year", "No");
+		if ((frm.doc.study_gap_proof_list || []).length) {
+			frm.clear_table("study_gap_proof_list");
+			frm.refresh_field("study_gap_proof_list");
+		}
+	} else {
+		set_if("gap_duration_status", "");
+		set_if("gap_duration_not_accepted", "");
+		set_if("study_gap_status", "");
+		set_if("study_gap_not_accepted_status", "");
+	}
+}
+
+function student_contact_from(stu) {
+	return stu.mobile || stu.mobile_no || stu.phone || stu.contact_no || "";
+}
+
+function calculate_age_from_dob(dob_str) {
+	if (!dob_str) return "";
+	const dob = frappe.datetime.str_to_obj(dob_str);
+	if (!dob) return "";
+	const today = new Date();
+	let age = today.getFullYear() - dob.getFullYear();
+	const monthDiff = today.getMonth() - dob.getMonth();
+	if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+		age--;
+	}
+	return age >= 0 ? age : "";
+}
+
+function apply_age_from_dob(frm) {
+	if (!frm.fields_dict.current_age) return;
+	frm.set_df_property("current_age", "hidden", 0);
+	const age = calculate_age_from_dob(frm.doc.dob);
+	if (frm.doc.current_age !== age) {
+		frm.set_value("current_age", age === "" ? "" : age);
+	}
+}
+
+function apply_student_defaults_to_form(frm) {
+	if (!frm.doc.student) return;
+	frappe.db.get_doc("Student", frm.doc.student).then((stu) => {
+		const email = stu.email || stu.student_email;
+		if (email && !frm.doc.student_email) frm.set_value("student_email", email);
+		const contact = student_contact_from(stu);
+		if (contact && !frm.doc.student_contact_no) frm.set_value("student_contact_no", contact);
+		const dob = stu.dob || stu.date_of_birth;
+		if (dob && !frm.doc.dob) {
+			frm.set_value("dob", dob).then(() => apply_age_from_dob(frm));
+		} else {
+			apply_age_from_dob(frm);
+		}
+	});
+}
+
+/** Force child tables to open the row form when Add Row is clicked.
+ *  Uses capture-phase click so it still works after frm.refresh_fields() remakes grids
+ *  (that was wiping per-button handlers — Sponsors under Financials was affected).
+ */
+function patch_form_view_tables(frm) {
+	// Keep child metas in form-view mode (not inline editable grid)
+	(frm.meta.fields || [])
+		.filter((df) => df.fieldtype === "Table" && df.options)
+		.forEach((df) => {
+			frappe.model.with_doctype(df.options, () => {
+				const meta = frappe.get_meta(df.options);
+				if (meta) meta.editable_grid = 0;
+				const grid = frm.fields_dict[df.fieldname]?.grid;
+				if (grid) {
+					grid.meta = meta;
+					if (typeof grid.setup_fields === "function") {
+						try {
+							grid.setup_fields();
+						} catch (e) {
+							/* ignore until doctype fully ready */
+						}
+					}
+					if (grid.meta) grid.meta.editable_grid = 0;
+					grid.allow_on_grid_editing = function () {
+						return false;
+					};
+					grid.set_focus_on_row = function () {};
+					patch_grid_row_toggle(grid, df.options);
+				}
+			});
+			const grid = frm.fields_dict[df.fieldname]?.grid;
+			if (grid) {
+				if (grid.meta) grid.meta.editable_grid = 0;
+				grid.allow_on_grid_editing = function () {
+					return false;
+				};
+				grid.set_focus_on_row = function () {};
+			}
+		});
+
+	if (frm._unideft_capture_add || !frm.wrapper) return;
+	frm._unideft_capture_add = true;
+
+	frm.wrapper.addEventListener(
+		"click",
+		(e) => {
+			const btn = e.target && e.target.closest && e.target.closest(".grid-add-row");
+			if (!btn || !frm.wrapper.contains(btn)) return;
+
+			const control_el = btn.closest("[data-fieldname]");
+			const fieldname = control_el && control_el.getAttribute("data-fieldname");
+			if (!fieldname || !frm.fields_dict[fieldname] || !frm.fields_dict[fieldname].grid) {
+				return;
+			}
+
+			const grid = frm.fields_dict[fieldname].grid;
+			if (!grid.wrapper || !grid.wrapper.get(0).contains(btn)) return;
+
+			// Stop Frappe's stock Add Row (which also calls set_focus_on_row and undoes form view)
+			e.preventDefault();
+			e.stopPropagation();
+			e.stopImmediatePropagation();
+
+			if (!grid.is_editable()) return;
+
+			const child_dt = grid.doctype || grid.df?.options;
+			if (!child_dt) return;
+
+			try {
+				const child = frappe.model.add_child(frm.doc, child_dt, fieldname);
+				child.__unedited = true;
+				frm.script_manager.trigger(fieldname + "_add", child.doctype, child.name);
+				grid.refresh();
+				open_child_row_form(frm, grid, child, child_dt);
+			} catch (err) {
+				console.error("add child row", fieldname, err);
+				frappe.msgprint({
+					title: __("Add Row failed"),
+					message: err.message || String(err),
+					indicator: "red",
+				});
+			}
+		},
+		true
+	);
+}
+
+/** Load full child (+ nested table) meta, then open row for editing. */
+function open_child_row_form(frm, grid, child, child_dt) {
+	// Application Sponsor Complete breaks Frappe's in-grid form (permlevel / nested tables).
+	// Use a Dialog editor instead — reliable for client use.
+	if (child_dt === "Application Sponsor Complete") {
+		open_child_row_dialog(frm, grid, child, child_dt);
+		return;
+	}
+
+	const nested_from_meta = (meta) =>
+		(meta?.fields || [])
+			.filter((f) => f.fieldtype === "Table" && f.options)
+			.map((f) => f.options);
+
+	const open_row = () => {
+		const orig_status = frappe.perm.get_field_display_status;
+		frappe.perm.get_field_display_status = function (df, doc, perm, explain) {
+			if (!df) return "None";
+			return orig_status.call(this, df, doc, perm, explain);
+		};
+		try {
+			const row =
+				grid.grid_rows_by_docname?.[child.name] ||
+				(grid.grid_rows && grid.grid_rows[grid.grid_rows.length - 1]);
+			if (!row) return;
+
+			if (frappe.meta.docfield_copy?.[child_dt]) {
+				delete frappe.meta.docfield_copy[child_dt][child.name];
+			}
+			frappe.meta.make_docfield_copy_for(child_dt, child.name);
+			row.docfields = (frappe.meta.get_docfields(child_dt, child.name) || []).filter(
+				(df) => df && df.fieldname
+			);
+			if (grid.meta) grid.meta.editable_grid = 0;
+			grid.allow_on_grid_editing = function () {
+				return false;
+			};
+			patch_grid_row_toggle(grid, child_dt);
+			row.toggle_view(true);
+		} catch (err) {
+			console.error("open child form", child_dt, err);
+			frappe.show_alert({
+				message: __("Could not open {0} row form: {1}", [child_dt, err.message || err]),
+				indicator: "red",
+			});
+		} finally {
+			setTimeout(() => {
+				frappe.perm.get_field_display_status = orig_status;
+			}, 1500);
+		}
+	};
+
+	const load_nested_then_open = (meta) => {
+		const nested = nested_from_meta(meta);
+		if (!nested.length) {
+			open_row();
+			return;
+		}
+		let left = nested.length;
+		nested.forEach((dt) => {
+			frappe.model.with_doctype(dt, () => {
+				left -= 1;
+				if (left <= 0) open_row();
+			});
+		});
+	};
+
+	frappe.model.with_doctype(child_dt, () => {
+		const meta = frappe.get_meta(child_dt);
+		if (meta) {
+			meta.editable_grid = 0;
+			grid.meta = meta;
+			try {
+				grid.setup_fields && grid.setup_fields();
+			} catch (e) {
+				/* continue */
+			}
+		}
+		load_nested_then_open(meta);
+	});
+}
+
+const CHILD_ROW_SKIP_KEYS = new Set([
+	"name",
+	"owner",
+	"creation",
+	"modified",
+	"modified_by",
+	"parent",
+	"parentfield",
+	"parenttype",
+	"docstatus",
+	"doctype",
+	"idx",
+]);
+
+/** Reliable popup editor for heavy child tables (Sponsors). */
+function open_child_row_dialog(frm, grid, child, child_dt) {
+	if (!child || !child_dt) return;
+
+	const ensure_nested = (meta, cb) => {
+		const nested = (meta.fields || [])
+			.filter((f) => f && f.fieldtype === "Table" && f.options)
+			.map((f) => f.options);
+		if (!nested.length) {
+			cb();
+			return;
+		}
+		let left = nested.length;
+		nested.forEach((dt) => {
+			frappe.model.with_doctype(dt, () => {
+				left -= 1;
+				if (left <= 0) cb();
+			});
+		});
+	};
+
+	frappe.model.with_doctype(child_dt, () => {
+		const meta = frappe.get_meta(child_dt);
+		if (!meta) {
+			frappe.msgprint(__("Could not load {0}", [child_dt]));
+			return;
+		}
+		ensure_nested(meta, () => {
+			const fields = (meta.fields || [])
+				.filter((df) => df && df.fieldname)
+				.map((df) => {
+					const f = Object.assign({}, df);
+					if (f.fieldtype === "Table" && f.options) {
+						// Dialog Table grids have no frm — Grid reads columns from df.fields
+						const child_meta = frappe.get_meta(f.options);
+						f.fields = ((child_meta && child_meta.fields) || [])
+							.filter((cf) => cf && cf.fieldname)
+							.map((cf) => Object.assign({}, cf));
+						f.data = (child[f.fieldname] || []).map((r) => Object.assign({}, r));
+					}
+					return f;
+				});
+
+			const d = new frappe.ui.Dialog({
+				title: __("Sponsor"),
+				fields: fields,
+				size: "extra-large",
+				primary_action_label: __("Done"),
+				primary_action() {
+					const values = d.get_values() || {};
+
+					(meta.fields || []).forEach((df) => {
+						if (!df || !df.fieldname) return;
+						if ((frappe.model.layout_fields || []).includes(df.fieldtype)) return;
+
+						if (df.fieldtype === "Table") {
+							const ctrl = d.fields_dict[df.fieldname];
+							const rows =
+								(ctrl && ctrl.grid && typeof ctrl.grid.get_data === "function"
+									? ctrl.grid.get_data()
+									: null) ||
+								[];
+							child[df.fieldname] = [];
+							(rows || []).forEach((r, i) => {
+								if (!df.options) return;
+								const nr = frappe.model.add_child(child, df.options, df.fieldname);
+								Object.keys(r || {}).forEach((k) => {
+									if (k.startsWith("__") || CHILD_ROW_SKIP_KEYS.has(k)) return;
+									nr[k] = r[k];
+								});
+								nr.idx = i + 1;
+							});
+						} else if (Object.prototype.hasOwnProperty.call(values, df.fieldname)) {
+							child[df.fieldname] = values[df.fieldname];
+						}
+					});
+
+					frm.dirty();
+					frm.refresh_field(grid.df.fieldname);
+					d.hide();
+				},
+			});
+
+			d.show();
+
+			setTimeout(() => {
+				(meta.fields || []).forEach((df) => {
+					if (!df || !df.fieldname) return;
+					if (df.fieldtype === "Table") return;
+					if ((frappe.model.layout_fields || []).includes(df.fieldtype)) return;
+					const val = child[df.fieldname];
+					if (val !== undefined && val !== null && val !== "") {
+						try {
+							d.set_value(df.fieldname, val);
+						} catch (e) {
+							/* ignore missing controls */
+						}
+					}
+				});
+			}, 100);
+		});
+	});
+}
+
+/** Ensure clicking an existing row opens the dialog/form correctly. */
+function patch_grid_row_toggle(grid, child_dt) {
+	const frm = grid.frm;
+	(grid.grid_rows || []).forEach((row) => {
+		if (row._unideft_toggle_patched) return;
+		const original = row.toggle_view.bind(row);
+		row.toggle_view = function (show, callback) {
+			if (show !== false && show !== 0) {
+				if (child_dt === "Application Sponsor Complete" && row.doc) {
+					open_child_row_dialog(frm, grid, row.doc, child_dt);
+					return row;
+				}
+				try {
+					const name = row.doc?.name;
+					if (name && child_dt) {
+						if (frappe.meta.docfield_copy?.[child_dt]) {
+							delete frappe.meta.docfield_copy[child_dt][name];
+						}
+						frappe.meta.make_docfield_copy_for(child_dt, name);
+						row.docfields = (
+							frappe.meta.get_docfields(child_dt, name) || []
+						).filter((df) => df && df.fieldname);
+					}
+				} catch (e) {
+					console.error("rebuild row docfields", e);
+				}
+			}
+			return original(show, callback);
+		};
+		row._unideft_toggle_patched = true;
+	});
+}
+
 const AU_STAGE_TABS = [
 	"information_tab",
 	"submitted_tab",
@@ -558,7 +1055,8 @@ function redirect_uk_index_to_native(frm) {
 	return false;
 }
 
-// AU-only blocks on Details (Aus/NZ refusal cascade, Case 4 spouse, need assessment)
+// AU-only blocks on Details (Aus/NZ refusal cascade, Case 4 spouse)
+// Need Assessment + legacy study-gap Yes/No stay permanently hidden (Assessment Request / gap_duration cover them)
 const AU_DETAILS_ONLY = [
 	"visa_refused_ok",
 	"visa_refused_country",
@@ -572,15 +1070,6 @@ const AU_DETAILS_ONLY = [
 	"visa_refused_new_application",
 	"visa_refused_close_reason",
 	"visa_refused_closed_status",
-	"study_gap_upto_1_year",
-	"study_gap_status",
-	"study_gap_not_accepted_status",
-	"details_need_assessment_section",
-	"need_assessment",
-	"need_assessment_university",
-	"need_assessment_course",
-	"details_vendors_section",
-	"need_assessment_vendors",
 	"section_case_4_spouse",
 	"case_4_spouse_qualification",
 	"case_4_marriage_duration",
@@ -590,6 +1079,19 @@ const AU_DETAILS_ONLY = [
 	"case_4_note_wait",
 	"case_4_note_convince",
 	"case_4_close_reason",
+];
+
+const DETAILS_ALWAYS_HIDDEN = [
+	"details_need_assessment_section",
+	"need_assessment",
+	"need_assessment_university",
+	"need_assessment_course",
+	"details_vendors_section",
+	"need_assessment_vendors",
+	"study_gap_upto_1_year",
+	"study_gap_status",
+	"study_gap_not_accepted_status",
+	"study_gap_proof",
 ];
 
 function apply_country_flow_ui(frm) {
@@ -610,6 +1112,16 @@ function apply_country_flow_ui(frm) {
 			frm.set_df_property(fieldname, "hidden", au ? 0 : 1);
 		}
 	});
+	DETAILS_ALWAYS_HIDDEN.forEach((fieldname) => {
+		if (frm.fields_dict[fieldname]) {
+			frm.set_df_property(fieldname, "hidden", 1);
+		}
+	});
+
+	// Age must always show next to DOB on AU (and all) applications
+	if (frm.fields_dict.current_age) {
+		frm.set_df_property("current_age", "hidden", 0);
+	}
 
 	if (frm.fields_dict.details_tab) {
 		frm.set_df_property("details_tab", "hidden", 0);
@@ -624,8 +1136,10 @@ function apply_country_flow_ui(frm) {
 		frm.set_df_property("uk_data", "read_only", 1);
 	}
 
+	// Do not call frm.refresh_fields() here — it remakes every child grid and
+	// restores stock Add Row handlers (Sponsors then stops opening).
 	frm.dashboard.clear_headline();
-	frm.refresh_fields();
+	setTimeout(() => patch_form_view_tables(frm), 0);
 
 	if (frm.is_new() && !frm._country_confirmed) {
 		if (!frm._country_cleared_default && !frm._country_from_dialog) {
@@ -695,17 +1209,7 @@ function show_application_country_dialog(frm) {
 
 frappe.ui.form.on("Application", {
 	onload(frm) {
-		// Force form view (modal) for child tables that should open in dialog on Add Row
-		const form_view_tables = ["spouse_details_list", "table_ihmq"];
-		form_view_tables.forEach((fieldname) => {
-			const doctype = frm.meta.fields.find((df) => df.fieldname === fieldname && df.fieldtype === "Table")?.options;
-			if (doctype) {
-				frappe.model.with_doctype(doctype, () => {
-					const meta = frappe.get_meta(doctype);
-					if (meta) meta.editable_grid = 0;
-				});
-			}
-		});
+		patch_form_view_tables(frm);
 
 		// Country was chosen via list dialog → trust it; otherwise force country picker
 		if (frm.is_new()) {
@@ -723,16 +1227,14 @@ frappe.ui.form.on("Application", {
 	},
 
 	refresh(frm) {
-		// Force Spouse / AU sponsors / UK child tables to open in form/modal on Add Row
-		["spouse_details_list", "table_ihmq"].forEach((fieldname) => {
-			const control = frm.fields_dict[fieldname];
-			if (control && control.grid && !control.grid._form_view_patched) {
-				control.grid.allow_on_grid_editing = function () {
-					return false;
-				};
-				control.grid._form_view_patched = true;
-			}
-		});
+		patch_form_view_tables(frm);
+		// Grids on later tabs may initialize after first paint
+		setTimeout(() => patch_form_view_tables(frm), 300);
+		apply_age_from_dob(frm);
+		apply_gap_duration_rule(frm);
+		if (frm.doc.student && (!frm.doc.student_contact_no || !frm.doc.dob || !frm.doc.student_email)) {
+			apply_student_defaults_to_form(frm);
+		}
 
 		// Hide assigned fields for Agents (keep visible for System Manager, Team Lead, Executive)
 		if (frappe.user.has_role("Agent") || frappe.user.has_role("B2B Agent") || frappe.user.has_role("B2C Agent")) {
@@ -782,16 +1284,8 @@ frappe.ui.form.on("Application", {
 			frm.set_value("agent", "");
 		}
 
-		// Filter courses based on selected university
-		if (frm.doc.preferred_university) {
-			frm.set_query("course", "preferred_courses", function () {
-				return {
-					filters: {
-						university: frm.doc.preferred_university
-					}
-				};
-			});
-		}
+		// Filter Course by selected Preferred University
+		setup_course_query(frm);
 
 		// Filter course_name in Offer Letter tab based on university_name
 		if (frm.doc.university_name) {
@@ -827,24 +1321,6 @@ frappe.ui.form.on("Application", {
 			frm.set_df_property("password", "reqd", 0);
 			frm.set_df_property("recovery_email_id", "reqd", 0);
 			frm.set_df_property("login_contact_no", "reqd", 0);
-		}
-
-		// Calculate age from DOB on form load
-		if (frm.doc.dob) {
-			const dob = new Date(frm.doc.dob);
-			const today = new Date();
-
-			let age = today.getFullYear() - dob.getFullYear();
-			const monthDiff = today.getMonth() - dob.getMonth();
-
-			// Adjust age if birthday hasn't occurred this year
-			if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
-				age--;
-			}
-
-			if (age > 0) {
-				frm.set_value("current_age", age);
-			}
 		}
 
 		// Calculate funds required on form load
@@ -935,8 +1411,12 @@ frappe.ui.form.on("Application", {
 
 	// Auto-populate university and course when preferred university or courses change
 	preferred_university(frm) {
+		// Clear course when university changes (unless still valid)
+		if (frm.doc.course) {
+			frm.set_value("course", "");
+		}
+		setup_course_query(frm);
 		populateOfferUniversityAndCourse(frm);
-		// Update course filter when university changes
 		if (frm.doc.university_name) {
 			frm.set_query("course_name", function () {
 				return {
@@ -948,7 +1428,7 @@ frappe.ui.form.on("Application", {
 		}
 	},
 
-	preferred_courses(frm) {
+	course(frm) {
 		populateOfferUniversityAndCourse(frm);
 	},
 
@@ -1019,36 +1499,6 @@ frappe.ui.form.on("Application", {
 		}
 	},
 
-	preferred_university(frm) {
-		// Clear courses when university changes
-		if (frm.doc.preferred_courses) {
-			frm.clear_table("preferred_courses");
-			frm.refresh_field("preferred_courses");
-		}
-
-		// Set filter for courses based on selected university
-		if (frm.doc.preferred_university) {
-			frm.set_query("course", "preferred_courses", function () {
-				return {
-					filters: {
-						university: frm.doc.preferred_university
-					}
-				};
-			});
-
-		}
-	},
-
-	preferred_courses(frm) {
-		// Validate maximum 3 courses on client side
-		if (frm.doc.preferred_courses && frm.doc.preferred_courses.length > 3) {
-			frappe.msgprint("You can select a maximum of 3 courses only.");
-			// Remove the extra course
-			frm.doc.preferred_courses.pop();
-			frm.refresh_field("preferred_courses");
-		}
-	},
-
 	is_package_case(frm) {
 		// Make email fields mandatory when package case is checked
 		if (frm.doc.is_package_case) {
@@ -1064,56 +1514,36 @@ frappe.ui.form.on("Application", {
 		}
 	},
 
+	student(frm) {
+		apply_student_defaults_to_form(frm);
+	},
+
 	dob(frm) {
-		// Calculate age from DOB
-		if (frm.doc.dob) {
-			const dob = new Date(frm.doc.dob);
-			const today = new Date();
-
-			let age = today.getFullYear() - dob.getFullYear();
-			const monthDiff = today.getMonth() - dob.getMonth();
-
-			// Adjust age if birthday hasn't occurred this year
-			if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
-				age--;
-			}
-
-			if (age > 0) {
-				frm.set_value("current_age", age);
-			} else {
-				frm.set_value("current_age", "");
-			}
-		} else {
-			frm.set_value("current_age", "");
-		}
+		apply_age_from_dob(frm);
 	},
 
 	study_gap(frm) {
+		if (frm.doc.study_gap === "No") {
+			frm.set_value("study_gap_ok", "✓ OK");
+		} else {
+			frm.set_value("study_gap_ok", "");
+		}
 		if (frm.doc.study_gap !== "Yes") {
-			frm.set_value("study_gap_upto_1_year", "");
-			frm.set_value("study_gap_status", "");
-			frm.set_value("study_gap_not_accepted_status", "");
 			frm.set_value("gap_duration", "");
 			frm.set_value("gap_duration_status", "");
 			frm.set_value("gap_duration_not_accepted", "");
-			frm.clear_table("study_gap_proof");
-			frm.refresh_field("study_gap_proof");
+			frm.set_value("study_gap_upto_1_year", "");
+			frm.set_value("study_gap_status", "");
+			frm.set_value("study_gap_not_accepted_status", "");
 			frm.clear_table("study_gap_proof_list");
 			frm.refresh_field("study_gap_proof_list");
+		} else {
+			apply_gap_duration_rule(frm);
 		}
 	},
 
 	gap_duration(frm) {
-		if (frm.doc.gap_duration === "Below 1 Year" || frm.doc.gap_duration === "Below 2 Years") {
-			frm.set_value("gap_duration_status", "Accepted");
-			frm.set_value("gap_duration_not_accepted", "");
-		} else if (frm.doc.gap_duration === "Above 2 Years") {
-			frm.set_value("gap_duration_status", "");
-			frm.set_value("gap_duration_not_accepted", "Not Accepted");
-		} else {
-			frm.set_value("gap_duration_status", "");
-			frm.set_value("gap_duration_not_accepted", "");
-		}
+		apply_gap_duration_rule(frm);
 	},
 
 	application_submitted(frm) {
@@ -1140,20 +1570,7 @@ frappe.ui.form.on("Application", {
 	},
 
 	study_gap_upto_1_year(frm) {
-		if (frm.doc.study_gap_upto_1_year === "Yes") {
-			frm.set_value("study_gap_status", "Accepted");
-			frm.set_value("study_gap_not_accepted_status", "");
-		} else if (frm.doc.study_gap_upto_1_year === "No") {
-			frm.set_value("study_gap_status", "");
-			frm.set_value("study_gap_not_accepted_status", "Not Accepted");
-			frm.clear_table("study_gap_proof");
-			frm.refresh_field("study_gap_proof");
-		} else {
-			frm.set_value("study_gap_status", "");
-			frm.set_value("study_gap_not_accepted_status", "");
-			frm.clear_table("study_gap_proof");
-			frm.refresh_field("study_gap_proof");
-		}
+		// Legacy Yes/No field — kept hidden; prefer gap_duration
 	},
 
 	any_visa_refused(frm) {
@@ -1285,6 +1702,9 @@ frappe.ui.form.on("Application", {
 	},
 
 	submitted_another_application(frm) {
+		if (frm.doc.submitted_another_application !== "Yes") {
+			frm.set_value("another_application_id", "");
+		}
 		if (frm.doc.submitted_another_application !== "No") {
 			frm.set_value("need_another_application", "");
 			frm.set_value("not_processing_another_application_reason", "");
@@ -1339,6 +1759,19 @@ frappe.ui.form.on("Application", {
 		sync_financial_condition_visibility(frm);
 		refresh_financial_condition_sections(frm);
 		sync_gs_interview_stage_from_financials(frm);
+	},
+
+	verification_verified(frm) {
+		if (frm.doc.verification_verified === "Yes") {
+			frm.set_value("verification_type", "");
+		}
+		if (frm.fields_dict.verification_type) {
+			const show_type =
+				has_offer_letter_condition(frm, "Verification") &&
+				frm.doc.verification_verified === "No";
+			frm.set_df_property("verification_type", "hidden", show_type ? 0 : 1);
+			frm.refresh_field("verification_type");
+		}
 	},
 
 	on_submit(frm) {
@@ -1596,13 +2029,49 @@ frappe.ui.form.on("Application", {
 		}
 	},
 
+	financial_started(frm) {
+		if (frm.doc.financial_started === "Yes") {
+			frm.set_value("offer_letter_stage_completed", 1);
+			const move_to_financials = () => {
+				setTimeout(() => {
+					activate_application_tab(frm, "financials_tab", "Financials");
+				}, 250);
+			};
+			const early = ["Pending", "Processing", "Offer Letter Received", ""];
+			if (early.includes(frm.doc.status || "")) {
+				frm.set_value("status", "Financial").then(move_to_financials);
+			} else {
+				move_to_financials();
+			}
+			frappe.show_alert(
+				{
+					message: __("Offer Letter stage completed — moved to Financials"),
+					indicator: "green",
+				},
+				4
+			);
+		} else if (frm.doc.financial_started === "No") {
+			frm.set_value("offer_letter_stage_completed", 0);
+			if (frm.doc.name && !frm.doc.__islocal) {
+				prompt_application_reminder(frm, {
+					title: __("Follow up — Financial Started"),
+					default_description: "Follow up to start Financials",
+					trigger_key: `financial_started_${frm.doc.name}`,
+				});
+			}
+		} else {
+			frm.set_value("offer_letter_stage_completed", 0);
+		}
+	},
+
 	// Financials Tab handlers
 	gs_submitted(frm) {
 		if (frm.doc.gs_submitted === "Yes") {
-			frm.set_value("gs_submitted_reminder_date", "");
+			clear_gs_submitted_no_branch(frm);
+			frm.set_value("financial_stage_completed", "✓ Financial stage completed → Moved to GS Processing");
 			const move_to_gs_tab = () => {
 				setTimeout(() => {
-					activate_application_tab(frm, "gs_tab", "GS Processing");
+					activate_application_tab(frm, "gs_tab", "GS Submitted");
 				}, 250);
 			};
 			if (["Financial", "Offer Letter Received", "Pending", "Processing"].includes(frm.doc.status)) {
@@ -1612,14 +2081,18 @@ frappe.ui.form.on("Application", {
 			}
 			frappe.show_alert(
 				{
-					message: __("Financial stage completed — moved to GS Processing"),
+					message: __("Financial stage completed — moved to GS Submitted"),
 					indicator: "green",
 				},
 				4
 			);
 		} else if (frm.doc.gs_submitted === "No") {
-			// Open calendar popup immediately (date + time + remarks)
+			frm.set_value("financial_stage_completed", "");
+			// Reminder popup (date / time / remarks) — also keep "When will financials be completed?"
 			maybe_prompt_financial_completion_reminder(frm);
+		} else {
+			clear_gs_submitted_no_branch(frm);
+			frm.set_value("financial_stage_completed", "");
 		}
 	},
 
@@ -1631,6 +2104,84 @@ frappe.ui.form.on("Application", {
 		}
 	},
 
+	student_will_process_gs(frm) {
+		if (frm.doc.student_will_process_gs !== "No") {
+			frm.set_value("will_process_gs_another_university", "");
+			frm.set_value("gs_another_university_application_id", "");
+			frm.set_value("will_process_another_country", "");
+			frm.set_value("gs_another_country_application_id", "");
+			frm.set_value("gs_not_process_reason", "");
+		}
+	},
+
+	will_process_gs_another_university(frm) {
+		if (frm.doc.will_process_gs_another_university !== "Yes") {
+			frm.set_value("gs_another_university_application_id", "");
+		}
+		if (frm.doc.will_process_gs_another_university !== "No") {
+			frm.set_value("will_process_another_country", "");
+			frm.set_value("gs_another_country_application_id", "");
+			frm.set_value("gs_not_process_reason", "");
+		}
+	},
+
+	gs_another_university_application_id(frm) {
+		if (
+			frm.doc.gs_submitted === "No" &&
+			frm.doc.student_will_process_gs === "No" &&
+			frm.doc.will_process_gs_another_university === "Yes" &&
+			(frm.doc.gs_another_university_application_id || "").trim()
+		) {
+			close_application_from_financials(
+				frm,
+				__("Process closed — GS in another university (ID: {0})", [
+					frm.doc.gs_another_university_application_id,
+				])
+			);
+		}
+	},
+
+	will_process_another_country(frm) {
+		if (frm.doc.will_process_another_country !== "Yes") {
+			frm.set_value("gs_another_country_application_id", "");
+		}
+		if (frm.doc.will_process_another_country !== "No") {
+			frm.set_value("gs_not_process_reason", "");
+		}
+	},
+
+	gs_another_country_application_id(frm) {
+		if (
+			frm.doc.gs_submitted === "No" &&
+			frm.doc.student_will_process_gs === "No" &&
+			frm.doc.will_process_gs_another_university === "No" &&
+			frm.doc.will_process_another_country === "Yes" &&
+			(frm.doc.gs_another_country_application_id || "").trim()
+		) {
+			close_application_from_financials(
+				frm,
+				__("Closed — processing in another country (ID: {0})", [
+					frm.doc.gs_another_country_application_id,
+				])
+			);
+		}
+	},
+
+	gs_not_process_reason(frm) {
+		if (
+			frm.doc.gs_submitted === "No" &&
+			frm.doc.student_will_process_gs === "No" &&
+			frm.doc.will_process_gs_another_university === "No" &&
+			frm.doc.will_process_another_country === "No" &&
+			(frm.doc.gs_not_process_reason || "").trim()
+		) {
+			close_application_from_financials(
+				frm,
+				__("Case closed — student does not want to process")
+			);
+		}
+	},
+
 	interview_deadline_date(frm) {
 		if (
 			frm.doc.interview_deadline_date &&
@@ -1638,6 +2189,7 @@ frappe.ui.form.on("Application", {
 			frm.doc.name &&
 			!frm.doc.__islocal
 		) {
+			AU_REMINDER_SESSION[`interview_deadline_financial_${frm.doc.name}`] = false;
 			prompt_application_reminder(frm, {
 				title: __("Set Interview Deadline Reminder"),
 				default_description:
@@ -1649,12 +2201,66 @@ frappe.ui.form.on("Application", {
 	},
 
 	interview_timing(frm) {
-		// Clear interview fields when timing changes away from Before GS Approval
 		if (frm.doc.interview_timing !== "Before GS Approval") {
-			frm.set_value("interview_deadline_date", "");
+			[
+				"interview_deadline_date",
+				"financials_student_prepare",
+				"financials_schedule_interview",
+				"financials_interview_completed",
+			].forEach((f) => frm.set_value(f, ""));
 		}
-		refresh_financial_condition_sections(frm);
 		sync_gs_interview_stage_from_financials(frm);
+		refresh_financial_condition_sections(frm);
+	},
+
+	financials_student_prepare(frm) {
+		if (frm.doc.financials_student_prepare !== "Yes") {
+			frm.set_value("financials_schedule_interview", "");
+		}
+		if (
+			frm.doc.interview_timing === "Before GS Approval" &&
+			frm.doc.financials_student_prepare === "No" &&
+			frm.doc.name &&
+			!frm.doc.__islocal
+		) {
+			AU_REMINDER_SESSION[`fin_prepare_student_${frm.doc.name}`] = false;
+			prompt_application_reminder(frm, {
+				title: __("Prepare Student for Interview"),
+				default_description: "Prepare Student for Interview",
+				trigger_key: `fin_prepare_student_${frm.doc.name}`,
+			});
+		}
+	},
+
+	financials_schedule_interview(frm) {
+		if (frm.doc.interview_timing !== "Before GS Approval" || !frm.doc.name || frm.doc.__islocal) {
+			return;
+		}
+		if (frm.doc.financials_schedule_interview === "No") {
+			AU_REMINDER_SESSION[`fin_followup_interview_${frm.doc.name}`] = false;
+			prompt_application_reminder(frm, {
+				title: __("Follow Up Interview Schedule"),
+				default_description: "Follow Up Interview Schedule",
+				trigger_key: `fin_followup_interview_${frm.doc.name}`,
+			});
+		}
+		if (frm.doc.financials_schedule_interview === "Yes" && frm.doc.interview_deadline_date) {
+			AU_REMINDER_SESSION[`fin_interview_date_${frm.doc.name}`] = false;
+			prompt_application_reminder(frm, {
+				title: __("Interview Date Reminder"),
+				default_description:
+					"Interview Date - " + frappe.datetime.str_to_user(frm.doc.interview_deadline_date),
+				default_date: frm.doc.interview_deadline_date,
+				trigger_key: `fin_interview_date_${frm.doc.name}`,
+			});
+		}
+	},
+
+	financials_interview_completed(frm) {
+		if (frm.doc.financials_interview_completed === "Yes") {
+			deactivate_reminders_matching(frm, "Interview Deadline");
+			deactivate_reminders_matching(frm, "Interview Date");
+		}
 	},
 
 	// Section C (Sponsors - Part 1) fields (no child "Sponsors" table)
@@ -2047,7 +2653,7 @@ function createIntakeReminder(frm, intakeDate, offerType) {
 
 // Function to check and deactivate intake reminder when tuition fee is paid
 function checkAndDeactivateIntakeReminder(frm) {
-	if (!frm.doc.name || frm.doc.__islocal || !frm.doc.tuition_fee_paid) {
+	if (!frm.doc.name || frm.doc.__islocal || frm.doc.tuition_fee_paid !== "Yes") {
 		return;
 	}
 
@@ -2084,12 +2690,9 @@ function populateOfferUniversityAndCourse(frm) {
 		frm.set_value("university_name", frm.doc.preferred_university);
 	}
 
-	// Auto-populate course_name from first course in preferred_courses table
-	if (frm.doc.preferred_courses && frm.doc.preferred_courses.length > 0 && !frm.doc.course_name) {
-		const firstCourse = frm.doc.preferred_courses[0];
-		if (firstCourse.course) {
-			frm.set_value("course_name", firstCourse.course);
-		}
+	// Auto-populate course_name from Details Course
+	if (frm.doc.course && !frm.doc.course_name) {
+		frm.set_value("course_name", frm.doc.course);
 	}
 }
 
@@ -2100,13 +2703,23 @@ function populateDeferOfferUniversityAndCourse(frm) {
 		frm.set_value("defer_university_name", frm.doc.preferred_university);
 	}
 
-	// Auto-populate defer_course_name from first course in preferred_courses table
-	if (frm.doc.preferred_courses && frm.doc.preferred_courses.length > 0 && !frm.doc.defer_course_name) {
-		const firstCourse = frm.doc.preferred_courses[0];
-		if (firstCourse.course) {
-			frm.set_value("defer_course_name", firstCourse.course);
-		}
+	// Auto-populate defer_course_name from Details Course
+	if (frm.doc.course && !frm.doc.defer_course_name) {
+		frm.set_value("defer_course_name", frm.doc.course);
 	}
+}
+
+function setup_course_query(frm) {
+	frm.set_query("course", function () {
+		if (!frm.doc.preferred_university) {
+			return { filters: { name: ["in", []] } };
+		}
+		return {
+			filters: {
+				university: frm.doc.preferred_university,
+			},
+		};
+	});
 }
 
 // Helper function to update all currency fields based on selected currency
@@ -2308,91 +2921,174 @@ frappe.ui.form.on("Application", {
 // Acceptance - Event Handlers
 frappe.ui.form.on("Application", {
 	acceptance_interview_deadline(frm) {
-		if (frm.doc.acceptance_interview_deadline && frm.doc.acceptance_before_coe_available) {
-			createAcceptanceReminder(frm, frm.doc.acceptance_interview_deadline, "Acceptance Interview Deadline - " + frappe.datetime.str_to_user(frm.doc.acceptance_interview_deadline));
+		if (
+			frm.doc.acceptance_interview_deadline &&
+			frm.doc.acceptance_before_coe_available &&
+			frm.doc.name &&
+			!frm.doc.__islocal
+		) {
+			AU_REMINDER_SESSION[`acceptance_interview_deadline_${frm.doc.name}`] = false;
+			prompt_application_reminder(frm, {
+				title: __("Set Interview Deadline Reminder"),
+				default_description:
+					"Interview Deadline - " +
+					frappe.datetime.str_to_user(frm.doc.acceptance_interview_deadline),
+				default_date: frm.doc.acceptance_interview_deadline,
+				trigger_key: `acceptance_interview_deadline_${frm.doc.name}`,
+			});
 		}
-		frm.refresh();
 	},
 
 	acceptance_student_prepare(frm) {
-		if (!frm.doc.acceptance_student_prepare && frm.doc.acceptance_before_coe_available) {
-			createAcceptanceReminder(frm, null, "Prepare Student for Acceptance Interview");
+		if (frm.doc.acceptance_student_prepare !== "Yes") {
+			frm.set_value("acceptance_schedule_interview", "");
 		}
-		frm.refresh();
+		if (
+			frm.doc.acceptance_student_prepare === "No" &&
+			frm.doc.acceptance_before_coe_available &&
+			frm.doc.name &&
+			!frm.doc.__islocal
+		) {
+			AU_REMINDER_SESSION[`acceptance_prepare_${frm.doc.name}`] = false;
+			prompt_application_reminder(frm, {
+				title: __("Prepare Student for Interview"),
+				default_description: "Prepare Student for Acceptance Interview",
+				trigger_key: `acceptance_prepare_${frm.doc.name}`,
+			});
+		}
 	},
 
 	acceptance_schedule_interview(frm) {
-		if (!frm.doc.acceptance_schedule_interview && frm.doc.acceptance_before_coe_available) {
-			createAcceptanceReminder(frm, null, "Follow Up Acceptance Interview Schedule");
+		if (!frm.doc.acceptance_before_coe_available || !frm.doc.name || frm.doc.__islocal) {
+			return;
 		}
-		if (frm.doc.acceptance_schedule_interview && frm.doc.acceptance_interview_deadline) {
-			createAcceptanceReminder(frm, frm.doc.acceptance_interview_deadline, "Acceptance Interview Date - " + frappe.datetime.str_to_user(frm.doc.acceptance_interview_deadline));
+		if (frm.doc.acceptance_schedule_interview === "No") {
+			AU_REMINDER_SESSION[`acceptance_followup_${frm.doc.name}`] = false;
+			prompt_application_reminder(frm, {
+				title: __("Follow Up Interview Schedule"),
+				default_description: "Follow Up Acceptance Interview Schedule",
+				trigger_key: `acceptance_followup_${frm.doc.name}`,
+			});
 		}
-		frm.refresh();
+		if (frm.doc.acceptance_schedule_interview === "Yes" && frm.doc.acceptance_interview_deadline) {
+			AU_REMINDER_SESSION[`acceptance_interview_date_${frm.doc.name}`] = false;
+			prompt_application_reminder(frm, {
+				title: __("Interview Date Reminder"),
+				default_description:
+					"Interview Date - " +
+					frappe.datetime.str_to_user(frm.doc.acceptance_interview_deadline),
+				default_date: frm.doc.acceptance_interview_deadline,
+				trigger_key: `acceptance_interview_date_${frm.doc.name}`,
+			});
+		}
+	},
+
+	acceptance_interview_completed(frm) {
+		if (frm.doc.acceptance_interview_completed === "Yes") {
+			deactivate_reminders_matching(frm, "Interview Deadline");
+			deactivate_reminders_matching(frm, "Interview Date");
+		}
 	},
 
 	acceptance_any_requirement(frm) {
-		if (!frm.doc.acceptance_any_requirement) {
-			createAcceptanceReminder(frm, null, "Waiting for COE");
+		if (frm.doc.acceptance_any_requirement !== "Yes") {
+			frm.set_value("acceptance_requirement_details", "");
+			frm.set_value("acceptance_requirements_completed", "");
+			frm.set_value("acceptance_requirement_upload", "");
 		}
-		frm.refresh();
+		if (frm.doc.acceptance_any_requirement === "No" && frm.doc.name && !frm.doc.__islocal) {
+			AU_REMINDER_SESSION[`acceptance_waiting_coe_${frm.doc.name}`] = false;
+			prompt_application_reminder(frm, {
+				title: __("Receive COE Reminder"),
+				default_description: "Set Reminder to receive COE & proceed to next stage",
+				trigger_key: `acceptance_waiting_coe_${frm.doc.name}`,
+			});
+		}
 	},
 
 	acceptance_requirements_completed(frm) {
-		if (!frm.doc.acceptance_requirements_completed && frm.doc.acceptance_any_requirement) {
-			createAcceptanceReminder(frm, null, "Acceptance Requirement Completion Pending");
+		if (frm.doc.acceptance_any_requirement !== "Yes" || !frm.doc.name || frm.doc.__islocal) {
+			return;
 		}
-		if (frm.doc.acceptance_requirements_completed && frm.doc.acceptance_any_requirement) {
-			createAcceptanceReminder(frm, null, "Waiting for COE After Requirements Completion");
+		if (frm.doc.acceptance_requirements_completed === "No") {
+			AU_REMINDER_SESSION[`acceptance_req_pending_${frm.doc.name}`] = false;
+			prompt_application_reminder(frm, {
+				title: __("Requirement Completion Pending"),
+				default_description: "Acceptance Requirement Completion Pending",
+				trigger_key: `acceptance_req_pending_${frm.doc.name}`,
+			});
+		} else if (frm.doc.acceptance_requirements_completed === "Yes") {
+			AU_REMINDER_SESSION[`acceptance_coe_after_req_${frm.doc.name}`] = false;
+			prompt_application_reminder(frm, {
+				title: __("Receive COE Reminder"),
+				default_description: "Waiting for COE After Requirements Completion",
+				trigger_key: `acceptance_coe_after_req_${frm.doc.name}`,
+			});
 		}
-		frm.refresh();
-	}
+	},
 });
 
 // GS Approved - Event Handlers
 frappe.ui.form.on("Application", {
 	tuition_fee_paid(frm) {
-		if (frm.doc.tuition_fee_paid) {
+		if (frm.doc.tuition_fee_paid === "Yes") {
 			checkAndDeactivateIntakeReminder(frm);
-		} else {
+		} else if (frm.doc.tuition_fee_paid === "No") {
 			createGSReminder(frm, null, "Follow Up Tuition Fee Payment");
 		}
-		frm.refresh();
+	},
+
+	oshc_required(frm) {
+		if (frm.doc.oshc_required !== "Yes") {
+			frm.set_value("oshc_arranged_by_type", "");
+			frm.set_value("gha_policy_received", 0);
+			frm.set_value("agent_policy_received", 0);
+			frm.set_value("student_policy_received", 0);
+		}
 	},
 
 	gha_policy_received(frm) {
-		if (!frm.doc.gha_policy_received && frm.doc.oshc_arranged_by_type === 'GHA' && frm.doc.oshc_required) {
+		if (
+			!frm.doc.gha_policy_received &&
+			frm.doc.oshc_arranged_by_type === "GHA" &&
+			frm.doc.oshc_required === "Yes"
+		) {
 			createGSReminder(frm, null, "OSHC Policy Received from GHA");
 		}
-		frm.refresh();
 	},
 
 	agent_policy_received(frm) {
-		if (!frm.doc.agent_policy_received && frm.doc.oshc_arranged_by_type === 'Agent' && frm.doc.oshc_required) {
+		if (
+			!frm.doc.agent_policy_received &&
+			frm.doc.oshc_arranged_by_type === "Agent" &&
+			frm.doc.oshc_required === "Yes"
+		) {
 			createGSReminder(frm, null, "OSHC Policy Received from Agent");
 		}
-		frm.refresh();
 	},
 
 	student_policy_received(frm) {
-		if (!frm.doc.student_policy_received && frm.doc.oshc_arranged_by_type === 'Student' && frm.doc.oshc_required) {
+		if (
+			!frm.doc.student_policy_received &&
+			frm.doc.oshc_arranged_by_type === "Student" &&
+			frm.doc.oshc_required === "Yes"
+		) {
 			createGSReminder(frm, null, "OSHC Policy Received from Student");
 		}
-		frm.refresh();
 	},
 
 	acceptance_submitted(frm) {
-		if (!frm.doc.acceptance_submitted) {
+		if (frm.doc.acceptance_submitted === "No") {
 			createGSReminder(frm, null, "Acceptance Submission Pending");
 		}
-		frm.refresh();
-	}
+	},
 });
 
-// GS Processing - Event Handlers
+// GS Submitted - Event Handlers
 frappe.ui.form.on("Application", {
 	interview_deadline(frm) {
 		if (frm.doc.interview_deadline && frm.doc.interview_stage_available && frm.doc.name && !frm.doc.__islocal) {
+			AU_REMINDER_SESSION[`gs_interview_deadline_${frm.doc.name}`] = false;
 			prompt_application_reminder(frm, {
 				title: __("Set Interview Deadline Reminder"),
 				default_description:
@@ -2401,7 +3097,6 @@ frappe.ui.form.on("Application", {
 				trigger_key: `gs_interview_deadline_${frm.doc.name}`,
 			});
 		}
-		frm.refresh();
 	},
 
 	student_prepare(frm) {
@@ -2409,17 +3104,18 @@ frappe.ui.form.on("Application", {
 			frm.set_value("schedule_interview", "");
 		}
 		if (frm.doc.student_prepare === "No" && frm.doc.interview_stage_available) {
+			AU_REMINDER_SESSION[`gs_prepare_student_${frm.doc.name}`] = false;
 			prompt_application_reminder(frm, {
 				title: __("Prepare Student for Interview"),
 				default_description: "Prepare Student for Interview",
 				trigger_key: `gs_prepare_student_${frm.doc.name}`,
 			});
 		}
-		frm.refresh();
 	},
 
 	schedule_interview(frm) {
 		if (frm.doc.schedule_interview === "No" && frm.doc.interview_stage_available) {
+			AU_REMINDER_SESSION[`gs_followup_interview_${frm.doc.name}`] = false;
 			prompt_application_reminder(frm, {
 				title: __("Follow Up Interview Schedule"),
 				default_description: "Follow Up Interview Schedule",
@@ -2427,6 +3123,7 @@ frappe.ui.form.on("Application", {
 			});
 		}
 		if (frm.doc.schedule_interview === "Yes" && frm.doc.interview_deadline && frm.doc.name && !frm.doc.__islocal) {
+			AU_REMINDER_SESSION[`gs_interview_date_${frm.doc.name}`] = false;
 			prompt_application_reminder(frm, {
 				title: __("Interview Date Reminder"),
 				default_description:
@@ -2435,14 +3132,20 @@ frappe.ui.form.on("Application", {
 				trigger_key: `gs_interview_date_${frm.doc.name}`,
 			});
 		}
-		frm.refresh();
+	},
+
+	interview_completed(frm) {
+		if (frm.doc.interview_completed === "Yes") {
+			deactivate_reminders_matching(frm, "Interview Deadline");
+			deactivate_reminders_matching(frm, "Interview Date");
+		}
 	},
 
 	gs_approved_check(frm) {
 		if (frm.doc.gs_approved_check === "Yes") {
 			frm.set_value("gs_any_requirement", "");
 			frm.set_value("requirement_details", "");
-			frm.set_value("requirements_completed", 0);
+			frm.set_value("requirements_completed", "");
 			if (["GS Processing", "Financial"].includes(frm.doc.status)) {
 				frm.set_value("status", "GS Approved");
 			}
@@ -2450,13 +3153,13 @@ frappe.ui.form.on("Application", {
 				{ message: __("Moved to GS Approved stage"), indicator: "green" },
 				4
 			);
+		} else if (frm.doc.gs_approved_check === "No") {
+			// keep requirement cascade available regardless of interview
 		}
-		frm.refresh();
 	},
 
 	gs_any_requirement(frm) {
-		if (frm.doc.gs_approved_check === "Yes" || !frm.doc.interview_stage_available) {
-			frm.refresh();
+		if (frm.doc.gs_approved_check === "Yes") {
 			return;
 		}
 
@@ -2468,27 +3171,25 @@ frappe.ui.form.on("Application", {
 				trigger_key: `gs_waiting_approved_${frm.doc.name}`,
 			});
 		} else if (frm.doc.gs_any_requirement === "Yes") {
-			frm.set_value("requirements_completed", 0);
+			frm.set_value("requirements_completed", "");
 		} else {
 			frm.set_value("requirement_details", "");
-			frm.set_value("requirements_completed", 0);
+			frm.set_value("requirements_completed", "");
 		}
-		frm.refresh();
 	},
 
 	requirements_completed(frm) {
 		if (frm.doc.gs_approved_check === "Yes" || frm.doc.gs_any_requirement !== "Yes") {
-			frm.refresh();
 			return;
 		}
-		if (!frm.doc.requirements_completed) {
+		if (frm.doc.requirements_completed === "No") {
 			AU_REMINDER_SESSION[`gs_requirement_pending_${frm.doc.name}`] = false;
 			prompt_application_reminder(frm, {
 				title: __("Requirement Completion Pending"),
 				default_description: "Requirement Completion Pending",
 				trigger_key: `gs_requirement_pending_${frm.doc.name}`,
 			});
-		} else {
+		} else if (frm.doc.requirements_completed === "Yes") {
 			AU_REMINDER_SESSION[`gs_waiting_after_req_${frm.doc.name}`] = false;
 			prompt_application_reminder(frm, {
 				title: __("Waiting for GS Approved"),
@@ -2496,7 +3197,6 @@ frappe.ui.form.on("Application", {
 				trigger_key: `gs_waiting_after_req_${frm.doc.name}`,
 			});
 		}
-		frm.refresh();
 	},
 });
 

@@ -62,7 +62,7 @@ READ_ROLES = [
 
 def execute():
 	_ensure_country("India")
-	_seed_vendors()
+	_seed_our_companies()
 	_seed_offer_conditions()
 	_grant_link_read_permissions()
 	frappe.db.commit()
@@ -73,19 +73,32 @@ def _ensure_country(name):
 		frappe.get_doc({"doctype": "Country", "country_name": name}).insert(ignore_permissions=True)
 
 
-def _seed_vendors():
+def _seed_our_companies():
+	"""Own / Direct companies — not Vendors (see migrate_own_companies_from_vendor)."""
+	dt = "Our Company" if frappe.db.exists("DocType", "Our Company") else "vendor"
 	for v in GHA_VENDORS:
-		if frappe.db.exists("vendor", v["name1"]):
-			continue
-		doc = frappe.get_doc(
-			{
-				"doctype": "vendor",
-				"name1": v["name1"],
-				"short_name": v["short_name"],
-				"country": v["country"],
-			}
-		)
-		doc.insert(ignore_permissions=True)
+		if dt == "Our Company":
+			if frappe.db.exists("Our Company", v["name1"]):
+				continue
+			frappe.get_doc(
+				{
+					"doctype": "Our Company",
+					"company_name": v["name1"],
+					"short_name": v["short_name"],
+					"country": v["country"],
+				}
+			).insert(ignore_permissions=True)
+		else:
+			if frappe.db.exists("vendor", v["name1"]):
+				continue
+			frappe.get_doc(
+				{
+					"doctype": "vendor",
+					"name1": v["name1"],
+					"short_name": v["short_name"],
+					"country": v["country"],
+				}
+			).insert(ignore_permissions=True)
 
 
 def _seed_offer_conditions():

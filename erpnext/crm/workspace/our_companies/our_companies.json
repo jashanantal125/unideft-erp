@@ -1,0 +1,66 @@
+{
+ "app": "erpnext",
+ "charts": [],
+ "content": "[{\"id\": \"spacer1\", \"type\": \"spacer\", \"data\": {\"col\": 12}}, {\"id\": \"header2\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Our Direct Companies</b></span>\", \"col\": 12}}, {\"id\": \"shortcut1\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"View All Our Companies\", \"col\": 6}}, {\"id\": \"shortcut2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Create Our Company\", \"col\": 6}}, {\"id\": \"quickList1\", \"type\": \"quick_list\", \"data\": {\"quick_list_name\": \"Recent Our Companies\", \"col\": 6}}]",
+ "creation": "2026-08-06 00:00:00.000000",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "hide_custom": 0,
+ "icon": "organization",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "Our Companies",
+ "link_to": "Our Company",
+ "link_type": "DocType",
+ "links": [],
+ "modified": "2026-08-06 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Our Companies",
+ "number_cards": [],
+ "owner": "Administrator",
+ "public": 1,
+ "quick_lists": [
+  {
+   "document_type": "Our Company",
+   "label": "Recent Our Companies",
+   "quick_list_filter": "[]"
+  }
+ ],
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "CRM Admin"
+  },
+  {
+   "role": "CRM Sales Staff"
+  }
+ ],
+ "sequence_id": 0.0,
+ "shortcuts": [
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "icon": "fa fa-list",
+   "label": "View All Our Companies",
+   "link_to": "Our Company",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "New",
+   "icon": "fa fa-plus",
+   "label": "Create Our Company",
+   "link_to": "Our Company",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
+ "title": "Our Companies",
+ "type": "Link"
+}

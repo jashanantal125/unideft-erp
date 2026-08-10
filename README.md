@@ -1,8 +1,8 @@
-# Unideft — AI‑Driven Visa Management CRM 
+# Unideft — AI-Driven Visa Management CRM
 
-Unideft is an **AI‑driven visa management CRM** built on the **Frappe/ERPNext** framework for overseas education and migration consultancies. It models each client matter as a single **Application** record with a stage‑based workflow (Processing → Financials → GS Processing → Acceptance → COE → File Lodged → Visa → Enrolled), combining **forensic‑grade traceability**, structured evidence capture, and **analytics‑ready data**.
+**Unideft** is an **AI-ready, process-driven CRM** for overseas education and migration consultancies. Built on **Frappe / ERPNext**, it turns messy counselor workflows into one clear system: every student case lives as an **Application**, moves through defined stages, and stays fully auditable.
 
-This repository is published as a **sanitized showcase**: it highlights architecture and implementation patterns while intentionally excluding sensitive configurations and any real client data.
+This repo is a **sanitized showcase** — architecture and patterns only. No secrets, no real client data.
 
 ---
 
@@ -15,28 +15,56 @@ This repository is published as a **sanitized showcase**: it highlights architec
 
 ---
 
+## What problem does it solve?
 
-## 🔑 Key Highlights
+Education agents juggle students, documents, English tests, offers, finances, visas, and follow-ups — usually across sheets, chats, and memory.
 
-- **End‑to‑end case lifecycle modeling**: The visa journey is structured into a single auditable **Application** entity with defined stages and conditional transitions.
-- **Forensic‑grade traceability**: Linked, normalized data (student, sponsor, conditions, refusals, gap proofs, documents) enables fast reconstruction of “what happened and why.”
-- **Rule‑based logic & risk flags**: Business rules for offer‑letter conditions, English requirements, gap justification, and interview scheduling are enforced via conditional logic.
-- **Evidence workflows**: Document schemas and verification flags support systematic review (ITR, salary slips, SOPs, offer letters, sponsor proofs).
-- **Analytics‑ready foundation**: Strongly structured child tables + categorical statuses are suitable for downstream scoring/anomaly detection/cohort analysis.
+Unideft gives them a **single source of truth**:
+- one Application per case  
+- stage-based progress (so nothing is skipped)  
+- **context-aware forms** (only show what matters next)  
+- structured evidence (not random file dumps)  
+- reminders so deadlines don’t slip  
 
----
-
-## 🧩 Core Features
-
-Unideft models visa operations as a **stage‑based workflow** centered on the `Application` doctype, with separate tabs for Processing, Financials, GS Processing, Acceptance, COE, File Lodged, Visa, and Enrolled. The form is heavily **context‑aware**: sections render only when relevant (e.g., spouse pathways, refusal handling, interview requirements, study gap proof types), guiding users through a consistent process and reducing operational variance across teams.
-
-The system is designed for **evidence‑driven decisioning**. Documents are captured in structured tables (not generic attachments), and paired with verification flags/status fields (e.g., sponsor proofs, financial artifacts, English test formats, gap proofs). This supports auditability and rapid matter reconstruction—key when cases require formal review, escalation, or defensible documentation.
-
-Finally, the data model is intentionally **analytics‑first**. Normalized child doctypes and categorical statuses create a clean foundation for advanced analytics and AI: risk scoring (e.g., gap/refusal patterns), anomaly detection, SLA bottlenecks by stage, and cohort analysis across destinations, sponsors, and outcomes.
+In short: **operational clarity + compliance-friendly traceability + data ready for analytics / AI**.
 
 ---
 
-## 🏗️ Architecture Overview
+## Key Highlights
+
+- **End-to-end case lifecycle** — From processing and financials through GS / acceptance, COE, file lodge, visa, and enrolment — all on one auditable Application.
+- **Forensic-grade traceability** — Students, sponsors, conditions, refusals, gap proofs, and documents are linked and normalized, so you can reconstruct *what happened and why*.
+- **Rule-based, smart forms** — Offer-letter conditions, English requirements, gap justification, interviews, spouse paths, and more appear only when relevant.
+- **Evidence-first workflows** — Purpose-built tables + verification flags for ITR, salary slips, SOPs, offer letters, sponsor proofs, and English tests.
+- **Analytics-ready by design** — Clean child tables and categorical statuses power dashboards, SLA tracking, cohort analysis, risk scoring, and future AI copilots.
+- **Multi-country ready** — Destination-aware flows (e.g. Australia vs UK) with country-specific stages and rules on the same CRM backbone.
+
+---
+
+## Core Features (in plain English)
+
+### 1. Stage-based visa operations
+Counselors don’t guess the next step. The Application walks through tabs like **Processing → Financials → GS Processing → Acceptance → COE → File Lodged → Visa → Enrolled** (plus refusal / refund paths where needed).
+
+### 2. Context-aware UI
+Sections unlock based on answers — study gap type, interview timing, sponsor type, refusal handling, spouse pathways, and more. That reduces training time and **cuts operational variance** across teams.
+
+### 3. Evidence-driven decisioning
+Documents live in **structured child tables** with verification status — not a generic “uploads” folder. That supports audits, escalations, and defensible case history.
+
+### 4. Follow-ups that don’t get lost
+Deadlines and “No” answers can trigger **reminders** so counselors follow up on offers, deposits, interviews, and lodgements on time.
+
+### 5. Built for scale & intelligence
+Because data is normalized from day one, the same CRM becomes a foundation for:
+- bottleneck / SLA analytics by stage  
+- refusal & gap pattern analysis  
+- destination / university cohort insights  
+- future **AI assistance** (checklists, risk flags, draft follow-ups)
+
+---
+
+## Architecture Overview
 
 ```mermaid
 flowchart LR
@@ -66,15 +94,15 @@ flowchart LR
   R --> DB
 ```
 
+**How to read this:** Users work in Frappe Desk → the Application is the hub → child tables store structured evidence → MariaDB is the system of record → reminders close the loop on follow-ups.
+
 ---
 
-## ✨ Implementation Snippets
+## Implementation Snippets
 
-These snippets are included to show **how** the system enforces workflows and remains analytics‑ready.
+Small examples of how Unideft enforces quality and workflow in code.
 
-### 1) Forcing complex child tables to open in a full modal form
-
-Some child tables are intentionally edited via a modal (form view) for usability and data quality.
+### 1) Complex child tables open in a full modal (better data quality)
 
 Source: `erpnext/crm/doctype/application/application.js`
 
@@ -107,9 +135,9 @@ refresh(frm) {
 }
 ```
 
-### 2) Table MultiSelect → dynamic “Conditions” sections
+### 2) Offer-letter conditions → dynamic Financials sections
 
-Offer‑letter conditions are stored as **Table MultiSelect rows**, and Financials sections appear based on selected `condition` values.
+Conditions are stored as **Table MultiSelect** rows. Matching sections (e.g. Interview) only render when selected.
 
 Source: `erpnext/crm/doctype/application/application.json`
 
@@ -123,9 +151,7 @@ doc.conditions_on_offer_letter
 })
 ```
 
-### 3) Structured evidence tables (purpose‑built child doctype)
-
-Instead of a generic “documents” table, certain stages use tailored doctypes to maintain clean semantics.
+### 3) Purpose-built evidence tables (not generic attachments)
 
 Source: `erpnext/crm/doctype/application_documents_10th_to_12th/application_documents_10th_to_12th.json`
 
@@ -156,19 +182,21 @@ Source: `erpnext/crm/doctype/application_documents_10th_to_12th/application_docu
 
 ---
 
-## 🧱 Tech Stack
+## Tech Stack
 
-- **Framework**: Frappe / ERPNext
-- **Backend**: Python
-- **Client**: JavaScript (form scripts)
-- **Database**: MariaDB (via Frappe)
-- **UI**: Frappe Desk (DocTypes, Tabs, Child Tables, conditional sections)
+| Layer | Choice |
+|--------|--------|
+| Platform | **Frappe / ERPNext** |
+| Backend | **Python** |
+| Frontend logic | **JavaScript** form scripts |
+| Database | **MariaDB** |
+| UX | Frappe Desk — DocTypes, tabs, child tables, conditional sections |
 
 ---
 
-## 🛠 Setup (High‑Level)
+## Setup (high-level)
 
-> Keep setup simple for reviewers; production deployments may differ.
+> Enough for reviewers to understand the stack. Production setups may differ.
 
 ```bash
 cd /path/to/frappe-bench/apps
@@ -185,5 +213,5 @@ bench restart
 
 ## Notes / Sanitization
 
-- No secrets, tokens, or real client data are included.
-- If you want access to a full private demo environment, contact the author.
+- No API keys, tokens, or real student/client data in this showcase.
+- Want a private demo walkthrough? Contact the author.
