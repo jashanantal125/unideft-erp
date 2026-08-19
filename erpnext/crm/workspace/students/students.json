@@ -22,7 +22,7 @@
  "is_hidden": 0,
  "label": "Students",
  "links": [],
- "modified": "2025-11-26 17:05:20.147456",
+ "modified": "2026-08-11 15:29:49.083435",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Students",
@@ -40,10 +40,10 @@
  "restrict_to_domain": "",
  "roles": [
   {
-   "role": "System Manager"
+   "role": "Administrator"
   },
   {
-   "role": "Administrator"
+   "role": "System Manager"
   },
   {
    "role": "CRM Admin"
@@ -61,13 +61,13 @@
    "role": "Agent"
   },
   {
+   "role": "agents"
+  },
+  {
    "role": "B2B Agent"
   },
   {
    "role": "B2C Agent"
-  },
-  {
-   "role": "agents"
   }
  ],
  "sequence_id": 19.0,

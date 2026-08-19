@@ -1,0 +1,628 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-08-19 12:20:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "field_order": [
+  "sponsor_occupation",
+  "occupation_other_details",
+  "occupation_other_upload",
+  "business_proof",
+  "gst_number",
+  "gst_verified",
+  "gst_certificate_upload",
+  "msme_company_name",
+  "msme_business_start_date",
+  "msme_registration_date",
+  "msme_registration_duration",
+  "msme_certificate_upload",
+  "incorporation_business_start_date",
+  "incorporation_registration_date",
+  "incorporation_certificate_upload",
+  "incorporation_current_account_statement",
+  "shop_act_company_name",
+  "shop_act_business_start_date",
+  "shop_act_registration_date",
+  "shop_act_registration_duration",
+  "shop_act_certificate_upload",
+  "iec_company_name",
+  "iec_business_start_date",
+  "iec_registration_date",
+  "iec_registration_duration",
+  "iec_certificate_upload",
+  "duration_additional_docs_note",
+  "duration_no_additional_docs_note",
+  "additional_current_account_statement",
+  "additional_gst_certificate",
+  "business_other_details",
+  "business_other_upload",
+  "job_type",
+  "gov_department",
+  "gov_position",
+  "gov_id_card",
+  "gov_salary_slip",
+  "gov_salary_statement",
+  "gov_slip_current_salary",
+  "gov_slip_gpf_amount",
+  "gov_slip_upload",
+  "gov_statement_current_salary",
+  "gov_statement_upload",
+  "private_company_name",
+  "private_department",
+  "private_position",
+  "private_experience_letter",
+  "private_id_card",
+  "private_salary_slip",
+  "private_salary_statement",
+  "private_slip_current_salary",
+  "private_slip_upload",
+  "private_statement_current_salary",
+  "private_statement_upload",
+  "retired_department",
+  "retired_position",
+  "retired_date",
+  "retired_id_card",
+  "retired_pension_statement",
+  "retired_pension_proof",
+  "retired_salary_statement",
+  "farmer_income",
+  "farmer_income_support_type",
+  "farmer_tehsildar_income",
+  "farmer_tehsildar_matches_itrs",
+  "farmer_tehsildar_upload",
+  "farmer_family_id_income",
+  "farmer_family_income_matches_itrs",
+  "farmer_family_id_upload",
+  "farmer_jform_year",
+  "farmer_jform_amount",
+  "farmer_jform_sixty_percent_match_itrs",
+  "farmer_jform_upload",
+  "farmer_other_details",
+  "farmer_other_upload"
+ ],
+ "fields": [
+  {
+   "fieldname": "sponsor_occupation",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Occupation",
+   "length": 20,
+   "options": "\nBusiness\nJob\nFarmer\nOther",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.sponsor_occupation == 'Other'",
+   "fieldname": "occupation_other_details",
+   "fieldtype": "Text",
+   "label": "Occupation Details",
+   "mandatory_depends_on": "eval:doc.sponsor_occupation == 'Other'"
+  },
+  {
+   "depends_on": "eval:doc.sponsor_occupation == 'Other'",
+   "fieldname": "occupation_other_upload",
+   "fieldtype": "Attach",
+   "label": "Supporting Documents"
+  },
+  {
+   "depends_on": "eval:doc.sponsor_occupation == 'Business'",
+   "fieldname": "business_proof",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Business Proof",
+   "length": 40,
+   "mandatory_depends_on": "eval:doc.sponsor_occupation == 'Business'",
+   "options": "\nGST Certificate\nMSME Certificate\nIncorporation Certificate\nShop Act\nIEC Certificate\nOthers"
+  },
+  {
+   "depends_on": "eval:doc.business_proof == 'GST Certificate'",
+   "fieldname": "gst_number",
+   "fieldtype": "Data",
+   "label": "GST Number",
+   "length": 32,
+   "mandatory_depends_on": "eval:doc.business_proof == 'GST Certificate'"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.business_proof == 'GST Certificate'",
+   "fieldname": "gst_verified",
+   "fieldtype": "Check",
+   "label": "GST Verified"
+  },
+  {
+   "depends_on": "eval:doc.business_proof == 'GST Certificate'",
+   "fieldname": "gst_certificate_upload",
+   "fieldtype": "Attach",
+   "label": "Upload GST Certificate",
+   "mandatory_depends_on": "eval:doc.business_proof == 'GST Certificate'"
+  },
+  {
+   "depends_on": "eval:doc.business_proof == 'MSME Certificate'",
+   "fieldname": "msme_company_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Company Name",
+   "length": 140,
+   "mandatory_depends_on": "eval:doc.business_proof == 'MSME Certificate'"
+  },
+  {
+   "depends_on": "eval:doc.business_proof == 'MSME Certificate'",
+   "fieldname": "msme_business_start_date",
+   "fieldtype": "Date",
+   "label": "Business Start Date",
+   "mandatory_depends_on": "eval:doc.business_proof == 'MSME Certificate'"
+  },
+  {
+   "depends_on": "eval:doc.business_proof == 'MSME Certificate'",
+   "fieldname": "msme_registration_date",
+   "fieldtype": "Date",
+   "label": "MSME Registration Date",
+   "mandatory_depends_on": "eval:doc.business_proof == 'MSME Certificate'"
+  },
+  {
+   "depends_on": "eval:doc.business_proof == 'MSME Certificate'",
+   "fieldname": "msme_registration_duration",
+   "fieldtype": "Select",
+   "label": "Registration Duration",
+   "length": 20,
+   "mandatory_depends_on": "eval:doc.business_proof == 'MSME Certificate'",
+   "options": "\nBelow 1 Year\nBelow 2 Years\nAbove 2 Years"
+  },
+  {
+   "depends_on": "eval:doc.business_proof == 'MSME Certificate'",
+   "fieldname": "msme_certificate_upload",
+   "fieldtype": "Attach",
+   "label": "MSME Certificate Upload",
+   "mandatory_depends_on": "eval:doc.business_proof == 'MSME Certificate'"
+  },
+  {
+   "depends_on": "eval:doc.business_proof == 'Incorporation Certificate'",
+   "fieldname": "incorporation_business_start_date",
+   "fieldtype": "Date",
+   "label": "Business Start Date",
+   "mandatory_depends_on": "eval:doc.business_proof == 'Incorporation Certificate'"
+  },
+  {
+   "depends_on": "eval:doc.business_proof == 'Incorporation Certificate'",
+   "fieldname": "incorporation_registration_date",
+   "fieldtype": "Date",
+   "label": "Registration Date",
+   "mandatory_depends_on": "eval:doc.business_proof == 'Incorporation Certificate'"
+  },
+  {
+   "depends_on": "eval:doc.business_proof == 'Incorporation Certificate'",
+   "fieldname": "incorporation_certificate_upload",
+   "fieldtype": "Attach",
+   "label": "Incorporation Certificate Upload",
+   "mandatory_depends_on": "eval:doc.business_proof == 'Incorporation Certificate'"
+  },
+  {
+   "depends_on": "eval:doc.business_proof == 'Incorporation Certificate'",
+   "fieldname": "incorporation_current_account_statement",
+   "fieldtype": "Attach",
+   "label": "Current Account Statement Upload",
+   "mandatory_depends_on": "eval:doc.business_proof == 'Incorporation Certificate'"
+  },
+  {
+   "depends_on": "eval:doc.business_proof == 'Shop Act'",
+   "fieldname": "shop_act_company_name",
+   "fieldtype": "Data",
+   "label": "Company Name",
+   "length": 140,
+   "mandatory_depends_on": "eval:doc.business_proof == 'Shop Act'"
+  },
+  {
+   "depends_on": "eval:doc.business_proof == 'Shop Act'",
+   "fieldname": "shop_act_business_start_date",
+   "fieldtype": "Date",
+   "label": "Business Start Date",
+   "mandatory_depends_on": "eval:doc.business_proof == 'Shop Act'"
+  },
+  {
+   "depends_on": "eval:doc.business_proof == 'Shop Act'",
+   "fieldname": "shop_act_registration_date",
+   "fieldtype": "Date",
+   "label": "Registration Date",
+   "mandatory_depends_on": "eval:doc.business_proof == 'Shop Act'"
+  },
+  {
+   "depends_on": "eval:doc.business_proof == 'Shop Act'",
+   "fieldname": "shop_act_registration_duration",
+   "fieldtype": "Select",
+   "label": "Registration Duration",
+   "length": 20,
+   "mandatory_depends_on": "eval:doc.business_proof == 'Shop Act'",
+   "options": "\nBelow 1 Year\nBelow 2 Years\nAbove 2 Years"
+  },
+  {
+   "depends_on": "eval:doc.business_proof == 'Shop Act'",
+   "fieldname": "shop_act_certificate_upload",
+   "fieldtype": "Attach",
+   "label": "Shop Act Certificate Upload",
+   "mandatory_depends_on": "eval:doc.business_proof == 'Shop Act'"
+  },
+  {
+   "depends_on": "eval:doc.business_proof == 'IEC Certificate'",
+   "fieldname": "iec_company_name",
+   "fieldtype": "Data",
+   "label": "Company Name",
+   "length": 140,
+   "mandatory_depends_on": "eval:doc.business_proof == 'IEC Certificate'"
+  },
+  {
+   "depends_on": "eval:doc.business_proof == 'IEC Certificate'",
+   "fieldname": "iec_business_start_date",
+   "fieldtype": "Date",
+   "label": "Business Start Date",
+   "mandatory_depends_on": "eval:doc.business_proof == 'IEC Certificate'"
+  },
+  {
+   "depends_on": "eval:doc.business_proof == 'IEC Certificate'",
+   "fieldname": "iec_registration_date",
+   "fieldtype": "Date",
+   "label": "Registration Date",
+   "mandatory_depends_on": "eval:doc.business_proof == 'IEC Certificate'"
+  },
+  {
+   "depends_on": "eval:doc.business_proof == 'IEC Certificate'",
+   "fieldname": "iec_registration_duration",
+   "fieldtype": "Select",
+   "label": "Registration Duration",
+   "length": 20,
+   "mandatory_depends_on": "eval:doc.business_proof == 'IEC Certificate'",
+   "options": "\nBelow 1 Year\nBelow 2 Years\nAbove 2 Years"
+  },
+  {
+   "depends_on": "eval:doc.business_proof == 'IEC Certificate'",
+   "fieldname": "iec_certificate_upload",
+   "fieldtype": "Attach",
+   "label": "IEC Certificate Upload",
+   "mandatory_depends_on": "eval:doc.business_proof == 'IEC Certificate'"
+  },
+  {
+   "bold": 1,
+   "default": "Current Account Statement and GST Certificate are mandatory.",
+   "depends_on": "eval:(doc.business_proof=='MSME Certificate' && (doc.msme_registration_duration=='Below 1 Year' || doc.msme_registration_duration=='Below 2 Years')) || (doc.business_proof=='Shop Act' && (doc.shop_act_registration_duration=='Below 1 Year' || doc.shop_act_registration_duration=='Below 2 Years')) || (doc.business_proof=='IEC Certificate' && (doc.iec_registration_duration=='Below 1 Year' || doc.iec_registration_duration=='Below 2 Years'))",
+   "fieldname": "duration_additional_docs_note",
+   "fieldtype": "Small Text",
+   "label": "Note",
+   "read_only": 1
+  },
+  {
+   "bold": 1,
+   "default": "No additional documents required.",
+   "depends_on": "eval:(doc.business_proof=='MSME Certificate' && doc.msme_registration_duration=='Above 2 Years') || (doc.business_proof=='Shop Act' && doc.shop_act_registration_duration=='Above 2 Years') || (doc.business_proof=='IEC Certificate' && doc.iec_registration_duration=='Above 2 Years')",
+   "fieldname": "duration_no_additional_docs_note",
+   "fieldtype": "Small Text",
+   "label": "Note",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:(doc.business_proof=='MSME Certificate' && (doc.msme_registration_duration=='Below 1 Year' || doc.msme_registration_duration=='Below 2 Years')) || (doc.business_proof=='Shop Act' && (doc.shop_act_registration_duration=='Below 1 Year' || doc.shop_act_registration_duration=='Below 2 Years')) || (doc.business_proof=='IEC Certificate' && (doc.iec_registration_duration=='Below 1 Year' || doc.iec_registration_duration=='Below 2 Years'))",
+   "fieldname": "additional_current_account_statement",
+   "fieldtype": "Attach",
+   "label": "Current Account Statement",
+   "mandatory_depends_on": "eval:(doc.business_proof=='MSME Certificate' && (doc.msme_registration_duration=='Below 1 Year' || doc.msme_registration_duration=='Below 2 Years')) || (doc.business_proof=='Shop Act' && (doc.shop_act_registration_duration=='Below 1 Year' || doc.shop_act_registration_duration=='Below 2 Years')) || (doc.business_proof=='IEC Certificate' && (doc.iec_registration_duration=='Below 1 Year' || doc.iec_registration_duration=='Below 2 Years'))"
+  },
+  {
+   "depends_on": "eval:(doc.business_proof=='MSME Certificate' && (doc.msme_registration_duration=='Below 1 Year' || doc.msme_registration_duration=='Below 2 Years')) || (doc.business_proof=='Shop Act' && (doc.shop_act_registration_duration=='Below 1 Year' || doc.shop_act_registration_duration=='Below 2 Years')) || (doc.business_proof=='IEC Certificate' && (doc.iec_registration_duration=='Below 1 Year' || doc.iec_registration_duration=='Below 2 Years'))",
+   "fieldname": "additional_gst_certificate",
+   "fieldtype": "Attach",
+   "label": "GST Certificate",
+   "mandatory_depends_on": "eval:(doc.business_proof=='MSME Certificate' && (doc.msme_registration_duration=='Below 1 Year' || doc.msme_registration_duration=='Below 2 Years')) || (doc.business_proof=='Shop Act' && (doc.shop_act_registration_duration=='Below 1 Year' || doc.shop_act_registration_duration=='Below 2 Years')) || (doc.business_proof=='IEC Certificate' && (doc.iec_registration_duration=='Below 1 Year' || doc.iec_registration_duration=='Below 2 Years'))"
+  },
+  {
+   "depends_on": "eval:doc.business_proof == 'Others'",
+   "fieldname": "business_other_details",
+   "fieldtype": "Text",
+   "label": "Details",
+   "mandatory_depends_on": "eval:doc.business_proof == 'Others'"
+  },
+  {
+   "depends_on": "eval:doc.business_proof == 'Others'",
+   "fieldname": "business_other_upload",
+   "fieldtype": "Attach",
+   "label": "Upload",
+   "mandatory_depends_on": "eval:doc.business_proof == 'Others'"
+  },
+  {
+   "depends_on": "eval:doc.sponsor_occupation == 'Job'",
+   "fieldname": "job_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Job Type",
+   "length": 40,
+   "mandatory_depends_on": "eval:doc.sponsor_occupation == 'Job'",
+   "options": "\nGovernment\nPrivate\nRetired from Govt. services"
+  },
+  {
+   "depends_on": "eval:doc.job_type == 'Government'",
+   "fieldname": "gov_department",
+   "fieldtype": "Data",
+   "label": "Department",
+   "length": 140
+  },
+  {
+   "depends_on": "eval:doc.job_type == 'Government'",
+   "fieldname": "gov_position",
+   "fieldtype": "Data",
+   "label": "Position",
+   "length": 140
+  },
+  {
+   "depends_on": "eval:doc.job_type == 'Government'",
+   "fieldname": "gov_id_card",
+   "fieldtype": "Attach",
+   "label": "ID Card"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.job_type == 'Government'",
+   "fieldname": "gov_salary_slip",
+   "fieldtype": "Check",
+   "label": "Has Salary Slips"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.job_type == 'Government'",
+   "fieldname": "gov_salary_statement",
+   "fieldtype": "Check",
+   "label": "Has Salary Statement"
+  },
+  {
+   "depends_on": "eval:doc.job_type == 'Government' && doc.gov_salary_slip == 1",
+   "fieldname": "gov_slip_current_salary",
+   "fieldtype": "Currency",
+   "label": "Current Salary (from Slips)"
+  },
+  {
+   "depends_on": "eval:doc.job_type == 'Government' && doc.gov_salary_slip == 1",
+   "fieldname": "gov_slip_gpf_amount",
+   "fieldtype": "Currency",
+   "label": "GPF Amount"
+  },
+  {
+   "depends_on": "eval:doc.job_type == 'Government' && doc.gov_salary_slip == 1",
+   "fieldname": "gov_slip_upload",
+   "fieldtype": "Attach",
+   "label": "Upload Salary Slips (Min 6 months)"
+  },
+  {
+   "depends_on": "eval:doc.job_type == 'Government' && doc.gov_salary_statement == 1",
+   "fieldname": "gov_statement_current_salary",
+   "fieldtype": "Currency",
+   "label": "Current Salary (from Statement)"
+  },
+  {
+   "depends_on": "eval:doc.job_type == 'Government' && doc.gov_salary_statement == 1",
+   "fieldname": "gov_statement_upload",
+   "fieldtype": "Attach",
+   "label": "Upload Salary Statement (Min 6 months)"
+  },
+  {
+   "depends_on": "eval:doc.job_type == 'Private'",
+   "fieldname": "private_company_name",
+   "fieldtype": "Data",
+   "label": "Company Name",
+   "length": 140
+  },
+  {
+   "depends_on": "eval:doc.job_type == 'Private'",
+   "fieldname": "private_department",
+   "fieldtype": "Data",
+   "label": "Department",
+   "length": 140
+  },
+  {
+   "depends_on": "eval:doc.job_type == 'Private'",
+   "fieldname": "private_position",
+   "fieldtype": "Data",
+   "label": "Position",
+   "length": 140
+  },
+  {
+   "depends_on": "eval:doc.job_type == 'Private'",
+   "fieldname": "private_experience_letter",
+   "fieldtype": "Attach",
+   "label": "Experience Letter"
+  },
+  {
+   "depends_on": "eval:doc.job_type == 'Private'",
+   "fieldname": "private_id_card",
+   "fieldtype": "Attach",
+   "label": "ID Card"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.job_type == 'Private'",
+   "fieldname": "private_salary_slip",
+   "fieldtype": "Check",
+   "label": "Has Salary Slips"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.job_type == 'Private'",
+   "fieldname": "private_salary_statement",
+   "fieldtype": "Check",
+   "label": "Has Salary Statement"
+  },
+  {
+   "depends_on": "eval:doc.job_type == 'Private' && doc.private_salary_slip == 1",
+   "fieldname": "private_slip_current_salary",
+   "fieldtype": "Currency",
+   "label": "Current Salary (from Slips)"
+  },
+  {
+   "depends_on": "eval:doc.job_type == 'Private' && doc.private_salary_slip == 1",
+   "fieldname": "private_slip_upload",
+   "fieldtype": "Attach",
+   "label": "Upload Salary Slips (Min 6 months)"
+  },
+  {
+   "depends_on": "eval:doc.job_type == 'Private' && doc.private_salary_statement == 1",
+   "fieldname": "private_statement_current_salary",
+   "fieldtype": "Currency",
+   "label": "Current Salary (from Statement)"
+  },
+  {
+   "depends_on": "eval:doc.job_type == 'Private' && doc.private_salary_statement == 1",
+   "fieldname": "private_statement_upload",
+   "fieldtype": "Attach",
+   "label": "Upload Salary Statement (Min 6 months)"
+  },
+  {
+   "depends_on": "eval:doc.job_type == 'Retired from Govt. services'",
+   "fieldname": "retired_department",
+   "fieldtype": "Data",
+   "label": "Department",
+   "length": 140
+  },
+  {
+   "depends_on": "eval:doc.job_type == 'Retired from Govt. services'",
+   "fieldname": "retired_position",
+   "fieldtype": "Data",
+   "label": "Position",
+   "length": 140
+  },
+  {
+   "depends_on": "eval:doc.job_type == 'Retired from Govt. services'",
+   "fieldname": "retired_date",
+   "fieldtype": "Date",
+   "label": "Retired Date"
+  },
+  {
+   "depends_on": "eval:doc.job_type == 'Retired from Govt. services'",
+   "fieldname": "retired_id_card",
+   "fieldtype": "Attach",
+   "label": "ID Card"
+  },
+  {
+   "depends_on": "eval:doc.job_type == 'Retired from Govt. services'",
+   "fieldname": "retired_pension_statement",
+   "fieldtype": "Currency",
+   "label": "Current Pension"
+  },
+  {
+   "depends_on": "eval:doc.job_type == 'Retired from Govt. services'",
+   "fieldname": "retired_pension_proof",
+   "fieldtype": "Attach",
+   "label": "Pension Proof",
+   "mandatory_depends_on": "eval:doc.job_type == 'Retired from Govt. services'"
+  },
+  {
+   "depends_on": "eval:doc.job_type == 'Retired from Govt. services'",
+   "fieldname": "retired_salary_statement",
+   "fieldtype": "Attach",
+   "label": "Upload Salary Statement (Min 6 months)"
+  },
+  {
+   "depends_on": "eval:doc.sponsor_occupation == 'Farmer'",
+   "fieldname": "farmer_income",
+   "fieldtype": "Currency",
+   "label": "Income"
+  },
+  {
+   "depends_on": "eval:doc.sponsor_occupation == 'Farmer'",
+   "fieldname": "farmer_income_support_type",
+   "fieldtype": "Select",
+   "label": "Income Supporting Documents",
+   "length": 40,
+   "options": "\nTehsildar Income Proof\nFamily ID\nJ forms\nOther"
+  },
+  {
+   "depends_on": "eval:doc.farmer_income_support_type == 'Tehsildar Income Proof'",
+   "fieldname": "farmer_tehsildar_income",
+   "fieldtype": "Currency",
+   "label": "Income"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.farmer_income_support_type == 'Tehsildar Income Proof'",
+   "fieldname": "farmer_tehsildar_matches_itrs",
+   "fieldtype": "Check",
+   "label": "Income Matches with Provided ITRs"
+  },
+  {
+   "depends_on": "eval:doc.farmer_income_support_type == 'Tehsildar Income Proof' && doc.farmer_tehsildar_matches_itrs == 1",
+   "fieldname": "farmer_tehsildar_upload",
+   "fieldtype": "Attach",
+   "label": "Upload Income Proof"
+  },
+  {
+   "depends_on": "eval:doc.farmer_income_support_type == 'Family ID'",
+   "fieldname": "farmer_family_id_income",
+   "fieldtype": "Currency",
+   "label": "Income"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.farmer_income_support_type == 'Family ID'",
+   "fieldname": "farmer_family_income_matches_itrs",
+   "fieldtype": "Check",
+   "label": "Income Matches with Provided ITRs"
+  },
+  {
+   "depends_on": "eval:doc.farmer_income_support_type == 'Family ID' && doc.farmer_family_income_matches_itrs == 1",
+   "fieldname": "farmer_family_id_upload",
+   "fieldtype": "Attach",
+   "label": "Upload Family ID"
+  },
+  {
+   "depends_on": "eval:doc.farmer_income_support_type == 'J forms'",
+   "fieldname": "farmer_jform_year",
+   "fieldtype": "Data",
+   "label": "Assessment Year",
+   "length": 20
+  },
+  {
+   "depends_on": "eval:doc.farmer_income_support_type == 'J forms'",
+   "fieldname": "farmer_jform_amount",
+   "fieldtype": "Currency",
+   "label": "Amount"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.farmer_income_support_type == 'J forms'",
+   "fieldname": "farmer_jform_sixty_percent_match_itrs",
+   "fieldtype": "Check",
+   "label": "60% Amount Match with ITR"
+  },
+  {
+   "depends_on": "eval:doc.farmer_income_support_type == 'J forms' && doc.farmer_jform_sixty_percent_match_itrs == 1",
+   "fieldname": "farmer_jform_upload",
+   "fieldtype": "Attach",
+   "label": "Upload J Form"
+  },
+  {
+   "depends_on": "eval:doc.farmer_income_support_type == 'Other'",
+   "fieldname": "farmer_other_details",
+   "fieldtype": "Text",
+   "label": "Details",
+   "mandatory_depends_on": "eval:doc.farmer_income_support_type == 'Other'"
+  },
+  {
+   "depends_on": "eval:doc.farmer_income_support_type == 'Other'",
+   "fieldname": "farmer_other_upload",
+   "fieldtype": "Attach",
+   "label": "Upload",
+   "mandatory_depends_on": "eval:doc.farmer_income_support_type == 'Other'"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-08-19 12:20:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Application Sponsor Occupation",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

@@ -15,6 +15,7 @@
   "type",
   "shore_type",
   "is_direct",
+  "direct_processing_company",
   "vendor_name",
   "vendor_id",
   "old_id",
@@ -132,6 +133,15 @@
    "fieldname": "is_direct",
    "fieldtype": "Check",
    "label": "is Direct"
+  },
+  {
+   "depends_on": "eval:doc.is_direct == 1",
+   "description": "Company automatically used when Processing Agent Type is Direct.",
+   "fieldname": "direct_processing_company",
+   "fieldtype": "Link",
+   "label": "Direct Processing Company",
+   "mandatory_depends_on": "eval:doc.is_direct == 1",
+   "options": "Our Company"
   },
   {
    "fieldname": "vendor_name",

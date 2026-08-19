@@ -7,6 +7,7 @@ frappe.ui.form.on("Assessment Request", {
 			frm.set_value("requested_by", frappe.session.user);
 		}
 		setup_student_query(frm);
+		toggle_assessment_workflow_for_agents(frm);
 	},
 
 	student_already_registered(frm) {
@@ -40,19 +41,37 @@ frappe.ui.form.on("Assessment Request", {
 	},
 });
 
-function setup_student_query(frm) {
-	frm.set_query("student", () => {
-		const filters = {};
-		const roles = frappe.user_roles || [];
-		if (
-			roles.includes("Agent") ||
-			roles.includes("B2B Agent") ||
-			roles.includes("B2C Agent")
-		) {
-			filters.agent = frappe.session.user;
+const AGENT_ROLES = ["Agent", "B2B Agent", "B2C Agent", "agents"];
+const STAFF_ROLES = [
+	"System Manager",
+	"Administrator",
+	"CRM Admin",
+	"CRM Sales Staff",
+	"Team Lead",
+	"Team Executive",
+];
+
+function user_is_agent_only() {
+	const roles = frappe.user_roles || [];
+	const is_agent = roles.some((r) => AGENT_ROLES.includes(r));
+	const is_staff = roles.some((r) => STAFF_ROLES.includes(r));
+	return is_agent && !is_staff;
+}
+
+/** Assessment Grid / Workflow is backend-only — hide from agent roles. */
+function toggle_assessment_workflow_for_agents(frm) {
+	const hide = user_is_agent_only();
+	["assessment_workflow_tab", "assessment_vendors_section", "assessment_vendors"].forEach(
+		(field) => {
+			frm.set_df_property(field, "hidden", hide ? 1 : 0);
 		}
-		return { filters };
-	});
+	);
+}
+
+function setup_student_query(frm) {
+	// Do not filter by Student.agent — that column does not exist.
+	// Agent scoping is handled server-side in Student.get_list_query (owner / linked apps).
+	frm.set_query("student", () => ({ filters: {} }));
 }
 
 const ASR_REMINDER_SESSION = {};

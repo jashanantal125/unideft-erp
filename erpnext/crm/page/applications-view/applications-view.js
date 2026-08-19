@@ -506,11 +506,18 @@ function createProgramsContent(app) {
 }
 
 function createDocumentsContent(app) {
-    return `
+	return `
 		<div class="documents-content" data-app="${escapeHtml(app.name)}">
-			<div class="documents-loading">
-				<div class="spinner-small"></div>
-				<p>Loading documents...</p>
+			<div class="documents-upload-bar" style="margin-bottom:10px;">
+				<button type="button" class="btn btn-sm btn-primary" onclick="uploadApplicationDocument('${app.name}')">
+					<i class="fa fa-upload"></i> Upload Document
+				</button>
+			</div>
+			<div class="documents-list-host" id="documents-list-${app.name}">
+				<div class="documents-loading">
+					<div class="spinner-small"></div>
+					<p>Loading documents...</p>
+				</div>
 			</div>
 		</div>
 	`;
@@ -518,6 +525,11 @@ function createDocumentsContent(app) {
 
 function loadDocumentsForCard(appName, container) {
 	if (!container) return;
+	const listHost =
+		(container.classList && container.classList.contains("documents-list-host") && container) ||
+		container.querySelector?.(".documents-list-host") ||
+		container;
+	listHost.innerHTML = `<div class="documents-loading"><div class="spinner-small"></div><p>Loading documents...</p></div>`;
 	frappe.call({
 		method: 'erpnext.crm.doctype.application.application.get_application_documents_by_stage',
 		args: { name: appName },
@@ -525,7 +537,7 @@ function loadDocumentsForCard(appName, container) {
 			const groups = response.message || {};
 			const stageNames = Object.keys(groups);
 			if (!stageNames.length) {
-				container.innerHTML = `<p class="text-muted">No documents uploaded yet</p>`;
+				listHost.innerHTML = `<p class="text-muted">No documents uploaded yet. Use Upload Document above.</p>`;
 				return;
 			}
 			let html = '<div class="documents-by-stage-list" style="display:flex;flex-direction:column;gap:14px;">';
@@ -552,20 +564,120 @@ function loadDocumentsForCard(appName, container) {
 				html += `</div></div>`;
 			});
 			html += '</div>';
-			container.innerHTML = html;
+			listHost.innerHTML = html;
 		},
 		error: function () {
-			container.innerHTML = `<p class="text-danger">Failed to load documents</p>`;
+			listHost.innerHTML = `<p class="text-danger">Failed to load documents</p>`;
 		}
 	});
 }
 
+function uploadApplicationDocument(appName) {
+	if (!appName) return;
+	new frappe.ui.FileUploader({
+		doctype: "Application",
+		docname: appName,
+		folder: "Home/Attachments",
+		allow_multiple: true,
+		disable_file_browser: true,
+		dialog_title: __("Upload Document"),
+		on_success() {
+			frappe.show_alert({ message: __("Document uploaded"), indicator: "green" }, 3);
+			const card = document.querySelector(`.application-card[data-app-name="${appName}"]`);
+			const host =
+				(card && card.querySelector(`#documents-list-${appName}`)) ||
+				(card && card.querySelector(".documents-list-host"));
+			if (host) {
+				loadDocumentsForCard(appName, host);
+			}
+		},
+	});
+}
+
 function createNotesContent(app) {
-    return `
+	return `
 		<div class="notes-content">
-			<p class="text-muted">Notes will be displayed here</p>
+			<div class="notes-chat-banner" id="notes-chat-banner-${app.name}" style="display:none;gap:8px;align-items:center;margin-bottom:10px;padding:8px 12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;font-size:13px;">
+				<i class="fa fa-comments"></i>
+				<span>Chat anything by typing in the notes box below.</span>
+			</div>
+			<div class="add-comment-inline" style="display:flex;gap:8px;margin-bottom:12px;">
+				<input type="text" id="add-comment-input-${app.name}" class="form-control"
+					placeholder="Chat / add a note..."
+					onkeydown="if (event.key === 'Enter') { event.preventDefault(); addApplicationComment('${app.name}'); }" />
+				<button class="btn btn-primary btn-sm" onclick="addApplicationComment('${app.name}')">Send</button>
+			</div>
+			<div class="notes-list-container" id="notes-list-${app.name}">
+				<p class="text-muted">Loading comments...</p>
+			</div>
 		</div>
 	`;
+}
+
+function fetchApplicationComments(appName, container) {
+	if (!container) return;
+	frappe.call({
+		method: "frappe.client.get_list",
+		args: {
+			doctype: "Comment",
+			filters: {
+				reference_doctype: "Application",
+				reference_name: appName,
+				comment_type: "Comment",
+			},
+			fields: ["name", "content", "owner", "creation", "comment_by"],
+			order_by: "creation desc",
+		},
+		callback(response) {
+			const comments = response.message || [];
+			if (!comments.length) {
+				container.innerHTML = `<p class="text-muted">No comments yet</p>`;
+				return;
+			}
+			container.innerHTML = comments
+				.map((c) => {
+					const by = c.comment_by || c.owner || "Unknown";
+					const when = c.creation ? frappe.datetime.str_to_user(c.creation) : "";
+					const body = (c.content || "").replace(/style\s*=\s*["'][^"']*["']/gi, "");
+					return `<div style="border-bottom:1px solid #eee;padding:8px 0;">
+						<div style="font-size:12px;color:#6b7280;"><strong>${escapeHtml(by)}</strong> · ${escapeHtml(when)}</div>
+						<div>${body}</div>
+					</div>`;
+				})
+				.join("");
+		},
+		error() {
+			container.innerHTML = `<p class="text-danger">Failed to load comments</p>`;
+		},
+	});
+}
+
+function addApplicationComment(appName) {
+	const input = document.getElementById(`add-comment-input-${appName}`);
+	if (!input) return;
+	const content = input.value.trim();
+	if (!content) {
+		frappe.show_alert(__("Please enter a note before sending."), 3);
+		return;
+	}
+	frappe.call({
+		method: "frappe.client.insert",
+		args: {
+			doc: {
+				doctype: "Comment",
+				comment_type: "Comment",
+				reference_doctype: "Application",
+				reference_name: appName,
+				content,
+			},
+		},
+		callback() {
+			frappe.show_alert(__("Note sent."), 3);
+			input.value = "";
+			const container = document.getElementById(`notes-list-${appName}`);
+			if (container) fetchApplicationComments(appName, container);
+		},
+	});
 }
 
 function createRemindersContent(app) {
@@ -673,8 +785,16 @@ function updateTabContent(contentArea, tabName, appData) {
     contentArea.innerHTML = content;
 
 	if (tabName === 'documents' && appData && appData.name) {
-		const docsContainer = contentArea.querySelector('.documents-content');
+		const docsContainer =
+			contentArea.querySelector('.documents-list-host') ||
+			contentArea.querySelector('.documents-content');
 		loadDocumentsForCard(appData.name, docsContainer);
+	}
+	if (tabName === 'notes' && appData && appData.name) {
+		const notesContainer = contentArea.querySelector('.notes-list-container');
+		if (notesContainer) {
+			fetchApplicationComments(appData.name, notesContainer);
+		}
 	}
 }
 
@@ -700,7 +820,28 @@ function editStatus(name) {
 }
 
 function openChat(name) {
-    frappe.show_alert('Chat functionality coming soon!', 3);
+	const card = document.querySelector(`.application-card[data-app-name="${name}"]`);
+	if (!card) {
+		frappe.show_alert({ message: __("Application card not found"), indicator: "orange" }, 3);
+		return;
+	}
+	const notesTab = card.querySelector('.tab-btn[data-tab="notes"]');
+	if (notesTab) {
+		switchTab(notesTab, "notes", name);
+	}
+	frappe.show_alert(
+		{ message: __("Chat anything by typing in the Notes box."), indicator: "blue" },
+		6
+	);
+	setTimeout(() => {
+		const banner = document.getElementById(`notes-chat-banner-${name}`);
+		if (banner) banner.style.display = "flex";
+		const input = document.getElementById(`add-comment-input-${name}`);
+		if (input) {
+			input.focus();
+			input.placeholder = __("Chat anything by typing here...");
+		}
+	}, 80);
 }
 
 function refreshApplications() {
@@ -732,3 +873,5 @@ window.switchTab = switchTab;
 window.viewApplication = viewApplication;
 window.editStatus = editStatus;
 window.openChat = openChat;
+window.addApplicationComment = addApplicationComment;
+window.uploadApplicationDocument = uploadApplicationDocument;
