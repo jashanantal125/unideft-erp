@@ -25,88 +25,49 @@
   "occupation_section",
   "occupation_documents_needed",
   "occupation_reason",
-  "sponsor_occupation",
-  "business_proof",
-  "gst_number",
-  "gst_verified",
-  "gst_certificate_upload",
-  "msme_company_name",
-  "msme_certificate_upload",
-  "msme_cert_verified",
-  "incorporation_business_start_date",
-  "incorporation_certificate_upload",
-  "shop_act_company_name",
-  "iec_company_name",
-  "iec_cert_upload",
-  "job_type",
-  "gov_department",
-  "gov_position",
-  "gov_id_card",
-  "gov_salary_slip",
-  "gov_salary_statement",
-  "gov_slip_current_salary",
-  "gov_slip_gpf_amount",
-  "gov_slip_upload",
-  "gov_statement_current_salary",
-  "gov_statement_upload",
-  "private_company_name",
-  "private_department",
-  "private_position",
-  "private_experience_letter",
-  "private_id_card",
-  "private_salary_slip",
-  "private_salary_statement",
-  "private_slip_current_salary",
-  "private_slip_upload",
-  "private_statement_current_salary",
-  "private_statement_upload",
-  "retired_department",
-  "retired_position",
-  "retired_date",
-  "retired_id_card",
-  "retired_pension_statement",
-  "retired_salary_statement",
-  "farmer_income",
-  "farmer_income_support_type",
-  "farmer_tehsildar_income",
-  "farmer_tehsildar_matches_itrs",
-  "farmer_tehsildar_upload",
-  "farmer_family_id_income",
-  "farmer_family_income_matches_itrs",
-  "farmer_family_id_upload",
-  "farmer_jform_year",
-  "farmer_jform_amount",
-  "farmer_jform_sixty_percent_match_itrs",
-  "farmer_jform_upload",
-  "farmer_other_details",
+  "occupation_documents",
   "funds_section",
   "funds_type",
   "if_fundtype_gpf",
   "fd_bank_name",
   "fd_nationalized",
+  "fd_nationalized_status",
   "fd_months_old",
   "fd_source_of_funds",
-  "fd_other_details",
   "fd_balance_cert_available",
   "fd_verified",
+  "fd_not_verified_comments",
   "fd_upload",
   "statement_bank_name",
   "statement_nationalized",
+  "statement_nationalized_status",
   "statement_fifty_thousand_times",
   "statement_source_of_funds",
-  "statement_other_details",
   "statement_balance_cert_available",
   "statement_balance_cert_same_date",
+  "statement_updated_docs_note",
   "statement_verified",
+  "statement_not_verified_comments",
   "statement_upload",
   "loan_bank_name",
+  "loan_holder_name",
+  "loan_amount",
   "loan_education_purpose",
   "loan_holder_student",
-  "loan_amount",
   "loan_covering_requirements",
+  "loan_revised_letter_note",
   "loan_security_collection",
-  "loan_security_proof",
-  "loan_letter_upload"
+  "loan_property_docs",
+  "loan_other_details",
+  "loan_other_docs",
+  "loan_verified",
+  "loan_letter_upload",
+  "other_funds_details",
+  "other_nationalized",
+  "other_nationalized_status",
+  "other_verified",
+  "other_not_verified_comments",
+  "other_funds_upload"
  ],
  "fields": [
   {
@@ -114,7 +75,8 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Sponsor Type",
-   "options": "\nMother\nFather\nRelative\nSelf\nOther",
+   "length": 20,
+   "options": "\nFather\nMother\nSelf\nSpouse\nBrother\nSister\nGuardian",
    "reqd": 1
   },
   {
@@ -133,13 +95,13 @@
    "default": "0",
    "fieldname": "dob_matched_pc_ac",
    "fieldtype": "Check",
-   "label": "DOB on PC & AC Matched"
+   "label": "DOB on Passport & A/C Matched"
   },
   {
    "default": "0",
    "fieldname": "name_matched_ac_pc",
    "fieldtype": "Check",
-   "label": "Name Matched on A/C & PC"
+   "label": "Name Matched on A/C & Passport"
   },
   {
    "depends_on": "eval:doc.name_matched_ac_pc == 1",
@@ -160,6 +122,7 @@
    "fieldname": "income_support_documents",
    "fieldtype": "Select",
    "label": "Income Support Documents",
+   "length": 20,
    "options": "\nITRs\nForm 16\nFamily ID"
   },
   {
@@ -174,14 +137,14 @@
    "depends_on": "eval:doc.income_support_documents == 'ITRs'",
    "fieldname": "dob_matched_itr_ac_pc",
    "fieldtype": "Check",
-   "label": "DOB on ITR matched with AC & PC"
+   "label": "DOB on ITR matched with A/C & Passport"
   },
   {
    "default": "0",
    "depends_on": "eval:doc.income_support_documents == 'ITRs'",
    "fieldname": "name_matched_itr_ac_pc",
    "fieldtype": "Check",
-   "label": "Name on ITR matched with AC / PC"
+   "label": "Name on ITR matched with A/C & Passport"
   },
   {
    "default": "0",
@@ -216,6 +179,7 @@
   },
   {
    "default": "0",
+   "description": "Checked = Yes. Not checked = No. If No, write the reason below.",
    "fieldname": "occupation_documents_needed",
    "fieldtype": "Check",
    "label": "Occupation Documents Needed"
@@ -228,340 +192,10 @@
   },
   {
    "depends_on": "eval:doc.occupation_documents_needed == 1",
-   "fieldname": "sponsor_occupation",
-   "fieldtype": "Select",
-   "label": "Sponsor Occupation",
-   "options": "\nBusiness\nJob\nFarmer\nOther"
-  },
-  {
-   "depends_on": "eval:doc.sponsor_occupation == 'Business'",
-   "fieldname": "business_proof",
-   "fieldtype": "Select",
-   "label": "Business Proof",
-   "options": "\nGST Certificate\nMSME Certificate\nIncorporation Certificate\nShop Act\nIEC Certificate\nOthers"
-  },
-  {
-   "depends_on": "eval:doc.business_proof == 'GST Certificate'",
-   "fieldname": "gst_number",
-   "fieldtype": "Data",
-   "label": "GST Number"
-  },
-  {
-   "default": "0",
-   "depends_on": "eval:doc.business_proof == 'GST Certificate'",
-   "fieldname": "gst_verified",
-   "fieldtype": "Check",
-   "label": "GST Verified"
-  },
-  {
-   "depends_on": "eval:doc.business_proof == 'GST Certificate'",
-   "fieldname": "gst_certificate_upload",
-   "fieldtype": "Attach",
-   "label": "Upload GST Certificate"
-  },
-  {
-   "depends_on": "eval:doc.business_proof == 'MSME Certificate'",
-   "fieldname": "msme_company_name",
-   "fieldtype": "Data",
-   "label": "Company Name"
-  },
-  {
-   "depends_on": "eval:doc.business_proof == 'MSME Certificate'",
-   "fieldname": "msme_certificate_upload",
-   "fieldtype": "Attach",
-   "label": "Upload MSME Certificate"
-  },
-  {
-   "default": "0",
-   "depends_on": "eval:doc.business_proof == 'MSME Certificate'",
-   "fieldname": "msme_cert_verified",
-   "fieldtype": "Check",
-   "label": "MSME Cert Verified"
-  },
-  {
-   "depends_on": "eval:doc.business_proof == 'Incorporation Certificate'",
-   "fieldname": "incorporation_business_start_date",
-   "fieldtype": "Date",
-   "label": "Business Start Date"
-  },
-  {
-   "depends_on": "eval:doc.business_proof == 'Incorporation Certificate'",
-   "fieldname": "incorporation_certificate_upload",
-   "fieldtype": "Attach",
-   "label": "Upload Incorporation Certificate"
-  },
-  {
-   "depends_on": "eval:doc.business_proof == 'Shop Act'",
-   "fieldname": "shop_act_company_name",
-   "fieldtype": "Data",
-   "label": "Company Name"
-  },
-  {
-   "depends_on": "eval:doc.business_proof == 'IEC Certificate'",
-   "fieldname": "iec_company_name",
-   "fieldtype": "Data",
-   "label": "Company Name"
-  },
-  {
-   "depends_on": "eval:doc.business_proof == 'IEC Certificate'",
-   "fieldname": "iec_cert_upload",
-   "fieldtype": "Attach",
-   "label": "Upload IEC Certificate"
-  },
-  {
-   "depends_on": "eval:doc.sponsor_occupation == 'Job'",
-   "fieldname": "job_type",
-   "fieldtype": "Select",
-   "label": "Job Type",
-   "options": "\nGovernment\nPrivate\nRetired from Govt. services"
-  },
-  {
-   "depends_on": "eval:doc.job_type == 'Government'",
-   "fieldname": "gov_department",
-   "fieldtype": "Data",
-   "label": "Department"
-  },
-  {
-   "depends_on": "eval:doc.job_type == 'Government'",
-   "fieldname": "gov_position",
-   "fieldtype": "Data",
-   "label": "Position"
-  },
-  {
-   "depends_on": "eval:doc.job_type == 'Government'",
-   "fieldname": "gov_id_card",
-   "fieldtype": "Attach",
-   "label": "ID Card"
-  },
-  {
-   "default": "0",
-   "depends_on": "eval:doc.job_type == 'Government'",
-   "fieldname": "gov_salary_slip",
-   "fieldtype": "Check",
-   "label": "Has Salary Slips"
-  },
-  {
-   "default": "0",
-   "depends_on": "eval:doc.job_type == 'Government'",
-   "fieldname": "gov_salary_statement",
-   "fieldtype": "Check",
-   "label": "Has Salary Statement"
-  },
-  {
-   "depends_on": "eval:doc.job_type == 'Government' && doc.gov_salary_slip == 1",
-   "fieldname": "gov_slip_current_salary",
-   "fieldtype": "Currency",
-   "label": "Current Salary (from Slips)"
-  },
-  {
-   "depends_on": "eval:doc.job_type == 'Government' && doc.gov_salary_slip == 1",
-   "fieldname": "gov_slip_gpf_amount",
-   "fieldtype": "Currency",
-   "label": "GPF Amount"
-  },
-  {
-   "depends_on": "eval:doc.job_type == 'Government' && doc.gov_salary_slip == 1",
-   "fieldname": "gov_slip_upload",
-   "fieldtype": "Attach",
-   "label": "Upload Salary Slips (Min 6 months)"
-  },
-  {
-   "depends_on": "eval:doc.job_type == 'Government' && doc.gov_salary_statement == 1",
-   "fieldname": "gov_statement_current_salary",
-   "fieldtype": "Currency",
-   "label": "Current Salary (from Statement)"
-  },
-  {
-   "depends_on": "eval:doc.job_type == 'Government' && doc.gov_salary_statement == 1",
-   "fieldname": "gov_statement_upload",
-   "fieldtype": "Attach",
-   "label": "Upload Salary Statement (Min 6 months)"
-  },
-  {
-   "depends_on": "eval:doc.job_type == 'Private'",
-   "fieldname": "private_company_name",
-   "fieldtype": "Data",
-   "label": "Company Name"
-  },
-  {
-   "depends_on": "eval:doc.job_type == 'Private'",
-   "fieldname": "private_department",
-   "fieldtype": "Data",
-   "label": "Department"
-  },
-  {
-   "depends_on": "eval:doc.job_type == 'Private'",
-   "fieldname": "private_position",
-   "fieldtype": "Data",
-   "label": "Position"
-  },
-  {
-   "depends_on": "eval:doc.job_type == 'Private'",
-   "fieldname": "private_experience_letter",
-   "fieldtype": "Attach",
-   "label": "Experience Letter"
-  },
-  {
-   "depends_on": "eval:doc.job_type == 'Private'",
-   "fieldname": "private_id_card",
-   "fieldtype": "Attach",
-   "label": "ID Card"
-  },
-  {
-   "default": "0",
-   "depends_on": "eval:doc.job_type == 'Private'",
-   "fieldname": "private_salary_slip",
-   "fieldtype": "Check",
-   "label": "Has Salary Slips"
-  },
-  {
-   "default": "0",
-   "depends_on": "eval:doc.job_type == 'Private'",
-   "fieldname": "private_salary_statement",
-   "fieldtype": "Check",
-   "label": "Has Salary Statement"
-  },
-  {
-   "depends_on": "eval:doc.job_type == 'Private' && doc.private_salary_slip == 1",
-   "fieldname": "private_slip_current_salary",
-   "fieldtype": "Currency",
-   "label": "Current Salary (from Slips)"
-  },
-  {
-   "depends_on": "eval:doc.job_type == 'Private' && doc.private_salary_slip == 1",
-   "fieldname": "private_slip_upload",
-   "fieldtype": "Attach",
-   "label": "Upload Salary Slips (Min 6 months)"
-  },
-  {
-   "depends_on": "eval:doc.job_type == 'Private' && doc.private_salary_statement == 1",
-   "fieldname": "private_statement_current_salary",
-   "fieldtype": "Currency",
-   "label": "Current Salary (from Statement)"
-  },
-  {
-   "depends_on": "eval:doc.job_type == 'Private' && doc.private_salary_statement == 1",
-   "fieldname": "private_statement_upload",
-   "fieldtype": "Attach",
-   "label": "Upload Salary Statement (Min 6 months)"
-  },
-  {
-   "depends_on": "eval:doc.job_type == 'Retired from Govt. services'",
-   "fieldname": "retired_department",
-   "fieldtype": "Data",
-   "label": "Department"
-  },
-  {
-   "depends_on": "eval:doc.job_type == 'Retired from Govt. services'",
-   "fieldname": "retired_position",
-   "fieldtype": "Data",
-   "label": "Position"
-  },
-  {
-   "depends_on": "eval:doc.job_type == 'Retired from Govt. services'",
-   "fieldname": "retired_date",
-   "fieldtype": "Date",
-   "label": "Retired Date"
-  },
-  {
-   "depends_on": "eval:doc.job_type == 'Retired from Govt. services'",
-   "fieldname": "retired_id_card",
-   "fieldtype": "Attach",
-   "label": "ID Card"
-  },
-  {
-   "depends_on": "eval:doc.job_type == 'Retired from Govt. services'",
-   "fieldname": "retired_pension_statement",
-   "fieldtype": "Currency",
-   "label": "Current Pension"
-  },
-  {
-   "depends_on": "eval:doc.job_type == 'Retired from Govt. services'",
-   "fieldname": "retired_salary_statement",
-   "fieldtype": "Attach",
-   "label": "Upload Salary Statement (Min 6 months)"
-  },
-  {
-   "depends_on": "eval:doc.sponsor_occupation == 'Farmer'",
-   "fieldname": "farmer_income",
-   "fieldtype": "Currency",
-   "label": "Income"
-  },
-  {
-   "depends_on": "eval:doc.sponsor_occupation == 'Farmer'",
-   "fieldname": "farmer_income_support_type",
-   "fieldtype": "Select",
-   "label": "Income Supporting Documents",
-   "options": "\nTehsildar Income Proof\nFamily ID\nJ forms\nOther"
-  },
-  {
-   "depends_on": "eval:doc.farmer_income_support_type == 'Tehsildar Income Proof'",
-   "fieldname": "farmer_tehsildar_income",
-   "fieldtype": "Currency",
-   "label": "Income"
-  },
-  {
-   "default": "0",
-   "depends_on": "eval:doc.farmer_income_support_type == 'Tehsildar Income Proof'",
-   "fieldname": "farmer_tehsildar_matches_itrs",
-   "fieldtype": "Check",
-   "label": "Income Matches with Provided ITRs"
-  },
-  {
-   "depends_on": "eval:doc.farmer_income_support_type == 'Tehsildar Income Proof' && doc.farmer_tehsildar_matches_itrs == 1",
-   "fieldname": "farmer_tehsildar_upload",
-   "fieldtype": "Attach",
-   "label": "Upload Income Proof"
-  },
-  {
-   "depends_on": "eval:doc.farmer_income_support_type == 'Family ID'",
-   "fieldname": "farmer_family_id_income",
-   "fieldtype": "Currency",
-   "label": "Income"
-  },
-  {
-   "default": "0",
-   "depends_on": "eval:doc.farmer_income_support_type == 'Family ID'",
-   "fieldname": "farmer_family_income_matches_itrs",
-   "fieldtype": "Check",
-   "label": "Income Matches with Provided ITRs"
-  },
-  {
-   "depends_on": "eval:doc.farmer_income_support_type == 'Family ID' && doc.farmer_family_income_matches_itrs == 1",
-   "fieldname": "farmer_family_id_upload",
-   "fieldtype": "Attach",
-   "label": "Upload Family ID"
-  },
-  {
-   "depends_on": "eval:doc.farmer_income_support_type == 'J forms'",
-   "fieldname": "farmer_jform_year",
-   "fieldtype": "Data",
-   "label": "Assessment Year"
-  },
-  {
-   "depends_on": "eval:doc.farmer_income_support_type == 'J forms'",
-   "fieldname": "farmer_jform_amount",
-   "fieldtype": "Currency",
-   "label": "Amount"
-  },
-  {
-   "default": "0",
-   "depends_on": "eval:doc.farmer_income_support_type == 'J forms'",
-   "fieldname": "farmer_jform_sixty_percent_match_itrs",
-   "fieldtype": "Check",
-   "label": "60% Amount Match with ITR"
-  },
-  {
-   "depends_on": "eval:doc.farmer_income_support_type == 'J forms' && doc.farmer_jform_sixty_percent_match_itrs == 1",
-   "fieldname": "farmer_jform_upload",
-   "fieldtype": "Attach",
-   "label": "Upload J Form"
-  },
-  {
-   "depends_on": "eval:doc.farmer_income_support_type == 'Other'",
-   "fieldname": "farmer_other_details",
-   "fieldtype": "Text",
-   "label": "Details"
+   "fieldname": "occupation_documents",
+   "fieldtype": "Table",
+   "label": "Occupation Documents",
+   "options": "Application Sponsor Occupation"
   },
   {
    "fieldname": "funds_section",
@@ -571,13 +205,15 @@
   {
    "fieldname": "funds_type",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Funds Type",
-   "options": "\nFixed Deposit\nBank Statement\nEducation Loan"
+   "length": 30,
+   "options": "\nFixed Deposit\nBank Statement\nEducation Loan\nOther"
   },
   {
-   "default": "If sponsors are providing GPF and Post office statement then they need to transfer amount to saving account and saving account should be in nationalize bank.",
+   "default": "If sponsors are providing GPF and Post office statement then they need to transfer amount to saving account and saving account should be in nationalized bank.",
    "fieldname": "if_fundtype_gpf",
-   "fieldtype": "Text",
+   "fieldtype": "Small Text",
    "label": "Note",
    "read_only": 1
   },
@@ -585,40 +221,51 @@
    "depends_on": "eval:doc.funds_type == 'Fixed Deposit'",
    "fieldname": "fd_bank_name",
    "fieldtype": "Data",
-   "label": "Bank Name"
+   "label": "Bank Name",
+   "length": 140,
+   "mandatory_depends_on": "eval:doc.funds_type == 'Fixed Deposit'"
   },
   {
-   "default": "0",
    "depends_on": "eval:doc.funds_type == 'Fixed Deposit'",
    "fieldname": "fd_nationalized",
-   "fieldtype": "Check",
-   "label": "Is Nationalized Bank"
+   "fieldtype": "Select",
+   "label": "Is Nationalized Bank?",
+   "length": 10,
+   "mandatory_depends_on": "eval:doc.funds_type == 'Fixed Deposit'",
+   "options": "\nYes\nNo"
+  },
+  {
+   "bold": 1,
+   "depends_on": "eval:doc.funds_type == 'Fixed Deposit' && doc.fd_nationalized",
+   "fieldname": "fd_nationalized_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
   },
   {
    "depends_on": "eval:doc.funds_type == 'Fixed Deposit'",
    "fieldname": "fd_months_old",
    "fieldtype": "Select",
    "label": "How Many Months FD Old",
+   "length": 24,
+   "mandatory_depends_on": "eval:doc.funds_type == 'Fixed Deposit'",
    "options": "\n1 Month\n2 Months\n3 Months\nMore than 3 Months"
   },
   {
-   "depends_on": "eval:doc.funds_type == 'Fixed Deposit' && (doc.fd_months_old == '1 Month' || doc.fd_months_old == '2 Months')",
+   "depends_on": "eval:doc.funds_type == 'Fixed Deposit' && (doc.fd_months_old == '1 Month' || doc.fd_months_old == '2 Months' || doc.fd_months_old == '3 Months')",
    "fieldname": "fd_source_of_funds",
    "fieldtype": "Text",
-   "label": "Source of Funds (Required)"
+   "label": "Source of Funds",
+   "mandatory_depends_on": "eval:doc.funds_type == 'Fixed Deposit' && (doc.fd_months_old == '1 Month' || doc.fd_months_old == '2 Months' || doc.fd_months_old == '3 Months')"
   },
   {
-   "depends_on": "eval:doc.funds_type == 'Fixed Deposit'",
-   "fieldname": "fd_other_details",
-   "fieldtype": "Text",
-   "label": "Other Details"
-  },
-  {
-   "default": "0",
    "depends_on": "eval:doc.funds_type == 'Fixed Deposit'",
    "fieldname": "fd_balance_cert_available",
-   "fieldtype": "Check",
-   "label": "Balance Certificate Available"
+   "fieldtype": "Select",
+   "label": "Balance Certificate Available?",
+   "length": 10,
+   "mandatory_depends_on": "eval:doc.funds_type == 'Fixed Deposit'",
+   "options": "\nYes\nNo"
   },
   {
    "default": "0",
@@ -628,56 +275,84 @@
    "label": "FD Verified"
   },
   {
-   "depends_on": "eval:doc.funds_type == 'Fixed Deposit'",
+   "depends_on": "eval:doc.funds_type == 'Fixed Deposit' && doc.fd_verified == 0",
+   "fieldname": "fd_not_verified_comments",
+   "fieldtype": "Small Text",
+   "label": "Comments"
+  },
+  {
+   "depends_on": "eval:doc.funds_type == 'Fixed Deposit' && doc.fd_verified == 1",
    "fieldname": "fd_upload",
    "fieldtype": "Attach",
-   "label": "Upload FD"
+   "label": "Upload FD",
+   "mandatory_depends_on": "eval:doc.funds_type == 'Fixed Deposit' && doc.fd_verified == 1"
   },
   {
    "depends_on": "eval:doc.funds_type == 'Bank Statement'",
    "fieldname": "statement_bank_name",
    "fieldtype": "Data",
-   "label": "Bank Name"
+   "label": "Bank Name",
+   "length": 140,
+   "mandatory_depends_on": "eval:doc.funds_type == 'Bank Statement'"
   },
   {
-   "default": "0",
    "depends_on": "eval:doc.funds_type == 'Bank Statement'",
    "fieldname": "statement_nationalized",
-   "fieldtype": "Check",
-   "label": "Is Nationalized Bank"
+   "fieldtype": "Select",
+   "label": "Is Nationalized Bank?",
+   "length": 10,
+   "mandatory_depends_on": "eval:doc.funds_type == 'Bank Statement'",
+   "options": "\nYes\nNo"
+  },
+  {
+   "bold": 1,
+   "depends_on": "eval:doc.funds_type == 'Bank Statement' && doc.statement_nationalized",
+   "fieldname": "statement_nationalized_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
   },
   {
    "depends_on": "eval:doc.funds_type == 'Bank Statement'",
    "fieldname": "statement_fifty_thousand_times",
    "fieldtype": "Select",
-   "label": "How Many Times 50,000+ Amount",
-   "options": "\n1 Time\n2 Times\n3 Times\nMore than 3 Times"
+   "label": "Number of deposits above Rs. 50,000",
+   "length": 40,
+   "options": "\nDeposit within 1 month\nDeposit within 2 months\nDeposit within 3 months\nDeposit older than 3 months"
   },
   {
-   "depends_on": "eval:doc.funds_type == 'Bank Statement' && (doc.statement_fifty_thousand_times == '1 Time' || doc.statement_fifty_thousand_times == '2 Times')",
+   "depends_on": "eval:doc.funds_type == 'Bank Statement' && doc.statement_fifty_thousand_times == 'Deposit older than 3 months'",
    "fieldname": "statement_source_of_funds",
    "fieldtype": "Text",
-   "label": "Source of Funds (Required)"
+   "label": "Source of Funds",
+   "mandatory_depends_on": "eval:doc.funds_type == 'Bank Statement' && doc.statement_fifty_thousand_times == 'Deposit older than 3 months'"
   },
   {
-   "depends_on": "eval:doc.funds_type == 'Bank Statement'",
-   "fieldname": "statement_other_details",
-   "fieldtype": "Text",
-   "label": "Other Details"
-  },
-  {
-   "default": "0",
    "depends_on": "eval:doc.funds_type == 'Bank Statement'",
    "fieldname": "statement_balance_cert_available",
-   "fieldtype": "Check",
-   "label": "Balance Certificate Available"
+   "fieldtype": "Select",
+   "label": "Balance Certificate Available?",
+   "length": 10,
+   "mandatory_depends_on": "eval:doc.funds_type == 'Bank Statement'",
+   "options": "\nYes\nNo"
   },
   {
-   "default": "0",
-   "depends_on": "eval:doc.funds_type == 'Bank Statement' && doc.statement_balance_cert_available == 1",
+   "depends_on": "eval:doc.funds_type == 'Bank Statement' && doc.statement_balance_cert_available == 'Yes'",
    "fieldname": "statement_balance_cert_same_date",
-   "fieldtype": "Check",
-   "label": "Date of Issue Same as Statement"
+   "fieldtype": "Select",
+   "label": "Balance cert date & bank statement date same?",
+   "length": 10,
+   "mandatory_depends_on": "eval:doc.funds_type == 'Bank Statement' && doc.statement_balance_cert_available == 'Yes'",
+   "options": "\nYes\nNo"
+  },
+  {
+   "bold": 1,
+   "default": "Updated documents are required. Set a reminder for the updated bank statement / balance certificate.",
+   "depends_on": "eval:doc.funds_type == 'Bank Statement' && doc.statement_balance_cert_available == 'Yes' && doc.statement_balance_cert_same_date == 'No'",
+   "fieldname": "statement_updated_docs_note",
+   "fieldtype": "Small Text",
+   "label": "Note",
+   "read_only": 1
   },
   {
    "default": "0",
@@ -687,69 +362,169 @@
    "label": "Statement Verified"
   },
   {
-   "depends_on": "eval:doc.funds_type == 'Bank Statement'",
+   "depends_on": "eval:doc.funds_type == 'Bank Statement' && doc.statement_verified == 0",
+   "fieldname": "statement_not_verified_comments",
+   "fieldtype": "Small Text",
+   "label": "Comments"
+  },
+  {
+   "depends_on": "eval:doc.funds_type == 'Bank Statement' && doc.statement_verified == 1",
    "fieldname": "statement_upload",
    "fieldtype": "Attach",
-   "label": "Upload Statement"
+   "label": "Upload Statement",
+   "mandatory_depends_on": "eval:doc.funds_type == 'Bank Statement' && doc.statement_verified == 1"
   },
   {
    "depends_on": "eval:doc.funds_type == 'Education Loan'",
    "fieldname": "loan_bank_name",
    "fieldtype": "Data",
-   "label": "Bank Name"
+   "label": "Bank Name",
+   "length": 140,
+   "mandatory_depends_on": "eval:doc.funds_type == 'Education Loan'"
   },
   {
-   "default": "0",
    "depends_on": "eval:doc.funds_type == 'Education Loan'",
-   "fieldname": "loan_education_purpose",
-   "fieldtype": "Check",
-   "label": "Loan is Only for Education Purpose"
-  },
-  {
-   "default": "0",
-   "depends_on": "eval:doc.funds_type == 'Education Loan'",
-   "fieldname": "loan_holder_student",
-   "fieldtype": "Check",
-   "label": "Loan Holder Name is Student Name"
+   "fieldname": "loan_holder_name",
+   "fieldtype": "Data",
+   "label": "Loan Holder Name",
+   "length": 140,
+   "mandatory_depends_on": "eval:doc.funds_type == 'Education Loan'"
   },
   {
    "depends_on": "eval:doc.funds_type == 'Education Loan'",
    "fieldname": "loan_amount",
    "fieldtype": "Currency",
-   "label": "Loan Amount"
+   "label": "Loan Amount",
+   "mandatory_depends_on": "eval:doc.funds_type == 'Education Loan'"
   },
   {
-   "default": "0",
+   "depends_on": "eval:doc.funds_type == 'Education Loan'",
+   "fieldname": "loan_education_purpose",
+   "fieldtype": "Select",
+   "label": "Is loan for education purpose?",
+   "length": 10,
+   "mandatory_depends_on": "eval:doc.funds_type == 'Education Loan'",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.funds_type == 'Education Loan'",
+   "fieldname": "loan_holder_student",
+   "fieldtype": "Select",
+   "label": "Is loan holder the student?",
+   "length": 10,
+   "mandatory_depends_on": "eval:doc.funds_type == 'Education Loan'",
+   "options": "\nYes\nNo"
+  },
+  {
    "depends_on": "eval:doc.funds_type == 'Education Loan'",
    "fieldname": "loan_covering_requirements",
-   "fieldtype": "Check",
-   "label": "Loan Amount Covering Funds Requirements"
+   "fieldtype": "Select",
+   "label": "Does loan amount cover required funds?",
+   "length": 10,
+   "mandatory_depends_on": "eval:doc.funds_type == 'Education Loan'",
+   "options": "\nYes\nNo"
+  },
+  {
+   "bold": 1,
+   "default": "Revised education loan letter is required. Set a reminder to follow up.",
+   "depends_on": "eval:doc.funds_type == 'Education Loan' && (doc.loan_education_purpose == 'No' || doc.loan_holder_student == 'No' || doc.loan_covering_requirements == 'No')",
+   "fieldname": "loan_revised_letter_note",
+   "fieldtype": "Small Text",
+   "label": "Note",
+   "read_only": 1
   },
   {
    "depends_on": "eval:doc.funds_type == 'Education Loan'",
    "fieldname": "loan_security_collection",
    "fieldtype": "Select",
-   "label": "Security Collection",
-   "options": "\nProperties\nOthers"
+   "label": "Security Type",
+   "length": 20,
+   "options": "\nProperty\nOther"
   },
   {
-   "depends_on": "eval:doc.funds_type == 'Education Loan' && doc.loan_security_collection",
-   "fieldname": "loan_security_proof",
+   "depends_on": "eval:doc.funds_type == 'Education Loan' && doc.loan_security_collection == 'Property'",
+   "fieldname": "loan_property_docs",
    "fieldtype": "Attach",
-   "label": "Upload Security Proof"
+   "label": "Property Documents",
+   "mandatory_depends_on": "eval:doc.funds_type == 'Education Loan' && doc.loan_security_collection == 'Property'"
   },
   {
+   "depends_on": "eval:doc.funds_type == 'Education Loan' && doc.loan_security_collection == 'Other'",
+   "fieldname": "loan_other_details",
+   "fieldtype": "Text",
+   "label": "Details",
+   "mandatory_depends_on": "eval:doc.funds_type == 'Education Loan' && doc.loan_security_collection == 'Other'"
+  },
+  {
+   "depends_on": "eval:doc.funds_type == 'Education Loan' && doc.loan_security_collection == 'Other'",
+   "fieldname": "loan_other_docs",
+   "fieldtype": "Attach",
+   "label": "Supporting Documents",
+   "mandatory_depends_on": "eval:doc.funds_type == 'Education Loan' && doc.loan_security_collection == 'Other'"
+  },
+  {
+   "default": "0",
    "depends_on": "eval:doc.funds_type == 'Education Loan'",
+   "fieldname": "loan_verified",
+   "fieldtype": "Check",
+   "label": "Loan Verified"
+  },
+  {
+   "depends_on": "eval:doc.funds_type == 'Education Loan' && doc.loan_verified == 1",
    "fieldname": "loan_letter_upload",
    "fieldtype": "Attach",
-   "label": "Upload Loan Letter"
+   "label": "Loan Letter",
+   "mandatory_depends_on": "eval:doc.funds_type == 'Education Loan' && doc.loan_verified == 1"
+  },
+  {
+   "depends_on": "eval:doc.funds_type == 'Other'",
+   "fieldname": "other_funds_details",
+   "fieldtype": "Text",
+   "label": "Details",
+   "mandatory_depends_on": "eval:doc.funds_type == 'Other'"
+  },
+  {
+   "depends_on": "eval:doc.funds_type == 'Other'",
+   "fieldname": "other_nationalized",
+   "fieldtype": "Select",
+   "label": "Is Nationalized Bank?",
+   "length": 10,
+   "options": "\nYes\nNo"
+  },
+  {
+   "bold": 1,
+   "depends_on": "eval:doc.funds_type == 'Other' && doc.other_nationalized",
+   "fieldname": "other_nationalized_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.funds_type == 'Other'",
+   "fieldname": "other_verified",
+   "fieldtype": "Check",
+   "label": "Verified"
+  },
+  {
+   "depends_on": "eval:doc.funds_type == 'Other' && doc.other_verified == 0",
+   "fieldname": "other_not_verified_comments",
+   "fieldtype": "Small Text",
+   "label": "Comments"
+  },
+  {
+   "depends_on": "eval:doc.funds_type == 'Other' && doc.other_verified == 1",
+   "fieldname": "other_funds_upload",
+   "fieldtype": "Attach",
+   "label": "Supporting Documents",
+   "mandatory_depends_on": "eval:doc.funds_type == 'Other' && doc.other_verified == 1"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-02-06 21:59:02.364281",
+ "modified": "2026-08-19 12:20:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Application Sponsor Complete",

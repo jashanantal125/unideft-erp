@@ -62,7 +62,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "default": "User",
    "fieldname": "requested_by",
    "fieldtype": "Link",
    "label": "Requested By",
@@ -123,14 +122,14 @@
    "fieldname": "mobile_number",
    "fieldtype": "Data",
    "label": "Mobile Number",
-   "mandatory_depends_on": "eval:doc.student_already_registered == 'Yes'",
+   "mandatory_depends_on": "eval:doc.student_already_registered == 'Yes' || doc.student_already_registered == 'No'",
    "options": "Phone"
   },
   {
    "fieldname": "email_address",
    "fieldtype": "Data",
    "label": "Email Address",
-   "mandatory_depends_on": "eval:doc.student_already_registered == 'Yes'",
+   "mandatory_depends_on": "eval:doc.student_already_registered == 'Yes' || doc.student_already_registered == 'No'",
    "options": "Email"
   },
   {

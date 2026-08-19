@@ -94,6 +94,10 @@ class Application(Document):
 		self.auto_assign_team()
 		self.apply_country_flow_defaults()
 
+	def before_validate(self):
+		"""Normalize legacy Check values that were converted to Yes/No selects."""
+		self.normalize_legacy_yes_no_fields()
+
 	def apply_student_defaults(self):
 		"""Pull email / contact / DOB from Student when blank (all countries)."""
 		if not self.student:
@@ -528,6 +532,8 @@ class Application(Document):
 			if not self.course:
 				frappe.throw("Please select a Course.")
 
+		self.apply_application_submission_workflow()
+		self.sync_processing_agents()
 		self.apply_study_gap_duration_rule()
 		self.validate_submitted_another_application()
 		self.validate_gs_submitted_financials_branch()
@@ -543,6 +549,54 @@ class Application(Document):
 				frappe.throw("Unideft agent not found. Please create it first.")
 		
 		# For B2B: No validation - can select any agent or leave empty
+
+	def normalize_legacy_yes_no_fields(self):
+		"""Map old Check 0/1 values onto Yes/No Select options."""
+		for df in self.meta.get("fields") or []:
+			if df.fieldtype != "Select":
+				continue
+			options = {opt.strip() for opt in (df.options or "").split("\n") if opt.strip()}
+			if options != {"Yes", "No"}:
+				continue
+			value = self.get(df.fieldname)
+			if value in (0, "0", False):
+				self.set(df.fieldname, "")
+			elif value in (1, "1", True):
+				self.set(df.fieldname, "Yes")
+
+	def apply_application_submission_workflow(self):
+		"""Keep the Australia Processing → Submitted transition consistent."""
+		if not self.is_australia():
+			return
+
+		if self.application_submitted == "Yes":
+			from frappe.utils import nowdate
+
+			self.submitted_date = self.submitted_date or nowdate()
+			self.expected_application_submission_date = None
+			if self.status in ("Pending", "Processing"):
+				self.status = "Submitted"
+		elif self.application_submitted == "No" and self.status in ("Pending", "Submitted"):
+			self.status = "Processing"
+
+	def sync_processing_agents(self):
+		"""Fill processing-agent names from the selected university/vendor."""
+		university = self.preferred_university or self.university_name
+		direct_company = None
+		if university:
+			direct_company = frappe.db.get_value(
+				"University", university, "direct_processing_company"
+			)
+		direct_company = direct_company or "Unideft Education Services Pvt. Ltd."
+
+		for row in self.get("processing_agent_details") or []:
+			if row.processing_agent_type == "Direct":
+				row.our_company = direct_company
+				row.processing_agent_vendor = None
+				row.processing_agent_direct = direct_company
+			elif row.processing_agent_type == "Vendor":
+				row.our_company = None
+				row.processing_agent_direct = row.processing_agent_vendor
 
 	def validate_submitted_another_application(self):
 		"""Submitted stage: another app id / reason rules."""
@@ -573,8 +627,10 @@ class Application(Document):
 			self.will_process_gs_another_university = None
 			self.gs_another_university_application_id = None
 			self.will_process_another_country = None
+			self.gs_another_country_name = None
 			self.gs_another_country_application_id = None
 			self.gs_not_process_reason = None
+			self.gs_close_this_application = None
 			if self.status in ("Financial", "Offer Letter Received", "Pending", "Processing"):
 				self.status = "GS Processing"
 			return
@@ -593,13 +649,16 @@ class Application(Document):
 
 		if self.will_process_gs_another_university == "No":
 			if self.will_process_another_country == "Yes":
+				if not (self.gs_another_country_name or "").strip():
+					frappe.throw("Please select the country name.")
 				if not (self.gs_another_country_application_id or "").strip():
-					frappe.throw("Please enter Details Application ID.")
+					frappe.throw("Please link the new Application ID.")
 				self.status = "Closed"
 			elif self.will_process_another_country == "No":
 				if not (self.gs_not_process_reason or "").strip():
 					frappe.throw("Please enter reason why student don't want to process.")
-				self.status = "Closed"
+				if self.gs_close_this_application == "Yes":
+					self.status = "Closed"
 
 	def apply_study_gap_duration_rule(self):
 		"""Details picks duration; Accepted opens Processing proof table (no duration there)."""
@@ -661,6 +720,39 @@ def _agents_under_cro_for_support(user):
 	return frappe.get_all(
 		"Agent", filters={"sales_team": ["in", cro_teams]}, pluck="name"
 	) or []
+
+
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def get_processing_vendor_options(doctype, txt, searchfield, start, page_len, filters):
+	"""Return at most three priority vendors for the selected university."""
+	filters = frappe.parse_json(filters) if isinstance(filters, str) else (filters or {})
+	university = filters.get("university")
+	if not university:
+		return []
+
+	search_text = f"%{txt or ''}%"
+	return frappe.db.sql(
+		"""
+		SELECT vendor.name, vendor.name1
+		FROM `tabvendor` vendor
+		INNER JOIN `tabVendor Partner University` partner
+			ON partner.parent = vendor.name
+			AND partner.parenttype = 'vendor'
+			AND partner.parentfield = 'universities_represented'
+		WHERE partner.university = %(university)s
+			AND (vendor.name LIKE %(txt)s OR vendor.name1 LIKE %(txt)s)
+		GROUP BY vendor.name, vendor.name1
+		ORDER BY
+			MIN(CASE WHEN COALESCE(partner.processing_priority, 0) <= 0
+				THEN 999999 ELSE partner.processing_priority END) ASC,
+			MIN(partner.idx) ASC,
+			vendor.name ASC
+		LIMIT 3
+		""",
+		{"university": university, "txt": search_text},
+	)
+
 
 def _map_au_qualification_to_uk(higher_education):
 	"""Map Application.higher_education options to UK assessment qualification."""

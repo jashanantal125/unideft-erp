@@ -897,82 +897,124 @@ function createProgramsContent(app) {
 }
 
 function createDocumentsContent(app) {
-    // Show loading state initially
-    return `
-		<div class="documents-content">
-			<div class="documents-loading">
-				<div class="spinner-small"></div>
-				<p>Loading documents...</p>
+	return `
+		<div class="documents-content" data-app="${escapeHtml(app.name)}">
+			<div class="documents-upload-bar">
+				<button type="button" class="btn-upload-document" onclick="uploadApplicationDocument('${app.name}')">
+					<i class="fa fa-upload"></i> Upload Document
+				</button>
+				<span class="documents-upload-hint">Files attach to this application</span>
+			</div>
+			<div class="documents-list-host" id="documents-list-${app.name}">
+				<div class="documents-loading">
+					<div class="spinner-small"></div>
+					<p>Loading documents...</p>
+				</div>
 			</div>
 		</div>
 	`;
 }
 
 function fetchApplicationDocuments(appName, container) {
-    frappe.call({
-        method: 'erpnext.crm.doctype.application.application.get_application_documents_by_stage',
-        args: { name: appName },
-        callback: function (response) {
-            const groups = response.message || {};
-            const stageNames = Object.keys(groups);
-            if (!stageNames.length) {
-                container.innerHTML = `
-                    <div class="documents-empty">
-                        <i class="fa fa-file-o"></i>
-                        <p>No documents uploaded yet</p>
-                    </div>
-                `;
-                return;
-            }
+	if (!container) return;
+	// Prefer list host so upload bar stays mounted
+	const listHost =
+		(container.classList && container.classList.contains("documents-list-host") && container) ||
+		container.querySelector?.(".documents-list-host") ||
+		container;
+	listHost.innerHTML = `
+		<div class="documents-loading">
+			<div class="spinner-small"></div>
+			<p>Loading documents...</p>
+		</div>
+	`;
+	frappe.call({
+		method: "erpnext.crm.doctype.application.application.get_application_documents_by_stage",
+		args: { name: appName },
+		callback: function (response) {
+			const groups = response.message || {};
+			const stageNames = Object.keys(groups);
+			if (!stageNames.length) {
+				listHost.innerHTML = `
+					<div class="documents-empty">
+						<i class="fa fa-file-o"></i>
+						<p>No documents uploaded yet</p>
+						<p class="text-muted" style="font-size:12px;">Use Upload Document above to attach files.</p>
+					</div>
+				`;
+				return;
+			}
 
-            let filesHTML = '<div class="documents-list documents-by-stage">';
-            stageNames.forEach((stage) => {
-                const files = groups[stage] || [];
-                filesHTML += `
-                    <div class="document-stage-group" style="margin-bottom:14px;">
-                        <div class="document-stage-title" style="font-weight:600; margin-bottom:6px;">
-                            ${escapeHtml(stage)} <span class="text-muted">(${files.length})</span>
-                        </div>
-                `;
-                files.forEach((file) => {
-                    const fileSize = file.file_size ? formatFileSize(file.file_size) : '';
-                    const fileDate = file.creation || '';
-                    const fileIcon = getFileIcon(file.file_name);
-                    const label = file.field_label
-                        ? `${file.field_label}: ${file.file_name}`
-                        : file.file_name;
-                    filesHTML += `
-                        <div class="document-item">
-                            <div class="document-icon">${fileIcon}</div>
-                            <div class="document-info">
-                                <a href="${escapeHtml(file.file_url)}" target="_blank" class="document-name" title="${escapeHtml(label)}">
-                                    ${escapeHtml(label)}
-                                </a>
-                                <div class="document-meta">
-                                    ${fileSize ? `<span class="document-size"><i class="fa fa-hdd-o"></i> ${fileSize}</span>` : ''}
-                                    ${fileDate ? `<span class="document-date"><i class="fa fa-calendar"></i> ${fileDate}</span>` : ''}
-                                </div>
-                            </div>
-                            <a href="${escapeHtml(file.file_url)}" target="_blank" class="document-download" title="Download">
-                                <i class="fa fa-download"></i>
-                            </a>
-                        </div>
-                    `;
-                });
-                filesHTML += '</div>';
-            });
-            filesHTML += '</div>';
-            container.innerHTML = filesHTML;
-        },
-        error: function () {
-            container.innerHTML = `
-                <div class="documents-error">
-                    <i class="fa fa-exclamation-triangle"></i>
-                    <p>Failed to load documents</p>
-                </div>
-            `;
-        }
-    });
+			let filesHTML = '<div class="documents-list documents-by-stage">';
+			stageNames.forEach((stage) => {
+				const files = groups[stage] || [];
+				filesHTML += `
+					<div class="document-stage-group" style="margin-bottom:14px;">
+						<div class="document-stage-title" style="font-weight:600; margin-bottom:6px;">
+							${escapeHtml(stage)} <span class="text-muted">(${files.length})</span>
+						</div>
+				`;
+				files.forEach((file) => {
+					const fileSize = file.file_size ? formatFileSize(file.file_size) : "";
+					const fileDate = file.creation || "";
+					const fileIcon = getFileIcon(file.file_name);
+					const label = file.field_label
+						? `${file.field_label}: ${file.file_name}`
+						: file.file_name;
+					filesHTML += `
+						<div class="document-item">
+							<div class="document-icon">${fileIcon}</div>
+							<div class="document-info">
+								<a href="${escapeHtml(file.file_url)}" target="_blank" class="document-name" title="${escapeHtml(label)}">
+									${escapeHtml(label)}
+								</a>
+								<div class="document-meta">
+									${fileSize ? `<span class="document-size"><i class="fa fa-hdd-o"></i> ${fileSize}</span>` : ""}
+									${fileDate ? `<span class="document-date"><i class="fa fa-calendar"></i> ${fileDate}</span>` : ""}
+								</div>
+							</div>
+							<a href="${escapeHtml(file.file_url)}" target="_blank" class="document-download" title="Download">
+								<i class="fa fa-download"></i>
+							</a>
+						</div>
+					`;
+				});
+				filesHTML += "</div>";
+			});
+			filesHTML += "</div>";
+			listHost.innerHTML = filesHTML;
+		},
+		error: function () {
+			listHost.innerHTML = `
+				<div class="documents-error">
+					<i class="fa fa-exclamation-triangle"></i>
+					<p>Failed to load documents</p>
+				</div>
+			`;
+		},
+	});
+}
+
+function uploadApplicationDocument(appName) {
+	if (!appName) return;
+	new frappe.ui.FileUploader({
+		doctype: "Application",
+		docname: appName,
+		folder: "Home/Attachments",
+		allow_multiple: true,
+		disable_file_browser: true,
+		dialog_title: __("Upload Document"),
+		on_success() {
+			frappe.show_alert({ message: __("Document uploaded"), indicator: "green" }, 3);
+			const card = document.querySelector(`.application-card[data-app-name="${appName}"]`);
+			const host =
+				(card && card.querySelector(`#documents-list-${appName}`)) ||
+				(card && card.querySelector(".documents-list-host"));
+			if (host) {
+				fetchApplicationDocuments(appName, host);
+			}
+		},
+	});
 }
 
 function formatFileSize(bytes) {
@@ -1006,20 +1048,24 @@ function getFileIcon(fileName) {
 }
 
 function createNotesContent(app) {
-    // Notes tab: inline add note + simple comments list
+    // Notes tab: inline add note + simple comments list (used as card chat)
     return `
 		<div class="notes-content">
+			<div class="notes-chat-banner" id="notes-chat-banner-${app.name}" style="display:none;">
+				<i class="fa fa-comments"></i>
+				<span>Chat anything by typing in the notes box below.</span>
+			</div>
 			<div class="add-comment-inline">
 				<input
 					type="text"
 					id="add-comment-input-${app.name}"
 					class="add-comment-input"
-					placeholder="Add a note..."
+					placeholder="Chat / add a note..."
 					onkeydown="if (event.key === 'Enter') { event.preventDefault(); addApplicationComment('${app.name}'); }"
 				/>
 				<button class="add-comment-button" onclick="addApplicationComment('${app.name}')">
 					<i class="fa fa-paper-plane"></i>
-					Comment
+					Send
 				</button>
 			</div>
 			<div class="notes-list-container" id="notes-list-${app.name}">
@@ -1415,7 +1461,9 @@ function updateTabContent(contentArea, tabName, appData) {
             contentArea.innerHTML = content;
             // Fetch documents asynchronously after rendering the loading state
             setTimeout(() => {
-                const documentsContainer = contentArea.querySelector('.documents-content');
+                const documentsContainer =
+					contentArea.querySelector('.documents-list-host') ||
+					contentArea.querySelector('.documents-content');
                 if (documentsContainer) {
                     fetchApplicationDocuments(appData.name, documentsContainer);
                 }
@@ -1483,7 +1531,36 @@ function editStatus(name) {
 }
 
 function openChat(name) {
-    frappe.show_alert('Chat functionality coming soon!', 3);
+	const card = document.querySelector(`.application-card[data-app-name="${name}"]`);
+	if (!card) {
+		frappe.show_alert({ message: __("Application card not found"), indicator: "orange" }, 3);
+		return;
+	}
+
+	const notesTab = card.querySelector('.tab-btn[data-tab="notes"]');
+	if (notesTab) {
+		switchTab(notesTab, "notes", name);
+	}
+
+	frappe.show_alert(
+		{
+			message: __("Chat anything by typing in the Notes box."),
+			indicator: "blue",
+		},
+		6
+	);
+
+	setTimeout(() => {
+		const banner = document.getElementById(`notes-chat-banner-${name}`);
+		if (banner) {
+			banner.style.display = "flex";
+		}
+		const input = document.getElementById(`add-comment-input-${name}`);
+		if (input) {
+			input.focus();
+			input.placeholder = __("Chat anything by typing here...");
+		}
+	}, 80);
 }
 
 function refreshApplications() {
@@ -1519,6 +1596,8 @@ window.closeReminderModal = closeReminderModal;
 window.viewApplication = viewApplication;
 window.editStatus = editStatus;
 window.openChat = openChat;
+window.addApplicationComment = addApplicationComment;
+window.uploadApplicationDocument = uploadApplicationDocument;
 window.applyFilters = applyFilters;
 window.clearSearch = clearSearch;
 //hello just for updating the file

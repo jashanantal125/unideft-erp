@@ -13,14 +13,14 @@
  "doctype": "Workspace",
  "for_user": "",
  "hide_custom": 0,
- "icon": "sell",
+ "icon": "money-coins-1",
  "idx": 0,
  "indicator_color": "green",
  "is_hidden": 0,
  "label": "Commission",
  "link_type": "DocType",
  "links": [],
- "modified": "2026-01-18 10:23:38.245789",
+ "modified": "2026-08-11 15:29:49.194219",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Commission",
@@ -34,16 +34,31 @@
    "role": "Administrator"
   },
   {
+   "role": "System Manager"
+  },
+  {
+   "role": "CRM Admin"
+  },
+  {
+   "role": "CRM Sales Staff"
+  },
+  {
+   "role": "Team Lead"
+  },
+  {
+   "role": "Team Executive"
+  },
+  {
    "role": "Agent"
+  },
+  {
+   "role": "agents"
   },
   {
    "role": "B2B Agent"
   },
   {
    "role": "B2C Agent"
-  },
-  {
-   "role": "agents"
   }
  ],
  "sequence_id": 25.0,

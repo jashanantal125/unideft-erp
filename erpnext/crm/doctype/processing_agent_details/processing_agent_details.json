@@ -17,7 +17,7 @@
    "fieldname": "processing_agent_type",
    "fieldtype": "Select",
    "in_list_view": 1,
-   "label": "Type",
+   "label": "Processing Agent Type",
    "options": "\nDirect\nVendor",
    "reqd": 1
   },
@@ -39,7 +39,7 @@
    "fieldname": "processing_agent_vendor",
    "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Vendor",
+   "label": "Vendor Name",
    "options": "vendor",
    "mandatory_depends_on": "eval:doc.processing_agent_type=='Vendor'"
   },

@@ -29,7 +29,8 @@
             "depends_on": "eval:doc.notarize_docs_required",
             "fieldname": "notarized_academic_docs_upload",
             "fieldtype": "Attach",
-            "label": "Notarized All Academic Docs"
+            "label": "Notarized All Academic Docs",
+            "mandatory_depends_on": "eval:doc.notarize_docs_required"
         },
         {
             "default": "0",
@@ -74,7 +75,8 @@
         {
             "fieldname": "gap_docs_notarized_upload",
             "fieldtype": "Attach",
-            "label": "Gap Documents Notarized Upload"
+            "label": "Gap Documents Notarized Upload",
+            "description": "Shown only when Study Gap is Yes on the Application Details tab."
         },
         {
             "default": "0",
