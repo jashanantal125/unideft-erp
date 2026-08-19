@@ -551,3 +551,34 @@ input[type="radio"]:checked {
 	fill: #7c7c7c !important;
 }
 
+/* Document Links cards — white background so orange link text stays readable */
+.form-links .document-link {
+	background-color: #FFFFFF !important;
+	border: 1px solid #FF7800 !important;
+	color: #282828 !important;
+}
+
+.form-links .document-link:hover {
+	border-color: #E66A00 !important;
+	background-color: #FFFFFF !important;
+}
+
+.form-links .document-link .document-link-badge,
+.form-links .document-link .report-link-badge,
+.form-links .document-link .badge-link,
+.form-links .document-link .report-link {
+	color: #282828 !important;
+}
+
+.form-links .document-link .document-link-badge .count,
+.form-links .document-link .report-link-badge .count {
+	background-color: #FFE8D1 !important;
+	color: #282828 !important;
+}
+
+.form-links .document-link .open-notification {
+	background-color: #FFE8D1 !important;
+	color: #282828 !important;
+}
+
+
