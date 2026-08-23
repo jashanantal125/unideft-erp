@@ -1,0 +1,104 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-08-22 13:40:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "full_name",
+  "relation",
+  "pan_number",
+  "pan_upload",
+  "aadhaar_number",
+  "aadhaar_upload",
+  "bank_section",
+  "bank_name",
+  "amount_paid_inr",
+  "utr_number",
+  "payment_receipt"
+ ],
+ "fields": [
+  {
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "label": "Full Name",
+   "in_list_view": 1,
+   "columns": 2,
+   "reqd": 1
+  },
+  {
+   "fieldname": "relation",
+   "fieldtype": "Select",
+   "label": "Relation",
+   "options": "\nMother\nFather\nBrother\nSister\nGrandmother\nGrandfather\nSelf\nOther",
+   "in_list_view": 1,
+   "columns": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "pan_number",
+   "fieldtype": "Data",
+   "label": "PAN Number",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "pan_upload",
+   "fieldtype": "Attach",
+   "label": "Upload PAN Card"
+  },
+  {
+   "fieldname": "aadhaar_number",
+   "fieldtype": "Data",
+   "label": "Aadhaar Number"
+  },
+  {
+   "fieldname": "aadhaar_upload",
+   "fieldtype": "Attach",
+   "label": "Upload Aadhaar Card"
+  },
+  {
+   "fieldname": "bank_section",
+   "fieldtype": "Section Break",
+   "label": "Bank & Payment Details"
+  },
+  {
+   "fieldname": "bank_name",
+   "fieldtype": "Data",
+   "label": "Bank Name",
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "amount_paid_inr",
+   "fieldtype": "Currency",
+   "label": "Amount Paid (INR)",
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "utr_number",
+   "fieldtype": "Data",
+   "label": "UTR Number"
+  },
+  {
+   "fieldname": "payment_receipt",
+   "fieldtype": "Attach",
+   "label": "Cheque / Payment Receipt"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-08-22 13:40:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Accounts Fee Payer",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "istable": 1
+}

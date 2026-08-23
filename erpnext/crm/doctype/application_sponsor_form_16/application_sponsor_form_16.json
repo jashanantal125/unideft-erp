@@ -7,16 +7,28 @@
  "engine": "InnoDB",
  "istable": 1,
  "field_order": [
+  "sponsor_type",
   "assessment_year",
   "income_value",
   "form_16_upload"
  ],
  "fields": [
   {
+   "fieldname": "sponsor_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Sponsor",
+   "length": 20,
+   "options": "\nFather\nMother\nSelf\nSpouse\nBrother\nSister\nGuardian",
+   "reqd": 1,
+   "description": "Which sponsor from the Sponsors table this Form 16 belongs to."
+  },
+  {
    "fieldname": "assessment_year",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Assessment Year",
+   "length": 20,
    "reqd": 1
   },
   {
@@ -34,8 +46,7 @@
   }
  ],
  "index_web_pages_for_search": 1,
- "istable": 1,
- "modified": "2026-01-13 00:00:00.000000",
+ "modified": "2026-08-20 14:30:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Application Sponsor Form 16",

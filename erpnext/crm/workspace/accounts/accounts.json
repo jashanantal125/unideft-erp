@@ -1,0 +1,98 @@
+{
+ "app": "erpnext",
+ "charts": [],
+ "content": "[{\"id\":\"acc-h1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Payments</b></span>\",\"col\":12}},{\"id\":\"acc-s1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tuition Fee Payments\",\"col\":4}},{\"id\":\"acc-s2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"OSHC Payments\",\"col\":4}},{\"id\":\"acc-h2\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Commission Dashboards</b></span>\",\"col\":12}},{\"id\":\"acc-s3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Forex Commission\",\"col\":3}},{\"id\":\"acc-s4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"OSHC Commission\",\"col\":3}},{\"id\":\"acc-s5\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tuition Fee Commission\",\"col\":3}},{\"id\":\"acc-s6\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Fee Payment Route Commission\",\"col\":3}},{\"id\":\"acc-h3\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Queues</b></span>\",\"col\":12}},{\"id\":\"acc-q1\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Pending Tuition Fee Payments\",\"col\":6}},{\"id\":\"acc-q2\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Pending Commissions\",\"col\":6}}]",
+ "creation": "2026-08-22 14:00:00.000000",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "accounting",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "Accounts",
+ "link_type": "DocType",
+ "links": [],
+ "modified": "2026-08-22 14:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Accounts",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [
+  {
+   "document_type": "Accounts Tuition Fee Payment",
+   "label": "Pending Tuition Fee Payments",
+   "quick_list_filter": "[[\"Accounts Tuition Fee Payment\",\"workflow_status\",\"!=\",\"Completed\"]]"
+  },
+  {
+   "document_type": "Accounts Commission",
+   "label": "Pending Commissions",
+   "quick_list_filter": "[[\"Accounts Commission\",\"status\",\"!=\",\"Received\"]]"
+  }
+ ],
+ "roles": [
+  {"role": "Administrator"},
+  {"role": "System Manager"},
+  {"role": "Accounts Manager"},
+  {"role": "Accounts User"},
+  {"role": "Team Lead"}
+ ],
+ "sequence_id": 16.0,
+ "shortcuts": [
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "label": "Tuition Fee Payments",
+   "link_to": "Accounts Tuition Fee Payment",
+   "stats_filter": "[[\"Accounts Tuition Fee Payment\",\"workflow_status\",\"!=\",\"Completed\"]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "label": "OSHC Payments",
+   "link_to": "Accounts OSHC Payment",
+   "stats_filter": "[[\"Accounts OSHC Payment\",\"workflow_status\",\"!=\",\"Completed\"]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Orange",
+   "doc_view": "List",
+   "label": "Forex Commission",
+   "link_to": "Accounts Commission",
+   "stats_filter": "[[\"Accounts Commission\",\"commission_type\",\"=\",\"Forex\"]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Orange",
+   "doc_view": "List",
+   "label": "OSHC Commission",
+   "link_to": "Accounts Commission",
+   "stats_filter": "[[\"Accounts Commission\",\"commission_type\",\"=\",\"OSHC\"]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "Tuition Fee Commission",
+   "link_to": "Accounts Commission",
+   "stats_filter": "[[\"Accounts Commission\",\"commission_type\",\"=\",\"Tuition Fee\"]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "Fee Payment Route Commission",
+   "link_to": "Accounts Commission",
+   "stats_filter": "[[\"Accounts Commission\",\"commission_type\",\"=\",\"Fee Payment Route\"]]",
+   "type": "DocType"
+  }
+ ],
+ "title": "Accounts",
+ "type": "Workspace"
+}

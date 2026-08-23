@@ -1,0 +1,434 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-08-22 13:40:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "commission_type",
+  "application",
+  "student",
+  "student_name",
+  "column_break_head",
+  "status",
+  "expected_commission",
+  "commission_received_date",
+  "section_details",
+  "university_name",
+  "course_name",
+  "country",
+  "paid_tuition_fee",
+  "total_tuition_fee",
+  "full_year_tuition_fee",
+  "column_break_details",
+  "fee_payment_date",
+  "forex_company",
+  "fee_payment_route",
+  "reference_number",
+  "oshc_payment_date",
+  "oshc_duration",
+  "oshc_amount_paid",
+  "visa_approval_date",
+  "intake_date",
+  "enrolment_status",
+  "section_documents",
+  "documents",
+  "section_receipt",
+  "commission_received",
+  "comments",
+  "commission_pending_note",
+  "commission_invoice",
+  "commission_receipt_upload",
+  "section_outstanding",
+  "outstanding_commission",
+  "no_outstanding_reason",
+  "outstanding_commission_received",
+  "outstanding_notes",
+  "outstanding_loop_note",
+  "commission_receipts",
+  "total_commission_received",
+  "commission_completed_note",
+  "receipts_logged"
+ ],
+ "fields": [
+  {
+   "fieldname": "commission_type",
+   "fieldtype": "Select",
+   "label": "Commission Type",
+   "options": "\nForex\nOSHC\nTuition Fee\nFee Payment Route",
+   "reqd": 1,
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "application",
+   "fieldtype": "Link",
+   "label": "Application",
+   "options": "Application",
+   "reqd": 1,
+   "read_only": 1,
+   "in_standard_filter": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "student",
+   "fieldtype": "Link",
+   "label": "Student",
+   "options": "Student",
+   "read_only": 1
+  },
+  {
+   "fieldname": "student_name",
+   "fieldtype": "Data",
+   "label": "Student Name",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_head",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nProcessing\nReceived",
+   "default": "Pending",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "expected_commission",
+   "fieldtype": "Currency",
+   "label": "Expected Commission",
+   "in_list_view": 1,
+   "read_only_depends_on": "eval:in_list(['Forex', 'Tuition Fee'], doc.commission_type)",
+   "description": "Auto-filled for Forex and Tuition Fee. Entered by Accounts for OSHC and Fee Payment Route."
+  },
+  {
+   "fieldname": "commission_received_date",
+   "fieldtype": "Date",
+   "label": "Commission Received Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_details",
+   "fieldtype": "Section Break",
+   "label": "Application Details",
+   "bold": 1
+  },
+  {
+   "fieldname": "university_name",
+   "fieldtype": "Data",
+   "label": "University Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "course_name",
+   "fieldtype": "Data",
+   "label": "Course Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Data",
+   "label": "Country",
+   "read_only": 1
+  },
+  {
+   "fieldname": "paid_tuition_fee",
+   "fieldtype": "Currency",
+   "label": "Paid Tuition Fee",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_tuition_fee",
+   "fieldtype": "Currency",
+   "label": "Total Tuition Fee",
+   "read_only": 1,
+   "depends_on": "eval:doc.commission_type == 'Tuition Fee'"
+  },
+  {
+   "fieldname": "full_year_tuition_fee",
+   "fieldtype": "Currency",
+   "label": "Full Year Tuition Fee",
+   "read_only": 1,
+   "depends_on": "eval:doc.commission_type == 'Tuition Fee'"
+  },
+  {
+   "fieldname": "column_break_details",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "fee_payment_date",
+   "fieldtype": "Date",
+   "label": "Fee Payment Date",
+   "read_only": 1,
+   "depends_on": "eval:doc.commission_type != 'OSHC'"
+  },
+  {
+   "fieldname": "forex_company",
+   "fieldtype": "Data",
+   "label": "Forex Company",
+   "read_only": 1,
+   "depends_on": "eval:doc.commission_type == 'Forex'"
+  },
+  {
+   "fieldname": "fee_payment_route",
+   "fieldtype": "Data",
+   "label": "Fee Payment Route",
+   "read_only": 1,
+   "depends_on": "eval:doc.commission_type == 'Fee Payment Route'"
+  },
+  {
+   "fieldname": "reference_number",
+   "fieldtype": "Data",
+   "label": "Reference Number",
+   "read_only": 1,
+   "depends_on": "eval:doc.commission_type == 'Fee Payment Route'"
+  },
+  {
+   "fieldname": "oshc_payment_date",
+   "fieldtype": "Date",
+   "label": "OSHC Payment Date",
+   "read_only": 1,
+   "depends_on": "eval:doc.commission_type == 'OSHC'"
+  },
+  {
+   "fieldname": "oshc_duration",
+   "fieldtype": "Data",
+   "label": "OSHC Duration",
+   "read_only": 1,
+   "depends_on": "eval:doc.commission_type == 'OSHC'"
+  },
+  {
+   "fieldname": "oshc_amount_paid",
+   "fieldtype": "Currency",
+   "label": "OSHC Amount Paid",
+   "read_only": 1,
+   "depends_on": "eval:doc.commission_type == 'OSHC'"
+  },
+  {
+   "fieldname": "visa_approval_date",
+   "fieldtype": "Date",
+   "label": "Visa Approval Date",
+   "read_only": 1,
+   "depends_on": "eval:doc.commission_type == 'Tuition Fee'"
+  },
+  {
+   "fieldname": "intake_date",
+   "fieldtype": "Date",
+   "label": "Intake Date",
+   "read_only": 1,
+   "depends_on": "eval:doc.commission_type == 'Tuition Fee'"
+  },
+  {
+   "fieldname": "enrolment_status",
+   "fieldtype": "Data",
+   "label": "Enrolment Status",
+   "read_only": 1,
+   "depends_on": "eval:doc.commission_type == 'Tuition Fee'"
+  },
+  {
+   "fieldname": "section_documents",
+   "fieldtype": "Section Break",
+   "label": "Supporting Documents",
+   "bold": 1
+  },
+  {
+   "fieldname": "documents",
+   "fieldtype": "Table",
+   "label": "Documents",
+   "options": "Accounts Fetched Document",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_receipt",
+   "fieldtype": "Section Break",
+   "label": "Commission Receipt",
+   "bold": 1
+  },
+  {
+   "fieldname": "commission_received",
+   "fieldtype": "Select",
+   "label": "Commission Received",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "comments",
+   "fieldtype": "Small Text",
+   "label": "Comments",
+   "depends_on": "eval:doc.commission_received == 'No'",
+   "mandatory_depends_on": "eval:doc.commission_received == 'No'"
+  },
+  {
+   "fieldname": "commission_pending_note",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "⏳ Follow-up reminder requested for this commission.",
+   "depends_on": "eval:doc.commission_received == 'No'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "commission_invoice",
+   "fieldtype": "Attach",
+   "label": "Upload Commission Invoice",
+   "depends_on": "eval:doc.commission_received == 'Yes' && doc.commission_type != 'Tuition Fee'",
+   "mandatory_depends_on": "eval:doc.commission_received == 'Yes' && doc.commission_type != 'Tuition Fee'"
+  },
+  {
+   "fieldname": "commission_receipt_upload",
+   "fieldtype": "Attach",
+   "label": "Upload Commission Receipt / Payment Proof",
+   "depends_on": "eval:doc.commission_received == 'Yes' && doc.commission_type != 'Tuition Fee'",
+   "mandatory_depends_on": "eval:doc.commission_received == 'Yes' && doc.commission_type != 'Tuition Fee'"
+  },
+  {
+   "fieldname": "section_outstanding",
+   "fieldtype": "Section Break",
+   "label": "Outstanding Commission",
+   "bold": 1,
+   "depends_on": "eval:doc.commission_type == 'Tuition Fee' && doc.commission_received == 'Yes'"
+  },
+  {
+   "fieldname": "outstanding_commission",
+   "fieldtype": "Select",
+   "label": "Is There Any Outstanding Commission?",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.commission_type == 'Tuition Fee' && doc.commission_received == 'Yes'",
+   "mandatory_depends_on": "eval:doc.commission_type == 'Tuition Fee' && doc.commission_received == 'Yes'"
+  },
+  {
+   "fieldname": "no_outstanding_reason",
+   "fieldtype": "Small Text",
+   "label": "Reason / Remarks",
+   "depends_on": "eval:doc.outstanding_commission == 'No'",
+   "mandatory_depends_on": "eval:doc.commission_type == 'Tuition Fee' && doc.commission_received == 'Yes' && doc.outstanding_commission == 'No'"
+  },
+  {
+   "fieldname": "outstanding_commission_received",
+   "fieldtype": "Select",
+   "label": "Outstanding Commission Received",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.outstanding_commission == 'Yes'",
+   "mandatory_depends_on": "eval:doc.outstanding_commission == 'Yes'"
+  },
+  {
+   "fieldname": "outstanding_notes",
+   "fieldtype": "Small Text",
+   "label": "Notes / Comments",
+   "depends_on": "eval:doc.outstanding_commission == 'Yes' && doc.outstanding_commission_received == 'No'",
+   "mandatory_depends_on": "eval:doc.outstanding_commission == 'Yes' && doc.outstanding_commission_received == 'No'"
+  },
+  {
+   "fieldname": "outstanding_loop_note",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "Each outstanding amount received is logged below, then the question is asked again. The record closes when there is no outstanding commission left.",
+   "depends_on": "eval:doc.outstanding_commission == 'Yes'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "commission_receipts",
+   "fieldtype": "Table",
+   "label": "Commission Receipts",
+   "options": "Accounts Commission Receipt",
+   "depends_on": "eval:doc.commission_type == 'Tuition Fee'"
+  },
+  {
+   "fieldname": "total_commission_received",
+   "fieldtype": "Currency",
+   "label": "Total Commission Received",
+   "read_only": 1,
+   "depends_on": "eval:doc.commission_type == 'Tuition Fee'"
+  },
+  {
+   "fieldname": "commission_completed_note",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "✓ Commission fully received — record completed.",
+   "depends_on": "eval:doc.status == 'Received'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "receipts_logged",
+   "fieldtype": "Int",
+   "label": "Receipts Logged",
+   "hidden": 1,
+   "read_only": 1,
+   "default": "0"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-08-22 13:40:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Accounts Commission",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1
+  },
+  {
+   "role": "Accounts Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1
+  },
+  {
+   "role": "Accounts User",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1
+  },
+  {
+   "role": "Team Lead",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1
+  },
+  {
+   "role": "Team Executive",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "ACOM-.YYYY.-.####",
+ "naming_rule": "Expression",
+ "title_field": "student_name",
+ "show_title_field_in_link": 1
+}

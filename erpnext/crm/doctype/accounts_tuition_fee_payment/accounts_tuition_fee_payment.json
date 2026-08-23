@@ -1,0 +1,553 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-08-22 13:40:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "application",
+  "student",
+  "student_name",
+  "column_break_head",
+  "workflow_status",
+  "completed_on",
+  "section_details",
+  "country",
+  "currency",
+  "university_name",
+  "column_break_details",
+  "course_name",
+  "intake",
+  "payable_tuition_fee",
+  "section_documents",
+  "documents",
+  "section_payment",
+  "tuition_fee_paid",
+  "tuition_fee_not_paid_note",
+  "tt_copy_received",
+  "tt_copy_not_received_note",
+  "tt_copy_upload",
+  "tt_copy_shared_note",
+  "section_history",
+  "previous_tuition_fee_payment",
+  "previous_country",
+  "previous_amount_foreign",
+  "previous_amount_inr",
+  "section_payers",
+  "fee_payer_types",
+  "number_of_accounts_used",
+  "fee_payers",
+  "payer_count_note",
+  "section_route",
+  "forex_company",
+  "actual_payable_fee",
+  "fee_payment_route",
+  "column_break_route",
+  "flywire_amount",
+  "flywire_instruction_sheet",
+  "convera_amount",
+  "convera_instruction_sheet",
+  "bank_deposit_amount",
+  "reference_number",
+  "section_calculation",
+  "latest_payable_fee",
+  "currency_exchange_rate",
+  "forex_topup_fee",
+  "processing_fee",
+  "swift_nostro_charges",
+  "column_break_calc",
+  "gst",
+  "tcs",
+  "our_commission_percentage",
+  "actual_commission_inr",
+  "total_fee_payable_inr",
+  "section_reconcile",
+  "total_paid_by_payers",
+  "column_break_reconcile",
+  "mark_completed",
+  "reconcile_note"
+ ],
+ "fields": [
+  {
+   "fieldname": "application",
+   "fieldtype": "Link",
+   "label": "Application",
+   "options": "Application",
+   "reqd": 1,
+   "read_only": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "student",
+   "fieldtype": "Link",
+   "label": "Student",
+   "options": "Student",
+   "read_only": 1
+  },
+  {
+   "fieldname": "student_name",
+   "fieldtype": "Data",
+   "label": "Student Name",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_head",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "workflow_status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nIn Progress\nCompleted",
+   "default": "Pending",
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "completed_on",
+   "fieldtype": "Date",
+   "label": "Completed On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_details",
+   "fieldtype": "Section Break",
+   "label": "Application Details (from Offer Letter)",
+   "bold": 1
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Data",
+   "label": "Country",
+   "read_only": 1
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Data",
+   "label": "Currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "university_name",
+   "fieldtype": "Data",
+   "label": "University Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_details",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "course_name",
+   "fieldtype": "Data",
+   "label": "Course Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "intake",
+   "fieldtype": "Data",
+   "label": "Intake",
+   "read_only": 1
+  },
+  {
+   "fieldname": "payable_tuition_fee",
+   "fieldtype": "Currency",
+   "label": "Payable Tuition Fee",
+   "read_only": 1,
+   "options": "currency"
+  },
+  {
+   "fieldname": "section_documents",
+   "fieldtype": "Section Break",
+   "label": "Documents Received",
+   "bold": 1
+  },
+  {
+   "fieldname": "documents",
+   "fieldtype": "Table",
+   "label": "Documents",
+   "options": "Accounts Fetched Document",
+   "description": "Offer letter and identity documents are pulled from the application. Passport, Aadhaar and PAN upload from Processing → Passport / ID Upload."
+  },
+  {
+   "fieldname": "section_payment",
+   "fieldtype": "Section Break",
+   "label": "B. Tuition Fee Payment",
+   "bold": 1
+  },
+  {
+   "fieldname": "tuition_fee_paid",
+   "fieldtype": "Select",
+   "label": "Tuition Fee Paid",
+   "options": "\nYes\nNo",
+   "reqd": 1
+  },
+  {
+   "fieldname": "tuition_fee_not_paid_note",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "⏳ Follow-up reminder requested for the tuition fee payment.",
+   "depends_on": "eval:doc.tuition_fee_paid == 'No'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "tt_copy_received",
+   "fieldtype": "Select",
+   "label": "TT Copy Received",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.tuition_fee_paid == 'Yes'",
+   "mandatory_depends_on": "eval:doc.tuition_fee_paid == 'Yes'"
+  },
+  {
+   "fieldname": "tt_copy_not_received_note",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "⏳ Follow-up reminder requested for the TT copy.",
+   "depends_on": "eval:doc.tuition_fee_paid == 'Yes' && doc.tt_copy_received == 'No'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "tt_copy_upload",
+   "fieldtype": "Attach",
+   "label": "Upload TT Copy",
+   "depends_on": "eval:doc.tt_copy_received == 'Yes'",
+   "mandatory_depends_on": "eval:doc.tt_copy_received == 'Yes'"
+  },
+  {
+   "fieldname": "tt_copy_shared_note",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "✓ TT copy is shared with the Admission Team, Counselor, Student and Agent. Payment details are pushed to the commission modules once this record is completed.",
+   "depends_on": "eval:doc.tt_copy_received == 'Yes' && doc.tt_copy_upload",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "section_history",
+   "fieldtype": "Section Break",
+   "label": "C. Previous Tuition Fee Payment History",
+   "bold": 1
+  },
+  {
+   "fieldname": "previous_tuition_fee_payment",
+   "fieldtype": "Select",
+   "label": "Has the Student Paid Tuition Fees for Any Other Country or University This Financial Year?",
+   "options": "\nYes\nNo",
+   "mandatory_depends_on": "eval:doc.mark_completed"
+  },
+  {
+   "fieldname": "previous_country",
+   "fieldtype": "Link",
+   "label": "Country Name",
+   "options": "Country",
+   "depends_on": "eval:doc.previous_tuition_fee_payment == 'Yes'",
+   "mandatory_depends_on": "eval:doc.previous_tuition_fee_payment == 'Yes'"
+  },
+  {
+   "fieldname": "previous_amount_foreign",
+   "fieldtype": "Currency",
+   "label": "Amount Paid (Foreign Currency)",
+   "depends_on": "eval:doc.previous_tuition_fee_payment == 'Yes'",
+   "mandatory_depends_on": "eval:doc.previous_tuition_fee_payment == 'Yes'"
+  },
+  {
+   "fieldname": "previous_amount_inr",
+   "fieldtype": "Currency",
+   "label": "Amount Paid (INR)",
+   "depends_on": "eval:doc.previous_tuition_fee_payment == 'Yes'",
+   "mandatory_depends_on": "eval:doc.previous_tuition_fee_payment == 'Yes'"
+  },
+  {
+   "fieldname": "section_payers",
+   "fieldtype": "Section Break",
+   "label": "D. Fee Payer Details",
+   "bold": 1
+  },
+  {
+   "fieldname": "fee_payer_types",
+   "fieldtype": "Table",
+   "label": "Who Will Pay the Tuition Fee?",
+   "options": "Accounts Fee Payer Type",
+   "description": "Add one row per person paying the fee.",
+   "mandatory_depends_on": "eval:doc.mark_completed"
+  },
+  {
+   "fieldname": "number_of_accounts_used",
+   "fieldtype": "Select",
+   "label": "Number of Accounts Used",
+   "options": "\nOne\nTwo\nThree",
+   "mandatory_depends_on": "eval:doc.mark_completed"
+  },
+  {
+   "fieldname": "fee_payers",
+   "fieldtype": "Table",
+   "label": "Fee Payers",
+   "options": "Accounts Fee Payer",
+   "depends_on": "eval:doc.number_of_accounts_used",
+   "description": "One row per bank account used. KYC and bank/UTR details are captured together so each payer's payment stays linked to that payer."
+  },
+  {
+   "fieldname": "payer_count_note",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "",
+   "depends_on": "eval:0",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "section_route",
+   "fieldtype": "Section Break",
+   "label": "E. Fee Payment Details",
+   "bold": 1
+  },
+  {
+   "fieldname": "forex_company",
+   "fieldtype": "Select",
+   "label": "Forex Company",
+   "options": "\nSupreme Securities\nPaul Merchants\nEbixCash\nReeudo (ApplyBoard)\nMoneyHop",
+   "mandatory_depends_on": "eval:doc.mark_completed"
+  },
+  {
+   "fieldname": "actual_payable_fee",
+   "fieldtype": "Currency",
+   "label": "Actual Payable Fee",
+   "options": "currency",
+   "mandatory_depends_on": "eval:doc.mark_completed"
+  },
+  {
+   "fieldname": "fee_payment_route",
+   "fieldtype": "Select",
+   "label": "Fee Payment Route",
+   "options": "\nFlywire\nConvera\nBank Deposit",
+   "mandatory_depends_on": "eval:doc.mark_completed"
+  },
+  {
+   "fieldname": "column_break_route",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "flywire_amount",
+   "fieldtype": "Currency",
+   "label": "Flywire Amount",
+   "depends_on": "eval:doc.fee_payment_route == 'Flywire'",
+   "mandatory_depends_on": "eval:doc.mark_completed && doc.fee_payment_route == 'Flywire'"
+  },
+  {
+   "fieldname": "flywire_instruction_sheet",
+   "fieldtype": "Attach",
+   "label": "Flywire Instruction Sheet",
+   "depends_on": "eval:doc.fee_payment_route == 'Flywire'",
+   "mandatory_depends_on": "eval:doc.mark_completed && doc.fee_payment_route == 'Flywire'"
+  },
+  {
+   "fieldname": "convera_amount",
+   "fieldtype": "Currency",
+   "label": "Convera Amount",
+   "depends_on": "eval:doc.fee_payment_route == 'Convera'",
+   "mandatory_depends_on": "eval:doc.mark_completed && doc.fee_payment_route == 'Convera'"
+  },
+  {
+   "fieldname": "convera_instruction_sheet",
+   "fieldtype": "Attach",
+   "label": "Convera Instruction Sheet",
+   "depends_on": "eval:doc.fee_payment_route == 'Convera'",
+   "mandatory_depends_on": "eval:doc.mark_completed && doc.fee_payment_route == 'Convera'"
+  },
+  {
+   "fieldname": "bank_deposit_amount",
+   "fieldtype": "Currency",
+   "label": "Bank Deposit Amount",
+   "depends_on": "eval:doc.fee_payment_route == 'Bank Deposit'",
+   "mandatory_depends_on": "eval:doc.mark_completed && doc.fee_payment_route == 'Bank Deposit'"
+  },
+  {
+   "fieldname": "reference_number",
+   "fieldtype": "Data",
+   "label": "Reference Number",
+   "depends_on": "eval:doc.fee_payment_route",
+   "description": "Flywire / Convera reference or bank deposit transaction reference."
+  },
+  {
+   "fieldname": "section_calculation",
+   "fieldtype": "Section Break",
+   "label": "F. Fee Calculation",
+   "bold": 1,
+   "depends_on": "eval:doc.fee_payment_route"
+  },
+  {
+   "fieldname": "latest_payable_fee",
+   "fieldtype": "Currency",
+   "label": "Latest Payable Fee",
+   "options": "currency",
+   "mandatory_depends_on": "eval:doc.mark_completed"
+  },
+  {
+   "fieldname": "currency_exchange_rate",
+   "fieldtype": "Float",
+   "label": "Currency Exchange Rate",
+   "precision": "4",
+   "mandatory_depends_on": "eval:doc.mark_completed"
+  },
+  {
+   "fieldname": "forex_topup_fee",
+   "fieldtype": "Currency",
+   "label": "Forex Company Top-up Fee",
+   "mandatory_depends_on": "eval:doc.mark_completed"
+  },
+  {
+   "fieldname": "processing_fee",
+   "fieldtype": "Currency",
+   "label": "Processing Fee",
+   "default": "350"
+  },
+  {
+   "fieldname": "swift_nostro_charges",
+   "fieldtype": "Currency",
+   "label": "SWIFT / Nostro Charges",
+   "default": "1100"
+  },
+  {
+   "fieldname": "column_break_calc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "gst",
+   "fieldtype": "Currency",
+   "label": "GST",
+   "mandatory_depends_on": "eval:doc.mark_completed"
+  },
+  {
+   "fieldname": "tcs",
+   "fieldtype": "Currency",
+   "label": "TCS",
+   "mandatory_depends_on": "eval:doc.mark_completed"
+  },
+  {
+   "fieldname": "our_commission_percentage",
+   "fieldtype": "Percent",
+   "label": "Our Commission Percentage",
+   "description": "Applied to the Actual Payable Fee.",
+   "mandatory_depends_on": "eval:doc.mark_completed"
+  },
+  {
+   "fieldname": "actual_commission_inr",
+   "fieldtype": "Currency",
+   "label": "Actual Commission (INR)",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "total_fee_payable_inr",
+   "fieldtype": "Currency",
+   "label": "Total Fee Payable (INR)",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "section_reconcile",
+   "fieldtype": "Section Break",
+   "label": "G. Reconciliation",
+   "bold": 1,
+   "depends_on": "eval:doc.fee_payment_route"
+  },
+  {
+   "fieldname": "total_paid_by_payers",
+   "fieldtype": "Currency",
+   "label": "Total Paid by Fee Payers (INR)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_reconcile",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "mark_completed",
+   "fieldtype": "Check",
+   "label": "Mark Payment as Completed",
+   "default": "0",
+   "description": "Allowed once the fee payers' total matches the Total Fee Payable (INR)."
+  },
+  {
+   "fieldname": "reconcile_note",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "",
+   "depends_on": "eval:0",
+   "read_only": 1,
+   "bold": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-08-22 13:40:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Accounts Tuition Fee Payment",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1
+  },
+  {
+   "role": "Accounts Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1
+  },
+  {
+   "role": "Accounts User",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1
+  },
+  {
+   "role": "Team Lead",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1
+  },
+  {
+   "role": "Team Executive",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "ATFP-.YYYY.-.####",
+ "naming_rule": "Expression",
+ "title_field": "student_name",
+ "show_title_field_in_link": 1
+}
