@@ -15,6 +15,7 @@
   "agent",
   "column_break_jdtj",
   "application_type",
+  "is_onshore_change",
   "status",
   "destination_country",
   "country_flow_case",
@@ -109,7 +110,7 @@
   "section_d_study_gap_proof",
   "study_gap_proof_list",
   "section_d_passport",
-  "passport_upload",
+  "passport_id_uploads",
   "column_break_section_d",
   "section_e_processing_agent",
   "processing_agent_details",
@@ -178,6 +179,7 @@
   "section_break_offer_docs",
   "offer_letter_upload",
   "send_offer_to_chat",
+  "offer_sent_to_chat_status",
   "defer_offer_required",
   "defer_offer_ok",
   "applied_for_defer_offer_letter",
@@ -249,6 +251,12 @@
   "english_requirement_documents",
   "c_sponsors_section",
   "table_ihmq",
+  "sponsor_occupations_section",
+  "sponsor_occupations",
+  "sponsor_itrs_section",
+  "sponsor_itrs",
+  "sponsor_form_16_section",
+  "sponsor_form_16",
   "gap_justification_section",
   "gap_justification_details",
   "gap_justification_documents",
@@ -276,6 +284,7 @@
   "student_affidavit_upload",
   "gs_tab",
   "gs_processing_section",
+  "gs_interview_section",
   "interview_stage_available",
   "interview_not_available_status",
   "interview_deadline",
@@ -286,28 +295,38 @@
   "schedule_interview_yes_status",
   "schedule_interview_no_status",
   "interview_completed",
+  "gs_approval_decision_section",
   "gs_approved_check",
   "gs_approved_yes_status",
   "gs_any_requirement",
   "no_requirement_status",
   "requirement_details",
-  "requirement_document_upload",
   "requirements_completed",
+  "gs_supporting_details",
+  "gs_supporting_documents_upload",
   "requirements_completed_yes_status",
   "requirements_completed_no_status",
-  "all_documents",
   "gs_approved_tab",
   "gs_approved_section",
   "tuition_fee_paid",
   "tuition_fee_paid_status",
   "tuition_fee_not_paid_status",
   "tuition_fee_upload",
+  "fee_processed_through_gha",
+  "fee_gha_yes_status",
+  "convinced_fee_through_gha",
+  "reason_fee_not_through_gha",
+  "reason_no_efforts_gha",
+  "gsa_oshc_section",
   "oshc_required",
   "oshc_arranged_by_type",
+  "university_oshc_status",
   "gha_policy_received",
   "gha_oshc_company_name",
   "gha_oshc_policy_no",
   "gha_oshc_upload",
+  "gha_oshc_amount",
+  "gha_oshc_duration",
   "gha_policy_not_received_status",
   "agent_policy_received",
   "agent_oshc_company_name",
@@ -321,9 +340,27 @@
   "student_oshc_amount",
   "student_oshc_upload",
   "student_policy_not_received_status",
+  "gsa_acceptance_section",
   "acceptance_submitted",
   "acceptance_submitted_status",
   "acceptance_not_submitted_status",
+  "acceptance_pending_conditions",
+  "acceptance_pending_no_status",
+  "acceptance_condition_details",
+  "acceptance_condition_completed",
+  "acceptance_condition_completed_yes_status",
+  "acceptance_condition_completed_no_status",
+  "gsa_interview_section",
+  "gsa_interview_available",
+  "gsa_interview_not_available_status",
+  "gsa_interview_deadline",
+  "gsa_student_prepare",
+  "gsa_student_prepare_yes_status",
+  "gsa_student_prepare_no_status",
+  "gsa_schedule_interview",
+  "gsa_schedule_interview_yes_status",
+  "gsa_schedule_interview_no_status",
+  "gsa_interview_completed",
   "acceptance_tab",
   "acceptance_before_coe_section",
   "acceptance_before_coe_available",
@@ -342,10 +379,17 @@
   "acceptance_requirements_completed",
   "acceptance_requirements_completed_yes_status",
   "acceptance_requirements_completed_no_status",
+  "acceptance_completion_details",
   "acceptance_requirement_upload",
+  "coe_confirmation_section",
+  "coe_received",
+  "coe_received_yes_status",
+  "coe_received_no_status",
   "coe_tab",
   "coe_section",
   "coe_uploaded",
+  "send_coe_to_student_chat",
+  "coe_sent_to_chat_status",
   "intake_date",
   "medical_arranged_by",
   "our_side_medical_scheduled",
@@ -382,6 +426,13 @@
   "trn_number",
   "immi_acknowledgement_upload",
   "hap_id_upload",
+  "visa_decision_section",
+  "decision_received",
+  "visa_status_checked",
+  "visa_status_screenshot_upload",
+  "visa_status_checked_reminder_status",
+  "visa_status_not_checked_reason",
+  "visa_status_manager_notified_status",
   "visa_decision",
   "visa_status",
   "visa_approved_status",
@@ -397,12 +448,9 @@
   "visa_refused_tab",
   "visa_refused_section",
   "refused_letter_upload",
-  "process_other_country",
-  "no_process_comments",
-  "no_process_reason",
-  "other_country_name",
-  "new_app_handling_team",
-  "new_app_handling_person",
+  "send_refusal_letter_to_chat",
+  "refusal_sent_to_chat_status",
+  "refused_refund_section",
   "refund_processed_by",
   "refund_form_filled_by",
   "refund_form_cross_checked",
@@ -412,10 +460,22 @@
   "employee_position",
   "employee_code",
   "oshc_refund_form_upload",
+  "future_processing_section",
+  "process_other_country",
+  "no_process_comments",
+  "no_process_reason",
+  "other_country_name",
+  "new_app_handling_team",
+  "new_app_handling_person",
   "enrollment_tab",
+  "enrolment_proof_upload",
   "enrollment_documents",
+  "enrollment_completed_status",
+  "application_completed_on",
   "on_shore_college_change_tab",
   "on_shore_section",
+  "onshore_college_change_allowed",
+  "onshore_not_allowed_status",
   "student_wants_college_change",
   "student_no_change_status",
   "from_where_change",
@@ -425,6 +485,9 @@
   "close_case_status",
   "ganpati_new_app_status",
   "oscg_status",
+  "onshore_new_app_stage",
+  "onshore_new_application_id",
+  "create_onshore_application",
   "refund_processing_tab",
   "refund_processing_section",
   "tuition_fee_refund_received",
@@ -447,8 +510,6 @@
   "close_case_upload_no_issue",
   "closed_tab",
   "application_closed",
-  "shop_act_additional_document",
-  "shop_act_uploaded",
   "column_break_uk_assess",
   "column_break_uk_email",
   "column_break_uk_docs",
@@ -460,7 +521,15 @@
   "section_break_dkel",
   "study_gap_proof",
   "other_documents_offer",
-  "defer_other_documents"
+  "defer_other_documents",
+  "tuition_fee_refund_issue",
+  "refund_issue_details",
+  "refund_issue_resolved",
+  "refund_issue_unresolved_status",
+  "refunded_oshc_received",
+  "refunded_oshc_not_received_status",
+  "tuition_fee_refund_invoice_upload",
+  "refunded_completed_status"
  ],
  "fields": [
   {
@@ -501,7 +570,6 @@
    "options": "User",
    "default": "__user",
    "depends_on": "eval:doc.application_type == 'B2B' || doc.application_type == 'B2C'",
-   "read_only": 1,
    "in_list_view": 1
   },
   {
@@ -512,19 +580,21 @@
    "fieldname": "application_type",
    "fieldtype": "Select",
    "label": "Application Type",
-   "options": "B2B",
+   "options": "B2B\nB2C",
    "reqd": 1,
-   "read_only": 1,
-   "in_list_view": 1
+   "in_list_view": 1,
+   "length": 20,
+   "default": "B2B"
   },
   {
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Pending\nProcessing\nSubmitted\nOffer Letter Received\nFinancial\nGS Processing\nGS Approved\nAcceptance\nCOE\nFile Lodged\nVisa\nEnrollment\nOn Shore College change\nVisa Refused\nClosed",
+   "options": "Pending\nProcessing\nSubmitted\nOffer Letter Received\nFinancial\nGS Processing\nGS Approved\nAcceptance\nCOE\nFile Lodged\nVisa\nEnrollment\nCompleted\nOn Shore College change\nVisa Refused\nRefunded\nRefund\nClosed",
    "default": "Pending",
    "reqd": 1,
-   "in_list_view": 1
+   "in_list_view": 1,
+   "length": 43
   },
   {
    "fieldname": "destination_country",
@@ -542,7 +612,8 @@
    "description": "Auto-set from destination country + assessment (UK router / AU spouse gate).",
    "hidden": 1,
    "read_only": 1,
-   "in_list_view": 1
+   "in_list_view": 1,
+   "length": 36
   },
   {
    "fieldname": "uk_data",
@@ -558,7 +629,8 @@
    "fieldname": "naming_series",
    "fieldtype": "Select",
    "label": "Series",
-   "options": "APP-.YYYY.-"
+   "options": "APP-.YYYY.-",
+   "length": 20
   },
   {
    "fieldname": "column_break_ilyf",
@@ -581,13 +653,15 @@
    "fieldname": "martial_status",
    "fieldtype": "Select",
    "label": "Martial Status",
-   "options": "\nMarried\nSingle"
+   "options": "\nMarried\nSingle",
+   "length": 20
   },
   {
    "fieldname": "higher_education",
    "fieldtype": "Select",
    "label": "Qualification",
-   "options": "\n12th pass\nGraduation\nPost-graduation\nOthers"
+   "options": "\n12th pass\nGraduation\nPost-graduation\nOthers",
+   "length": 20
   },
   {
    "fieldname": "details_program_section",
@@ -620,7 +694,8 @@
    "fieldname": "intake",
    "fieldtype": "Select",
    "label": "Intake",
-   "options": "\nJanuary\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember"
+   "options": "\nJanuary\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember",
+   "length": 20
   },
   {
    "fieldname": "column_break_details_program_3",
@@ -673,14 +748,16 @@
    "fieldtype": "Select",
    "label": "Which Country?",
    "options": "\nAustralia\nNew Zealand",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.any_visa_refused == 'Yes')"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.any_visa_refused == 'Yes')",
+   "length": 20
   },
   {
    "fieldname": "visa_refused_type",
    "fieldtype": "Select",
    "label": "Which type of Visa refused?",
    "options": "\nStudy Visa\nTourist Visa\nWork Visa\nOther Visa",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.any_visa_refused == 'Yes' && doc.visa_refused_country)"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.any_visa_refused == 'Yes' && doc.visa_refused_country)",
+   "length": 20
   },
   {
    "fieldname": "column_break_details_visa_2",
@@ -700,7 +777,8 @@
    "fieldtype": "Select",
    "label": "Can we process this case for Australia?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.any_visa_refused == 'Yes' && doc.visa_refused_type && !(doc.visa_refused_country == 'Australia' && doc.visa_refused_type == 'Study Visa'))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.any_visa_refused == 'Yes' && doc.visa_refused_type && !(doc.visa_refused_country == 'Australia' && doc.visa_refused_type == 'Study Visa'))",
+   "length": 20
   },
   {
    "fieldname": "visa_refused_go_ahead_status",
@@ -716,7 +794,8 @@
    "fieldtype": "Select",
    "label": "Does student want to process any other country?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.any_visa_refused == 'Yes' && ((doc.visa_refused_country == 'Australia' && doc.visa_refused_type == 'Study Visa') || doc.visa_refused_can_process == 'No'))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.any_visa_refused == 'Yes' && ((doc.visa_refused_country == 'Australia' && doc.visa_refused_type == 'Study Visa') || doc.visa_refused_can_process == 'No'))",
+   "length": 20
   },
   {
    "fieldname": "visa_refused_other_country_name",
@@ -775,7 +854,8 @@
    "label": "If study gap is",
    "options": "\nBelow 1 Year\nBelow 2 Years\nAbove 2 Years",
    "depends_on": "eval:doc.study_gap == 'Yes'",
-   "description": "Below 1 Year / Below 2 Years → Accepted. Above 2 Years → Not Accepted."
+   "description": "Below 1 Year / Below 2 Years → Accepted. Above 2 Years → Not Accepted.",
+   "length": 20
   },
   {
    "fieldname": "column_break_details_gap_2",
@@ -882,7 +962,8 @@
    "fieldtype": "Select",
    "label": "Spouse qualification",
    "options": "\nGraduate or above Graduation\nBelow Graduate",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.higher_education == 'Graduation' && doc.martial_status == 'Married')"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.higher_education == 'Graduation' && doc.martial_status == 'Married')",
+   "length": 48
   },
   {
    "fieldname": "column_break_spouse_1",
@@ -893,14 +974,16 @@
    "fieldtype": "Select",
    "label": "Marriage Duration",
    "options": "\n1 year or above\nBelow 1 year",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.case_4_spouse_qualification == 'Graduate or above Graduation' && doc.higher_education == 'Graduation' && doc.martial_status == 'Married')"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.case_4_spouse_qualification == 'Graduate or above Graduation' && doc.higher_education == 'Graduation' && doc.martial_status == 'Married')",
+   "length": 20
   },
   {
    "fieldname": "case_4_proceed_below_graduate",
    "fieldtype": "Select",
    "label": "Student wants to proceed (Below Graduate)",
    "options": "\non single basis\nDon’t want to procced",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.case_4_spouse_qualification == 'Below Graduate' && doc.higher_education == 'Graduation' && doc.martial_status == 'Married')"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.case_4_spouse_qualification == 'Below Graduate' && doc.higher_education == 'Graduation' && doc.martial_status == 'Married')",
+   "length": 41
   },
   {
    "fieldname": "column_break_spouse_2",
@@ -911,14 +994,16 @@
    "fieldtype": "Select",
    "label": "Student wants to proceed (Below 1 year)",
    "options": "\non single basis\nwait to complete one year",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.case_4_marriage_duration == 'Below 1 year' && doc.case_4_spouse_qualification == 'Graduate or above Graduation' && doc.higher_education == 'Graduation' && doc.martial_status == 'Married')"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.case_4_marriage_duration == 'Below 1 year' && doc.case_4_spouse_qualification == 'Graduate or above Graduation' && doc.higher_education == 'Graduation' && doc.martial_status == 'Married')",
+   "length": 45
   },
   {
    "fieldname": "case_4_proceed_above_1_year",
    "fieldtype": "Select",
    "label": "Student wants to proceed (1 year or above)",
    "options": "\nOn single basis\nwith Spouse",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.case_4_marriage_duration == '1 year or above' && doc.case_4_spouse_qualification == 'Graduate or above Graduation' && doc.higher_education == 'Graduation' && doc.martial_status == 'Married')"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.case_4_marriage_duration == '1 year or above' && doc.case_4_spouse_qualification == 'Graduate or above Graduation' && doc.higher_education == 'Graduation' && doc.martial_status == 'Married')",
+   "length": 20
   },
   {
    "fieldname": "case_4_note_wait",
@@ -946,7 +1031,7 @@
    "fieldname": "information_tab",
    "fieldtype": "Tab Break",
    "label": "Processing",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive'))"
+   "depends_on": "eval:!doc.is_onshore_change && ((doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive')))"
   },
   {
    "fieldname": "section_a_email",
@@ -1071,7 +1156,8 @@
    "fieldtype": "Select",
    "label": "10th/12th Documents Verified",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.higher_education == 'Graduation'"
+   "depends_on": "eval:doc.higher_education == 'Graduation'",
+   "length": 20
   },
   {
    "fieldname": "school_docs_pdf",
@@ -1133,12 +1219,21 @@
   {
    "fieldname": "section_d_passport",
    "fieldtype": "Section Break",
-   "label": "Passport"
+   "label": "Passport / ID Upload"
+  },
+  {
+   "fieldname": "passport_id_uploads",
+   "fieldtype": "Table",
+   "label": "Passport / ID Upload",
+   "options": "Application Passport ID Upload",
+   "description": "Passport, Aadhaar and PAN Card rows sync to Accounts when uploaded. Use Others for any extra ID document that stays on this application only."
   },
   {
    "fieldname": "passport_upload",
    "fieldtype": "Attach",
-   "label": "Upload Passport"
+   "label": "Upload Passport (legacy)",
+   "hidden": 1,
+   "read_only": 1
   },
   {
    "fieldname": "column_break_section_d",
@@ -1165,7 +1260,8 @@
    "fieldname": "application_filled_by",
    "fieldtype": "Select",
    "label": "Application Filled By",
-   "options": "\nApplication filled by us\nFilled on portal\nFilled by Vendor"
+   "options": "\nApplication filled by us\nFilled on portal\nFilled by Vendor",
+   "length": 44
   },
   {
    "fieldname": "application_form_1_upload",
@@ -1207,7 +1303,7 @@
    "fieldname": "submitted_tab",
    "fieldtype": "Tab Break",
    "label": "Submitted",
-   "depends_on": "eval:doc.destination_country=='Australia'"
+   "depends_on": "eval:!doc.is_onshore_change && (doc.destination_country=='Australia')"
   },
   {
    "fieldname": "submitted_date",
@@ -1427,7 +1523,8 @@
    "fieldtype": "Select",
    "label": "Currency",
    "options": "AUD\nCAD\nNZD\nUSD\nINR\nGBP",
-   "default": "AUD"
+   "default": "AUD",
+   "length": 23
   },
   {
    "fieldname": "university_name",
@@ -1548,7 +1645,8 @@
    "fieldname": "funds_required_type",
    "fieldtype": "Select",
    "label": "Funds Required",
-   "options": "\nWith Full Year fee (single basis)\nWithout Full Year fee (single basis)\nWith Full Year fee (With spouse)\nWithout Full Year fee (With spouse)\nWith Full Year fee (With spouse and Kid)\nWithout Full Year fee (With spouse and Kid)\nWith Full Year fee (With Kid)\nWithout Full Year fee (With Kid)"
+   "options": "\nWith Full Year fee (single basis)\nWithout Full Year fee (single basis)\nWith Full Year fee (With spouse)\nWithout Full Year fee (With spouse)\nWith Full Year fee (With spouse and Kid)\nWithout Full Year fee (With spouse and Kid)\nWith Full Year fee (With Kid)\nWithout Full Year fee (With Kid)",
+   "length": 63
   },
   {
    "fieldname": "funds_required_amount",
@@ -1592,15 +1690,18 @@
   },
   {
    "fieldname": "send_offer_to_chat",
-   "fieldtype": "Check",
-   "label": "Send directly to chat",
-   "default": "0"
+   "fieldtype": "Select",
+   "label": "Send Offer Letter to Student Chat",
+   "options": "\nYes\nNo",
+   "description": "Yes → a note appears below reminding you to share the offer letter with the student in chat.",
+   "length": 23
   },
   {
    "fieldname": "defer_offer_required",
    "fieldtype": "Select",
    "label": "Defer Offer Required",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "length": 23
   },
   {
    "fieldname": "defer_offer_ok",
@@ -1616,7 +1717,8 @@
    "fieldtype": "Select",
    "label": "Have you applied for Defer Offer letter?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.defer_offer_required == 'Yes'"
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "length": 23
   },
   {
    "fieldname": "applied_for_defer_offer_yes_section",
@@ -1629,7 +1731,8 @@
    "fieldtype": "Select",
    "label": "Any Further Requirement for Defer offer letter?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes'"
+   "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes'",
+   "length": 23
   },
   {
    "fieldname": "defer_no_further_requirement_note",
@@ -1651,7 +1754,8 @@
    "fieldtype": "Select",
    "label": "Pending requirements Completed?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes' && doc.defer_any_further_requirement == 'Yes'"
+   "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes' && doc.defer_any_further_requirement == 'Yes'",
+   "length": 23
   },
   {
    "fieldname": "defer_pending_requirements_reminder_note",
@@ -1699,7 +1803,8 @@
    "label": "Currency",
    "options": "AUD\nCAD\nNZD\nUSD\nINR\nGBP",
    "default": "AUD",
-   "depends_on": "eval:doc.defer_offer_required == 'Yes'"
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "length": 23
   },
   {
    "fieldname": "defer_university_name",
@@ -1828,7 +1933,8 @@
    "fieldtype": "Select",
    "label": "Funds Required",
    "options": "\nWith Full Year fee (single basis)\nWithout Full Year fee (single basis)\nWith Full Year fee (With spouse)\nWithout Full Year fee (With spouse)\nWith Full Year fee (With spouse and Kid)\nWithout Full Year fee (With spouse and Kid)\nWith Full Year fee (With Kid)\nWithout Full Year fee (With Kid)",
-   "depends_on": "eval:doc.defer_offer_required == 'Yes'"
+   "depends_on": "eval:doc.defer_offer_required == 'Yes'",
+   "length": 63
   },
   {
    "fieldname": "defer_funds_required_amount",
@@ -1916,7 +2022,8 @@
    "fieldtype": "Select",
    "label": "Is student will do process for GS in Another University?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.gs_submitted == 'No' && doc.student_will_process_gs == 'No'"
+   "depends_on": "eval:doc.gs_submitted == 'No' && doc.student_will_process_gs == 'No'",
+   "length": 23
   },
   {
    "fieldname": "gs_another_university_application_id",
@@ -2023,28 +2130,31 @@
    "fieldname": "interview_timing",
    "fieldtype": "Select",
    "label": "Interview Timing",
-   "options": "\nBefore GS Approval\nBefore Acceptance\nBefore COE",
+   "options": "\nBefore Financial\nBefore GS Approval\nBefore Acceptance\nBefore COE",
    "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; })",
-   "description": "Before GS Approval → Financials. Before Acceptance → GS Submitted. Before COE → Acceptance."
+   "description": "Before Financial → Financials tab. Before GS Approval → GS Submitted tab. Before Acceptance → GS Approved tab. Before COE → Acceptance tab.",
+   "mandatory_depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; })",
+   "length": 38
   },
   {
    "fieldname": "interview_deadline_date",
    "fieldtype": "Date",
    "label": "Interview Deadline Date",
-   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before GS Approval'",
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before Financial'",
    "description": "Set the deadline date for the interview. A reminder will be automatically created for this date."
   },
   {
-   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before GS Approval'",
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before Financial'",
    "fieldname": "financials_student_prepare",
    "fieldtype": "Select",
    "label": "Student Prepare",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "length": 23
   },
   {
    "bold": 1,
    "default": "✓ Schedule Interview (if not scheduled)",
-   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before GS Approval' && doc.financials_student_prepare == 'Yes'",
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before Financial' && doc.financials_student_prepare == 'Yes'",
    "fieldname": "financials_student_prepare_yes_status",
    "fieldtype": "Text",
    "label": "Status",
@@ -2053,23 +2163,24 @@
   {
    "bold": 1,
    "default": "⚠ Prepare Student — Set Reminder to Prepare Student",
-   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before GS Approval' && doc.financials_student_prepare == 'No'",
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before Financial' && doc.financials_student_prepare == 'No'",
    "fieldname": "financials_student_prepare_no_status",
    "fieldtype": "Text",
    "label": "Status",
    "read_only": 1
   },
   {
-   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before GS Approval' && doc.financials_student_prepare == 'Yes'",
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before Financial' && doc.financials_student_prepare == 'Yes'",
    "fieldname": "financials_schedule_interview",
    "fieldtype": "Select",
    "label": "Schedule Interview",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "length": 23
   },
   {
    "bold": 1,
    "default": "✓ Prepare Student Strongly — Reminder for Interview Date",
-   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before GS Approval' && doc.financials_schedule_interview == 'Yes'",
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before Financial' && doc.financials_schedule_interview == 'Yes'",
    "fieldname": "financials_schedule_interview_yes_status",
    "fieldtype": "Text",
    "label": "Status",
@@ -2078,19 +2189,20 @@
   {
    "bold": 1,
    "default": "⚠ Prepare Student — Set Reminder to Follow Up Interview Schedule",
-   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before GS Approval' && doc.financials_schedule_interview == 'No'",
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before Financial' && doc.financials_schedule_interview == 'No'",
    "fieldname": "financials_schedule_interview_no_status",
    "fieldtype": "Text",
    "label": "Status",
    "read_only": 1
   },
   {
-   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before GS Approval'",
+   "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before Financial'",
    "fieldname": "financials_interview_completed",
    "fieldtype": "Select",
    "label": "Interview Done Before Deadline?",
    "options": "\nYes\nNo",
-   "description": "Yes → auto-deactivate interview deadline reminder"
+   "description": "Yes → auto-deactivate interview deadline reminder",
+   "length": 23
   },
   {
    "fieldname": "english_requirement_section",
@@ -2123,6 +2235,42 @@
    "fieldtype": "Table",
    "label": "Sponsors",
    "options": "Application Sponsor Complete"
+  },
+  {
+   "fieldname": "sponsor_occupations_section",
+   "fieldtype": "Section Break",
+   "label": "Sponsor Occupation Documents",
+   "description": "One row per occupation. Tag each row with the sponsor it belongs to; a sponsor can have several occupations."
+  },
+  {
+   "fieldname": "sponsor_occupations",
+   "fieldtype": "Table",
+   "label": "Sponsor Occupation Documents",
+   "options": "Application Sponsor Occupation"
+  },
+  {
+   "fieldname": "sponsor_itrs_section",
+   "fieldtype": "Section Break",
+   "label": "Sponsor ITRs",
+   "description": "One row per ITR. Tag each row with the sponsor it belongs to."
+  },
+  {
+   "fieldname": "sponsor_itrs",
+   "fieldtype": "Table",
+   "label": "Sponsor ITRs",
+   "options": "Application Sponsor ITR"
+  },
+  {
+   "fieldname": "sponsor_form_16_section",
+   "fieldtype": "Section Break",
+   "label": "Sponsor Form 16",
+   "description": "One row per Form 16. Tag each row with the sponsor it belongs to."
+  },
+  {
+   "fieldname": "sponsor_form_16",
+   "fieldtype": "Table",
+   "label": "Sponsor Form 16",
+   "options": "Application Sponsor Form 16"
   },
   {
    "fieldname": "gap_justification_section",
@@ -2158,7 +2306,8 @@
    "options": "\nYes\nNo",
    "default": "No",
    "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Verification') !== -1; })",
-   "description": "If Yes, no further verification options. If No, select Academics or Work Experience."
+   "description": "If Yes, no further verification options. If No, select Academics or Work Experience.",
+   "length": 23
   },
   {
    "fieldname": "verification_type",
@@ -2166,7 +2315,8 @@
    "label": "Verification Type",
    "options": "\nAcademics\nWork Experience",
    "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Verification') !== -1; }) && doc.verification_verified == 'No'",
-   "description": "Shown only when Verified = No"
+   "description": "Shown only when Verified = No",
+   "length": 35
   },
   {
    "fieldname": "academic_transcript_section",
@@ -2306,19 +2456,25 @@
    "bold": 1
   },
   {
+   "fieldname": "gs_interview_section",
+   "fieldtype": "Section Break",
+   "label": "Interview Before GS Approval",
+   "bold": 1
+  },
+  {
    "fieldname": "interview_stage_available",
    "fieldtype": "Check",
-   "label": "Interview Before Acceptance (This stage available)",
+   "label": "Interview Before GS Approval (This stage available)",
    "default": "0",
-   "description": "Auto when Interview Timing = Before Acceptance",
+   "description": "Auto when Interview Timing = Before GS Approval",
    "hidden": 1
   },
   {
    "fieldname": "interview_not_available_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "ℹ Interview fields here apply when Interview Timing = Before Acceptance in Financials",
-   "depends_on": "eval:!doc.interview_stage_available",
+   "default": "ℹ These interview fields apply when Interview Timing = Before GS Approval in Financials",
+   "depends_on": "eval:!doc.interview_stage_available && doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; })",
    "read_only": 1
   },
   {
@@ -2332,7 +2488,8 @@
    "fieldtype": "Select",
    "label": "Student Prepare",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.interview_stage_available"
+   "depends_on": "eval:doc.interview_stage_available",
+   "length": 23
   },
   {
    "fieldname": "student_prepare_yes_status",
@@ -2355,7 +2512,8 @@
    "fieldtype": "Select",
    "label": "Schedule Interview",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.interview_stage_available && doc.student_prepare == 'Yes'"
+   "depends_on": "eval:doc.interview_stage_available && doc.student_prepare == 'Yes'",
+   "length": 23
   },
   {
    "fieldname": "schedule_interview_yes_status",
@@ -2379,13 +2537,15 @@
    "fieldtype": "Select",
    "label": "Interview Done Before Deadline?",
    "options": "\nYes\nNo",
-   "description": "Yes → auto-deactivate interview deadline reminder"
+   "description": "Yes → auto-deactivate interview deadline reminder",
+   "length": 23
   },
   {
    "fieldname": "gs_approved_check",
    "fieldtype": "Select",
    "label": "GS Approved",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "length": 23
   },
   {
    "fieldname": "gs_approved_yes_status",
@@ -2400,7 +2560,8 @@
    "fieldtype": "Select",
    "label": "Is There Any Requirement",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.gs_approved_check == 'No'"
+   "depends_on": "eval:doc.gs_approved_check == 'No'",
+   "length": 23
   },
   {
    "fieldname": "no_requirement_status",
@@ -2417,17 +2578,12 @@
    "depends_on": "eval:doc.gs_approved_check == 'No' && doc.gs_any_requirement == 'Yes'"
   },
   {
-   "fieldname": "requirement_document_upload",
-   "fieldtype": "Attach",
-   "label": "Upload Required Document",
-   "depends_on": "eval:doc.gs_approved_check == 'No' && doc.gs_any_requirement == 'Yes'"
-  },
-  {
    "fieldname": "requirements_completed",
    "fieldtype": "Select",
    "label": "Requirements Completed?",
    "depends_on": "eval:doc.gs_approved_check == 'No' && doc.gs_any_requirement == 'Yes'",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "length": 23
   },
   {
    "fieldname": "requirements_completed_yes_status",
@@ -2446,12 +2602,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "all_documents",
-   "fieldtype": "Table",
-   "label": "All Documents",
-   "options": "student documents"
-  },
-  {
    "fieldname": "gs_approved_tab",
    "fieldtype": "Tab Break",
    "label": "GS Approved",
@@ -2467,7 +2617,9 @@
    "fieldname": "tuition_fee_paid",
    "fieldtype": "Select",
    "label": "Tuition Fee Paid",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "mandatory_depends_on": "eval:doc.status == 'GS Approved'",
+   "length": 23
   },
   {
    "fieldname": "tuition_fee_paid_status",
@@ -2482,144 +2634,168 @@
    "fieldtype": "Text",
    "label": "Status",
    "default": "⚠ Set Reminder for Fee Payment Follow Up",
-   "depends_on": "eval:doc.tuition_fee_paid != 'Yes'",
+   "depends_on": "eval:doc.tuition_fee_paid == 'No'",
    "read_only": 1
   },
   {
    "fieldname": "tuition_fee_upload",
    "fieldtype": "Attach",
-   "label": "Tuition Fee Upload",
-   "depends_on": "eval:(doc.tuition_fee_paid == 'Yes')"
+   "label": "Tuition Fee Receipt",
+   "depends_on": "eval:(doc.tuition_fee_paid == 'Yes')",
+   "mandatory_depends_on": "eval:doc.tuition_fee_paid == 'Yes'"
   },
   {
    "fieldname": "oshc_required",
    "fieldtype": "Select",
    "label": "OSHC Required",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.tuition_fee_paid == 'Yes'",
+   "mandatory_depends_on": "eval:doc.tuition_fee_paid == 'Yes'",
+   "length": 23
   },
   {
    "fieldname": "oshc_arranged_by_type",
    "fieldtype": "Select",
    "label": "OSHC Arranged By",
    "options": "\nGHA\nUniversity\nAgent\nStudent",
-   "depends_on": "eval:(doc.oshc_required == 'Yes')"
+   "depends_on": "eval:(doc.oshc_required == 'Yes')",
+   "mandatory_depends_on": "eval:(doc.oshc_required == 'Yes')",
+   "length": 30
   },
   {
    "fieldname": "gha_policy_received",
-   "fieldtype": "Check",
-   "label": "Have You Received Policy",
-   "default": "0",
-   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'GHA'"
+   "fieldtype": "Select",
+   "label": "Have You Received the Policy?",
+   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'GHA'",
+   "options": "\nYes\nNo",
+   "mandatory_depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'GHA'",
+   "length": 23
   },
   {
    "fieldname": "gha_oshc_company_name",
    "fieldtype": "Text",
    "label": "OSHC Company Name",
-   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'GHA' && doc.gha_policy_received"
+   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'GHA' && doc.gha_policy_received == 'Yes'",
+   "mandatory_depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'GHA' && doc.gha_policy_received == 'Yes'"
   },
   {
    "fieldname": "gha_oshc_policy_no",
    "fieldtype": "Text",
    "label": "Policy No",
-   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'GHA' && doc.gha_policy_received"
+   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'GHA' && doc.gha_policy_received == 'Yes'",
+   "mandatory_depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'GHA' && doc.gha_policy_received == 'Yes'"
   },
   {
    "fieldname": "gha_oshc_upload",
    "fieldtype": "Attach",
    "label": "Upload OSHC",
-   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'GHA' && doc.gha_policy_received"
+   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'GHA' && doc.gha_policy_received == 'Yes'",
+   "mandatory_depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'GHA' && doc.gha_policy_received == 'Yes'"
   },
   {
    "fieldname": "gha_policy_not_received_status",
    "fieldtype": "Text",
    "label": "Status",
    "default": "⚠ Set Reminder When Policy Will Be Received",
-   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'GHA' && !doc.gha_policy_received",
+   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'GHA' && doc.gha_policy_received == 'No'",
    "read_only": 1
   },
   {
    "fieldname": "agent_policy_received",
-   "fieldtype": "Check",
-   "label": "Have You Received Policy",
-   "default": "0",
-   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Agent'"
+   "fieldtype": "Select",
+   "label": "Have You Received the Policy?",
+   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Agent'",
+   "options": "\nYes\nNo",
+   "mandatory_depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Agent'",
+   "length": 23
   },
   {
    "fieldname": "agent_oshc_company_name",
    "fieldtype": "Text",
    "label": "OSHC Company Name",
-   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Agent' && doc.agent_policy_received"
+   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Agent' && doc.agent_policy_received == 'Yes'",
+   "mandatory_depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Agent' && doc.agent_policy_received == 'Yes'"
   },
   {
    "fieldname": "agent_oshc_policy_no",
    "fieldtype": "Text",
    "label": "Policy No",
-   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Agent' && doc.agent_policy_received"
+   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Agent' && doc.agent_policy_received == 'Yes'",
+   "mandatory_depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Agent' && doc.agent_policy_received == 'Yes'"
   },
   {
    "fieldname": "agent_oshc_amount",
    "fieldtype": "Text",
    "label": "Amount",
-   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Agent' && doc.agent_policy_received"
+   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Agent' && doc.agent_policy_received == 'Yes'",
+   "mandatory_depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Agent' && doc.agent_policy_received == 'Yes'"
   },
   {
    "fieldname": "agent_oshc_upload",
    "fieldtype": "Attach",
    "label": "Upload OSHC",
-   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Agent' && doc.agent_policy_received"
+   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Agent' && doc.agent_policy_received == 'Yes'",
+   "mandatory_depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Agent' && doc.agent_policy_received == 'Yes'"
   },
   {
    "fieldname": "agent_policy_not_received_status",
    "fieldtype": "Text",
    "label": "Status",
    "default": "⚠ Set Reminder When Policy Will Be Received",
-   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Agent' && !doc.agent_policy_received",
+   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Agent' && doc.agent_policy_received == 'No'",
    "read_only": 1
   },
   {
    "fieldname": "student_policy_received",
-   "fieldtype": "Check",
-   "label": "Have You Received Policy",
-   "default": "0",
-   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Student'"
+   "fieldtype": "Select",
+   "label": "Have You Received the Policy?",
+   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Student'",
+   "options": "\nYes\nNo",
+   "mandatory_depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Student'",
+   "length": 23
   },
   {
    "fieldname": "student_oshc_company_name",
    "fieldtype": "Text",
    "label": "OSHC Company Name",
-   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Student' && doc.student_policy_received"
+   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Student' && doc.student_policy_received == 'Yes'",
+   "mandatory_depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Student' && doc.student_policy_received == 'Yes'"
   },
   {
    "fieldname": "student_oshc_policy_no",
    "fieldtype": "Text",
    "label": "Policy No",
-   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Student' && doc.student_policy_received"
+   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Student' && doc.student_policy_received == 'Yes'",
+   "mandatory_depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Student' && doc.student_policy_received == 'Yes'"
   },
   {
    "fieldname": "student_oshc_amount",
    "fieldtype": "Text",
    "label": "Amount",
-   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Student' && doc.student_policy_received"
+   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Student' && doc.student_policy_received == 'Yes'",
+   "mandatory_depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Student' && doc.student_policy_received == 'Yes'"
   },
   {
    "fieldname": "student_oshc_upload",
    "fieldtype": "Attach",
    "label": "Upload OSHC",
-   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Student' && doc.student_policy_received"
+   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Student' && doc.student_policy_received == 'Yes'",
+   "mandatory_depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Student' && doc.student_policy_received == 'Yes'"
   },
   {
    "fieldname": "student_policy_not_received_status",
    "fieldtype": "Text",
    "label": "Status",
    "default": "⚠ Set Reminder When Policy Will Be Received",
-   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Student' && !doc.student_policy_received",
+   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'Student' && doc.student_policy_received == 'No'",
    "read_only": 1
   },
   {
    "fieldname": "acceptance_submitted",
    "fieldtype": "Select",
    "label": "Acceptance Submitted",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "length": 23
   },
   {
    "fieldname": "acceptance_submitted_status",
@@ -2633,8 +2809,8 @@
    "fieldname": "acceptance_not_submitted_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "⚠ Set Reminder When Acceptance Will Be Submitted",
-   "depends_on": "eval:doc.acceptance_submitted != 'Yes'",
+   "default": "⚠ Set Reminder to follow up for Acceptance Submission",
+   "depends_on": "eval:doc.acceptance_submitted == 'No'",
    "read_only": 1
   },
   {
@@ -2661,8 +2837,8 @@
    "fieldname": "acceptance_not_available_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "ℹ Interview fields here apply when Interview Timing = Before COE in Financials",
-   "depends_on": "eval:!doc.acceptance_before_coe_available",
+   "default": "ℹ These interview fields apply when Interview Timing = Before COE in Financials",
+   "depends_on": "eval:!doc.acceptance_before_coe_available && doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; })",
    "read_only": 1
   },
   {
@@ -2676,7 +2852,8 @@
    "fieldtype": "Select",
    "label": "Student Prepare",
    "depends_on": "eval:doc.acceptance_before_coe_available",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "length": 23
   },
   {
    "fieldname": "acceptance_student_prepare_yes_status",
@@ -2699,7 +2876,8 @@
    "fieldtype": "Select",
    "label": "Schedule Interview",
    "depends_on": "eval:doc.acceptance_before_coe_available && doc.acceptance_student_prepare == 'Yes'",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "length": 23
   },
   {
    "fieldname": "acceptance_schedule_interview_yes_status",
@@ -2723,13 +2901,15 @@
    "fieldtype": "Select",
    "label": "Interview Done Before Deadline?",
    "options": "\nYes\nNo",
-   "description": "Yes → auto-deactivate interview deadline reminder"
+   "description": "Yes → auto-deactivate interview deadline reminder",
+   "length": 23
   },
   {
    "fieldname": "acceptance_any_requirement",
    "fieldtype": "Select",
    "label": "Is There Any Requirement",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "length": 23
   },
   {
    "fieldname": "acceptance_no_requirement_status",
@@ -2750,7 +2930,8 @@
    "fieldtype": "Select",
    "label": "Requirements Completed?",
    "depends_on": "eval:doc.acceptance_any_requirement == 'Yes'",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "length": 23
   },
   {
    "fieldname": "acceptance_requirements_completed_yes_status",
@@ -2775,32 +2956,64 @@
    "depends_on": "eval:doc.acceptance_any_requirement == 'Yes' && doc.acceptance_requirements_completed == 'Yes'"
   },
   {
+   "fieldname": "coe_confirmation_section",
+   "fieldtype": "Section Break",
+   "label": "Confirmation of COE",
+   "bold": 1
+  },
+  {
+   "fieldname": "coe_received",
+   "fieldtype": "Select",
+   "label": "Have You Received the COE?",
+   "options": "\nYes\nNo",
+   "length": 23
+  },
+  {
+   "fieldname": "coe_received_yes_status",
+   "fieldtype": "Text",
+   "label": "Status",
+   "default": "✓ Acceptance stage completed → Moved to eCOE Stage",
+   "depends_on": "eval:doc.coe_received == 'Yes'",
+   "read_only": 1
+  },
+  {
+   "fieldname": "coe_received_no_status",
+   "fieldtype": "Text",
+   "label": "Status",
+   "default": "⚠ Set Reminder to follow up for COE Receipt",
+   "depends_on": "eval:doc.coe_received == 'No'",
+   "read_only": 1
+  },
+  {
    "fieldname": "coe_tab",
    "fieldtype": "Tab Break",
-   "label": "COE",
+   "label": "eCOE",
    "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive'))"
   },
   {
    "fieldname": "coe_section",
    "fieldtype": "Section Break",
-   "label": "COE",
+   "label": "Confirmation of Enrolment (COE)",
    "bold": 1
   },
   {
    "fieldname": "coe_uploaded",
    "fieldtype": "Attach",
-   "label": "COE Uploaded"
+   "label": "COE",
+   "mandatory_depends_on": "eval:doc.status == 'COE'"
   },
   {
    "fieldname": "intake_date",
    "fieldtype": "Date",
-   "label": "Intake Date"
+   "label": "Intake Date",
+   "mandatory_depends_on": "eval:doc.coe_uploaded"
   },
   {
    "fieldname": "medical_arranged_by",
    "fieldtype": "Select",
    "label": "Medical Arranged By",
-   "options": "\nOur Side\nAgent\nStudent"
+   "options": "\nOur Side\nAgent\nStudent",
+   "length": 28
   },
   {
    "fieldname": "our_side_medical_scheduled",
@@ -2884,7 +3097,8 @@
    "fieldname": "file_lodged_by",
    "fieldtype": "Select",
    "label": "File Lodged By",
-   "options": "\nOur Side\nAgent\nStudent\nVendor"
+   "options": "\nOur Side\nAgent\nStudent\nVendor",
+   "length": 28
   },
   {
    "fieldname": "our_side_login_id",
@@ -2903,7 +3117,8 @@
    "fieldtype": "Select",
    "label": "Visa Application Checked By",
    "options": "\nAgent\nStudent",
-   "depends_on": "eval:doc.file_lodged_by == 'Our Side'"
+   "depends_on": "eval:doc.file_lodged_by == 'Our Side'",
+   "length": 27
   },
   {
    "fieldname": "visa_application_upload",
@@ -3031,17 +3246,73 @@
    "label": "HAP ID Upload"
   },
   {
+   "fieldname": "visa_decision_section",
+   "fieldtype": "Section Break",
+   "label": "Visa Decision Status",
+   "bold": 1
+  },
+  {
+   "fieldname": "decision_received",
+   "fieldtype": "Select",
+   "label": "Decision Received",
+   "options": "\nYes\nNo",
+   "length": 23
+  },
+  {
+   "fieldname": "visa_status_checked",
+   "fieldtype": "Select",
+   "label": "Have You Checked the Visa Status?",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.decision_received == 'No'",
+   "mandatory_depends_on": "eval:doc.decision_received == 'No'",
+   "length": 23
+  },
+  {
+   "fieldname": "visa_status_screenshot_upload",
+   "fieldtype": "Attach",
+   "label": "Upload Visa Status Screenshot",
+   "depends_on": "eval:doc.decision_received == 'No' && doc.visa_status_checked == 'Yes'",
+   "mandatory_depends_on": "eval:doc.decision_received == 'No' && doc.visa_status_checked == 'Yes'"
+  },
+  {
+   "fieldname": "visa_status_checked_reminder_status",
+   "fieldtype": "Text",
+   "label": "Status",
+   "default": "⚠ Set Reminder to follow up for the Visa Decision",
+   "depends_on": "eval:doc.decision_received == 'No' && doc.visa_status_checked == 'Yes'",
+   "read_only": 1
+  },
+  {
+   "fieldname": "visa_status_not_checked_reason",
+   "fieldtype": "Small Text",
+   "label": "Reason for Not Checking Visa Status",
+   "depends_on": "eval:doc.decision_received == 'No' && doc.visa_status_checked == 'No'",
+   "mandatory_depends_on": "eval:doc.decision_received == 'No' && doc.visa_status_checked == 'No'"
+  },
+  {
+   "fieldname": "visa_status_manager_notified_status",
+   "fieldtype": "Text",
+   "label": "Notification",
+   "default": "📧 Concerned Manager notified with Application ID, Student Name, Counselor Name and the reason entered",
+   "depends_on": "eval:doc.decision_received == 'No' && doc.visa_status_checked == 'No'",
+   "read_only": 1
+  },
+  {
    "fieldname": "visa_decision",
    "fieldtype": "Select",
-   "label": "Decision",
-   "options": "\nVisa Approved\nVisa Refused"
+   "label": "Visa Decision",
+   "options": "\nVisa Approved\nVisa Refused",
+   "depends_on": "eval:doc.decision_received == 'Yes'",
+   "mandatory_depends_on": "eval:doc.decision_received == 'Yes'",
+   "length": 33
   },
   {
    "fieldname": "visa_status",
    "fieldtype": "Select",
    "label": "Visa Status",
    "options": "File Lodged\nVisa Approved\nVisa Refused",
-   "read_only": 1
+   "read_only": 1,
+   "length": 33
   },
   {
    "fieldname": "visa_approved_status",
@@ -3169,14 +3440,16 @@
    "fieldname": "refund_processed_by",
    "fieldtype": "Select",
    "label": "Refund Processed By",
-   "options": "\nOur Side\nAgent\nStudent"
+   "options": "\nOur Side\nAgent\nStudent",
+   "length": 28
   },
   {
    "fieldname": "refund_form_filled_by",
    "fieldtype": "Select",
    "label": "Refund Form Filled By",
    "options": "\nStudent\nAgent",
-   "depends_on": "eval:doc.refund_processed_by == 'Our Side'"
+   "depends_on": "eval:doc.refund_processed_by == 'Our Side'",
+   "length": 27
   },
   {
    "fieldname": "refund_form_cross_checked",
@@ -3230,10 +3503,31 @@
    "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_status == 'Visa Approved' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive')))"
   },
   {
+   "fieldname": "enrolment_proof_upload",
+   "fieldtype": "Attach",
+   "label": "Enrolment Proof",
+   "description": "Confirmation of Enrolment letter, Student ID card, class registration confirmation, university enrolment confirmation, or any other official enrolment document issued by the institution."
+  },
+  {
    "fieldname": "enrollment_documents",
    "fieldtype": "Table",
    "label": "Enrollment Documents",
    "options": "Enrollment Document"
+  },
+  {
+   "fieldname": "enrollment_completed_status",
+   "fieldtype": "Text",
+   "label": "Status",
+   "default": "✓ Enrolment stage completed → Application marked Completed",
+   "depends_on": "eval:doc.enrolment_proof_upload",
+   "read_only": 1
+  },
+  {
+   "fieldname": "application_completed_on",
+   "fieldtype": "Date",
+   "label": "Application Completed On",
+   "depends_on": "eval:doc.application_completed_on",
+   "read_only": 1
   },
   {
    "fieldname": "on_shore_college_change_tab",
@@ -3251,14 +3545,16 @@
    "fieldname": "student_wants_college_change",
    "fieldtype": "Select",
    "label": "Student Wants to Change College",
-   "options": "\nNo\nYes"
+   "options": "\nNo\nYes",
+   "depends_on": "eval:doc.onshore_college_change_allowed == 'Yes'",
+   "length": 23
   },
   {
    "fieldname": "student_no_change_status",
    "fieldtype": "Text",
    "label": "Status",
    "default": "✓ Ok",
-   "depends_on": "eval:doc.student_wants_college_change == 'No'",
+   "depends_on": "eval:doc.onshore_college_change_allowed == 'Yes' && doc.student_wants_college_change == 'No'",
    "read_only": 1
   },
   {
@@ -3266,33 +3562,34 @@
    "fieldtype": "Select",
    "label": "From Where Wants to Change",
    "options": "\nOthers\nGanpati House of Achievers",
-   "depends_on": "eval:doc.student_wants_college_change == 'Yes'"
+   "depends_on": "eval:doc.onshore_college_change_allowed == 'Yes' && doc.student_wants_college_change == 'Yes'",
+   "length": 46
   },
   {
    "fieldname": "others_reason",
    "fieldtype": "Text",
-   "label": "Reason",
-   "depends_on": "eval:doc.student_wants_college_change == 'Yes' && doc.from_where_change == 'Others'"
+   "label": "Reason for Choosing Other Consultant",
+   "depends_on": "eval:doc.onshore_college_change_allowed == 'Yes' && doc.student_wants_college_change == 'Yes' && doc.from_where_change == 'Others'"
   },
   {
    "fieldname": "convince_times",
    "fieldtype": "Int",
    "label": "How Many Times Convinced",
-   "depends_on": "eval:doc.student_wants_college_change == 'Yes' && doc.from_where_change == 'Others'"
+   "depends_on": "eval:doc.onshore_college_change_allowed == 'Yes' && doc.student_wants_college_change == 'Yes' && doc.from_where_change == 'Others'"
   },
   {
    "fieldname": "close_case",
    "fieldtype": "Check",
    "label": "Close Case",
    "default": "0",
-   "depends_on": "eval:doc.student_wants_college_change == 'Yes' && doc.from_where_change == 'Others'"
+   "depends_on": "eval:doc.onshore_college_change_allowed == 'Yes' && doc.student_wants_college_change == 'Yes' && doc.from_where_change == 'Others'"
   },
   {
    "fieldname": "close_case_status",
    "fieldtype": "Text",
    "label": "Status",
    "default": "✓ Case Closed",
-   "depends_on": "eval:doc.student_wants_college_change == 'Yes' && doc.from_where_change == 'Others' && doc.close_case",
+   "depends_on": "eval:doc.onshore_college_change_allowed == 'Yes' && doc.student_wants_college_change == 'Yes' && doc.from_where_change == 'Others' && doc.close_case",
    "read_only": 1
   },
   {
@@ -3300,7 +3597,7 @@
    "fieldtype": "Text",
    "label": "Status",
    "default": "✓ Create New Application for This Student",
-   "depends_on": "eval:doc.student_wants_college_change == 'Yes' && doc.from_where_change == 'Ganpati House of Achievers'",
+   "depends_on": "eval:doc.onshore_college_change_allowed == 'Yes' && doc.student_wants_college_change == 'Yes' && doc.from_where_change == 'Ganpati House of Achievers'",
    "read_only": 1
   },
   {
@@ -3308,7 +3605,8 @@
    "fieldtype": "Select",
    "label": "OSCG Status",
    "options": "\nProcessing\nOn Offer Letter\nOn COE\nOn Enrolled",
-   "depends_on": "eval:doc.student_wants_college_change == 'Yes' && doc.from_where_change == 'Ganpati House of Achievers'"
+   "depends_on": "eval:doc.onshore_college_change_allowed == 'Yes' && doc.student_wants_college_change == 'Yes' && doc.from_where_change == 'Ganpati House of Achievers'",
+   "length": 35
   },
   {
    "fieldname": "refund_processing_tab",
@@ -3324,16 +3622,18 @@
   },
   {
    "fieldname": "tuition_fee_refund_received",
-   "fieldtype": "Check",
-   "label": "Tuition Fee - Refund Received",
-   "default": "0"
+   "fieldtype": "Select",
+   "label": "Tuition Fee Refund Received",
+   "options": "\nYes\nNo",
+   "length": 23,
+   "mandatory_depends_on": "eval:doc.visa_status == 'Visa Refused'"
   },
   {
    "fieldname": "tuition_fee_refund_yes",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "✓ Move to Refunded Stage",
-   "depends_on": "eval:doc.tuition_fee_refund_received",
+   "default": "✓ Tuition fee refund completed → Moved to Refund stage",
+   "depends_on": "eval:doc.tuition_fee_refund_received == 'Yes'",
    "read_only": 1
   },
   {
@@ -3341,27 +3641,30 @@
    "fieldtype": "Text",
    "label": "Status",
    "default": "⚠ Set Reminder When Refund Expected",
-   "depends_on": "eval:!doc.tuition_fee_refund_received",
+   "depends_on": "eval:doc.tuition_fee_refund_received == 'No'",
    "read_only": 1
   },
   {
    "fieldname": "oshc_refund_received",
-   "fieldtype": "Check",
-   "label": "OSHC - Refund Received",
-   "default": "0"
+   "fieldtype": "Select",
+   "label": "OSHC Refund Received",
+   "options": "\nYes\nNo",
+   "length": 23,
+   "mandatory_depends_on": "eval:doc.visa_status == 'Visa Refused'"
   },
   {
    "fieldname": "oshc_refund_invoice_upload",
    "fieldtype": "Attach",
    "label": "Upload Invoice",
-   "depends_on": "eval:doc.oshc_refund_received"
+   "depends_on": "eval:doc.oshc_refund_received == 'Yes'",
+   "mandatory_depends_on": "eval:doc.oshc_refund_received == 'Yes'"
   },
   {
    "fieldname": "oshc_refund_no",
    "fieldtype": "Text",
    "label": "Status",
    "default": "⚠ Set Reminder When OSHC Refund Expected",
-   "depends_on": "eval:!doc.oshc_refund_received",
+   "depends_on": "eval:doc.oshc_refund_received == 'No'",
    "read_only": 1
   },
   {
@@ -3458,20 +3761,6 @@
    "default": "0"
   },
   {
-   "fieldname": "shop_act_additional_document",
-   "fieldtype": "Attach",
-   "label": "Additional Current A/C Statement/GST Cert Required",
-   "depends_on": "eval:doc.occupation_documents_needed && doc.sponsor_occupation == 'Business' && doc.business_proof == 'Shop Act' && (doc.shop_act_registration_duration == 'Below 1 Year' || doc.shop_act_registration_duration == 'Below 2 Years')",
-   "mandatory_depends_on": "eval:doc.occupation_documents_needed && doc.sponsor_occupation == 'Business' && doc.business_proof == 'Shop Act' && (doc.shop_act_registration_duration == 'Below 1 Year' || doc.shop_act_registration_duration == 'Below 2 Years')"
-  },
-  {
-   "fieldname": "shop_act_uploaded",
-   "fieldtype": "Check",
-   "label": "Shop Act Uploaded",
-   "default": "0",
-   "depends_on": "eval:doc.occupation_documents_needed && doc.sponsor_occupation == 'Business' && doc.business_proof == 'Shop Act'"
-  },
-  {
    "fieldname": "column_break_uk_assess",
    "fieldtype": "Column Break"
   },
@@ -3497,7 +3786,8 @@
    "label": "Is study gap up to 1 year? (legacy)",
    "options": "\nYes\nNo",
    "depends_on": "eval:doc.study_gap == 'Yes'",
-   "hidden": 1
+   "hidden": 1,
+   "length": 23
   },
   {
    "fieldname": "study_gap_status",
@@ -3547,6 +3837,433 @@
    "options": "student documents",
    "depends_on": "eval:doc.defer_offer_required == 'Yes'",
    "hidden": 1
+  },
+  {
+   "fieldname": "fee_processed_through_gha",
+   "fieldtype": "Select",
+   "label": "Was the Tuition Fee Payment Processed Through Us (GHA)?",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.tuition_fee_paid == 'Yes'",
+   "mandatory_depends_on": "eval:doc.tuition_fee_paid == 'Yes'",
+   "length": 23
+  },
+  {
+   "fieldname": "fee_gha_yes_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "✓ OSHC workflow started → Accounts Department workflow triggered",
+   "depends_on": "eval:doc.tuition_fee_paid == 'Yes' && doc.fee_processed_through_gha == 'Yes'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "convinced_fee_through_gha",
+   "fieldtype": "Select",
+   "label": "Have You Convinced the Student / Concerned Person to Process the Fee Through GHA?",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.tuition_fee_paid == 'Yes' && doc.fee_processed_through_gha == 'No'",
+   "mandatory_depends_on": "eval:doc.tuition_fee_paid == 'Yes' && doc.fee_processed_through_gha == 'No'",
+   "length": 23
+  },
+  {
+   "fieldname": "reason_fee_not_through_gha",
+   "fieldtype": "Small Text",
+   "label": "Reason Why Fee Payment Was Not Processed Through GHA",
+   "depends_on": "eval:doc.fee_processed_through_gha == 'No' && doc.convinced_fee_through_gha == 'Yes'",
+   "mandatory_depends_on": "eval:doc.fee_processed_through_gha == 'No' && doc.convinced_fee_through_gha == 'Yes'"
+  },
+  {
+   "fieldname": "reason_no_efforts_gha",
+   "fieldtype": "Small Text",
+   "label": "Reason Why No Efforts Were Made to Process the Fee Through GHA",
+   "depends_on": "eval:doc.fee_processed_through_gha == 'No' && doc.convinced_fee_through_gha == 'No'",
+   "mandatory_depends_on": "eval:doc.fee_processed_through_gha == 'No' && doc.convinced_fee_through_gha == 'No'"
+  },
+  {
+   "fieldname": "gsa_oshc_section",
+   "fieldtype": "Section Break",
+   "label": "OSHC",
+   "bold": 1,
+   "depends_on": "eval:doc.tuition_fee_paid == 'Yes'"
+  },
+  {
+   "fieldname": "university_oshc_status",
+   "fieldtype": "Small Text",
+   "label": "Note",
+   "default": "No additional action is required when the university arranges the OSHC.",
+   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'University'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "gha_oshc_amount",
+   "fieldtype": "Currency",
+   "label": "Policy Amount",
+   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'GHA' && doc.gha_policy_received == 'Yes'",
+   "mandatory_depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'GHA' && doc.gha_policy_received == 'Yes'"
+  },
+  {
+   "fieldname": "gha_oshc_duration",
+   "fieldtype": "Data",
+   "label": "Policy Duration",
+   "length": 64,
+   "depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'GHA' && doc.gha_policy_received == 'Yes'",
+   "mandatory_depends_on": "eval:(doc.oshc_required == 'Yes') && doc.oshc_arranged_by_type == 'GHA' && doc.gha_policy_received == 'Yes'",
+   "description": "e.g. 12 months, 24 months"
+  },
+  {
+   "fieldname": "gsa_acceptance_section",
+   "fieldtype": "Section Break",
+   "label": "Acceptance Submission",
+   "bold": 1
+  },
+  {
+   "fieldname": "acceptance_pending_conditions",
+   "fieldtype": "Select",
+   "label": "Any Pending Conditions?",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.acceptance_submitted == 'No'",
+   "mandatory_depends_on": "eval:doc.acceptance_submitted == 'No'",
+   "length": 23
+  },
+  {
+   "fieldname": "acceptance_pending_no_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "⚠ Set Reminder to follow up for Acceptance Submission",
+   "depends_on": "eval:doc.acceptance_submitted == 'No' && doc.acceptance_pending_conditions == 'No'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "acceptance_condition_details",
+   "fieldtype": "Small Text",
+   "label": "Condition Details",
+   "depends_on": "eval:doc.acceptance_submitted == 'No' && doc.acceptance_pending_conditions == 'Yes'",
+   "mandatory_depends_on": "eval:doc.acceptance_submitted == 'No' && doc.acceptance_pending_conditions == 'Yes'"
+  },
+  {
+   "fieldname": "acceptance_condition_completed",
+   "fieldtype": "Select",
+   "label": "Condition Completed",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.acceptance_submitted == 'No' && doc.acceptance_pending_conditions == 'Yes'",
+   "mandatory_depends_on": "eval:doc.acceptance_submitted == 'No' && doc.acceptance_pending_conditions == 'Yes'",
+   "length": 23
+  },
+  {
+   "fieldname": "acceptance_condition_completed_yes_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "✓ Conditions completed → Set Reminder for Acceptance Submission",
+   "depends_on": "eval:doc.acceptance_submitted == 'No' && doc.acceptance_pending_conditions == 'Yes' && doc.acceptance_condition_completed == 'Yes'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "acceptance_condition_completed_no_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "⚠ Set Reminder to complete the pending conditions",
+   "depends_on": "eval:doc.acceptance_submitted == 'No' && doc.acceptance_pending_conditions == 'Yes' && doc.acceptance_condition_completed == 'No'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "gsa_interview_section",
+   "fieldtype": "Section Break",
+   "label": "Interview Before Acceptance",
+   "bold": 1
+  },
+  {
+   "fieldname": "gsa_interview_available",
+   "fieldtype": "Check",
+   "label": "Interview Before Acceptance (This stage available)",
+   "default": "0",
+   "hidden": 1,
+   "description": "Auto when Interview Timing = Before Acceptance"
+  },
+  {
+   "fieldname": "gsa_interview_not_available_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "ℹ These interview fields apply when Interview Timing = Before Acceptance in Financials",
+   "depends_on": "eval:!doc.gsa_interview_available && doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; })",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "gsa_interview_deadline",
+   "fieldtype": "Date",
+   "label": "Interview Deadline",
+   "depends_on": "eval:doc.gsa_interview_available",
+   "mandatory_depends_on": "eval:doc.gsa_interview_available",
+   "description": "A reminder can be set for this deadline; it deactivates once the interview is completed."
+  },
+  {
+   "fieldname": "gsa_student_prepare",
+   "fieldtype": "Select",
+   "label": "Student Prepared",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.gsa_interview_available",
+   "mandatory_depends_on": "eval:doc.gsa_interview_available",
+   "length": 23
+  },
+  {
+   "fieldname": "gsa_student_prepare_yes_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "✓ Schedule Interview (if not scheduled)",
+   "depends_on": "eval:doc.gsa_interview_available && doc.gsa_student_prepare == 'Yes'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "gsa_student_prepare_no_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "⚠ Prepare Student — Set Reminder to follow up on student preparation",
+   "depends_on": "eval:doc.gsa_interview_available && doc.gsa_student_prepare == 'No'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "gsa_schedule_interview",
+   "fieldtype": "Select",
+   "label": "Schedule Interview",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.gsa_interview_available && doc.gsa_student_prepare == 'Yes'",
+   "mandatory_depends_on": "eval:doc.gsa_interview_available && doc.gsa_student_prepare == 'Yes'",
+   "length": 23
+  },
+  {
+   "fieldname": "gsa_schedule_interview_yes_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "✓ Prepare Student Strongly — Set Reminder for the Interview Date",
+   "depends_on": "eval:doc.gsa_interview_available && doc.gsa_schedule_interview == 'Yes'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "gsa_schedule_interview_no_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "⚠ Set Reminder to follow up for interview scheduling",
+   "depends_on": "eval:doc.gsa_interview_available && doc.gsa_schedule_interview == 'No'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "gsa_interview_completed",
+   "fieldtype": "Select",
+   "label": "Interview Done Before Deadline?",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.gsa_interview_available",
+   "description": "Yes → auto-deactivate the interview reminders for this stage",
+   "length": 23
+  },
+  {
+   "fieldname": "gs_supporting_details",
+   "fieldtype": "Small Text",
+   "label": "Supporting Details",
+   "depends_on": "eval:doc.gs_approved_check == 'No' && doc.gs_any_requirement == 'Yes' && doc.requirements_completed == 'Yes'",
+   "mandatory_depends_on": "eval:doc.gs_approved_check == 'No' && doc.gs_any_requirement == 'Yes' && doc.requirements_completed == 'Yes'"
+  },
+  {
+   "fieldname": "gs_supporting_documents_upload",
+   "fieldtype": "Attach",
+   "label": "Upload Supporting Documents",
+   "depends_on": "eval:doc.gs_approved_check == 'No' && doc.gs_any_requirement == 'Yes' && doc.requirements_completed == 'Yes'",
+   "mandatory_depends_on": "eval:doc.gs_approved_check == 'No' && doc.gs_any_requirement == 'Yes' && doc.requirements_completed == 'Yes'"
+  },
+  {
+   "fieldname": "acceptance_completion_details",
+   "fieldtype": "Small Text",
+   "label": "Completion Details",
+   "depends_on": "eval:doc.acceptance_any_requirement == 'Yes' && doc.acceptance_requirements_completed == 'Yes'",
+   "mandatory_depends_on": "eval:doc.acceptance_any_requirement == 'Yes' && doc.acceptance_requirements_completed == 'Yes'"
+  },
+  {
+   "fieldname": "send_coe_to_student_chat",
+   "fieldtype": "Select",
+   "label": "Send COE to Student Chat",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.coe_uploaded",
+   "mandatory_depends_on": "eval:doc.coe_uploaded",
+   "description": "Yes → a note appears below reminding you to share the COE with the student in chat.",
+   "length": 23
+  },
+  {
+   "fieldname": "coe_sent_to_chat_status",
+   "fieldtype": "Small Text",
+   "label": "Note",
+   "default": "📤 Please share the COE with the student in the chat.",
+   "depends_on": "eval:doc.coe_uploaded && doc.send_coe_to_student_chat == 'Yes'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "send_refusal_letter_to_chat",
+   "fieldtype": "Select",
+   "label": "Send Refusal Letter to Student Chat",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.refused_letter_upload",
+   "mandatory_depends_on": "eval:doc.refused_letter_upload",
+   "description": "Yes → a note appears below reminding you to share the refusal letter with the student in chat.",
+   "length": 23
+  },
+  {
+   "fieldname": "refusal_sent_to_chat_status",
+   "fieldtype": "Small Text",
+   "label": "Note",
+   "default": "📤 Please share the refusal letter with the student in the chat.",
+   "depends_on": "eval:doc.refused_letter_upload && doc.send_refusal_letter_to_chat == 'Yes'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "onshore_college_change_allowed",
+   "fieldtype": "Select",
+   "label": "Is Onshore College Change Allowed in This Country?",
+   "options": "\nYes\nNo",
+   "length": 23
+  },
+  {
+   "fieldname": "onshore_not_allowed_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "✓ Onshore College Change case closed — no further action required.",
+   "depends_on": "eval:doc.onshore_college_change_allowed == 'No'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "onshore_new_app_stage",
+   "fieldtype": "Select",
+   "label": "Start New Application From Stage",
+   "options": "\nOffer Letter\nGS\nAcceptance\nCOE\nEnrolled",
+   "depends_on": "eval:doc.onshore_college_change_allowed == 'Yes' && doc.student_wants_college_change == 'Yes' && doc.from_where_change == 'Ganpati House of Achievers'",
+   "mandatory_depends_on": "eval:doc.onshore_college_change_allowed == 'Yes' && doc.student_wants_college_change == 'Yes' && doc.from_where_change == 'Ganpati House of Achievers'",
+   "length": 32
+  },
+  {
+   "fieldname": "onshore_new_application_id",
+   "fieldtype": "Link",
+   "label": "New Onshore Application ID",
+   "options": "Application",
+   "read_only": 1,
+   "depends_on": "eval:doc.onshore_new_application_id"
+  },
+  {
+   "fieldname": "create_onshore_application",
+   "fieldtype": "Button",
+   "label": "Create Linked Onshore Application",
+   "depends_on": "eval:doc.onshore_college_change_allowed == 'Yes' && doc.student_wants_college_change == 'Yes' && doc.from_where_change == 'Ganpati House of Achievers' && doc.onshore_new_app_stage && !doc.onshore_new_application_id"
+  },
+  {
+   "fieldname": "gs_approval_decision_section",
+   "fieldtype": "Section Break",
+   "label": "GS Approval",
+   "bold": 1
+  },
+  {
+   "fieldname": "refused_refund_section",
+   "fieldtype": "Section Break",
+   "label": "Refund Processing",
+   "bold": 1
+  },
+  {
+   "fieldname": "future_processing_section",
+   "fieldtype": "Section Break",
+   "label": "Future Processing",
+   "bold": 1
+  },
+  {
+   "fieldname": "is_onshore_change",
+   "fieldtype": "Check",
+   "label": "Is Onshore College Change Application",
+   "default": "0",
+   "read_only": 1,
+   "hidden": 1,
+   "depends_on": "eval:doc.is_onshore_change",
+   "description": "Set automatically on applications created from an Onshore College Change."
+  },
+  {
+   "fieldname": "offer_sent_to_chat_status",
+   "fieldtype": "Small Text",
+   "label": "Note",
+   "default": "📤 Please share the offer letter with the student in the chat.",
+   "depends_on": "eval:doc.send_offer_to_chat == 'Yes'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "tuition_fee_refund_issue",
+   "fieldtype": "Select",
+   "label": "Is There Any Issue with the Tuition Fee Refund?",
+   "options": "\nYes\nNo",
+   "length": 23,
+   "mandatory_depends_on": "eval:doc.visa_status == 'Visa Refused'"
+  },
+  {
+   "fieldname": "refund_issue_details",
+   "fieldtype": "Small Text",
+   "label": "Refund Issue Details",
+   "depends_on": "eval:doc.tuition_fee_refund_issue == 'Yes'",
+   "mandatory_depends_on": "eval:doc.tuition_fee_refund_issue == 'Yes'"
+  },
+  {
+   "fieldname": "refund_issue_resolved",
+   "fieldtype": "Select",
+   "label": "Refund Issue Resolved",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:doc.tuition_fee_refund_issue == 'Yes'",
+   "mandatory_depends_on": "eval:doc.tuition_fee_refund_issue == 'Yes'",
+   "length": 23
+  },
+  {
+   "fieldname": "refund_issue_unresolved_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "⏳ Application stays in the Refunded stage until the refund issue is resolved. A follow-up reminder has been requested.",
+   "depends_on": "eval:doc.tuition_fee_refund_issue == 'Yes' && doc.refund_issue_resolved == 'No'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "refunded_oshc_received",
+   "fieldtype": "Select",
+   "label": "OSHC Refund Received",
+   "options": "\nYes\nNo",
+   "depends_on": "eval:(doc.tuition_fee_refund_issue == 'No' || (doc.tuition_fee_refund_issue == 'Yes' && doc.refund_issue_resolved == 'Yes'))",
+   "mandatory_depends_on": "eval:(doc.tuition_fee_refund_issue == 'No' || (doc.tuition_fee_refund_issue == 'Yes' && doc.refund_issue_resolved == 'Yes'))",
+   "length": 23
+  },
+  {
+   "fieldname": "refunded_oshc_not_received_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "⏳ Follow-up reminder requested for the OSHC refund.",
+   "depends_on": "eval:(doc.tuition_fee_refund_issue == 'No' || (doc.tuition_fee_refund_issue == 'Yes' && doc.refund_issue_resolved == 'Yes')) && doc.refunded_oshc_received == 'No'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "tuition_fee_refund_invoice_upload",
+   "fieldtype": "Attach",
+   "label": "Tuition Fee Refund Invoice",
+   "depends_on": "eval:(doc.tuition_fee_refund_issue == 'No' || (doc.tuition_fee_refund_issue == 'Yes' && doc.refund_issue_resolved == 'Yes')) && doc.refunded_oshc_received == 'Yes'",
+   "mandatory_depends_on": "eval:(doc.tuition_fee_refund_issue == 'No' || (doc.tuition_fee_refund_issue == 'Yes' && doc.refund_issue_resolved == 'Yes')) && doc.refunded_oshc_received == 'Yes'"
+  },
+  {
+   "fieldname": "refunded_completed_status",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "✓ Refunded stage completed → Application closed",
+   "depends_on": "eval:(doc.tuition_fee_refund_issue == 'No' || (doc.tuition_fee_refund_issue == 'Yes' && doc.refund_issue_resolved == 'Yes')) && doc.refunded_oshc_received == 'Yes' && doc.tuition_fee_refund_invoice_upload",
+   "read_only": 1,
+   "bold": 1
   }
  ],
  "grid_page_length": 50,
@@ -3711,6 +4428,22 @@
    "print": 1,
    "read": 1,
    "role": "Telecalling Member"
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Manager"
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts User"
   }
  ],
  "row_format": "Dynamic",

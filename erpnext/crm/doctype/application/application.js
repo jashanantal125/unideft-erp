@@ -227,8 +227,6 @@ const APPLICATION_ATTACH_STAGE_MAP = {
 	gs_form_2_upload: "Submitted — GS & Affidavits",
 	sponsorship_affidavit_upload: "Submitted — GS & Affidavits",
 	student_affidavit_upload: "Submitted — GS & Affidavits",
-	requirement_document_upload: "GS Processing",
-	shop_act_additional_document: "Financial / Sponsors",
 	tuition_fee_upload: "GS Approved",
 	gha_oshc_upload: "GS Approved",
 	agent_oshc_upload: "GS Approved",
@@ -541,21 +539,28 @@ function maybe_close_for_another_country(frm) {
 	}
 }
 
+// Interview Timing decides which stage runs the interview workflow:
+//   Before Financial   -> Financials tab (gated directly on interview_timing)
+//   Before GS Approval -> GS Submitted tab
+//   Before Acceptance  -> GS Approved tab
+//   Before COE         -> Acceptance tab
+// The GS Approval yes/no decision on the GS Submitted tab is independent of all
+// of this and always shows.
 function sync_gs_interview_stage_from_financials(frm) {
-	// Show interview detail sections based on Interview Timing (not only Interview selected)
 	const has_interview = has_offer_letter_condition(frm, "Interview");
-	const before_acceptance = has_interview && frm.doc.interview_timing === "Before Acceptance";
-	const before_coe = has_interview && frm.doc.interview_timing === "Before COE";
+	const timing = has_interview ? frm.doc.interview_timing : "";
 
-	const next_gs = before_acceptance ? 1 : 0;
-	if (!!frm.doc.interview_stage_available !== !!next_gs) {
-		frm.set_value("interview_stage_available", next_gs);
-	}
+	const flags = {
+		interview_stage_available: timing === "Before GS Approval" ? 1 : 0,
+		gsa_interview_available: timing === "Before Acceptance" ? 1 : 0,
+		acceptance_before_coe_available: timing === "Before COE" ? 1 : 0,
+	};
 
-	const next_acc = before_coe ? 1 : 0;
-	if (!!frm.doc.acceptance_before_coe_available !== !!next_acc) {
-		frm.set_value("acceptance_before_coe_available", next_acc);
-	}
+	Object.keys(flags).forEach((fieldname) => {
+		if (!!frm.doc[fieldname] !== !!flags[fieldname]) {
+			frm.set_value(fieldname, flags[fieldname]);
+		}
+	});
 }
 
 function deactivate_reminders_matching(frm, patterns, options = {}) {
@@ -615,6 +620,14 @@ const SUBMITTED_INTERVIEW_REMINDERS = [
 ];
 
 const CONDITION_INTERVIEW_REMINDERS = ["Interview Deadline", "Interview Date"];
+
+// Every reminder description used while the application waits on the COE.
+const COE_RECEIPT_REMINDERS = [
+	"Follow-up for COE Receipt",
+	"Set Reminder to receive COE & proceed to next stage",
+	"Waiting for COE After Requirements Completion",
+	"Acceptance Requirement Completion Pending",
+];
 
 function is_defer_offer_required(doc) {
 	return doc.defer_offer_required === "Yes" || doc.defer_offer_required === 1 || doc.defer_offer_required === "1";
@@ -795,7 +808,18 @@ function apply_gap_duration_rule(frm) {
 }
 
 function student_contact_from(stu) {
-	return stu.mobile || stu.mobile_no || stu.phone || stu.contact_no || "";
+	return normalize_phone_for_save(stu.mobile || stu.mobile_no || stu.phone || stu.contact_no || "");
+}
+
+function normalize_phone_for_save(value) {
+	if (!value) return "";
+	const raw = String(value).trim();
+	const digits = raw.replace(/\D/g, "");
+	if (raw.startsWith("+") && digits.length >= 8) return raw;
+	if (digits.length === 10) return `+91-${digits}`;
+	if (digits.length === 12 && digits.startsWith("91")) return `+91-${digits.slice(2)}`;
+	if (digits.length === 11 && digits.startsWith("0")) return `+91-${digits.slice(1)}`;
+	return "";
 }
 
 function calculate_age_from_dob(dob_str) {
@@ -1258,6 +1282,9 @@ function apply_country_flow_ui(frm) {
 			frm.set_df_property(fieldname, "hidden", 1);
 		}
 	});
+	if (frm.fields_dict.is_onshore_change) {
+		frm.set_df_property("is_onshore_change", "hidden", frm.doc.is_onshore_change ? 0 : 1);
+	}
 
 	// Age must always show next to DOB on AU (and all) applications
 	if (frm.fields_dict.current_age) {
@@ -1367,7 +1394,26 @@ frappe.ui.form.on("Application", {
 		}
 	},
 
+	validate(frm) {
+		if (!frm.doc.application_type) {
+			frm.doc.application_type = "B2B";
+		}
+		const contact = normalize_phone_for_save(frm.doc.student_contact_no);
+		if (contact !== (frm.doc.student_contact_no || "")) {
+			frm.doc.student_contact_no = contact;
+		}
+		const login = normalize_phone_for_save(frm.doc.login_contact_no);
+		if (login !== (frm.doc.login_contact_no || "")) {
+			frm.doc.login_contact_no = login;
+		}
+		if (frm.doc.agent && String(frm.doc.agent).startsWith("AGT-")) {
+			frm.doc.agent = frappe.session.user;
+		}
+	},
+
 	refresh(frm) {
+		hide_accounts_connections_on_application(frm);
+		add_accounts_workflow_buttons(frm);
 		patch_form_view_tables(frm);
 		// Grids on later tabs may initialize after first paint
 		setTimeout(() => patch_form_view_tables(frm), 300);
@@ -1396,28 +1442,17 @@ frappe.ui.form.on("Application", {
 		// For now, we ensure the agent can only see their own application data.
 
 		// Show/hide agent field based on application type
+		if (!frm.doc.application_type) {
+			frm.set_value("application_type", "B2B");
+		}
 		if (frm.doc.application_type === "B2B" || frm.doc.application_type === "B2C") {
 			frm.set_df_property("agent", "hidden", 0);
-
-			// For B2C: Auto-set to Unideft and make read-only
 			if (frm.doc.application_type === "B2C") {
-				// Find Unideft agent
-				frappe.db.get_value("Agent", { "company_name": "Unideft" }, "name", (r) => {
-					if (r && r.name) {
-						if (!frm.doc.agent || frm.doc.agent !== r.name) {
-							frm.set_value("agent", r.name);
-						}
-						frm.set_df_property("agent", "read_only", 1);
-					} else {
-						frappe.msgprint("Unideft agent not found. Please create it first.");
-					}
-				});
-			} else if (frm.doc.application_type === "B2B") {
-				// For B2B: Allow selection from ALL agents (no filter)
+				set_unideft_agent_user(frm);
+			} else {
 				frm.set_df_property("agent", "read_only", 0);
-				// Remove any query filter to show all agents
 				frm.set_query("agent", function () {
-					return {}; // No filters - show all agents
+					return {};
 				});
 			}
 		} else {
@@ -1629,34 +1664,14 @@ frappe.ui.form.on("Application", {
 	},
 
 	application_type(frm) {
-		// Show/hide agent field when application type changes
 		if (frm.doc.application_type === "B2B" || frm.doc.application_type === "B2C") {
 			frm.set_df_property("agent", "hidden", 0);
-
-			// For B2C: Auto-set to Unideft and make read-only
 			if (frm.doc.application_type === "B2C") {
-				// Find Unideft agent and set it
-				frappe.db.get_value("Agent", { "company_name": "Unideft" }, "name", (r) => {
-					if (r && r.name) {
-						frm.set_value("agent", r.name);
-						frm.set_df_property("agent", "read_only", 1);
-					} else {
-						frappe.msgprint("Unideft agent not found. Please create it first.");
-					}
-				});
-			} else if (frm.doc.application_type === "B2B") {
-				// For B2B: Allow selection from ALL agents, clear if was Unideft
+				set_unideft_agent_user(frm);
+			} else {
 				frm.set_df_property("agent", "read_only", 0);
-				if (frm.doc.agent) {
-					frappe.db.get_value("Agent", frm.doc.agent, "company_name", (r) => {
-						if (r && r.company_name === "Unideft") {
-							frm.set_value("agent", "");
-						}
-					});
-				}
-				// Remove any query filter to show all agents
 				frm.set_query("agent", function () {
-					return {}; // No filters - show all agents
+					return {};
 				});
 			}
 		} else {
@@ -2533,7 +2548,7 @@ frappe.ui.form.on("Application", {
 	interview_deadline_date(frm) {
 		if (
 			frm.doc.interview_deadline_date &&
-			frm.doc.interview_timing === "Before GS Approval" &&
+			frm.doc.interview_timing === "Before Financial" &&
 			frm.doc.name &&
 			!frm.doc.__islocal
 		) {
@@ -2549,7 +2564,7 @@ frappe.ui.form.on("Application", {
 	},
 
 	interview_timing(frm) {
-		if (frm.doc.interview_timing !== "Before GS Approval") {
+		if (frm.doc.interview_timing !== "Before Financial") {
 			[
 				"interview_deadline_date",
 				"financials_student_prepare",
@@ -2566,7 +2581,7 @@ frappe.ui.form.on("Application", {
 			frm.set_value("financials_schedule_interview", "");
 		}
 		if (
-			frm.doc.interview_timing === "Before GS Approval" &&
+			frm.doc.interview_timing === "Before Financial" &&
 			frm.doc.financials_student_prepare === "No" &&
 			frm.doc.name &&
 			!frm.doc.__islocal
@@ -2581,7 +2596,7 @@ frappe.ui.form.on("Application", {
 	},
 
 	financials_schedule_interview(frm) {
-		if (frm.doc.interview_timing !== "Before GS Approval" || !frm.doc.name || frm.doc.__islocal) {
+		if (frm.doc.interview_timing !== "Before Financial" || !frm.doc.name || frm.doc.__islocal) {
 			return;
 		}
 		if (frm.doc.financials_schedule_interview === "No") {
@@ -2632,155 +2647,6 @@ frappe.ui.form.on("Application", {
 		updateSectionCSponsorStatuses(frm);
 	},
 
-	dob_matched_itr_ac_pc(frm) {
-		updateSectionCSponsorStatuses(frm);
-	},
-
-	name_matched_itr_ac_pc(frm) {
-		updateSectionCSponsorStatuses(frm);
-	},
-
-	sponsor_itr_verified(frm) {
-		updateSectionCSponsorStatuses(frm);
-		if (frm.doc.income_support_documents === "ITRs" && !frm.doc.sponsor_itr_verified) {
-			// Set reminder for verification
-			createOfferLetterReminder(frm, "ITR needs verification");
-		}
-	},
-
-	// Section C (Sponsors - Occupation Documents)
-	occupation_documents_needed(frm) {
-		// Clear dependent fields when switching
-		if (!frm.doc.occupation_documents_needed) {
-			frm.set_value("sponsor_occupation", "");
-			frm.set_value("business_proof", "");
-			frm.set_value("job_type", "");
-			clearJobFields(frm);
-			clearFarmerFields(frm);
-		}
-	},
-
-	sponsor_occupation(frm) {
-		// Clear business_proof when sponsor_occupation changes
-		if (frm.doc.sponsor_occupation !== "Business") {
-			frm.set_value("business_proof", "");
-		}
-		if (frm.doc.sponsor_occupation !== "Job") {
-			frm.set_value("job_type", "");
-			clearJobFields(frm);
-		}
-		if (frm.doc.sponsor_occupation !== "Farmer") {
-			frm.set_value("farmer_supporting_documents", "");
-			clearFarmerFields(frm);
-		}
-	},
-
-	job_type(frm) {
-		// Clear job dependent fields when job type changes
-		clearJobFields(frm);
-	},
-
-	farmer_supporting_documents(frm) {
-		// Clear dependent farmer fields when doc type changes
-		clearFarmerFields(frm);
-		updateFarmerIncomeStatuses(frm);
-	},
-
-	tehsildar_income_matches_itrs(frm) {
-		updateFarmerIncomeStatuses(frm);
-		if (frm.doc.occupation_documents_needed &&
-			frm.doc.sponsor_occupation === "Farmer" &&
-			frm.doc.farmer_supporting_documents === "Tehsildar Income Proof" &&
-			!frm.doc.tehsildar_income_matches_itrs) {
-			createOfferLetterReminder(frm, "Correct Tehsildar income proof");
-		}
-	},
-
-	farmer_family_income_matches_itrs(frm) {
-		updateFarmerIncomeStatuses(frm);
-		if (frm.doc.occupation_documents_needed &&
-			frm.doc.sponsor_occupation === "Farmer" &&
-			frm.doc.farmer_supporting_documents === "Family ID" &&
-			!frm.doc.farmer_family_income_matches_itrs) {
-			createOfferLetterReminder(frm, "Correct Family ID income proof");
-		}
-	},
-
-	jform_sixty_percent_match_itrs(frm) {
-		updateFarmerIncomeStatuses(frm);
-		if (frm.doc.occupation_documents_needed &&
-			frm.doc.sponsor_occupation === "Farmer" &&
-			frm.doc.farmer_supporting_documents === "J forms" &&
-			!frm.doc.jform_sixty_percent_match_itrs) {
-			createOfferLetterReminder(frm, "Correct J form amount mismatch");
-		}
-	},
-
-	business_proof(frm) {
-		// Clear dependent fields when business_proof changes
-		if (frm.doc.business_proof !== "GST Certificate") {
-			frm.set_value("gst_number", "");
-			frm.set_value("gst_verified", 0);
-			frm.set_value("gst_certificate_upload", "");
-		}
-		if (frm.doc.business_proof !== "MSME Certificate") {
-			frm.set_value("msme_company_name", "");
-			frm.set_value("msme_company_start_duration", "");
-			frm.set_value("msme_certificate_upload", "");
-			frm.set_value("msme_registration_duration", "");
-			frm.set_value("msme_additional_document", "");
-			frm.set_value("msme_cert_verified", 0);
-		}
-		if (frm.doc.business_proof !== "Incorporation Certificate") {
-			frm.set_value("incorporation_business_start_date", "");
-			frm.set_value("incorporation_date_of_registration", "");
-			frm.set_value("incorporation_certificate_upload", "");
-			frm.set_value("incorporation_current_account_statement", "");
-		}
-		if (frm.doc.business_proof !== "Shop Act") {
-			frm.set_value("shop_act_company_name", "");
-			frm.set_value("shop_act_company_start_duration", "");
-			frm.set_value("shop_act_registration_date", "");
-			frm.set_value("shop_act_upload", "");
-			frm.set_value("shop_act_registration_duration", "");
-			frm.set_value("shop_act_additional_document", "");
-			frm.set_value("shop_act_uploaded", 0);
-		}
-		if (frm.doc.business_proof !== "IEC Certificate") {
-			frm.set_value("iec_company_name", "");
-			frm.set_value("iec_company_start_duration", "");
-			frm.set_value("iec_registration_date", "");
-			frm.set_value("iec_cert_upload", "");
-			frm.set_value("iec_registration_duration", "");
-			frm.set_value("iec_additional_document", "");
-			frm.set_value("iec_cert_uploaded", 0);
-		}
-		frm.refresh();
-	},
-
-	msme_registration_duration(frm) {
-		// Clear additional document if duration changes to "Above 2 Years"
-		if (frm.doc.msme_registration_duration === "Above 2 Years") {
-			frm.set_value("msme_additional_document", "");
-		}
-		frm.refresh();
-	},
-
-	shop_act_registration_duration(frm) {
-		// Clear additional document if duration changes to "Above 2 Years"
-		if (frm.doc.shop_act_registration_duration === "Above 2 Years") {
-			frm.set_value("shop_act_additional_document", "");
-		}
-		frm.refresh();
-	},
-
-	iec_registration_duration(frm) {
-		// Clear additional document if duration changes to "Above 2 Years"
-		if (frm.doc.iec_registration_duration === "Above 2 Years") {
-			frm.set_value("iec_additional_document", "");
-		}
-		frm.refresh();
-	}
 });
 
 // Section C (Sponsors - Part 1): status helper (Application doctype fields)
@@ -3195,15 +3061,97 @@ frappe.ui.form.on("Application", {
 // Visa - Event Handlers
 frappe.ui.form.on("Application", {
 	student_enrolled(frm) {
-		if (!frm.doc.student_enrolled) {
+		if (frm.doc.student_enrolled) {
+			deactivate_reminders_matching(frm, ["Enroll Student"], {
+				message: __("Student enrolment reminder deactivated"),
+			});
+		} else {
 			createVisaReminder(frm, null, "Enroll Student");
 		}
 		frm.refresh();
-	}
+	},
+});
+
+// Enrolment - Event Handlers
+frappe.ui.form.on("Application", {
+	enrolment_proof_upload(frm) {
+		if (!frm.doc.enrolment_proof_upload) {
+			return;
+		}
+		deactivate_reminders_matching(frm, ["Enroll Student"], {
+			message: __("Student enrolment reminder deactivated"),
+		});
+		frappe.show_alert(
+			{
+				message: __("Enrolment proof uploaded — application will be marked Completed on save."),
+				indicator: "green",
+			},
+			5
+		);
+	},
 });
 
 // File Lodged - Event Handlers
 frappe.ui.form.on("Application", {
+	decision_received(frm) {
+		if (frm.doc.decision_received === "No") {
+			frm.set_value("visa_decision", "");
+		} else if (frm.doc.decision_received === "Yes") {
+			frm.set_value("visa_status_checked", "");
+			frm.set_value("visa_status_screenshot_upload", "");
+			frm.set_value("visa_status_not_checked_reason", "");
+		}
+	},
+
+	visa_status_checked(frm) {
+		if (frm.doc.decision_received !== "No" || !frm.doc.name || frm.doc.__islocal) {
+			return;
+		}
+		if (frm.doc.visa_status_checked === "Yes") {
+			frm.set_value("visa_status_not_checked_reason", "");
+			AU_REMINDER_SESSION[`visa_decision_followup_${frm.doc.name}`] = false;
+			prompt_application_reminder(frm, {
+				title: __("Visa Decision Follow-up Reminder"),
+				default_description: "Follow-up for Visa Decision",
+				trigger_key: `visa_decision_followup_${frm.doc.name}`,
+			});
+		} else if (frm.doc.visa_status_checked === "No") {
+			frm.set_value("visa_status_screenshot_upload", "");
+		}
+	},
+
+	// The manager escalation fires on the reason, not on the Yes/No, so the
+	// notification carries the counselor's explanation with it.
+	visa_status_not_checked_reason(frm) {
+		if (
+			frm.doc.visa_status_checked !== "No" ||
+			!(frm.doc.visa_status_not_checked_reason || "").trim() ||
+			!frm.doc.name ||
+			frm.doc.__islocal
+		) {
+			return;
+		}
+		frappe.call({
+			method: "erpnext.crm.doctype.application.application.notify_visa_status_not_checked",
+			args: {
+				application: frm.doc.name,
+				reason: frm.doc.visa_status_not_checked_reason,
+			},
+			callback(r) {
+				const notified = (r.message && r.message.notified) || [];
+				if (notified.length) {
+					frappe.show_alert(
+						{
+							message: __("Concerned Manager notified ({0})", [notified.length]),
+							indicator: "orange",
+						},
+						4
+					);
+				}
+			},
+		});
+	},
+
 	visa_decision(frm) {
 		if (frm.doc.visa_decision === 'Visa Approved') {
 			// Update visa_status field (read-only field updated via JS)
@@ -3382,6 +3330,23 @@ frappe.ui.form.on("Application", {
 				title: __("Receive COE Reminder"),
 				default_description: "Waiting for COE After Requirements Completion",
 				trigger_key: `acceptance_coe_after_req_${frm.doc.name}`,
+			});
+		}
+	},
+
+	coe_received(frm) {
+		if (frm.doc.coe_received === "Yes") {
+			deactivate_reminders_matching(frm, COE_RECEIPT_REMINDERS, {
+				message: __("COE receipt reminders deactivated"),
+			});
+			return;
+		}
+		if (frm.doc.coe_received === "No" && frm.doc.name && !frm.doc.__islocal) {
+			AU_REMINDER_SESSION[`coe_receipt_followup_${frm.doc.name}`] = false;
+			prompt_application_reminder(frm, {
+				title: __("COE Receipt Reminder"),
+				default_description: "Follow-up for COE Receipt",
+				trigger_key: `coe_receipt_followup_${frm.doc.name}`,
 			});
 		}
 	},
@@ -3838,6 +3803,15 @@ frappe.ui.form.on("Need Assessment Vendor", {
 	},
 });
 
+frappe.ui.form.on("Application Passport ID Upload", {
+	document_type(frm, cdt, cdn) {
+		const row = locals[cdt][cdn];
+		if (row.document_type !== "Others") {
+			frappe.model.set_value(cdt, cdn, "other_document_type", "");
+		}
+	},
+});
+
 frappe.ui.form.on("student documents", {
 	upload_document(frm, cdt, cdn) {
 		const row = locals[cdt][cdn];
@@ -3909,6 +3883,238 @@ frappe.ui.form.on("Application Sponsor Complete", {
 	},
 });
 
+// Sponsor occupations live in their own Application-level table (Frappe does not
+// support a child table inside a child table), each row tagged with its sponsor.
+frappe.ui.form.on("Application Sponsor Occupation", {
+	sponsor_occupation(frm, cdt, cdn) {
+		const row = locals[cdt][cdn];
+		if (row.sponsor_occupation !== "Business") {
+			clear_occupation_fields(cdt, cdn, OCCUPATION_BUSINESS_FIELDS);
+		}
+		if (row.sponsor_occupation !== "Job") {
+			clear_occupation_fields(cdt, cdn, OCCUPATION_JOB_FIELDS);
+		}
+		if (row.sponsor_occupation !== "Farmer") {
+			clear_occupation_fields(cdt, cdn, OCCUPATION_FARMER_FIELDS);
+		}
+		if (row.sponsor_occupation !== "Other") {
+			clear_occupation_fields(cdt, cdn, ["occupation_other_details", "occupation_other_upload"]);
+		}
+		frm.refresh_field("sponsor_occupations");
+	},
+
+	business_proof(frm, cdt, cdn) {
+		// Only the selected proof's fields should survive a change of proof type.
+		const row = locals[cdt][cdn];
+		const keep = OCCUPATION_PROOF_FIELDS[row.business_proof] || [];
+		const all = Object.values(OCCUPATION_PROOF_FIELDS).flat();
+		clear_occupation_fields(
+			cdt,
+			cdn,
+			all.filter((field) => !keep.includes(field))
+		);
+		frm.refresh_field("sponsor_occupations");
+	},
+
+	job_type(frm, cdt, cdn) {
+		const row = locals[cdt][cdn];
+		const keep = OCCUPATION_JOB_TYPE_FIELDS[row.job_type] || [];
+		const all = Object.values(OCCUPATION_JOB_TYPE_FIELDS).flat();
+		clear_occupation_fields(
+			cdt,
+			cdn,
+			all.filter((field) => !keep.includes(field))
+		);
+		frm.refresh_field("sponsor_occupations");
+	},
+
+	farmer_income_support_type(frm, cdt, cdn) {
+		clear_occupation_fields(cdt, cdn, [
+			"farmer_tehsildar_income",
+			"farmer_tehsildar_matches_itrs",
+			"farmer_tehsildar_upload",
+			"farmer_family_id_income",
+			"farmer_family_income_matches_itrs",
+			"farmer_family_id_upload",
+			"farmer_jform_year",
+			"farmer_jform_amount",
+			"farmer_jform_sixty_percent_match_itrs",
+			"farmer_jform_upload",
+			"farmer_other_details",
+			"farmer_other_upload",
+		]);
+		frm.refresh_field("sponsor_occupations");
+	},
+
+	farmer_tehsildar_matches_itrs(frm, cdt, cdn) {
+		maybe_prompt_farmer_correction(frm, cdt, cdn, "farmer_tehsildar_matches_itrs", {
+			title: __("Correct Tehsildar Income Certificate"),
+			default_description: "Income on Tehsildar certificate does not match the ITRs — request correction",
+			trigger_key: "farmer_tehsildar",
+		});
+	},
+
+	farmer_family_income_matches_itrs(frm, cdt, cdn) {
+		maybe_prompt_farmer_correction(frm, cdt, cdn, "farmer_family_income_matches_itrs", {
+			title: __("Correct Family ID Income"),
+			default_description: "Income on Family ID does not match the ITRs — request correction",
+			trigger_key: "farmer_family_id",
+		});
+	},
+
+	farmer_jform_sixty_percent_match_itrs(frm, cdt, cdn) {
+		maybe_prompt_farmer_correction(frm, cdt, cdn, "farmer_jform_sixty_percent_match_itrs", {
+			title: __("Correct J Form Amount"),
+			default_description: "60% of the J Form amount does not match the ITRs — request correction",
+			trigger_key: "farmer_jform",
+		});
+	},
+});
+
+frappe.ui.form.on("Application Sponsor ITR", {
+	itr_verified(frm, cdt, cdn) {
+		const row = locals[cdt][cdn];
+		if (row.itr_verified === "No") {
+			prompt_sponsor_funds_reminder(frm, cdt, cdn, {
+				title: __("ITR Verification Pending"),
+				default_description: `Verify ITR ${row.assessment_year || ""} for ${row.sponsor_type || "sponsor"}`.trim(),
+				trigger_key: "itr_verify",
+			});
+		}
+	},
+	itr_dob_matches(frm, cdt, cdn) {
+		maybe_prompt_itr_correction(frm, cdt, cdn);
+	},
+	itr_name_matches(frm, cdt, cdn) {
+		maybe_prompt_itr_correction(frm, cdt, cdn);
+	},
+});
+
+const OCCUPATION_PROOF_FIELDS = {
+	"GST Certificate": ["gst_number", "gst_verified", "gst_certificate_upload"],
+	"MSME Certificate": [
+		"msme_company_name",
+		"msme_business_start_date",
+		"msme_registration_date",
+		"msme_registration_duration",
+		"msme_certificate_upload",
+	],
+	"Incorporation Certificate": [
+		"incorporation_business_start_date",
+		"incorporation_registration_date",
+		"incorporation_certificate_upload",
+		"incorporation_current_account_statement",
+	],
+	"Shop Act": [
+		"shop_act_company_name",
+		"shop_act_business_start_date",
+		"shop_act_registration_date",
+		"shop_act_registration_duration",
+		"shop_act_certificate_upload",
+	],
+	"IEC Certificate": [
+		"iec_company_name",
+		"iec_business_start_date",
+		"iec_registration_date",
+		"iec_registration_duration",
+		"iec_certificate_upload",
+	],
+	Others: ["business_other_details", "business_other_upload"],
+};
+
+const OCCUPATION_JOB_TYPE_FIELDS = {
+	Government: [
+		"gov_department",
+		"gov_position",
+		"gov_id_card",
+		"gov_salary_slip",
+		"gov_salary_statement",
+		"gov_slip_current_salary",
+		"gov_slip_gpf_amount",
+		"gov_slip_upload",
+		"gov_statement_current_salary",
+		"gov_statement_upload",
+	],
+	Private: [
+		"private_company_name",
+		"private_department",
+		"private_position",
+		"private_experience_letter",
+		"private_id_card",
+		"private_salary_slip",
+		"private_salary_statement",
+		"private_slip_current_salary",
+		"private_slip_upload",
+		"private_statement_current_salary",
+		"private_statement_upload",
+	],
+	"Retired from Govt. services": [
+		"retired_department",
+		"retired_position",
+		"retired_date",
+		"retired_id_card",
+		"retired_pension_statement",
+		"retired_pension_proof",
+		"retired_salary_statement",
+	],
+};
+
+const OCCUPATION_BUSINESS_FIELDS = ["business_proof"].concat(
+	Object.values(OCCUPATION_PROOF_FIELDS).flat(),
+	["additional_current_account_statement", "additional_gst_certificate"]
+);
+
+const OCCUPATION_JOB_FIELDS = ["job_type"].concat(Object.values(OCCUPATION_JOB_TYPE_FIELDS).flat());
+
+const OCCUPATION_FARMER_FIELDS = [
+	"farmer_income",
+	"farmer_income_support_type",
+	"farmer_tehsildar_income",
+	"farmer_tehsildar_matches_itrs",
+	"farmer_tehsildar_upload",
+	"farmer_family_id_income",
+	"farmer_family_income_matches_itrs",
+	"farmer_family_id_upload",
+	"farmer_jform_year",
+	"farmer_jform_amount",
+	"farmer_jform_sixty_percent_match_itrs",
+	"farmer_jform_upload",
+	"farmer_other_details",
+	"farmer_other_upload",
+];
+
+function clear_occupation_fields(cdt, cdn, fieldnames) {
+	const row = locals[cdt][cdn];
+	if (!row) {
+		return;
+	}
+	(fieldnames || []).forEach((fieldname) => {
+		if (row[fieldname]) {
+			frappe.model.set_value(cdt, cdn, fieldname, null);
+		}
+	});
+}
+
+function maybe_prompt_farmer_correction(frm, cdt, cdn, fieldname, options) {
+	const row = locals[cdt][cdn];
+	if (row.sponsor_occupation !== "Farmer" || row[fieldname]) {
+		return;
+	}
+	prompt_sponsor_funds_reminder(frm, cdt, cdn, options);
+}
+
+function maybe_prompt_itr_correction(frm, cdt, cdn) {
+	const row = locals[cdt][cdn];
+	if (row.itr_dob_matches !== "No" && row.itr_name_matches !== "No") {
+		return;
+	}
+	prompt_sponsor_funds_reminder(frm, cdt, cdn, {
+		title: __("ITR Correction Required"),
+		default_description: `Correct DOB / name mismatch on ITR ${row.assessment_year || ""}`.trim(),
+		trigger_key: "itr_correction",
+	});
+}
+
 function maybe_prompt_revised_loan_letter(frm, cdt, cdn) {
 	const row = locals[cdt][cdn];
 	if (row.funds_type !== "Education Loan") {
@@ -3927,3 +4133,498 @@ function maybe_prompt_revised_loan_letter(frm, cdt, cdn) {
 	}
 }
 
+
+// Reminder descriptions raised by the GS Approved stage. Kept distinct from the
+// other interview stages so deactivating one stage never clears another.
+const GSA_INTERVIEW_REMINDERS = [
+	"GS Approved Interview Deadline",
+	"GS Approved Interview Date",
+	"Prepare Student for GS Approved Interview",
+	"Follow Up GS Approved Interview Schedule",
+];
+
+const ACCEPTANCE_SUBMISSION_REMINDERS = [
+	"Follow-up for Acceptance Submission",
+	"Complete the pending acceptance conditions",
+];
+
+// GS Approved - Tuition Fee, OSHC, Acceptance Submission, Interview
+frappe.ui.form.on("Application", {
+	tuition_fee_paid(frm) {
+		if (frm.doc.tuition_fee_paid === "Yes") {
+			deactivate_reminders_matching(frm, ["Follow-up for Tuition Fee Payment"], {
+				message: __("Tuition fee reminder deactivated"),
+			});
+			return;
+		}
+		if (frm.doc.tuition_fee_paid === "No") {
+			["fee_processed_through_gha", "convinced_fee_through_gha", "tuition_fee_upload"].forEach(
+				(fieldname) => frm.set_value(fieldname, "")
+			);
+			if (frm.doc.name && !frm.doc.__islocal) {
+				AU_REMINDER_SESSION[`tuition_fee_followup_${frm.doc.name}`] = false;
+				prompt_application_reminder(frm, {
+					title: __("Tuition Fee Payment Reminder"),
+					default_description: "Follow-up for Tuition Fee Payment",
+					trigger_key: `tuition_fee_followup_${frm.doc.name}`,
+				});
+			}
+		}
+	},
+
+	fee_processed_through_gha(frm) {
+		if (frm.doc.fee_processed_through_gha !== "No") {
+			["convinced_fee_through_gha", "reason_fee_not_through_gha", "reason_no_efforts_gha"].forEach(
+				(fieldname) => frm.set_value(fieldname, "")
+			);
+		}
+	},
+
+	convinced_fee_through_gha(frm) {
+		if (frm.doc.convinced_fee_through_gha === "Yes") {
+			frm.set_value("reason_no_efforts_gha", "");
+		} else if (frm.doc.convinced_fee_through_gha === "No") {
+			frm.set_value("reason_fee_not_through_gha", "");
+		}
+	},
+
+	oshc_arranged_by_type(frm) {
+		// Only the chosen arranger's fields should stay populated.
+		const keep = frm.doc.oshc_arranged_by_type;
+		["GHA", "Agent", "Student"].forEach((who) => {
+			if (who === keep) {
+				return;
+			}
+			const p = who.toLowerCase();
+			[
+				`${p}_policy_received`,
+				`${p}_oshc_company_name`,
+				`${p}_oshc_policy_no`,
+				`${p}_oshc_upload`,
+				`${p}_oshc_amount`,
+			].forEach((fieldname) => {
+				if (frm.fields_dict[fieldname]) {
+					frm.set_value(fieldname, "");
+				}
+			});
+		});
+		if (keep !== "GHA") {
+			frm.set_value("gha_oshc_duration", "");
+		}
+	},
+
+	gha_policy_received(frm) {
+		handle_oshc_policy_received(frm, "gha");
+	},
+
+	agent_policy_received(frm) {
+		handle_oshc_policy_received(frm, "agent");
+	},
+
+	student_policy_received(frm) {
+		handle_oshc_policy_received(frm, "student");
+	},
+
+	acceptance_submitted(frm) {
+		if (frm.doc.acceptance_submitted === "Yes") {
+			[
+				"acceptance_pending_conditions",
+				"acceptance_condition_details",
+				"acceptance_condition_completed",
+			].forEach((fieldname) => frm.set_value(fieldname, ""));
+			deactivate_reminders_matching(frm, ACCEPTANCE_SUBMISSION_REMINDERS, {
+				message: __("Acceptance submission reminders deactivated"),
+			});
+		}
+	},
+
+	acceptance_pending_conditions(frm) {
+		if (frm.doc.acceptance_pending_conditions !== "Yes") {
+			frm.set_value("acceptance_condition_details", "");
+			frm.set_value("acceptance_condition_completed", "");
+		}
+		if (
+			frm.doc.acceptance_pending_conditions === "No" &&
+			frm.doc.name &&
+			!frm.doc.__islocal
+		) {
+			AU_REMINDER_SESSION[`acceptance_submission_${frm.doc.name}`] = false;
+			prompt_application_reminder(frm, {
+				title: __("Acceptance Submission Reminder"),
+				default_description: "Follow-up for Acceptance Submission",
+				trigger_key: `acceptance_submission_${frm.doc.name}`,
+			});
+		}
+	},
+
+	acceptance_condition_completed(frm) {
+		if (!frm.doc.name || frm.doc.__islocal) {
+			return;
+		}
+		if (frm.doc.acceptance_condition_completed === "Yes") {
+			deactivate_reminders_matching(frm, ["Complete the pending acceptance conditions"], {
+				message: __("Pending condition reminders deactivated"),
+			});
+			AU_REMINDER_SESSION[`acceptance_submission_${frm.doc.name}`] = false;
+			prompt_application_reminder(frm, {
+				title: __("Acceptance Submission Reminder"),
+				default_description: "Follow-up for Acceptance Submission",
+				trigger_key: `acceptance_submission_${frm.doc.name}`,
+			});
+		} else if (frm.doc.acceptance_condition_completed === "No") {
+			AU_REMINDER_SESSION[`acceptance_conditions_${frm.doc.name}`] = false;
+			prompt_application_reminder(frm, {
+				title: __("Pending Conditions Reminder"),
+				default_description: "Complete the pending acceptance conditions",
+				trigger_key: `acceptance_conditions_${frm.doc.name}`,
+			});
+		}
+	},
+
+	gsa_interview_deadline(frm) {
+		if (
+			!frm.doc.gsa_interview_deadline ||
+			!frm.doc.gsa_interview_available ||
+			!frm.doc.name ||
+			frm.doc.__islocal
+		) {
+			return;
+		}
+		AU_REMINDER_SESSION[`gsa_interview_deadline_${frm.doc.name}`] = false;
+		prompt_application_reminder(frm, {
+			title: __("Set Interview Deadline Reminder"),
+			default_description:
+				"GS Approved Interview Deadline - " +
+				frappe.datetime.str_to_user(frm.doc.gsa_interview_deadline),
+			default_date: frm.doc.gsa_interview_deadline,
+			trigger_key: `gsa_interview_deadline_${frm.doc.name}`,
+		});
+	},
+
+	gsa_student_prepare(frm) {
+		if (frm.doc.gsa_student_prepare !== "Yes") {
+			frm.set_value("gsa_schedule_interview", "");
+		}
+		if (
+			frm.doc.gsa_student_prepare === "No" &&
+			frm.doc.gsa_interview_available &&
+			frm.doc.name &&
+			!frm.doc.__islocal
+		) {
+			AU_REMINDER_SESSION[`gsa_prepare_${frm.doc.name}`] = false;
+			prompt_application_reminder(frm, {
+				title: __("Prepare Student for Interview"),
+				default_description: "Prepare Student for GS Approved Interview",
+				trigger_key: `gsa_prepare_${frm.doc.name}`,
+			});
+		}
+	},
+
+	gsa_schedule_interview(frm) {
+		if (!frm.doc.gsa_interview_available || !frm.doc.name || frm.doc.__islocal) {
+			return;
+		}
+		if (frm.doc.gsa_schedule_interview === "No") {
+			AU_REMINDER_SESSION[`gsa_followup_${frm.doc.name}`] = false;
+			prompt_application_reminder(frm, {
+				title: __("Follow Up Interview Schedule"),
+				default_description: "Follow Up GS Approved Interview Schedule",
+				trigger_key: `gsa_followup_${frm.doc.name}`,
+			});
+		}
+		if (frm.doc.gsa_schedule_interview === "Yes" && frm.doc.gsa_interview_deadline) {
+			AU_REMINDER_SESSION[`gsa_interview_date_${frm.doc.name}`] = false;
+			prompt_application_reminder(frm, {
+				title: __("Interview Date Reminder"),
+				default_description:
+					"GS Approved Interview Date - " +
+					frappe.datetime.str_to_user(frm.doc.gsa_interview_deadline),
+				default_date: frm.doc.gsa_interview_deadline,
+				trigger_key: `gsa_interview_date_${frm.doc.name}`,
+			});
+		}
+	},
+
+	gsa_interview_completed(frm) {
+		if (frm.doc.gsa_interview_completed === "Yes") {
+			deactivate_reminders_matching(frm, GSA_INTERVIEW_REMINDERS, {
+				message: __("GS Approved interview reminders deactivated"),
+			});
+		}
+	},
+});
+
+function handle_oshc_policy_received(frm, prefix) {
+	const value = frm.doc[`${prefix}_policy_received`];
+	if (value === "Yes") {
+		deactivate_reminders_matching(frm, ["Follow-up for OSHC Policy"], {
+			message: __("OSHC policy reminder deactivated"),
+		});
+		return;
+	}
+	if (value === "No") {
+		[
+			`${prefix}_oshc_company_name`,
+			`${prefix}_oshc_policy_no`,
+			`${prefix}_oshc_upload`,
+			`${prefix}_oshc_amount`,
+			"gha_oshc_duration",
+		].forEach((fieldname) => {
+			if (frm.fields_dict[fieldname]) {
+				frm.set_value(fieldname, "");
+			}
+		});
+		if (frm.doc.name && !frm.doc.__islocal) {
+			AU_REMINDER_SESSION[`oshc_policy_${frm.doc.name}`] = false;
+			prompt_application_reminder(frm, {
+				title: __("OSHC Policy Reminder"),
+				default_description: "Follow-up for OSHC Policy",
+				trigger_key: `oshc_policy_${frm.doc.name}`,
+			});
+		}
+	}
+}
+
+// "Send … to Student Chat" is a reminder for the counselor, not an automated
+// send — there is no student-facing chat channel in this install.
+function remind_to_share_in_chat(frm, fieldname, label) {
+	if (frm.doc[fieldname] !== "Yes") {
+		return;
+	}
+	frappe.show_alert(
+		{ message: __("Please share the {0} with the student in the chat.", [label]), indicator: "blue" },
+		6
+	);
+}
+
+// Refund follow-ups: prompt while the money is outstanding, stand down once it lands.
+function refund_followup(frm, value, label) {
+	if (!frm.doc.name || frm.doc.__islocal) {
+		return;
+	}
+	const trigger_key = `${label.replace(/\s+/g, "_")}_${frm.doc.name}`;
+	if (value === "No") {
+		AU_REMINDER_SESSION[trigger_key] = false;
+		prompt_application_reminder(frm, {
+			title: __("Set Reminder"),
+			default_description: label,
+			trigger_key: trigger_key,
+		});
+	} else if (value === "Yes") {
+		deactivate_reminders_matching(frm, label);
+	}
+}
+
+frappe.ui.form.on("Application", {
+	tuition_fee_refund_received(frm) {
+		refund_followup(frm, frm.doc.tuition_fee_refund_received, "Follow-up for Tuition Fee Refund");
+	},
+
+	oshc_refund_received(frm) {
+		refund_followup(frm, frm.doc.oshc_refund_received, "Follow-up for OSHC Refund");
+	},
+
+	refund_issue_resolved(frm) {
+		refund_followup(frm, frm.doc.refund_issue_resolved, "Follow-up for Refund Issue Resolution");
+	},
+
+	refunded_oshc_received(frm) {
+		refund_followup(frm, frm.doc.refunded_oshc_received, "Follow-up for OSHC Refund");
+	},
+
+	tuition_fee_refund_issue(frm) {
+		if (frm.doc.tuition_fee_refund_issue !== "Yes") {
+			frm.set_value("refund_issue_details", "");
+			frm.set_value("refund_issue_resolved", "");
+		}
+	},
+
+	send_coe_to_student_chat(frm) {
+		remind_to_share_in_chat(frm, "send_coe_to_student_chat", __("COE"));
+	},
+
+	send_refusal_letter_to_chat(frm) {
+		remind_to_share_in_chat(frm, "send_refusal_letter_to_chat", __("refusal letter"));
+	},
+
+	send_offer_to_chat(frm) {
+		remind_to_share_in_chat(frm, "send_offer_to_chat", __("offer letter"));
+	},
+
+	// GS Submitted: uploading the supporting documents re-opens the GS Approval follow-up
+	gs_supporting_documents_upload(frm) {
+		if (!frm.doc.gs_supporting_documents_upload || !frm.doc.name || frm.doc.__islocal) {
+			return;
+		}
+		AU_REMINDER_SESSION[`gs_approval_followup_${frm.doc.name}`] = false;
+		prompt_application_reminder(frm, {
+			title: __("GS Approval Reminder"),
+			default_description: "Follow up for GS Approval",
+			trigger_key: `gs_approval_followup_${frm.doc.name}`,
+		});
+	},
+
+	onshore_college_change_allowed(frm) {
+		if (frm.doc.onshore_college_change_allowed === "No") {
+			[
+				"student_wants_college_change",
+				"from_where_change",
+				"others_reason",
+				"oscg_status",
+				"onshore_new_app_stage",
+			].forEach((fieldname) => frm.set_value(fieldname, ""));
+			frm.set_value("convince_times", 0);
+			frappe.show_alert(
+				{
+					message: __("Onshore College Change case closed — no further action required."),
+					indicator: "blue",
+				},
+				5
+			);
+		}
+	},
+
+	create_onshore_application(frm) {
+		if (!frm.doc.name || frm.doc.__islocal) {
+			frappe.show_alert(
+				{ message: __("Please save the application first."), indicator: "orange" },
+				4
+			);
+			return;
+		}
+		if (!frm.doc.onshore_new_app_stage) {
+			frappe.msgprint(__("Please select the stage the new application should start from."));
+			return;
+		}
+		frappe.confirm(
+			__("Create a new Onshore College Change application starting at stage {0}?", [
+				frm.doc.onshore_new_app_stage,
+			]),
+			() => {
+				// The server reads the saved document, so flush the form first —
+				// otherwise a freshly picked stage is still unsaved and the call fails.
+				const run = () =>
+					frappe.call({
+						method: "erpnext.crm.doctype.application.application.create_onshore_application",
+						args: { application: frm.doc.name, stage: frm.doc.onshore_new_app_stage },
+						freeze: true,
+						freeze_message: __("Creating the linked application..."),
+						callback(r) {
+							const res = r.message || {};
+							if (!res.application) {
+								return;
+							}
+							frm.reload_doc();
+							frappe.msgprint({
+								title: __("Onshore Application Created"),
+								indicator: "green",
+								message: __(
+									"Created {0} with {1} document row(s) carried forward. The Accounts Department has been notified.",
+									[
+										`<a href="/app/application/${res.application}">${res.application}</a>`,
+										res.documents_copied || 0,
+									]
+								),
+							});
+						},
+					});
+
+				if (frm.is_dirty()) {
+					frm.save().then(run);
+				} else {
+					run();
+				}
+			}
+		);
+	},
+});
+
+function set_unideft_agent_user(frm) {
+	frappe.db.get_value("Agent", { company_name: "Unideft" }, "user", (r) => {
+		if (r && r.user && frm.doc.agent !== r.user) {
+			frm.set_value("agent", r.user);
+		}
+		frm.set_df_property("agent", "read_only", 1);
+	});
+}
+
+function is_accounts_user() {
+	return (
+		frappe.user.has_role("Accounts User") || frappe.user.has_role("Accounts Manager")
+	);
+}
+
+function hide_accounts_connections_on_application(frm) {
+	// Accounts work belongs on the Accounts workspace, not the counselor Details tab.
+	if (is_accounts_user()) {
+		return;
+	}
+	if (frm.dashboard && frm.dashboard.data && Array.isArray(frm.dashboard.data.transactions)) {
+		frm.dashboard.data.transactions = frm.dashboard.data.transactions.filter(
+			(group) => (group.label || "") !== "Accounts"
+		);
+	}
+	const $wrap = frm.dashboard && (frm.dashboard.parent || frm.$wrapper);
+	if ($wrap) {
+		["Accounts Tuition Fee Payment", "Accounts OSHC Payment", "Accounts Commission"].forEach(
+			(dt) => {
+				$wrap.find(`.document-link[data-doctype="${dt}"]`).closest(".document-link-parent, .form-documents").hide();
+				$wrap.find(`.document-link[data-doctype="${dt}"]`).hide();
+			}
+		);
+		$wrap.find(".form-dashboard-section.form-links").each(function () {
+			const text = ($(this).text() || "").toLowerCase();
+			if (text.indexOf("accounts tuition") !== -1 || text.indexOf("accounts oshc") !== -1) {
+				$(this).hide();
+			}
+		});
+	}
+	if (
+		frm.dashboard &&
+		frm.dashboard.data &&
+		(!frm.dashboard.data.transactions || !frm.dashboard.data.transactions.length)
+	) {
+		frm.dashboard.links_area && frm.dashboard.links_area.hide();
+	}
+}
+
+function add_accounts_workflow_buttons(frm) {
+	if (!frm.doc.name || frm.doc.__islocal || frm.doc.destination_country !== "Australia") {
+		return;
+	}
+	if (!is_accounts_user()) {
+		return;
+	}
+	if (!frappe.model.can_read("Accounts Tuition Fee Payment")) {
+		return;
+	}
+	const openers = [
+		["Accounts Tuition Fee Payment", __("Tuition Fee Payment")],
+		["Accounts OSHC Payment", __("OSHC Payment")],
+		["Accounts Commission", __("Commissions")],
+	];
+	openers.forEach(([doctype, label]) => {
+		if (!frappe.model.can_read(doctype)) {
+			return;
+		}
+		frappe.db
+			.get_list(doctype, {
+				filters: { application: frm.doc.name },
+				fields: ["name"],
+				limit: 1,
+			})
+			.then((rows) => {
+				if (!rows || !rows.length) {
+					return;
+				}
+				frm.add_custom_button(label, () => {
+					if (doctype === "Accounts Commission") {
+						frappe.set_route("List", doctype, { application: frm.doc.name });
+					} else {
+						frappe.set_route("Form", doctype, rows[0].name);
+					}
+				}, __("Accounts"));
+			})
+			.catch(() => {});
+	});
+}

@@ -7,6 +7,49 @@ import frappe
 from frappe.model.document import Document
 
 
+# Forward-only ordering of the Australia stages. Several stages share a rank
+# because they are alternative outcomes of the same step.
+AU_STAGE_RANK = {
+	"Pending": 0,
+	"Processing": 1,
+	"Submitted": 2,
+	"Offer Letter Received": 3,
+	"Financial": 4,
+	"GS Processing": 5,
+	"GS Approved": 6,
+	"Acceptance": 7,
+	"COE": 8,
+	"File Lodged": 9,
+	"Visa": 10,
+	"Visa Refused": 10,
+	"On Shore College change": 10,
+	"Enrollment": 11,
+	"Refund": 11,
+	"Completed": 12,
+	"Refunded": 12,
+}
+AU_TERMINAL_STATUSES = ("Closed", "Completed")
+
+
+def _normalize_phone(value):
+	"""Make a number valid for Frappe Phone fields, or blank it so save is not blocked."""
+	if not value:
+		return value
+	raw = str(value).strip()
+	if not raw:
+		return ""
+	digits = "".join(c for c in raw if c.isdigit())
+	if raw.startswith("+") and len(digits) >= 8:
+		return raw
+	if len(digits) == 10:
+		return f"+91-{digits}"
+	if len(digits) == 12 and digits.startswith("91"):
+		return f"+91-{digits[2:]}"
+	if len(digits) == 11 and digits.startswith("0"):
+		return f"+91-{digits[1:]}"
+	return ""
+
+
 class Application(Document):
 	@staticmethod
 	def get_list_query(query):
@@ -89,14 +132,64 @@ class Application(Document):
 
 	def before_save(self):
 		"""Auto-assign team based on destination country"""
+		self.migrate_legacy_passport_upload()
 		self.apply_student_defaults()
+		self.normalize_phone_fields()
+		self.ensure_agent_is_user()
 		self.compute_current_age()
 		self.auto_assign_team()
 		self.apply_country_flow_defaults()
 
+	def _validate_links(self):
+		# Frappe checks links before before_validate on insert, which is what
+		# caused the error beep when Agent IDs were written into the User link.
+		self.ensure_agent_is_user()
+		super()._validate_links()
+
+	def before_insert(self):
+		self.ensure_agent_is_user()
+		self.normalize_phone_fields()
+		if not self.application_type:
+			self.application_type = "B2B"
+
 	def before_validate(self):
-		"""Normalize legacy Check values that were converted to Yes/No selects."""
+		"""Normalize values that would otherwise beep/fail a new-form save."""
 		self.normalize_legacy_yes_no_fields()
+		if not self.application_type:
+			self.application_type = "B2B"
+		self.normalize_phone_fields()
+		self.ensure_agent_is_user()
+
+	def normalize_phone_fields(self):
+		"""Phone fields require a country code. Student mobiles are often stored as 10 digits."""
+		for fieldname in ("student_contact_no", "login_contact_no"):
+			if hasattr(self, fieldname):
+				self.set(fieldname, _normalize_phone(self.get(fieldname)))
+
+	def ensure_agent_is_user(self):
+		"""Agent is a Link to User. Stale JS used to write an Agent ID (AGT-…)."""
+		if not self.agent:
+			return
+		if frappe.db.exists("User", self.agent):
+			return
+		linked_user = frappe.db.get_value("Agent", self.agent, "user")
+		self.agent = linked_user or None
+
+	def migrate_legacy_passport_upload(self):
+		"""Move the old single passport attach into the Processing child table."""
+		if not self.get("passport_upload"):
+			return
+		has_passport = any(
+			(row.get("document_type") or "").strip() == "Passport" for row in self.get("passport_id_uploads") or []
+		)
+		if has_passport:
+			self.passport_upload = None
+			return
+		self.append(
+			"passport_id_uploads",
+			{"document_type": "Passport", "upload_document": self.passport_upload},
+		)
+		self.passport_upload = None
 
 	def apply_student_defaults(self):
 		"""Pull email / contact / DOB from Student when blank (all countries)."""
@@ -106,7 +199,7 @@ class Application(Document):
 		if not self.student_email:
 			self.student_email = getattr(stu, "email", None) or getattr(stu, "student_email", None) or ""
 		if not self.student_contact_no:
-			self.student_contact_no = (
+			self.student_contact_no = _normalize_phone(
 				getattr(stu, "mobile", None)
 				or getattr(stu, "mobile_no", None)
 				or getattr(stu, "phone", None)
@@ -135,6 +228,22 @@ class Application(Document):
 	def on_update(self):
 		if not self.flags.get("skip_country_pack"):
 			self.link_uk_index()
+		self.sync_accounts_workflow()
+
+	def sync_accounts_workflow(self):
+		"""Hand work to the Accounts Department when the counselor's answers require it.
+
+		Creating the Accounts records must never block the counselor's save, so a
+		failure here is logged rather than raised.
+		"""
+		if not self.is_australia():
+			return
+		try:
+			from erpnext.crm.accounts_workflow import sync_application_triggers
+
+			sync_application_triggers(self)
+		except Exception:
+			frappe.log_error(frappe.get_traceback(), f"Accounts workflow sync failed for {self.name}")
 
 	def link_uk_index(self):
 		"""UK applications are edited on Application UK — keep index row linked only."""
@@ -188,6 +297,7 @@ class Application(Document):
 
 	if TYPE_CHECKING:
 		from erpnext.crm.doctype.academic_verification.academic_verification import AcademicVerification
+		from erpnext.crm.doctype.application_passport_id_upload.application_passport_id_upload import ApplicationPassportIDUpload
 		from erpnext.crm.doctype.application_documents_10th_to_12th.application_documents_10th_to_12th import ApplicationDocuments10thTo12th
 		from erpnext.crm.doctype.application_english_test.application_english_test import ApplicationEnglishTest
 		from erpnext.crm.doctype.application_offer_letter_condition.application_offer_letter_condition import ApplicationOfferLetterCondition
@@ -233,7 +343,6 @@ class Application(Document):
 		agent_oshc_upload: DF.Attach | None
 		agent_policy_not_received_status: DF.Text | None
 		agent_policy_received: DF.Check
-		all_documents: DF.Table[studentdocuments]
 		any_further_requirement_offer_letter: DF.Literal["", "Yes", "No"]
 		any_visa_refused: DF.Literal["", "Yes", "No"]
 		application_closed: DF.Check
@@ -350,7 +459,9 @@ class Application(Document):
 		interview_deadline_date: DF.Date | None
 		interview_not_available_status: DF.Text | None
 		interview_stage_available: DF.Check
-		interview_timing: DF.Literal["", "Before GS Approval", "Before Acceptance", "Before COE"]
+		interview_timing: DF.Literal[
+			"", "Before Financial", "Before GS Approval", "Before Acceptance", "Before COE"
+		]
 		is_package_case: DF.Check
 		issue_not_resolved_reminder: DF.Text | None
 		living_expenses: DF.Currency
@@ -401,6 +512,7 @@ class Application(Document):
 		our_side_medical_scheduled: DF.Check
 		our_side_medical_scheduled_no_status: DF.Text | None
 		our_side_medical_scheduled_yes_status: DF.Text | None
+		passport_id_uploads: DF.Table[ApplicationPassportIDUpload]
 		passport_upload: DF.Attach | None
 		password: DF.Password | None
 		payable_fee: DF.Currency
@@ -421,7 +533,6 @@ class Application(Document):
 		refund_processed_by: DF.Literal["", "Our Side", "Agent", "Student"]
 		refused_letter_upload: DF.Attach | None
 		requirement_details: DF.Text | None
-		requirement_document_upload: DF.Attach | None
 		requirements_completed: DF.Check
 		requirements_completed_no_status: DF.Text | None
 		requirements_completed_yes_status: DF.Text | None
@@ -435,8 +546,6 @@ class Application(Document):
 		school_docs_status: DF.Data | None
 		school_docs_verified: DF.Literal["", "Yes", "No"]
 		send_offer_to_chat: DF.Check
-		shop_act_additional_document: DF.Attach | None
-		shop_act_uploaded: DF.Check
 		sop_portal_or_vendor_upload: DF.Attach | None
 		sop_upload: DF.Attach | None
 		sponsor_1_docs_pdf_upload: DF.Attach | None
@@ -537,18 +646,20 @@ class Application(Document):
 		self.apply_study_gap_duration_rule()
 		self.validate_submitted_another_application()
 		self.validate_gs_submitted_financials_branch()
+		self.validate_gs_approved_branch()
+		self.validate_acceptance_coe_branch()
+		self.validate_visa_decision_branch()
+		self.validate_onshore_branch()
+		self.apply_stage_auto_advance()
+		self.validate_refund_branch()
+		self.apply_enrolment_completion()
 
-		# For B2C: Auto-set agent to Unideft if not set or if wrong agent selected
+		# For B2C: auto-set the Unideft agent user. Agent is a Link to User.
 		if self.application_type == "B2C":
-			unideft_agent = frappe.db.get_value("Agent", {"company_name": "Unideft"}, "name")
-			if unideft_agent:
-				# Always set to Unideft for B2C
-				if not self.agent or self.agent != unideft_agent:
-					self.agent = unideft_agent
-			else:
-				frappe.throw("Unideft agent not found. Please create it first.")
-		
-		# For B2B: No validation - can select any agent or leave empty
+			unideft_user = frappe.db.get_value("Agent", {"company_name": "Unideft"}, "user")
+			if unideft_user:
+				self.agent = unideft_user
+		# For B2B: counselor / agent can leave or pick any User.
 
 	def normalize_legacy_yes_no_fields(self):
 		"""Map old Check 0/1 values onto Yes/No Select options."""
@@ -564,6 +675,21 @@ class Application(Document):
 			elif value in (1, "1", True):
 				self.set(df.fieldname, "Yes")
 
+	def advance_stage(self, status):
+		"""Move the application forward to `status`.
+
+		Every stage gate in the AU flow calls this instead of assigning `status`
+		directly, so a save can never drag an application backwards or resurrect
+		one that has already been closed.
+		"""
+		if self.status in AU_TERMINAL_STATUSES:
+			return
+		target = AU_STAGE_RANK.get(status)
+		if target is None:
+			return
+		if target > AU_STAGE_RANK.get(self.status, -1):
+			self.status = status
+
 	def apply_application_submission_workflow(self):
 		"""Keep the Australia Processing → Submitted transition consistent."""
 		if not self.is_australia():
@@ -574,8 +700,7 @@ class Application(Document):
 
 			self.submitted_date = self.submitted_date or nowdate()
 			self.expected_application_submission_date = None
-			if self.status in ("Pending", "Processing"):
-				self.status = "Submitted"
+			self.advance_stage("Submitted")
 		elif self.application_submitted == "No" and self.status in ("Pending", "Submitted"):
 			self.status = "Processing"
 
@@ -631,8 +756,7 @@ class Application(Document):
 			self.gs_another_country_application_id = None
 			self.gs_not_process_reason = None
 			self.gs_close_this_application = None
-			if self.status in ("Financial", "Offer Letter Received", "Pending", "Processing"):
-				self.status = "GS Processing"
+			self.advance_stage("GS Processing")
 			return
 
 		if self.gs_submitted != "No":
@@ -659,6 +783,200 @@ class Application(Document):
 					frappe.throw("Please enter reason why student don't want to process.")
 				if self.gs_close_this_application == "Yes":
 					self.status = "Closed"
+
+	def validate_gs_approved_branch(self):
+		"""GS Approved: tuition fee → OSHC → acceptance submission chain."""
+		if not self.is_australia():
+			return
+
+		# Tuition fee: the GHA questions only apply once the fee is actually paid.
+		if self.tuition_fee_paid == "No":
+			self.fee_processed_through_gha = None
+			self.convinced_fee_through_gha = None
+			self.reason_fee_not_through_gha = None
+			self.reason_no_efforts_gha = None
+			self.tuition_fee_upload = None
+		elif self.tuition_fee_paid == "Yes":
+			if self.fee_processed_through_gha == "Yes":
+				self.convinced_fee_through_gha = None
+				self.reason_fee_not_through_gha = None
+				self.reason_no_efforts_gha = None
+			elif self.fee_processed_through_gha == "No":
+				if self.convinced_fee_through_gha == "Yes":
+					self.reason_no_efforts_gha = None
+					if not (self.reason_fee_not_through_gha or "").strip():
+						frappe.throw(
+							"Please enter the reason why the fee payment was not processed through GHA."
+						)
+				elif self.convinced_fee_through_gha == "No":
+					self.reason_fee_not_through_gha = None
+					if not (self.reason_no_efforts_gha or "").strip():
+						frappe.throw(
+							"Please enter the reason why no efforts were made to process the fee through GHA."
+						)
+
+		# OSHC only opens after the tuition fee is paid.
+		if self.tuition_fee_paid != "Yes":
+			self.oshc_required = None
+			self.oshc_arranged_by_type = None
+
+		if self.oshc_required == "Yes" and self.oshc_arranged_by_type:
+			for prefix in ("gha", "agent", "student"):
+				if self.oshc_arranged_by_type.lower() == prefix:
+					continue
+				for suffix in (
+					"policy_received",
+					"oshc_company_name",
+					"oshc_policy_no",
+					"oshc_upload",
+					"oshc_amount",
+				):
+					fieldname = f"{prefix}_{suffix}"
+					if self.meta.has_field(fieldname):
+						self.set(fieldname, None)
+
+		# Acceptance submission → Acceptance stage.
+		if self.acceptance_submitted == "Yes":
+			self.acceptance_pending_conditions = None
+			self.acceptance_condition_details = None
+			self.acceptance_condition_completed = None
+			self.advance_stage("Acceptance")
+		elif self.acceptance_submitted == "No":
+			if self.acceptance_pending_conditions == "No":
+				self.acceptance_condition_details = None
+				self.acceptance_condition_completed = None
+			elif self.acceptance_pending_conditions == "Yes" and not (
+				self.acceptance_condition_details or ""
+			).strip():
+				frappe.throw("Please enter the pending condition details.")
+
+	def apply_stage_auto_advance(self):
+		"""Every "move to the next stage" in the AU flow happens on save, not by hand."""
+		if not self.is_australia():
+			return
+
+		# Offer letter in hand → Offer Letter Received
+		if self.get("offer_letter_upload"):
+			self.advance_stage("Offer Letter Received")
+
+		# Offer Letter stage signed off → Financials
+		if self.financial_started == "Yes":
+			self.advance_stage("Financial")
+
+		# GS Submitted → GS Approved
+		if self.gs_approved_check == "Yes":
+			self.advance_stage("GS Approved")
+
+		# eCOE → File Lodged, whoever lodged the file
+		lodged = any(
+			self.get(fieldname)
+			for fieldname in (
+				"file_lodged_status",
+				"agent_file_lodged_status",
+				"student_file_lodged_status",
+				"vendor_file_lodged_status",
+			)
+		)
+		if lodged:
+			self.advance_stage("File Lodged")
+			if not self.visa_status:
+				self.visa_status = "File Lodged"
+
+		# File Lodged → Visa / Visa Refused
+		if self.decision_received == "Yes" and self.visa_decision:
+			self.visa_status = self.visa_decision
+			self.advance_stage("Visa" if self.visa_decision == "Visa Approved" else "Visa Refused")
+
+		# Visa → Enrolled
+		if self.student_enrolled:
+			self.advance_stage("Enrollment")
+
+	def validate_acceptance_coe_branch(self):
+		"""Acceptance → eCOE transition, driven by COE Received."""
+		if not self.is_australia():
+			return
+
+		if self.coe_received == "Yes":
+			self.advance_stage("COE")
+
+	def validate_visa_decision_branch(self):
+		"""File Lodged → visa decision / status-check branch."""
+		if not self.is_australia():
+			return
+
+		if self.decision_received == "No":
+			self.visa_decision = None
+			if self.visa_status_checked == "Yes":
+				self.visa_status_not_checked_reason = None
+			elif self.visa_status_checked == "No":
+				self.visa_status_screenshot_upload = None
+				if not (self.visa_status_not_checked_reason or "").strip():
+					frappe.throw("Please enter the reason for not checking the visa status.")
+		elif self.decision_received == "Yes":
+			self.visa_status_checked = None
+			self.visa_status_screenshot_upload = None
+			self.visa_status_not_checked_reason = None
+
+	def validate_onshore_branch(self):
+		"""Onshore College Change is gated on country eligibility."""
+		if not self.is_australia():
+			return
+
+		if self.onshore_college_change_allowed == "No":
+			self.student_wants_college_change = None
+			self.from_where_change = None
+			self.others_reason = None
+			self.convince_times = 0
+			self.oscg_status = None
+			self.onshore_new_app_stage = None
+
+	def validate_refund_branch(self):
+		"""Refund Processing → Refunded → Closed, on the refused branch."""
+		if not self.is_australia():
+			return
+
+		if self.tuition_fee_refund_received == "Yes":
+			self.advance_stage("Refund")
+
+		if self.tuition_fee_refund_issue == "No":
+			self.refund_issue_details = None
+			self.refund_issue_resolved = None
+		elif self.tuition_fee_refund_issue == "Yes":
+			if not (self.refund_issue_details or "").strip():
+				frappe.throw("Please enter the refund issue details.")
+
+		# Both branches converge on OSHC refund → invoice → close.
+		issue_cleared = self.tuition_fee_refund_issue == "No" or (
+			self.tuition_fee_refund_issue == "Yes" and self.refund_issue_resolved == "Yes"
+		)
+		if not issue_cleared:
+			self.refunded_oshc_received = None
+			self.tuition_fee_refund_invoice_upload = None
+			return
+
+		if self.refunded_oshc_received != "Yes":
+			self.tuition_fee_refund_invoice_upload = None
+			return
+
+		self.advance_stage("Refunded")
+		if self.tuition_fee_refund_invoice_upload:
+			from frappe.utils import nowdate
+
+			self.application_completed_on = self.application_completed_on or nowdate()
+			self.status = "Closed"
+
+	def apply_enrolment_completion(self):
+		"""Enrolment proof closes out the application per the AU flow."""
+		if not self.is_australia():
+			return
+
+		if not self.enrolment_proof_upload:
+			return
+
+		from frappe.utils import nowdate
+
+		self.application_completed_on = self.application_completed_on or nowdate()
+		self.advance_stage("Completed")
 
 	def apply_study_gap_duration_rule(self):
 		"""Details picks duration; Accepted opens Processing proof table (no duration there)."""
@@ -779,6 +1097,64 @@ def resolve_uk_case(uk_qualification=None, uk_marital_status=None):
 	if qual == "Post-graduation":
 		return "UK Case 5" if married else "UK Case 6"
 	return "UK Case 2"
+
+
+# Roles treated as "Concerned Manager / Higher Authority" for escalations.
+ESCALATION_ROLES = ("Team Lead", "Country Head", "CRO Head", "CRM Admin", "System Manager")
+
+
+@frappe.whitelist()
+def notify_visa_status_not_checked(application, reason=None):
+	"""Escalate to managers when the counselor has not checked the visa status."""
+	if not application or not frappe.db.exists("Application", application):
+		frappe.throw("Application not found")
+
+	frappe.has_permission("Application", "read", doc=application, throw=True)
+
+	doc = frappe.get_doc("Application", application)
+	reason = (reason or doc.visa_status_not_checked_reason or "").strip()
+	if not reason:
+		frappe.throw("A reason is required before the manager can be notified.")
+
+	recipients = frappe.get_all(
+		"Has Role",
+		filters={"parenttype": "User", "role": ["in", ESCALATION_ROLES]},
+		pluck="parent",
+		distinct=True,
+	)
+	recipients = [
+		user
+		for user in recipients
+		if user not in ("Administrator", "Guest")
+		and frappe.db.get_value("User", user, "enabled")
+	]
+	if not recipients:
+		return {"notified": []}
+
+	student_name = doc.get("student_name") or doc.student or ""
+	counselor = doc.owner or ""
+	subject = f"Visa status not checked — {doc.name}"
+	message = (
+		f"<p><b>Application ID:</b> {frappe.utils.escape_html(doc.name)}</p>"
+		f"<p><b>Student Name:</b> {frappe.utils.escape_html(student_name)}</p>"
+		f"<p><b>Counselor Name:</b> {frappe.utils.escape_html(counselor)}</p>"
+		f"<p><b>Reason:</b> {frappe.utils.escape_html(reason)}</p>"
+	)
+
+	for user in recipients:
+		frappe.get_doc(
+			{
+				"doctype": "Notification Log",
+				"for_user": user,
+				"type": "Alert",
+				"document_type": "Application",
+				"document_name": doc.name,
+				"subject": subject,
+				"email_content": message,
+			}
+		).insert(ignore_permissions=True)
+
+	return {"notified": recipients}
 
 
 @frappe.whitelist()
@@ -903,8 +1279,6 @@ APPLICATION_ATTACH_STAGE_MAP = {
 	"gs_form_2_upload": "Submitted — GS & Affidavits",
 	"sponsorship_affidavit_upload": "Submitted — GS & Affidavits",
 	"student_affidavit_upload": "Submitted — GS & Affidavits",
-	"requirement_document_upload": "GS Processing",
-	"shop_act_additional_document": "Financial / Sponsors",
 	"tuition_fee_upload": "GS Approved",
 	"gha_oshc_upload": "GS Approved",
 	"agent_oshc_upload": "GS Approved",
@@ -937,6 +1311,7 @@ APPLICATION_CHILD_TABLE_STAGE_MAP = {
 	"documents_verified_pdf": "Processing — Academics",
 	"graduation_verification_documents": "Processing — Academics",
 	"study_gap_proof_list": "Processing — Study Gap",
+	"passport_id_uploads": "Processing — Passport / ID",
 	"documents_passport_application_form_sop": "Processing — Applications",
 	"english_test_details": "Processing — English Test",
 	"spouse_details_list": "Processing — Spouse",
@@ -944,7 +1319,6 @@ APPLICATION_CHILD_TABLE_STAGE_MAP = {
 	"student_academic_verification": "Submitted — Academics",
 	"spouse_academic_verification": "Submitted — Academics",
 	"table_ihmq": "Submitted — Sponsors",
-	"all_documents": "Financials",
 	"financial_documents": "Financials",
 	"offer_letter_upload": "Offer Letter",
 	"defer_supporting_documents": "Offer Letter — Defer",
@@ -1191,3 +1565,136 @@ def get_application_documents_by_stage(name):
 
 	return ordered
 
+
+ONSHORE_STAGE_TO_STATUS = {
+	"Offer Letter": "Offer Letter Received",
+	"GS": "GS Processing",
+	"Acceptance": "Acceptance",
+	"COE": "COE",
+	"Enrolled": "Enrollment",
+}
+
+# Document child tables worth carrying into the new onshore application.
+ONSHORE_DOCUMENT_TABLES = (
+	"offer_letter_upload",
+	"passport_id_uploads",
+	"enrollment_documents",
+	"study_gap_proof_list",
+)
+
+
+@frappe.whitelist()
+def create_onshore_application(application, stage=None):
+	"""Create a new Onshore College Change application linked to this one."""
+	if not application or not frappe.db.exists("Application", application):
+		frappe.throw("Application not found")
+
+	frappe.has_permission("Application", "write", doc=application, throw=True)
+
+	source = frappe.get_doc("Application", application)
+	if source.onshore_new_application_id:
+		return {"created": False, "application": source.onshore_new_application_id}
+
+	stage = stage or source.onshore_new_app_stage
+	if not stage:
+		frappe.throw("Please select the stage the new application should start from.")
+	if stage not in ONSHORE_STAGE_TO_STATUS:
+		frappe.throw(f"{stage} is not a valid starting stage.")
+
+	target = frappe.new_doc("Application")
+	for fieldname in (
+		"student",
+		"student_name",
+		"destination_country",
+		"application_type",
+		"application_filled_by",
+		"agent",
+		"assigned_team",
+		"assigned_executive",
+		"course",
+		"course_name",
+		"preferred_university",
+		"university_name",
+		"intake",
+		"intake_date",
+		"student_email",
+		"student_contact_no",
+		"martial_status",
+		"higher_education",
+	):
+		if source.meta.has_field(fieldname):
+			target.set(fieldname, source.get(fieldname))
+
+	target.status = ONSHORE_STAGE_TO_STATUS[stage]
+	if target.meta.has_field("is_onshore_change"):
+		target.is_onshore_change = 1
+	target.flags.ignore_mandatory = True
+	target.flags.skip_preferred_course_validation = True
+	target.insert(ignore_permissions=True)
+
+	# Carry the document rows across so nothing has to be re-uploaded.
+	copied = 0
+	for table in ONSHORE_DOCUMENT_TABLES:
+		if not (source.meta.has_field(table) and target.meta.has_field(table)):
+			continue
+		for row in source.get(table) or []:
+			target.append(table, row.as_dict(no_default_fields=True))
+			copied += 1
+	if copied:
+		target.flags.ignore_mandatory = True
+		target.flags.skip_preferred_course_validation = True
+		target.save(ignore_permissions=True)
+
+	source.db_set("onshore_new_app_stage", stage, update_modified=False)
+	source.db_set("onshore_new_application_id", target.name, update_modified=False)
+
+	frappe.get_doc(
+		{
+			"doctype": "Comment",
+			"comment_type": "Comment",
+			"reference_doctype": "Application",
+			"reference_name": source.name,
+			"content": (
+				f"<p>Onshore College Change: created linked application "
+				f"<b>{target.name}</b> starting at stage "
+				f"<b>{frappe.utils.escape_html(stage)}</b>. "
+				f"{copied} document row(s) carried forward.</p>"
+			),
+		}
+	).insert(ignore_permissions=True)
+
+	_notify_accounts_of_onshore_application(source, target, stage)
+
+	return {"created": True, "application": target.name, "documents_copied": copied}
+
+
+def _notify_accounts_of_onshore_application(source, target, stage):
+	"""The PDF requires the Accounts Department to hear about onshore applications."""
+	recipients = frappe.get_all(
+		"Has Role",
+		filters={"parenttype": "User", "role": ["in", ("Accounts Manager", "Accounts User") + ESCALATION_ROLES]},
+		pluck="parent",
+		distinct=True,
+	)
+	recipients = [
+		user
+		for user in recipients
+		if user not in ("Administrator", "Guest") and frappe.db.get_value("User", user, "enabled")
+	]
+
+	for user in recipients:
+		frappe.get_doc(
+			{
+				"doctype": "Notification Log",
+				"for_user": user,
+				"type": "Alert",
+				"document_type": "Application",
+				"document_name": target.name,
+				"subject": f"New Onshore College Change application — {target.name}",
+				"email_content": (
+					f"<p><b>Existing Application:</b> {source.name}</p>"
+					f"<p><b>New Onshore Application:</b> {target.name}</p>"
+					f"<p><b>Starting Stage:</b> {frappe.utils.escape_html(stage or '')}</p>"
+				),
+			}
+		).insert(ignore_permissions=True)

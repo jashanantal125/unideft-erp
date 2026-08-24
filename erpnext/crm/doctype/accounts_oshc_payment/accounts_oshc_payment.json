@@ -1,0 +1,225 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-08-22 13:40:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "application",
+  "student",
+  "student_name",
+  "column_break_head",
+  "workflow_status",
+  "section_details",
+  "university_name",
+  "course_name",
+  "oshc_company_name",
+  "column_break_details",
+  "oshc_policy_no",
+  "oshc_duration",
+  "oshc_amount",
+  "section_payment",
+  "oshc_amount_paid",
+  "oshc_not_paid_note",
+  "oshc_payment_date",
+  "oshc_payment_proof",
+  "oshc_paid_note"
+ ],
+ "fields": [
+  {
+   "fieldname": "application",
+   "fieldtype": "Link",
+   "label": "Application",
+   "options": "Application",
+   "reqd": 1,
+   "read_only": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "student",
+   "fieldtype": "Link",
+   "label": "Student",
+   "options": "Student",
+   "read_only": 1
+  },
+  {
+   "fieldname": "student_name",
+   "fieldtype": "Data",
+   "label": "Student Name",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_head",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "workflow_status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nCompleted",
+   "default": "Pending",
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "section_details",
+   "fieldtype": "Section Break",
+   "label": "Policy Details (from GS Approved)",
+   "bold": 1
+  },
+  {
+   "fieldname": "university_name",
+   "fieldtype": "Data",
+   "label": "University Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "course_name",
+   "fieldtype": "Data",
+   "label": "Course Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "oshc_company_name",
+   "fieldtype": "Data",
+   "label": "OSHC Company Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_details",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "oshc_policy_no",
+   "fieldtype": "Data",
+   "label": "Policy No",
+   "read_only": 1
+  },
+  {
+   "fieldname": "oshc_duration",
+   "fieldtype": "Data",
+   "label": "Policy Duration",
+   "read_only": 1
+  },
+  {
+   "fieldname": "oshc_amount",
+   "fieldtype": "Currency",
+   "label": "Policy Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_payment",
+   "fieldtype": "Section Break",
+   "label": "OSHC Payment",
+   "bold": 1
+  },
+  {
+   "fieldname": "oshc_amount_paid",
+   "fieldtype": "Select",
+   "label": "OSHC Amount Paid",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "oshc_not_paid_note",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "⏳ Follow-up reminder requested for the OSHC payment.",
+   "depends_on": "eval:doc.oshc_amount_paid == 'No'",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "oshc_payment_date",
+   "fieldtype": "Date",
+   "label": "Payment Date",
+   "depends_on": "eval:doc.oshc_amount_paid == 'Yes'",
+   "mandatory_depends_on": "eval:doc.oshc_amount_paid == 'Yes'"
+  },
+  {
+   "fieldname": "oshc_payment_proof",
+   "fieldtype": "Attach",
+   "label": "Payment Proof",
+   "depends_on": "eval:doc.oshc_amount_paid == 'Yes'",
+   "mandatory_depends_on": "eval:doc.oshc_amount_paid == 'Yes'"
+  },
+  {
+   "fieldname": "oshc_paid_note",
+   "fieldtype": "Small Text",
+   "label": "Status",
+   "default": "✓ OSHC payment recorded. Accounts has been notified and an OSHC Commission record has been created.",
+   "depends_on": "eval:doc.oshc_amount_paid == 'Yes' && doc.oshc_payment_proof",
+   "read_only": 1,
+   "bold": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-08-22 13:40:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Accounts OSHC Payment",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1
+  },
+  {
+   "role": "Accounts Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1
+  },
+  {
+   "role": "Accounts User",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1
+  },
+  {
+   "role": "Team Lead",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1
+  },
+  {
+   "role": "Team Executive",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "AOSHC-.YYYY.-.####",
+ "naming_rule": "Expression",
+ "title_field": "student_name",
+ "show_title_field_in_link": 1
+}

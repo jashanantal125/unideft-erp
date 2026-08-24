@@ -1,0 +1,53 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-08-22 17:55:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "field_order": [
+  "document_type",
+  "other_document_type",
+  "upload_document"
+ ],
+ "fields": [
+  {
+   "fieldname": "document_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Document Type",
+   "options": "\nPassport\nAadhaar\nPAN Card\nOthers",
+   "reqd": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "other_document_type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Document Name",
+   "depends_on": "eval:doc.document_type == 'Others'",
+   "mandatory_depends_on": "eval:doc.document_type == 'Others'",
+   "columns": 2
+  },
+  {
+   "fieldname": "upload_document",
+   "fieldtype": "Attach",
+   "in_list_view": 1,
+   "label": "Upload",
+   "columns": 4
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-08-22 17:55:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Application Passport ID Upload",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

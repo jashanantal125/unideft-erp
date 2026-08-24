@@ -6,6 +6,7 @@
  "editable_grid": 0,
  "engine": "InnoDB",
  "field_order": [
+  "sponsor_type",
   "sponsor_occupation",
   "occupation_other_details",
   "occupation_other_upload",
@@ -84,11 +85,21 @@
  ],
  "fields": [
   {
+   "fieldname": "sponsor_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Sponsor",
+   "length": 13,
+   "options": "\nFather\nMother\nSelf\nSpouse\nBrother\nSister\nGuardian",
+   "reqd": 1,
+   "description": "Which sponsor from the Sponsors table this occupation belongs to. Add one row per occupation, so a sponsor can have several."
+  },
+  {
    "fieldname": "sponsor_occupation",
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Occupation",
-   "length": 20,
+   "length": 13,
    "options": "\nBusiness\nJob\nFarmer\nOther",
    "reqd": 1
   },
@@ -111,7 +122,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Business Proof",
-   "length": 40,
+   "length": 30,
    "mandatory_depends_on": "eval:doc.sponsor_occupation == 'Business'",
    "options": "\nGST Certificate\nMSME Certificate\nIncorporation Certificate\nShop Act\nIEC Certificate\nOthers"
   },
@@ -165,7 +176,7 @@
    "fieldname": "msme_registration_duration",
    "fieldtype": "Select",
    "label": "Registration Duration",
-   "length": 20,
+   "length": 18,
    "mandatory_depends_on": "eval:doc.business_proof == 'MSME Certificate'",
    "options": "\nBelow 1 Year\nBelow 2 Years\nAbove 2 Years"
   },
@@ -231,7 +242,7 @@
    "fieldname": "shop_act_registration_duration",
    "fieldtype": "Select",
    "label": "Registration Duration",
-   "length": 20,
+   "length": 18,
    "mandatory_depends_on": "eval:doc.business_proof == 'Shop Act'",
    "options": "\nBelow 1 Year\nBelow 2 Years\nAbove 2 Years"
   },
@@ -269,7 +280,7 @@
    "fieldname": "iec_registration_duration",
    "fieldtype": "Select",
    "label": "Registration Duration",
-   "length": 20,
+   "length": 18,
    "mandatory_depends_on": "eval:doc.business_proof == 'IEC Certificate'",
    "options": "\nBelow 1 Year\nBelow 2 Years\nAbove 2 Years"
   },
@@ -332,7 +343,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Job Type",
-   "length": 40,
+   "length": 32,
    "mandatory_depends_on": "eval:doc.sponsor_occupation == 'Job'",
    "options": "\nGovernment\nPrivate\nRetired from Govt. services"
   },
@@ -527,7 +538,7 @@
    "fieldname": "farmer_income_support_type",
    "fieldtype": "Select",
    "label": "Income Supporting Documents",
-   "length": 40,
+   "length": 27,
    "options": "\nTehsildar Income Proof\nFamily ID\nJ forms\nOther"
   },
   {

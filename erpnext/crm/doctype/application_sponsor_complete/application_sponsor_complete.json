@@ -15,17 +15,13 @@
   "column_break_identity",
   "income_section",
   "income_support_documents",
-  "itr_table",
-  "dob_matched_itr_ac_pc",
-  "name_matched_itr_ac_pc",
-  "sponsor_itr_verified",
-  "itr_uploaded",
-  "form_16_table",
+  "itr_table_pointer_note",
+  "form_16_table_pointer_note",
   "family_id_upload",
   "occupation_section",
   "occupation_documents_needed",
   "occupation_reason",
-  "occupation_documents",
+  "occupation_table_pointer_note",
   "funds_section",
   "funds_type",
   "if_fundtype_gpf",
@@ -75,7 +71,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Sponsor Type",
-   "length": 20,
+   "length": 13,
    "options": "\nFather\nMother\nSelf\nSpouse\nBrother\nSister\nGuardian",
    "reqd": 1
   },
@@ -122,49 +118,26 @@
    "fieldname": "income_support_documents",
    "fieldtype": "Select",
    "label": "Income Support Documents",
-   "length": 20,
+   "length": 14,
    "options": "\nITRs\nForm 16\nFamily ID"
   },
   {
+   "bold": 1,
+   "default": "Add this sponsor's ITRs in the \"Sponsor ITRs\" table further down the Financials tab, tagging each row with this sponsor. DOB / name match and verification are recorded per ITR.",
    "depends_on": "eval:doc.income_support_documents == 'ITRs'",
-   "fieldname": "itr_table",
-   "fieldtype": "Table",
-   "label": "ITRs",
-   "options": "Application Sponsor ITR"
+   "fieldname": "itr_table_pointer_note",
+   "fieldtype": "Small Text",
+   "label": "Where to add ITRs",
+   "read_only": 1
   },
   {
-   "default": "0",
-   "depends_on": "eval:doc.income_support_documents == 'ITRs'",
-   "fieldname": "dob_matched_itr_ac_pc",
-   "fieldtype": "Check",
-   "label": "DOB on ITR matched with A/C & Passport"
-  },
-  {
-   "default": "0",
-   "depends_on": "eval:doc.income_support_documents == 'ITRs'",
-   "fieldname": "name_matched_itr_ac_pc",
-   "fieldtype": "Check",
-   "label": "Name on ITR matched with A/C & Passport"
-  },
-  {
-   "default": "0",
-   "depends_on": "eval:doc.income_support_documents == 'ITRs'",
-   "fieldname": "sponsor_itr_verified",
-   "fieldtype": "Check",
-   "label": "ITR Verified"
-  },
-  {
-   "depends_on": "eval:doc.income_support_documents == 'ITRs' && doc.sponsor_itr_verified == 1",
-   "fieldname": "itr_uploaded",
-   "fieldtype": "Attach",
-   "label": "Upload ITR"
-  },
-  {
+   "bold": 1,
+   "default": "Add this sponsor's Form 16 records in the \"Sponsor Form 16\" table further down the Financials tab, tagging each row with this sponsor.",
    "depends_on": "eval:doc.income_support_documents == 'Form 16'",
-   "fieldname": "form_16_table",
-   "fieldtype": "Table",
-   "label": "Form 16",
-   "options": "Application Sponsor Form 16"
+   "fieldname": "form_16_table_pointer_note",
+   "fieldtype": "Small Text",
+   "label": "Where to add Form 16",
+   "read_only": 1
   },
   {
    "depends_on": "eval:doc.income_support_documents == 'Family ID'",
@@ -191,11 +164,13 @@
    "label": "Reason"
   },
   {
+   "bold": 1,
+   "default": "Add this sponsor's occupations in the \"Sponsor Occupation Documents\" table further down the Financials tab, tagging each row with this sponsor. Add one row per occupation if the sponsor has more than one.",
    "depends_on": "eval:doc.occupation_documents_needed == 1",
-   "fieldname": "occupation_documents",
-   "fieldtype": "Table",
-   "label": "Occupation Documents",
-   "options": "Application Sponsor Occupation"
+   "fieldname": "occupation_table_pointer_note",
+   "fieldtype": "Small Text",
+   "label": "Where to add Occupation Documents",
+   "read_only": 1
   },
   {
    "fieldname": "funds_section",
@@ -207,7 +182,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Funds Type",
-   "length": 30,
+   "length": 19,
    "options": "\nFixed Deposit\nBank Statement\nEducation Loan\nOther"
   },
   {
@@ -247,7 +222,7 @@
    "fieldname": "fd_months_old",
    "fieldtype": "Select",
    "label": "How Many Months FD Old",
-   "length": 24,
+   "length": 23,
    "mandatory_depends_on": "eval:doc.funds_type == 'Fixed Deposit'",
    "options": "\n1 Month\n2 Months\n3 Months\nMore than 3 Months"
   },
@@ -317,7 +292,7 @@
    "fieldname": "statement_fifty_thousand_times",
    "fieldtype": "Select",
    "label": "Number of deposits above Rs. 50,000",
-   "length": 40,
+   "length": 32,
    "options": "\nDeposit within 1 month\nDeposit within 2 months\nDeposit within 3 months\nDeposit older than 3 months"
   },
   {
@@ -438,7 +413,7 @@
    "fieldname": "loan_security_collection",
    "fieldtype": "Select",
    "label": "Security Type",
-   "length": 20,
+   "length": 13,
    "options": "\nProperty\nOther"
   },
   {

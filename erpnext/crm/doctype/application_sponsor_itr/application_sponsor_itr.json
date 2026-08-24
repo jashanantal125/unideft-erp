@@ -7,17 +7,34 @@
  "engine": "InnoDB",
  "istable": 1,
  "field_order": [
+  "sponsor_type",
   "assessment_year",
   "itr_value",
   "acknowledgement_no",
+  "itr_dob_matches",
+  "itr_name_matches",
+  "itr_correction_note",
+  "itr_verified",
+  "itr_not_verified_note",
   "itr_upload"
  ],
  "fields": [
+  {
+   "fieldname": "sponsor_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Sponsor",
+   "length": 20,
+   "options": "\nFather\nMother\nSelf\nSpouse\nBrother\nSister\nGuardian",
+   "reqd": 1,
+   "description": "Which sponsor from the Sponsors table this ITR belongs to."
+  },
   {
    "fieldname": "assessment_year",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Assessment Year",
+   "length": 20,
    "reqd": 1
   },
   {
@@ -31,17 +48,59 @@
   {
    "fieldname": "acknowledgement_no",
    "fieldtype": "Data",
-   "label": "Acknowledgement No"
+   "label": "Acknowledgement No",
+   "length": 64
   },
   {
+   "fieldname": "itr_dob_matches",
+   "fieldtype": "Select",
+   "label": "DOB Matches Aadhaar Card & Passport",
+   "length": 10,
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "itr_name_matches",
+   "fieldtype": "Select",
+   "label": "Name Matches Aadhaar Card & Passport",
+   "length": 10,
+   "options": "\nYes\nNo"
+  },
+  {
+   "bold": 1,
+   "default": "Correction required before proceeding — DOB / name on the ITR does not match the Aadhaar Card or Passport.",
+   "depends_on": "eval:doc.itr_dob_matches == 'No' || doc.itr_name_matches == 'No'",
+   "fieldname": "itr_correction_note",
+   "fieldtype": "Small Text",
+   "label": "Note",
+   "read_only": 1
+  },
+  {
+   "fieldname": "itr_verified",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "ITR Verified",
+   "length": 10,
+   "options": "\nYes\nNo"
+  },
+  {
+   "bold": 1,
+   "default": "Verification pending — set a reminder to follow up until the ITR is verified.",
+   "depends_on": "eval:doc.itr_verified == 'No'",
+   "fieldname": "itr_not_verified_note",
+   "fieldtype": "Small Text",
+   "label": "Note",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.itr_verified == 'Yes'",
    "fieldname": "itr_upload",
    "fieldtype": "Attach",
-   "label": "Upload ITR"
+   "label": "Upload ITR",
+   "mandatory_depends_on": "eval:doc.itr_verified == 'Yes'"
   }
  ],
  "index_web_pages_for_search": 1,
- "istable": 1,
- "modified": "2026-01-13 00:00:00.000000",
+ "modified": "2026-08-20 14:30:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Application Sponsor ITR",
