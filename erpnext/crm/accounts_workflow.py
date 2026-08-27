@@ -303,10 +303,19 @@ def sync_application_triggers(application):
 	if application.get("destination_country") != "Australia":
 		return
 
-	if application.get("fee_processed_through_gha") == "Yes":
+	if (
+		application.get("fee_processed_through_gha") == "Yes"
+		and application.get("tuition_fee_paid") == "Yes"
+	):
 		ensure_tuition_fee_payment(application)
 
-	if application.get("oshc_required") == "Yes" and application.get("oshc_arranged_by_type") == "GHA":
+	if (
+		application.get("oshc_cert_received") == "Yes"
+		and application.get("oshc_arranged_by_type") == "GHA"
+	) or (
+		application.get("oshc_required") == "Yes"
+		and application.get("oshc_arranged_by_type") == "GHA"
+	):
 		ensure_oshc_payment(application)
 
 	if application.get("visa_decision") == "Visa Approved":

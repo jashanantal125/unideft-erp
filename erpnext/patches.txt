@@ -470,3 +470,5 @@ erpnext.patches.v16_0.ensure_agent_crm_workspaces_visible
 erpnext.patches.v16_0.cleanup_application_yes_no_values
 erpnext.patches.v16_0.cleanup_sponsor_complete_select_values
 erpnext.patches.v16_0.grant_accounts_read_on_application_student
+erpnext.patches.v16_0.grant_university_write_for_admissions
+erpnext.patches.v16_0.grant_student_access_for_cro_admission

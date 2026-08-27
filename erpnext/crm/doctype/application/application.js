@@ -163,12 +163,21 @@ function activate_application_tab(frm, tab_fieldname, tab_label) {
 		// fall through
 	}
 
+	const labels = [tab_label];
+	if (tab_fieldname === "coe_tab") {
+		labels.push("eCOE", "COE");
+	}
+
 	const $link = frm.$wrapper
 		.find(".form-tabs .nav-link")
 		.filter(function () {
 			const text = ($(this).text() || "").trim();
 			const df = $(this).attr("data-fieldname") || "";
-			return df === tab_fieldname || text === tab_label || text === __(tab_label);
+			return (
+				df === tab_fieldname ||
+				labels.includes(text) ||
+				labels.some((label) => text === __(label))
+			);
 		})
 		.first();
 
@@ -177,6 +186,59 @@ function activate_application_tab(frm, tab_fieldname, tab_label) {
 	} else {
 		frm.scroll_to_field(tab_fieldname);
 	}
+}
+
+function get_status_rank(status) {
+	const ranks = {
+		Pending: 0,
+		Processing: 1,
+		Submitted: 2,
+		"Offer Letter Received": 3,
+		Financial: 4,
+		"GS Processing": 5,
+		"GS Approved": 6,
+		Acceptance: 7,
+		COE: 8,
+		eCOE: 8,
+		"File Lodged": 9,
+		Visa: 10,
+		"Visa Refused": 10,
+		"On Shore College change": 10,
+		Enrollment: 11,
+		Refund: 11,
+		Completed: 12,
+		Refunded: 12,
+	};
+	return ranks[status];
+}
+
+function resolve_coe_status_option(frm) {
+	const options = String(frm?.fields_dict?.status?.df?.options || "")
+		.split("\n")
+		.map((x) => x.trim())
+		.filter(Boolean);
+	if (options.includes("eCOE")) {
+		return "eCOE";
+	}
+	return "COE";
+}
+
+function advance_status_if_forward(frm, next_status) {
+	if (!next_status || !frm || frm.doc.__islocal) {
+		return Promise.resolve();
+	}
+	if (["Closed", "Completed"].includes(frm.doc.status)) {
+		return Promise.resolve();
+	}
+	const current_rank = get_status_rank(frm.doc.status);
+	const next_rank = get_status_rank(next_status);
+	if (next_rank === undefined) {
+		return Promise.resolve();
+	}
+	if (current_rank === undefined || next_rank > current_rank) {
+		return frm.set_value("status", next_status);
+	}
+	return Promise.resolve();
 }
 
 function setup_processing_agent_query(frm) {
@@ -540,7 +602,7 @@ function maybe_close_for_another_country(frm) {
 }
 
 // Interview Timing decides which stage runs the interview workflow:
-//   Before Financial   -> Financials tab (gated directly on interview_timing)
+//   Before GS Submitted   -> Financials tab (gated directly on interview_timing)
 //   Before GS Approval -> GS Submitted tab
 //   Before Acceptance  -> GS Approved tab
 //   Before COE         -> Acceptance tab
@@ -1047,6 +1109,11 @@ const CHILD_ROW_SKIP_KEYS = new Set([
 function open_child_row_dialog(frm, grid, child, child_dt) {
 	if (!child || !child_dt) return;
 
+	if (child_dt === "Application Sponsor Complete") {
+		open_unified_sponsor_dialog(frm, grid, child);
+		return;
+	}
+
 	const ensure_nested = (meta, cb) => {
 		const nested = (meta.fields || [])
 			.filter((f) => f && f.fieldtype === "Table" && f.options)
@@ -1076,7 +1143,6 @@ function open_child_row_dialog(frm, grid, child, child_dt) {
 				.map((df) => {
 					const f = Object.assign({}, df);
 					if (f.fieldtype === "Table" && f.options) {
-						// Dialog Table grids have no frm — Grid reads columns from df.fields
 						const child_meta = frappe.get_meta(f.options);
 						f.fields = ((child_meta && child_meta.fields) || [])
 							.filter((cf) => cf && cf.fieldname)
@@ -1087,24 +1153,21 @@ function open_child_row_dialog(frm, grid, child, child_dt) {
 				});
 
 			const d = new frappe.ui.Dialog({
-				title: __("Sponsor"),
+				title: __(child_dt),
 				fields: fields,
 				size: "extra-large",
 				primary_action_label: __("Done"),
 				primary_action() {
 					const values = d.get_values() || {};
-
 					(meta.fields || []).forEach((df) => {
 						if (!df || !df.fieldname) return;
 						if ((frappe.model.layout_fields || []).includes(df.fieldtype)) return;
-
 						if (df.fieldtype === "Table") {
 							const ctrl = d.fields_dict[df.fieldname];
 							const rows =
 								(ctrl && ctrl.grid && typeof ctrl.grid.get_data === "function"
 									? ctrl.grid.get_data()
-									: null) ||
-								[];
+									: null) || [];
 							child[df.fieldname] = [];
 							(rows || []).forEach((r, i) => {
 								if (!df.options) return;
@@ -1119,15 +1182,12 @@ function open_child_row_dialog(frm, grid, child, child_dt) {
 							child[df.fieldname] = values[df.fieldname];
 						}
 					});
-
 					frm.dirty();
 					frm.refresh_field(grid.df.fieldname);
 					d.hide();
 				},
 			});
-
 			d.show();
-
 			setTimeout(() => {
 				(meta.fields || []).forEach((df) => {
 					if (!df || !df.fieldname) return;
@@ -1138,7 +1198,7 @@ function open_child_row_dialog(frm, grid, child, child_dt) {
 						try {
 							d.set_value(df.fieldname, val);
 						} catch (e) {
-							/* ignore missing controls */
+							/* ignore */
 						}
 					}
 				});
@@ -1146,6 +1206,310 @@ function open_child_row_dialog(frm, grid, child, child_dt) {
 		});
 	});
 }
+
+/**
+ * One Sponsors dialog: identity + income + occupations + funds.
+ * ITR / Form 16 / Occupation rows still live in the existing Application child
+ * tables (logic unchanged) — they are managed from here and those tables are hidden.
+ */
+function open_unified_sponsor_dialog(frm, grid, child) {
+	const prev_sponsor_type = child.sponsor_type;
+
+	frappe.model.with_doctype("Application Sponsor Complete", () => {
+		frappe.model.with_doctype("Application Sponsor ITR", () => {
+			frappe.model.with_doctype("Application Sponsor Form 16", () => {
+				frappe.model.with_doctype("Application Sponsor Occupation", () => {
+					const meta = frappe.get_meta("Application Sponsor Complete");
+					const fields = (meta.fields || [])
+						.filter((df) => df && df.fieldname && !df.hidden)
+						.map((df) => Object.assign({}, df));
+
+					const d = new frappe.ui.Dialog({
+						title: __("Sponsor — all documents in one place"),
+						fields: fields,
+						size: "extra-large",
+						primary_action_label: __("Done"),
+						primary_action() {
+							const values = d.get_values() || {};
+							(meta.fields || []).forEach((df) => {
+								if (!df || !df.fieldname) return;
+								if ((frappe.model.layout_fields || []).includes(df.fieldtype)) return;
+								if (df.fieldtype === "HTML") return;
+								if (Object.prototype.hasOwnProperty.call(values, df.fieldname)) {
+									child[df.fieldname] = values[df.fieldname];
+								}
+							});
+
+							// Retag related subdocs if sponsor type changed
+							const new_type = child.sponsor_type;
+							if (prev_sponsor_type && new_type && prev_sponsor_type !== new_type) {
+								["sponsor_itrs", "sponsor_form_16", "sponsor_occupations"].forEach((table) => {
+									(frm.doc[table] || []).forEach((r) => {
+										if (r.sponsor_type === prev_sponsor_type) {
+											r.sponsor_type = new_type;
+										}
+									});
+								});
+							}
+
+							frm.dirty();
+							frm.refresh_field(grid.df.fieldname);
+							sync_sponsor_docs_pdf_rows(frm);
+							d.hide();
+						},
+					});
+
+					d.show();
+
+					setTimeout(() => {
+						(meta.fields || []).forEach((df) => {
+							if (!df || !df.fieldname || df.fieldtype === "HTML") return;
+							if ((frappe.model.layout_fields || []).includes(df.fieldtype)) return;
+							const val = child[df.fieldname];
+							if (val !== undefined && val !== null && val !== "") {
+								try {
+									d.set_value(df.fieldname, val);
+								} catch (e) {
+									/* ignore */
+								}
+							}
+						});
+						bind_sponsor_subdoc_managers(frm, d, child);
+					}, 120);
+
+					["income_support_documents", "occupation_documents_needed", "sponsor_type"].forEach(
+						(fname) => {
+							const f = d.fields_dict[fname];
+							if (!f || !f.df) return;
+							const prev = f.df.onchange;
+							f.df.onchange = () => {
+								if (typeof prev === "function") prev();
+								setTimeout(() => bind_sponsor_subdoc_managers(frm, d, child), 30);
+							};
+						}
+					);
+				});
+			});
+		});
+	});
+}
+
+function current_sponsor_type_from_dialog(d, child) {
+	return (d.get_value("sponsor_type") || child.sponsor_type || "").trim();
+}
+
+function bind_sponsor_subdoc_managers(frm, d, child) {
+	const stype = current_sponsor_type_from_dialog(d, child);
+	const income = d.get_value("income_support_documents") || child.income_support_documents;
+	const need_occ = d.get_value("occupation_documents_needed");
+	const occ_needed = need_occ === 1 || need_occ === "1" || child.occupation_documents_needed == 1;
+
+	render_sponsor_subdoc_manager(frm, d, {
+		html_field: "itr_manager_html",
+		table_field: "sponsor_itrs",
+		child_dt: "Application Sponsor ITR",
+		sponsor_type: stype,
+		title: __("ITRs"),
+		summary: (r) =>
+			`${r.assessment_year || "—"} · ${format_currency_safe(r.itr_value)} · ${r.itr_verified || "—"}`,
+		visible: income === "ITRs",
+	});
+
+	render_sponsor_subdoc_manager(frm, d, {
+		html_field: "form16_manager_html",
+		table_field: "sponsor_form_16",
+		child_dt: "Application Sponsor Form 16",
+		sponsor_type: stype,
+		title: __("Form 16"),
+		summary: (r) =>
+			`${r.assessment_year || "—"} · ${format_currency_safe(r.income_value)}`,
+		visible: income === "Form 16",
+	});
+
+	render_sponsor_subdoc_manager(frm, d, {
+		html_field: "occupation_manager_html",
+		table_field: "sponsor_occupations",
+		child_dt: "Application Sponsor Occupation",
+		sponsor_type: stype,
+		title: __("Occupations"),
+		summary: (r) => `${r.sponsor_occupation || "—"}`,
+		visible: occ_needed,
+	});
+}
+
+function format_currency_safe(v) {
+	if (v === undefined || v === null || v === "") return "—";
+	try {
+		return format_currency(v, "INR");
+	} catch (e) {
+		return String(v);
+	}
+}
+
+function render_sponsor_subdoc_manager(frm, d, opts) {
+	const ctrl = d.fields_dict[opts.html_field];
+	if (!ctrl || !ctrl.$wrapper) return;
+
+	if (!opts.visible) {
+		ctrl.$wrapper.html("").closest(".frappe-control").hide();
+		return;
+	}
+	ctrl.$wrapper.closest(".frappe-control").show();
+
+	if (!opts.sponsor_type) {
+		ctrl.$wrapper.html(
+			`<div class="text-muted" style="padding:8px 0;">${__(
+				"Select Sponsor Type above first, then add {0}.",
+				[opts.title]
+			)}</div>`
+		);
+		return;
+	}
+
+	const rows = (frm.doc[opts.table_field] || []).filter(
+		(r) => (r.sponsor_type || "") === opts.sponsor_type
+	);
+
+	let html = `<div class="sponsor-subdoc-mgr" style="border:1px solid var(--border-color);border-radius:8px;padding:10px 12px;margin:4px 0 12px;">
+		<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+			<strong>${frappe.utils.escape_html(opts.title)}</strong>
+			<button type="button" class="btn btn-xs btn-primary btn-add-subdoc">${__("Add")} ${frappe.utils.escape_html(opts.title)}</button>
+		</div>`;
+
+	if (!rows.length) {
+		html += `<div class="text-muted">${__("None yet — click Add.")}</div>`;
+	} else {
+		html += `<table class="table table-bordered table-condensed" style="margin:0;">
+			<thead><tr><th>#</th><th>${__("Summary")}</th><th style="width:120px;"></th></tr></thead><tbody>`;
+		rows.forEach((r, i) => {
+			html += `<tr data-name="${frappe.utils.escape_html(r.name)}">
+				<td>${i + 1}</td>
+				<td>${frappe.utils.escape_html(opts.summary(r))}</td>
+				<td class="text-right">
+					<button type="button" class="btn btn-xs btn-default btn-edit-subdoc">${__("Edit")}</button>
+					<button type="button" class="btn btn-xs btn-danger btn-del-subdoc">${__("Delete")}</button>
+				</td>
+			</tr>`;
+		});
+		html += `</tbody></table>`;
+	}
+	html += `</div>`;
+	ctrl.$wrapper.html(html);
+
+	ctrl.$wrapper.find(".btn-add-subdoc").on("click", () => {
+		open_sponsor_subdoc_editor(frm, d, null, opts);
+	});
+	ctrl.$wrapper.find(".btn-edit-subdoc").on("click", function () {
+		const name = $(this).closest("tr").attr("data-name");
+		const row = (frm.doc[opts.table_field] || []).find((r) => r.name === name);
+		open_sponsor_subdoc_editor(frm, d, row, opts);
+	});
+	ctrl.$wrapper.find(".btn-del-subdoc").on("click", function () {
+		const name = $(this).closest("tr").attr("data-name");
+		frappe.confirm(__("Remove this row?"), () => {
+			frm.doc[opts.table_field] = (frm.doc[opts.table_field] || []).filter((r) => r.name !== name);
+			(frm.doc[opts.table_field] || []).forEach((r, i) => {
+				r.idx = i + 1;
+			});
+			frm.dirty();
+			frm.refresh_field(opts.table_field);
+			bind_sponsor_subdoc_managers(frm, d, {
+				sponsor_type: opts.sponsor_type,
+				income_support_documents: d.get_value("income_support_documents"),
+				occupation_documents_needed: d.get_value("occupation_documents_needed"),
+			});
+		});
+	});
+}
+
+function open_sponsor_subdoc_editor(frm, parent_dialog, row, opts) {
+	const meta = frappe.get_meta(opts.child_dt);
+	if (!meta) {
+		frappe.msgprint(__("Could not load {0}", [opts.child_dt]));
+		return;
+	}
+
+	const fields = (meta.fields || [])
+		.filter((df) => df && df.fieldname && df.fieldname !== "sponsor_type")
+		.map((df) => Object.assign({}, df));
+
+	// Show which sponsor this belongs to
+	fields.unshift({
+		fieldname: "_sponsor_type_display",
+		fieldtype: "Data",
+		label: __("Sponsor"),
+		read_only: 1,
+		default: opts.sponsor_type,
+	});
+
+	const is_new = !row;
+	const d = new frappe.ui.Dialog({
+		title: is_new ? __("Add {0}", [opts.title]) : __("Edit {0}", [opts.title]),
+		fields: fields,
+		size: opts.child_dt === "Application Sponsor Occupation" ? "extra-large" : "large",
+		primary_action_label: __("Save"),
+		primary_action() {
+			const values = d.get_values() || {};
+			delete values._sponsor_type_display;
+
+			let target = row;
+			if (is_new) {
+				target = frappe.model.add_child(frm.doc, opts.child_dt, opts.table_field);
+			}
+			target.sponsor_type = opts.sponsor_type;
+			(meta.fields || []).forEach((df) => {
+				if (!df || !df.fieldname || df.fieldname === "sponsor_type") return;
+				if ((frappe.model.layout_fields || []).includes(df.fieldtype)) return;
+				if (Object.prototype.hasOwnProperty.call(values, df.fieldname)) {
+					target[df.fieldname] = values[df.fieldname];
+				}
+			});
+
+			frm.dirty();
+			frm.refresh_field(opts.table_field);
+			d.hide();
+			bind_sponsor_subdoc_managers(frm, parent_dialog, {
+				sponsor_type: opts.sponsor_type,
+				income_support_documents: parent_dialog.get_value("income_support_documents"),
+				occupation_documents_needed: parent_dialog.get_value("occupation_documents_needed"),
+			});
+		},
+	});
+
+	d.show();
+	if (row) {
+		setTimeout(() => {
+			(meta.fields || []).forEach((df) => {
+				if (!df || !df.fieldname || df.fieldname === "sponsor_type") return;
+				if ((frappe.model.layout_fields || []).includes(df.fieldtype)) return;
+				const val = row[df.fieldname];
+				if (val !== undefined && val !== null && val !== "") {
+					try {
+						d.set_value(df.fieldname, val);
+					} catch (e) {
+						/* ignore */
+					}
+				}
+			});
+		}, 80);
+	}
+}
+
+function hide_legacy_sponsor_subtables(frm) {
+	[
+		"sponsor_occupations_section",
+		"sponsor_occupations",
+		"sponsor_itrs_section",
+		"sponsor_itrs",
+		"sponsor_form_16_section",
+		"sponsor_form_16",
+	].forEach((f) => {
+		if (frm.fields_dict[f]) {
+			frm.set_df_property(f, "hidden", 1);
+		}
+	});
+}
+
 
 /** Ensure clicking an existing row opens the dialog/form correctly. */
 function patch_grid_row_toggle(grid, child_dt) {
@@ -1414,6 +1778,9 @@ frappe.ui.form.on("Application", {
 	refresh(frm) {
 		hide_accounts_connections_on_application(frm);
 		add_accounts_workflow_buttons(frm);
+		apply_agent_application_tabs(frm);
+		apply_cro_only_fields(frm);
+		hide_legacy_sponsor_subtables(frm);
 		patch_form_view_tables(frm);
 		// Grids on later tabs may initialize after first paint
 		setTimeout(() => patch_form_view_tables(frm), 300);
@@ -2548,7 +2915,7 @@ frappe.ui.form.on("Application", {
 	interview_deadline_date(frm) {
 		if (
 			frm.doc.interview_deadline_date &&
-			frm.doc.interview_timing === "Before Financial" &&
+			frm.doc.interview_timing === "Before GS Submitted" &&
 			frm.doc.name &&
 			!frm.doc.__islocal
 		) {
@@ -2564,7 +2931,7 @@ frappe.ui.form.on("Application", {
 	},
 
 	interview_timing(frm) {
-		if (frm.doc.interview_timing !== "Before Financial") {
+		if (frm.doc.interview_timing !== "Before GS Submitted") {
 			[
 				"interview_deadline_date",
 				"financials_student_prepare",
@@ -2581,7 +2948,7 @@ frappe.ui.form.on("Application", {
 			frm.set_value("financials_schedule_interview", "");
 		}
 		if (
-			frm.doc.interview_timing === "Before Financial" &&
+			frm.doc.interview_timing === "Before GS Submitted" &&
 			frm.doc.financials_student_prepare === "No" &&
 			frm.doc.name &&
 			!frm.doc.__islocal
@@ -2596,7 +2963,7 @@ frappe.ui.form.on("Application", {
 	},
 
 	financials_schedule_interview(frm) {
-		if (frm.doc.interview_timing !== "Before Financial" || !frm.doc.name || frm.doc.__islocal) {
+		if (frm.doc.interview_timing !== "Before GS Submitted" || !frm.doc.name || frm.doc.__islocal) {
 			return;
 		}
 		if (frm.doc.financials_schedule_interview === "No") {
@@ -3339,6 +3706,9 @@ frappe.ui.form.on("Application", {
 			deactivate_reminders_matching(frm, COE_RECEIPT_REMINDERS, {
 				message: __("COE receipt reminders deactivated"),
 			});
+			advance_status_if_forward(frm, resolve_coe_status_option(frm)).then(() => {
+				activate_application_tab(frm, "coe_tab", "eCOE");
+			});
 			return;
 		}
 		if (frm.doc.coe_received === "No" && frm.doc.name && !frm.doc.__islocal) {
@@ -3828,6 +4198,12 @@ frappe.ui.form.on("student documents", {
 });
 
 frappe.ui.form.on("Application Sponsor Complete", {
+	sponsor_type(frm) {
+		sync_sponsor_docs_pdf_rows(frm);
+	},
+	sponsor_name(frm) {
+		sync_sponsor_docs_pdf_rows(frm);
+	},
 	fd_nationalized(frm, cdt, cdn) {
 		set_nationalized_status(cdt, cdn, "fd_nationalized", "fd_nationalized_status");
 	},
@@ -4173,6 +4549,14 @@ frappe.ui.form.on("Application", {
 	},
 
 	fee_processed_through_gha(frm) {
+		if (frm.doc.fee_processed_through_gha !== "Yes") {
+			if (frm.doc.tuition_fee_paid) {
+				frm.set_value("tuition_fee_paid", "");
+			}
+			if (frm.doc.tuition_fee_upload) {
+				frm.set_value("tuition_fee_upload", "");
+			}
+		}
 		if (frm.doc.fee_processed_through_gha !== "No") {
 			["convinced_fee_through_gha", "reason_fee_not_through_gha", "reason_no_efforts_gha"].forEach(
 				(fieldname) => frm.set_value(fieldname, "")
@@ -4227,6 +4611,9 @@ frappe.ui.form.on("Application", {
 
 	acceptance_submitted(frm) {
 		if (frm.doc.acceptance_submitted === "Yes") {
+			advance_status_if_forward(frm, "Acceptance").then(() => {
+				activate_application_tab(frm, "acceptance_tab", "Acceptance");
+			});
 			[
 				"acceptance_pending_conditions",
 				"acceptance_condition_details",
@@ -4385,8 +4772,7 @@ function handle_oshc_policy_received(frm, prefix) {
 	}
 }
 
-// "Send … to Student Chat" is a reminder for the counselor, not an automated
-// send — there is no student-facing chat channel in this install.
+// "Send … to Student Chat" — for offer letter, also post attachments to Comments.
 function remind_to_share_in_chat(frm, fieldname, label) {
 	if (frm.doc[fieldname] !== "Yes") {
 		return;
@@ -4396,6 +4782,119 @@ function remind_to_share_in_chat(frm, fieldname, label) {
 		6
 	);
 }
+
+function post_offer_letter_to_comments(frm) {
+	if (frm.doc.send_offer_to_chat !== "Yes" || !frm.doc.name || frm.doc.__islocal) {
+		return;
+	}
+	const rows = frm.doc.offer_letter_upload || [];
+	const files = rows.map((r) => r.upload).filter(Boolean);
+	let content = __("Offer letter shared with student (Send Offer Letter to Student Chat = Yes).");
+	if (files.length) {
+		content +=
+			"<br>" +
+			files
+				.map((f) => `<a href="${frappe.urllib.get_full_url(f)}" target="_blank">${frappe.utils.escape_html(f.split("/").pop())}</a>`)
+				.join("<br>");
+	}
+	frappe.call({
+		method: "frappe.desk.form.utils.add_comment",
+		args: {
+			reference_doctype: frm.doctype,
+			reference_name: frm.doc.name,
+			content: content,
+			comment_email: frappe.session.user,
+			comment_by: frappe.session.user_fullname,
+		},
+		callback() {
+			frappe.show_alert({ message: __("Posted to Comments"), indicator: "green" });
+			frm.reload_doc();
+		},
+	});
+}
+
+function sync_sponsor_docs_pdf_rows(frm) {
+	const sponsors = frm.doc.table_ihmq || [];
+	const existing = frm.doc.sponsor_docs_pdf || [];
+	const by_key = {};
+	existing.forEach((r) => {
+		const key = `${r.sponsor_type || ""}||${r.sponsor_name || ""}`;
+		by_key[key] = r;
+	});
+	frm.clear_table("sponsor_docs_pdf");
+	sponsors.forEach((s) => {
+		const key = `${s.sponsor_type || ""}||${s.sponsor_name || ""}`;
+		const prev = by_key[key];
+		const row = frm.add_child("sponsor_docs_pdf");
+		row.sponsor_type = s.sponsor_type;
+		row.sponsor_name = s.sponsor_name;
+		if (prev && prev.combined_docs_pdf) {
+			row.combined_docs_pdf = prev.combined_docs_pdf;
+		}
+	});
+	frm.refresh_field("sponsor_docs_pdf");
+}
+
+function user_is_agent_only_app() {
+	const roles = frappe.user_roles || [];
+	const agent = ["Agent", "B2B Agent", "B2C Agent", "agents"].some((r) => roles.includes(r));
+	const staff = [
+		"System Manager",
+		"Administrator",
+		"CRM Admin",
+		"Team Lead",
+		"Team Executive",
+		"Admission 1",
+		"Admission 2",
+		"CRO",
+		"CRO Head",
+		"Country Head",
+	].some((r) => roles.includes(r));
+	return agent && !staff;
+}
+
+function user_is_cro_app() {
+	return (frappe.user_roles || []).some((r) =>
+		["CRO", "CRO Head", "System Manager", "Administrator", "CRM Admin"].includes(r)
+	);
+}
+
+/** Agents only see the Details tab after create. */
+function apply_agent_application_tabs(frm) {
+	if (!user_is_agent_only_app()) {
+		return;
+	}
+	(frm.meta.fields || [])
+		.filter((df) => df.fieldtype === "Tab Break")
+		.forEach((df) => {
+			const is_details =
+				df.fieldname === "details_tab" ||
+				(df.label || "").toLowerCase() === "details";
+			frm.set_df_property(df.fieldname, "hidden", is_details ? 0 : 1);
+		});
+}
+
+/** CRO-only editable: fee GHA, OSHC arranged by, medical arranged by. */
+function apply_cro_only_fields(frm) {
+	const cro = user_is_cro_app();
+	["fee_processed_through_gha", "oshc_arranged_by_type", "medical_arranged_by"].forEach((f) => {
+		if (frm.fields_dict[f]) {
+			frm.set_df_property(f, "read_only", cro ? 0 : 1);
+		}
+	});
+	// Medical follow-ups visible to admission when Our Side
+	const show_medical_followup = frm.doc.medical_arranged_by === "Our Side";
+	[
+		"our_side_medical_scheduled",
+		"our_side_medical_scheduled_yes_status",
+		"our_side_medical_scheduled_no_status",
+	].forEach((f) => {
+		if (frm.fields_dict[f]) {
+			frm.set_df_property(f, "hidden", show_medical_followup ? 0 : 1);
+		}
+	});
+}
+
 
 // Refund follow-ups: prompt while the money is outstanding, stand down once it lands.
 function refund_followup(frm, value, label) {
@@ -4449,6 +4948,50 @@ frappe.ui.form.on("Application", {
 
 	send_offer_to_chat(frm) {
 		remind_to_share_in_chat(frm, "send_offer_to_chat", __("offer letter"));
+		post_offer_letter_to_comments(frm);
+	},
+
+	offer_letter_received(frm) {
+		if (frm.doc.offer_letter_received === "Yes") {
+			if (["Pending", "Processing", "Submitted"].includes(frm.doc.status || "")) {
+				frm.set_value("status", "Offer Letter Received");
+			}
+			deactivate_reminders_matching(frm, ["Offer Letter Received", "Follow up for Offer Letter"]);
+			activate_application_tab(frm, "offer_tab", "Offer Letter");
+		} else if (frm.doc.offer_letter_received === "No" && frm.doc.name && !frm.doc.__islocal) {
+			prompt_application_reminder(frm, {
+				title: __("Offer Letter Reminder"),
+				default_description: "Follow up for Offer Letter Received",
+				trigger_key: `offer_letter_received_${frm.doc.name}`,
+			});
+		}
+	},
+
+	defer_offer_received(frm) {
+		if (frm.doc.defer_offer_received === "No" && frm.doc.name && !frm.doc.__islocal) {
+			prompt_application_reminder(frm, {
+				title: __("Defer Offer Letter Reminder"),
+				default_description: "Follow up when Defer Offer letter will be received",
+				trigger_key: `defer_offer_received_${frm.doc.name}`,
+			});
+		}
+	},
+
+	oshc_cert_received(frm) {
+		if (frm.doc.oshc_cert_received !== "Yes") {
+			frm.set_value("oshc_arranged_by_type", "");
+		}
+		if (frm.doc.oshc_cert_received !== "No") {
+			frm.set_value("oshc_cert_not_received_notes", "");
+		}
+	},
+
+	table_ihmq_add(frm) {
+		sync_sponsor_docs_pdf_rows(frm);
+	},
+
+	table_ihmq_remove(frm) {
+		sync_sponsor_docs_pdf_rows(frm);
 	},
 
 	// GS Submitted: uploading the supporting documents re-opens the GS Approval follow-up

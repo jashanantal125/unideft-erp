@@ -26,7 +26,11 @@
   "preferred_course_area",
   "attachments_section",
   "attachments",
+  "cro_unregistered_section",
+  "cro_agent_name",
+  "cro_agency_name",
   "assessment_workflow_tab",
+  "need_assessment",
   "assessment_vendors_section",
   "assessment_vendors"
  ],
@@ -115,8 +119,7 @@
   {
    "fieldname": "last_name",
    "fieldtype": "Data",
-   "label": "Last Name",
-   "reqd": 1
+   "label": "Last Name"
   },
   {
    "fieldname": "mobile_number",
@@ -164,16 +167,43 @@
    "options": "Assessment Request Document"
   },
   {
+   "depends_on": "eval:doc.student_already_registered == 'No' && (in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head') || in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'CRM Admin'))",
+   "fieldname": "cro_unregistered_section",
+   "fieldtype": "Section Break",
+   "label": "CRO — Unregistered Student"
+  },
+  {
+   "depends_on": "eval:doc.student_already_registered == 'No' && (in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head') || in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'CRM Admin'))",
+   "fieldname": "cro_agent_name",
+   "fieldtype": "Data",
+   "label": "Agent Name"
+  },
+  {
+   "depends_on": "eval:doc.student_already_registered == 'No' && (in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head') || in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'CRM Admin'))",
+   "fieldname": "cro_agency_name",
+   "fieldtype": "Data",
+   "label": "Agency Name"
+  },
+  {
    "fieldname": "assessment_workflow_tab",
    "fieldtype": "Tab Break",
    "label": "Assessment Workflow"
   },
   {
+   "description": "Only CRO can set this. When Yes, the Assessment Vendors grid appears for admissions / staff.",
+   "fieldname": "need_assessment",
+   "fieldtype": "Select",
+   "label": "Need Assessment?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.need_assessment == 'Yes'",
    "fieldname": "assessment_vendors_section",
    "fieldtype": "Section Break",
    "label": "Assessment Grid"
   },
   {
+   "depends_on": "eval:doc.need_assessment == 'Yes'",
    "description": "Backend team tracks assessment receipt, student options, confirmation, and conversion here.",
    "fieldname": "assessment_vendors",
    "fieldtype": "Table",

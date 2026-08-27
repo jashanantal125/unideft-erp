@@ -19,9 +19,8 @@ function apply_agent_student_form(frm) {
 	// Agents only fill a short intake form
 	frm.set_df_property("first_name", "label", __("Name"));
 	frm.set_df_property("mobile", "label", __("Contact Number"));
-	frm.set_df_property("destination_country", "label", __("Destination Country"));
+	frm.set_df_property("destination_country", "label", __("Home Country"));
 	frm.set_df_property("destination_country", "reqd", 1);
-	frm.set_df_property("agent_request_type", "reqd", 1);
 
 	// Hide tabs / staff fields (belt-and-suspenders with depends_on)
 	[
@@ -48,7 +47,6 @@ function apply_agent_student_form(frm) {
 	});
 
 	if (frm.meta && frm.meta["__unsaved"] === undefined) {
-		// Rename profile tab for agents
 		frm.set_df_property("profile_details_tab", "label", __("Student"));
 	}
 
@@ -62,8 +60,7 @@ frappe.ui.form.on("Student", {
 
 	refresh(frm) {
 		apply_agent_student_form(frm);
-
-			// Agent form is already limited via depends_on + field properties
+		frm.set_df_property("destination_country", "label", __("Home Country"));
 	},
 
 	validate(frm) {
@@ -71,10 +68,7 @@ frappe.ui.form.on("Student", {
 			return;
 		}
 		if (!frm.doc.destination_country) {
-			frappe.throw(__("Please select Destination Country"));
-		}
-		if (!frm.doc.agent_request_type) {
-			frappe.throw(__("Please select Assessment or Expert Advice"));
+			frappe.throw(__("Please select Home Country"));
 		}
 	},
 });

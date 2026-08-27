@@ -27,11 +27,6 @@
   "lead_link",
   "comment",
   "naming_series",
-  "agent_interest_section",
-  "university_name",
-  "column_break_agent_interest",
-  "course_name",
-  "agent_request_type",
   "documents_tab",
   "section_break_wmtu",
   "table_rnxy",
@@ -123,7 +118,7 @@
   {
    "fieldname": "destination_country",
    "fieldtype": "Link",
-   "label": "Destination Country",
+   "label": "Home Country",
    "options": "Country",
    "reqd": 1
   },
@@ -236,33 +231,6 @@
    "fieldname": "column_break_rnnn",
    "fieldtype": "Column Break",
    "depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')"
-  },
-  {
-   "fieldname": "agent_interest_section",
-   "fieldtype": "Section Break",
-   "label": "Interest Details"
-  },
-  {
-   "fieldname": "university_name",
-   "fieldtype": "Data",
-   "label": "University Name"
-  },
-  {
-   "fieldname": "column_break_agent_interest",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "course_name",
-   "fieldtype": "Data",
-   "label": "Course Name"
-  },
-  {
-   "fieldname": "agent_request_type",
-   "fieldtype": "Select",
-   "label": "Request Type",
-   "options": "\nAssessment\nExpert Advice",
-   "reqd": 0,
-   "mandatory_depends_on": "eval:in_list(frappe.user_roles, 'Agent') || in_list(frappe.user_roles, 'B2B Agent') || in_list(frappe.user_roles, 'B2C Agent') || in_list(frappe.user_roles, 'agents')"
   }
  ],
  "grid_page_length": 50,
@@ -361,6 +329,60 @@
    "print": 1,
    "read": 1,
    "role": "agents",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "CRO",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "CRO Head",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Admission 1",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Admission 2",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Country Head",
    "write": 1
   },
   {

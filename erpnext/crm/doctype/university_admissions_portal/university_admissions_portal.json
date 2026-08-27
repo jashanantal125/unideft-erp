@@ -1,0 +1,46 @@
+{
+ "actions": [],
+ "creation": "2026-08-27 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": ["country", "portal_link", "login_id", "password"],
+ "fields": [
+  {
+   "fieldname": "country",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Country",
+   "options": "Country",
+   "reqd": 1
+  },
+  {
+   "fieldname": "portal_link",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Admissions Portal Link",
+   "options": "URL"
+  },
+  {
+   "fieldname": "login_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Login ID / Username"
+  },
+  {
+   "fieldname": "password",
+   "fieldtype": "Password",
+   "in_list_view": 1,
+   "label": "Password"
+  }
+ ],
+ "istable": 1,
+ "modified": "2026-08-27 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "University Admissions Portal",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

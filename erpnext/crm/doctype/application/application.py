@@ -19,6 +19,7 @@ AU_STAGE_RANK = {
 	"GS Approved": 6,
 	"Acceptance": 7,
 	"COE": 8,
+	"eCOE": 8,
 	"File Lodged": 9,
 	"Visa": 10,
 	"Visa Refused": 10,
@@ -290,6 +291,8 @@ class Application(Document):
 			
 			if team_result:
 				self.assigned_team = team_result[0].parent
+
+
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -684,11 +687,35 @@ class Application(Document):
 		"""
 		if self.status in AU_TERMINAL_STATUSES:
 			return
+		status = self._resolve_stage_alias(status)
 		target = AU_STAGE_RANK.get(status)
 		if target is None:
 			return
 		if target > AU_STAGE_RANK.get(self.status, -1):
 			self.status = status
+
+	def _resolve_stage_alias(self, status):
+		"""Map legacy/new stage labels (COE/eCOE) to whichever option exists."""
+		if not status:
+			return status
+
+		df = self.meta.get_field("status")
+		options = {
+			opt.strip()
+			for opt in (getattr(df, "options", "") or "").split("\n")
+			if opt and opt.strip()
+		}
+		if not options:
+			return status
+
+		aliases = {
+			"COE": ("COE", "eCOE"),
+			"eCOE": ("eCOE", "COE"),
+		}
+		for candidate in aliases.get(status, (status,)):
+			if candidate in options:
+				return candidate
+		return status
 
 	def apply_application_submission_workflow(self):
 		"""Keep the Australia Processing → Submitted transition consistent."""
@@ -897,7 +924,7 @@ class Application(Document):
 			return
 
 		if self.coe_received == "Yes":
-			self.advance_stage("COE")
+			self.advance_stage("eCOE")
 
 	def validate_visa_decision_branch(self):
 		"""File Lodged → visa decision / status-check branch."""
@@ -1698,3 +1725,81 @@ def _notify_accounts_of_onshore_application(source, target, stage):
 				),
 			}
 		).insert(ignore_permissions=True)
+
+
+@frappe.whitelist()
+def create_agent_application(
+	student=None,
+	student_id=None,
+	destination_country=None,
+	preferred_university=None,
+	course=None,
+	intake=None,
+):
+	"""Create Application (or UK) from the agent short-form dialog and assign team."""
+	student = student or student_id
+	if not student:
+		frappe.throw(frappe._("Student is required"))
+	if not destination_country:
+		frappe.throw(frappe._("Destination Country is required"))
+	if not preferred_university:
+		frappe.throw(frappe._("University is required"))
+	if not course:
+		frappe.throw(frappe._("Course is required"))
+	if not intake:
+		frappe.throw(frappe._("Intake is required"))
+
+	stu = frappe.get_doc("Student", student)
+	agent_user = frappe.session.user
+
+	uk = (destination_country or "").strip().lower() in {
+		"united kingdom",
+		"uk",
+		"great britain",
+		"britain",
+		"england",
+	}
+	if uk:
+		doc = frappe.get_doc(
+			{
+				"doctype": "Application UK",
+				"application_type": "B2B",
+				"uk_current_stage": "Details",
+				"country_flow_case": "UK Case 2",
+				"offer_currency": "GBP",
+				"status": "Pending",
+				"student": student,
+				"destination_country": destination_country,
+				"preferred_university": preferred_university,
+				"course": course,
+				"intake": intake,
+				"agent": agent_user,
+				"student_name": " ".join(
+					filter(None, [stu.first_name, getattr(stu, "last_name", None)])
+				)
+				or student,
+			}
+		)
+		doc.insert(ignore_permissions=True)
+		return {"doctype": "Application UK", "name": doc.name}
+
+	doc = frappe.get_doc(
+		{
+			"doctype": "Application",
+			"destination_country": destination_country,
+			"country_flow_case": "AU Default",
+			"application_type": "B2B",
+			"status": "Pending",
+			"student": student,
+			"preferred_university": preferred_university,
+			"course": course,
+			"intake": intake,
+			"agent": agent_user,
+			"student_name": " ".join(
+				filter(None, [stu.first_name, getattr(stu, "last_name", None)])
+			)
+			or student,
+		}
+	)
+	doc.insert(ignore_permissions=True)
+	return {"doctype": "Application", "name": doc.name}

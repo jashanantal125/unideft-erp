@@ -6,31 +6,88 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "details_tab",
   "university_name",
+  "trading_name",
+  "address",
+  "group_name_applicable",
+  "university_group",
+  "tie_up_company",
+  "naming_series",
+  "column_break_ktjy",
+  "country",
+  "city",
   "stateprovience",
+  "logo",
   "website",
+  "type",
+  "campus_name",
+  "primary_contact_section",
+  "first_name",
+  "last_name",
+  "contact_email",
+  "column_break_contact",
+  "contact_phone",
+  "contact_position",
+  "contract_type_section",
+  "contract_type",
+  "expected_unconditional_date",
+  "additional_details_section",
+  "email",
   "phone",
   "world_ranking",
+  "established_year",
   "commision",
-  "type",
+  "column_break_extra",
   "shore_type",
+  "is_private",
   "is_direct",
   "direct_processing_company",
   "vendor_name",
   "vendor_id",
   "old_id",
-  "column_break_ktjy",
-  "country",
-  "city",
-  "logo",
-  "email",
-  "established_year",
-  "campus_name",
-  "is_private",
-  "address",
-  "naming_series"
+  "portal_tab",
+  "portal_available",
+  "portal_link",
+  "portal_login_id",
+  "portal_password",
+  "commission_tab",
+  "overall_commission_percentage",
+  "country_wise_commission",
+  "country_commissions",
+  "extra_bonus_section",
+  "extra_bonus_available",
+  "country_wise_bonus",
+  "country_bonuses",
+  "university_wise_bonus",
+  "university_bonuses",
+  "commission_info_section",
+  "commission_info_source",
+  "use_existing_portal_credentials",
+  "commission_same_credentials_note",
+  "commission_portal_link",
+  "commission_login_id",
+  "commission_password",
+  "commission_email_attachment",
+  "contract_tab",
+  "contract_start_date",
+  "contract_end_date",
+  "renewal_reminder_date",
+  "contract_document",
+  "recruitment_tab",
+  "countries_recruited_for",
+  "partner_universities",
+  "admission_contacts_tab",
+  "admission_contacts",
+  "admissions_portal_tab",
+  "admissions_portals"
  ],
  "fields": [
+  {
+   "fieldname": "details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Details"
+  },
   {
    "fieldname": "university_name",
    "fieldtype": "Data",
@@ -39,29 +96,43 @@
    "reqd": 1
   },
   {
-   "fieldname": "stateprovience",
+   "fieldname": "trading_name",
    "fieldtype": "Data",
-   "label": "State/Provience"
+   "label": "Trading Name"
   },
   {
-   "fieldname": "website",
-   "fieldtype": "Data",
-   "label": "website"
+   "fieldname": "address",
+   "fieldtype": "Small Text",
+   "label": "Address"
   },
   {
-   "fieldname": "phone",
-   "fieldtype": "Data",
-   "label": "Phone"
+   "fieldname": "group_name_applicable",
+   "fieldtype": "Select",
+   "label": "Group Name Applicable",
+   "options": "\nYes\nNo"
   },
   {
-   "fieldname": "world_ranking",
-   "fieldtype": "Data",
-   "label": "World Ranking"
+   "depends_on": "eval:doc.group_name_applicable == 'Yes'",
+   "description": "Pick an existing group, or create a new one from this field.",
+   "fieldname": "university_group",
+   "fieldtype": "Link",
+   "label": "Group Name",
+   "mandatory_depends_on": "eval:doc.group_name_applicable == 'Yes'",
+   "options": "University Group"
   },
   {
-   "fieldname": "commision",
-   "fieldtype": "Currency",
-   "label": "Commision"
+   "description": "Our partner company this university is tied up under.",
+   "fieldname": "tie_up_company",
+   "fieldtype": "Link",
+   "label": "Tie-up Under Company Name",
+   "options": "Our Company"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "naming_series",
+   "options": "UNI-.YYYY.-"
   },
   {
    "fieldname": "column_break_ktjy",
@@ -80,25 +151,20 @@
    "label": "City"
   },
   {
-   "fieldname": "email",
+   "fieldname": "stateprovience",
    "fieldtype": "Data",
-   "label": "Email"
+   "label": "State/Province"
   },
   {
-   "fieldname": "established_year",
+   "fieldname": "logo",
+   "fieldtype": "Attach Image",
+   "label": "Logo"
+  },
+  {
+   "fieldname": "website",
    "fieldtype": "Data",
-   "label": "Established Year"
-  },
-  {
-   "fieldname": "address",
-   "fieldtype": "Small Text",
-   "label": "Address"
-  },
-  {
-   "fieldname": "naming_series",
-   "fieldtype": "Select",
-   "label": "naming_series",
-   "options": "UNI-.YYYY.-"
+   "label": "Website",
+   "options": "URL"
   },
   {
    "fieldname": "type",
@@ -107,20 +173,107 @@
    "options": "university\ncollege\nschool"
   },
   {
-   "fieldname": "logo",
-   "fieldtype": "Attach Image",
-   "label": "Logo"
+   "fieldname": "campus_name",
+   "fieldtype": "Data",
+   "label": "Campus Name"
+  },
+  {
+   "fieldname": "primary_contact_section",
+   "fieldtype": "Section Break",
+   "label": "Primary Contact Person Details"
+  },
+  {
+   "fieldname": "first_name",
+   "fieldtype": "Data",
+   "label": "First Name"
+  },
+  {
+   "fieldname": "last_name",
+   "fieldtype": "Data",
+   "label": "Last Name"
+  },
+  {
+   "fieldname": "contact_email",
+   "fieldtype": "Data",
+   "label": "Email Address",
+   "options": "Email"
+  },
+  {
+   "fieldname": "column_break_contact",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "contact_phone",
+   "fieldtype": "Data",
+   "label": "Phone Number",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "contact_position",
+   "fieldtype": "Data",
+   "label": "Position"
+  },
+  {
+   "fieldname": "contract_type_section",
+   "fieldtype": "Section Break",
+   "label": "Contract Type"
+  },
+  {
+   "fieldname": "contract_type",
+   "fieldtype": "Select",
+   "label": "Contract Type",
+   "options": "\nConditional\nUnconditional"
+  },
+  {
+   "depends_on": "eval:doc.contract_type == 'Conditional'",
+   "description": "A follow-up reminder is created automatically on this date.",
+   "fieldname": "expected_unconditional_date",
+   "fieldtype": "Date",
+   "label": "Expected Unconditional Date",
+   "mandatory_depends_on": "eval:doc.contract_type == 'Conditional'"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "additional_details_section",
+   "fieldtype": "Section Break",
+   "label": "Additional Details"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "University Email",
+   "options": "Email"
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Data",
+   "label": "University Phone"
+  },
+  {
+   "fieldname": "world_ranking",
+   "fieldtype": "Data",
+   "label": "World Ranking"
+  },
+  {
+   "fieldname": "established_year",
+   "fieldtype": "Data",
+   "label": "Established Year"
+  },
+  {
+   "fieldname": "commision",
+   "fieldtype": "Currency",
+   "hidden": 1,
+   "label": "Commision"
+  },
+  {
+   "fieldname": "column_break_extra",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "shore_type",
    "fieldtype": "Select",
    "label": "Shore Type",
    "options": "both\noffshore\nonshore"
-  },
-  {
-   "fieldname": "campus_name",
-   "fieldtype": "Data",
-   "label": "Campus Name"
   },
   {
    "default": "0",
@@ -132,7 +285,7 @@
    "default": "0",
    "fieldname": "is_direct",
    "fieldtype": "Check",
-   "label": "is Direct"
+   "label": "Is Direct"
   },
   {
    "depends_on": "eval:doc.is_direct == 1",
@@ -156,13 +309,228 @@
   {
    "fieldname": "old_id",
    "fieldtype": "Data",
-   "label": "oldid"
+   "label": "Old ID"
+  },
+  {
+   "fieldname": "portal_tab",
+   "fieldtype": "Tab Break",
+   "label": "Portal Access"
+  },
+  {
+   "fieldname": "portal_available",
+   "fieldtype": "Select",
+   "label": "Portal Available",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.portal_available == 'Yes'",
+   "fieldname": "portal_link",
+   "fieldtype": "Data",
+   "label": "Portal Link",
+   "mandatory_depends_on": "eval:doc.portal_available == 'Yes'",
+   "options": "URL"
+  },
+  {
+   "depends_on": "eval:doc.portal_available == 'Yes'",
+   "fieldname": "portal_login_id",
+   "fieldtype": "Data",
+   "label": "Login ID",
+   "mandatory_depends_on": "eval:doc.portal_available == 'Yes'"
+  },
+  {
+   "depends_on": "eval:doc.portal_available == 'Yes'",
+   "fieldname": "portal_password",
+   "fieldtype": "Password",
+   "label": "Password"
+  },
+  {
+   "fieldname": "commission_tab",
+   "fieldtype": "Tab Break",
+   "label": "Commission Details"
+  },
+  {
+   "fieldname": "overall_commission_percentage",
+   "fieldtype": "Percent",
+   "label": "Overall Commission Sharing Percentage"
+  },
+  {
+   "fieldname": "country_wise_commission",
+   "fieldtype": "Select",
+   "label": "Country-wise Commission Sharing",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.country_wise_commission == 'Yes'",
+   "fieldname": "country_commissions",
+   "fieldtype": "Table",
+   "label": "Country-wise Commission",
+   "options": "University Country Commission"
+  },
+  {
+   "fieldname": "extra_bonus_section",
+   "fieldtype": "Section Break",
+   "label": "Extra Bonuses"
+  },
+  {
+   "fieldname": "extra_bonus_available",
+   "fieldtype": "Select",
+   "label": "Extra Bonus Available",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.extra_bonus_available == 'Yes'",
+   "fieldname": "country_wise_bonus",
+   "fieldtype": "Select",
+   "label": "Country-wise Bonus",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.extra_bonus_available == 'Yes' && doc.country_wise_bonus == 'Yes'",
+   "fieldname": "country_bonuses",
+   "fieldtype": "Table",
+   "label": "Country-wise Bonus Details",
+   "options": "University Country Bonus"
+  },
+  {
+   "depends_on": "eval:doc.extra_bonus_available == 'Yes'",
+   "fieldname": "university_wise_bonus",
+   "fieldtype": "Select",
+   "label": "University-wise Bonus",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.extra_bonus_available == 'Yes' && doc.university_wise_bonus == 'Yes'",
+   "fieldname": "university_bonuses",
+   "fieldtype": "Table",
+   "label": "University-wise Bonus Details",
+   "options": "University Wise Bonus"
+  },
+  {
+   "fieldname": "commission_info_section",
+   "fieldtype": "Section Break",
+   "label": "Commission Information Platform"
+  },
+  {
+   "fieldname": "commission_info_source",
+   "fieldtype": "Select",
+   "label": "Commission Information Source",
+   "options": "\nPortal\nEmail"
+  },
+  {
+   "depends_on": "eval:doc.commission_info_source == 'Portal'",
+   "description": "Same = reuse Portal Access link / login / password. Different = enter separate commission portal credentials.",
+   "fieldname": "use_existing_portal_credentials",
+   "fieldtype": "Select",
+   "label": "Use Existing Portal Credentials",
+   "options": "\nSame\nDifferent"
+  },
+  {
+   "depends_on": "eval:doc.commission_info_source == 'Portal' && doc.use_existing_portal_credentials == 'Same'",
+   "fieldname": "commission_same_credentials_note",
+   "fieldtype": "HTML",
+   "label": " ",
+   "options": "<p class=\"text-muted\">Using credentials from <b>Portal Access</b> (Portal Link, Login ID, Password).</p>"
+  },
+  {
+   "depends_on": "eval:doc.commission_info_source == 'Portal' && doc.use_existing_portal_credentials == 'Different'",
+   "fieldname": "commission_portal_link",
+   "fieldtype": "Data",
+   "label": "Portal Link",
+   "options": "URL"
+  },
+  {
+   "depends_on": "eval:doc.commission_info_source == 'Portal' && doc.use_existing_portal_credentials == 'Different'",
+   "fieldname": "commission_login_id",
+   "fieldtype": "Data",
+   "label": "Login ID"
+  },
+  {
+   "depends_on": "eval:doc.commission_info_source == 'Portal' && doc.use_existing_portal_credentials == 'Different'",
+   "fieldname": "commission_password",
+   "fieldtype": "Password",
+   "label": "Password"
+  },
+  {
+   "depends_on": "eval:doc.commission_info_source == 'Email'",
+   "fieldname": "commission_email_attachment",
+   "fieldtype": "Attach",
+   "label": "Commission Structure Attachment"
+  },
+  {
+   "fieldname": "contract_tab",
+   "fieldtype": "Tab Break",
+   "label": "Contract"
+  },
+  {
+   "fieldname": "contract_start_date",
+   "fieldtype": "Date",
+   "label": "Contract Start Date"
+  },
+  {
+   "fieldname": "contract_end_date",
+   "fieldtype": "Date",
+   "label": "Contract End Date"
+  },
+  {
+   "description": "Auto-set to 30 days before Contract End Date",
+   "fieldname": "renewal_reminder_date",
+   "fieldtype": "Date",
+   "label": "Renewal Reminder Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "contract_document",
+   "fieldtype": "Attach",
+   "label": "Contract Document"
+  },
+  {
+   "fieldname": "recruitment_tab",
+   "fieldtype": "Tab Break",
+   "label": "Recruitment Coverage"
+  },
+  {
+   "description": "Select all countries for which this university is authorized to recruit. Add one row per country.",
+   "fieldname": "countries_recruited_for",
+   "fieldtype": "Table",
+   "label": "Countries Recruited For",
+   "options": "University Recruitment Country"
+  },
+  {
+   "description": "Select associated universities. If missing, create a new University from the link field.",
+   "fieldname": "partner_universities",
+   "fieldtype": "Table",
+   "label": "Universities Represented",
+   "options": "University Partner University"
+  },
+  {
+   "fieldname": "admission_contacts_tab",
+   "fieldtype": "Tab Break",
+   "label": "Admission Team Contact Details"
+  },
+  {
+   "description": "Add multiple rows. One contact can cover several countries (comma-separated). The same country may have multiple contacts.",
+   "fieldname": "admission_contacts",
+   "fieldtype": "Table",
+   "label": "Admission Team Contact Details",
+   "options": "University Admission Contact"
+  },
+  {
+   "fieldname": "admissions_portal_tab",
+   "fieldtype": "Tab Break",
+   "label": "Admissions Portal"
+  },
+  {
+   "description": "Country-wise admissions portal credentials (if applicable).",
+   "fieldname": "admissions_portals",
+   "fieldtype": "Table",
+   "label": "Admissions Portal (Country-wise)",
+   "options": "University Admissions Portal"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-05 18:47:05.821119",
+ "modified": "2026-08-27 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "University",
@@ -180,14 +548,71 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "CRM Admin",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Admission 1",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Admission 2"
+  },
+  {
+   "read": 1,
+   "role": "CRO"
+  },
+  {
+   "read": 1,
+   "role": "CRO Head"
+  },
+  {
+   "read": 1,
+   "role": "Country Head"
+  },
+  {
+   "read": 1,
+   "role": "Team Lead"
+  },
+  {
+   "read": 1,
+   "role": "Team Executive"
+  },
+  {
+   "read": 1,
+   "role": "Agent"
+  },
+  {
+   "read": 1,
+   "role": "B2B Agent"
+  },
+  {
+   "read": 1,
+   "role": "B2C Agent"
   }
  ],
  "row_format": "Dynamic",
  "rows_threshold_for_grid_search": 20,
+ "search_fields": "university_name,trading_name,country,city",
+ "show_title_field_in_link": 1,
  "sort_field": "creation",
  "sort_order": "DESC",
  "states": [],
- "show_title_field_in_link": 1,
- "search_fields": "university_name,country,city",
- "title_field": "university_name"
+ "title_field": "university_name",
+ "track_changes": 1
 }

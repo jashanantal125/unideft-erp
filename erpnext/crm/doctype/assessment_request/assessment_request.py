@@ -44,8 +44,8 @@ class AssessmentRequest(Document):
 			frappe.throw(frappe._("Email Address is required to create a new Student"))
 		if not mobile:
 			frappe.throw(frappe._("Mobile Number is required to create a new Student"))
-		if not (self.first_name or "").strip() or not (self.last_name or "").strip():
-			frappe.throw(frappe._("First Name and Last Name are required to create a new Student"))
+		if not (self.first_name or "").strip():
+			frappe.throw(frappe._("First Name is required to create a new Student"))
 
 		existing = frappe.db.get_value("Student", {"email": email}, "name")
 		if existing:
@@ -61,7 +61,7 @@ class AssessmentRequest(Document):
 		if not destination:
 			frappe.throw(
 				frappe._(
-					"Add at least one Preferred Country so Destination Country can be set on the Student"
+					"Add at least one Preferred Country so Home Country can be set on the Student"
 				)
 			)
 
@@ -69,11 +69,10 @@ class AssessmentRequest(Document):
 			{
 				"doctype": "Student",
 				"first_name": self.first_name.strip(),
-				"last_name": self.last_name.strip(),
+				"last_name": (self.last_name or "").strip() or None,
 				"email": email,
 				"mobile": mobile,
 				"destination_country": destination,
-				"agent_request_type": "Assessment",
 				"area_of_interest": self.preferred_course_area or "Assessment",
 				"state": "N/A",
 				"country_code": "N/A",

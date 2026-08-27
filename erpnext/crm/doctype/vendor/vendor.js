@@ -2,6 +2,10 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("vendor", {
+	refresh(frm) {
+		load_country_options_for_admission_contacts(frm);
+	},
+
 	contract_end_date(frm) {
 		if (frm.doc.contract_end_date) {
 			frm.set_value(
@@ -72,7 +76,6 @@ frappe.ui.form.on("vendor", {
 		if (frm.doc.use_existing_portal_credentials === "Same") {
 			frm.set_value("commission_portal_link", frm.doc.portal_link || "");
 			frm.set_value("commission_login_id", frm.doc.portal_login_id || "");
-			// Password cannot be read client-side; server syncs on save from Portal Access.
 		} else if (frm.doc.use_existing_portal_credentials !== "Different") {
 			frm.set_value("commission_portal_link", "");
 			frm.set_value("commission_login_id", "");
@@ -81,18 +84,14 @@ frappe.ui.form.on("vendor", {
 	},
 });
 
-frappe.ui.form.on("Vendor Admission Contact", {
-	countries(frm, cdt, cdn) {
-		// Normalize comma / newline lists after edit
-		const row = locals[cdt][cdn];
-		if (!row) return;
-		const parts = String(row.countries || "")
-			.split(/[\n,;]+/)
-			.map((p) => p.trim())
-			.filter(Boolean);
-		const unique = [...new Set(parts)];
-		if (unique.join(", ") !== row.countries) {
-			frappe.model.set_value(cdt, cdn, "countries", unique.join(", "));
-		}
-	},
-});
+function load_country_options_for_admission_contacts(frm) {
+	const grid = frm.fields_dict.admission_contacts?.grid;
+	if (!grid) {
+		return;
+	}
+	frappe.db.get_list("Country", { fields: ["name"], limit: 500, order_by: "name asc" }).then((rows) => {
+		const options = (rows || []).map((r) => r.name).join("\n");
+		grid.update_docfield_property("countries", "options", options);
+		frm.refresh_field(grid.df.fieldname);
+	});
+}

@@ -1,6 +1,6 @@
 {
  "actions": [],
- "creation": "2026-07-31 00:00:00.000000",
+ "creation": "2026-08-27 00:00:00.000000",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
@@ -9,16 +9,15 @@
   "contact_person_name",
   "position",
   "phone_number",
-  "email_address",
-  "country"
+  "email_address"
  ],
  "fields": [
   {
-   "description": "Select one or more countries from the list.",
+   "description": "One or more countries, comma-separated (e.g. Canada, United States).",
    "fieldname": "countries",
-   "fieldtype": "MultiSelect",
+   "fieldtype": "Small Text",
    "in_list_view": 1,
-   "label": "Countries",
+   "label": "Country",
    "reqd": 1
   },
   {
@@ -47,22 +46,13 @@
    "in_list_view": 1,
    "label": "Email Address",
    "options": "Email"
-  },
-  {
-   "description": "Legacy single-country field — migration only",
-   "fieldname": "country",
-   "fieldtype": "Link",
-   "hidden": 1,
-   "label": "Country (legacy)",
-   "options": "Country",
-   "read_only": 1
   }
  ],
  "istable": 1,
- "modified": "2026-08-27 18:30:00.000000",
+ "modified": "2026-08-27 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
- "name": "Vendor Admission Contact",
+ "name": "University Admission Contact",
  "owner": "Administrator",
  "permissions": [],
  "sort_field": "modified",

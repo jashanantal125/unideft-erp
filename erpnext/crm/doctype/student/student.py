@@ -16,20 +16,80 @@ def user_is_agent(user=None):
 class Student(Document):
 	@staticmethod
 	def get_list_query(query):
-		"""Agents only see students they created (or linked via their applications)."""
+		"""Scope Student list by role.
+
+		- CRO / CRM Admin / System Manager: all students
+		- Admission / Country Head / Team: students whose Home Country is in their Team Territory
+		- Agents: own students + linked via applications
+		"""
+		user_roles = set(frappe.get_roles())
+		user = frappe.session.user
+		Student = frappe.qb.DocType("Student")
+
+		if user_roles & {
+			"System Manager",
+			"Administrator",
+			"CRM Admin",
+			"CRM Sales Staff",
+			"CRO",
+			"CRO Head",
+		}:
+			return query
+
+		# Admission / Country Head / Team Lead — filter by assigned countries
+		teams = []
+		if "Country Head" in user_roles:
+			teams = frappe.get_all("Team", filters={"country_head": user}, pluck="name")
+		elif "Admission 1" in user_roles:
+			teams = frappe.get_all("Team", filters={"admission_1": user}, pluck="name")
+		elif "Admission 2" in user_roles:
+			teams = frappe.get_all("Team", filters={"admission_2": user}, pluck="name")
+		elif "Team Lead" in user_roles:
+			teams = frappe.get_all("Team", filters={"team_leader": user}, pluck="name")
+		elif "Team Executive" in user_roles:
+			# Executives are assigned per application; allow students for teams they appear on
+			teams = frappe.db.sql(
+				"""
+				SELECT DISTINCT parent FROM `tabTeam`
+				WHERE admission_1 = %(user)s OR admission_2 = %(user)s OR team_leader = %(user)s
+				""",
+				{"user": user},
+				pluck="parent",
+			) or []
+			# Also allow students linked to applications assigned to this executive
+			pass
+
+		if teams or ("Admission 1" in user_roles or "Admission 2" in user_roles or "Country Head" in user_roles or "Team Lead" in user_roles):
+			countries = []
+			if teams:
+				countries = frappe.get_all(
+					"Team Territory",
+					filters={"parent": ["in", teams]},
+					pluck="country",
+				)
+			countries = [c for c in countries if c]
+			if countries:
+				query = query.where(Student.destination_country.isin(countries))
+				return query
+			# No territory configured — fall through to no-match for admission roles
+			if user_roles & {"Admission 1", "Admission 2", "Country Head", "Team Lead"}:
+				return query.where(Student.name == "__no_match__")
+
+		if "Team Executive" in user_roles:
+			Application = frappe.qb.DocType("Application")
+			linked = (
+				frappe.qb.from_(Application)
+				.select(Application.student)
+				.where(Application.assigned_executive == user)
+				.where(Application.student.isnotnull())
+			)
+			return query.where(Student.name.isin(linked))
+
 		if not user_is_agent():
 			return query
 
-		# Pure agents (no staff roles) get a scoped list
-		staff_roles = {"System Manager", "CRM Admin", "CRM Sales Staff", "Team Lead", "Team Executive"}
-		if set(frappe.get_roles()).intersection(staff_roles):
-			return query
-
-		Student = frappe.qb.DocType("Student")
 		Application = frappe.qb.DocType("Application")
-
 		agent_name = frappe.db.get_value("Agent", {"user": frappe.session.user}, "name")
-		# Match Application.agent as User email OR Agent doc name (legacy mix)
 		agent_keys = [frappe.session.user]
 		if agent_name:
 			agent_keys.append(agent_name)
@@ -93,9 +153,7 @@ class Student(Document):
 		if user_is_agent():
 			self._apply_agent_defaults()
 			if not self.destination_country:
-				frappe.throw(frappe._("Please select Destination Country"))
-			if not self.agent_request_type:
-				frappe.throw(frappe._("Please select Assessment or Expert Advice"))
+				frappe.throw(frappe._("Please select Home Country"))
 
 		# Set title field for display in Link dropdowns
 		if self.first_name:
@@ -131,7 +189,7 @@ class Student(Document):
 		if not self.state:
 			self.state = "N/A"
 		if not self.area_of_interest:
-			self.area_of_interest = self.agent_request_type or "Agent Intake"
+			self.area_of_interest = "Agent Intake"
 		if not self.gender:
 			self.gender = "Other"
 		if not self.country_code:

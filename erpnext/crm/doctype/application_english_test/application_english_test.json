@@ -104,7 +104,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Test Type",
-   "options": "\nIELTS Waiver\nIELTS\nUKVI IELTS\nPTE\nUKVI PTE\nDuolingo\nTOEFL\nMOI",
+   "options": "\nIELTS Waiver\nIELTS\nPTE\nDuolingo\nTOEFL\nMOI",
    "reqd": 1
   },
   {
@@ -113,7 +113,7 @@
    "fieldtype": "Date",
    "in_list_view": 1,
    "label": "Result Date",
-   "depends_on": "eval:doc.test_type=='IELTS' || doc.test_type=='UKVI IELTS' || doc.test_type=='PTE' || doc.test_type=='UKVI PTE' || doc.test_type=='TOEFL' || doc.test_type=='Duolingo'"
+   "depends_on": "eval:doc.test_type=='IELTS' || doc.test_type=='PTE' || doc.test_type=='TOEFL' || doc.test_type=='Duolingo'"
   },
   {
    "default": "24",
@@ -121,7 +121,7 @@
    "fieldname": "validity_months",
    "fieldtype": "Int",
    "label": "Validity Period (Months)",
-   "depends_on": "eval:doc.test_type=='IELTS' || doc.test_type=='UKVI IELTS' || doc.test_type=='PTE' || doc.test_type=='UKVI PTE' || doc.test_type=='TOEFL' || doc.test_type=='Duolingo'"
+   "depends_on": "eval:doc.test_type=='IELTS' || doc.test_type=='PTE' || doc.test_type=='TOEFL' || doc.test_type=='Duolingo'"
   },
   {
    "fieldname": "validity_until",
