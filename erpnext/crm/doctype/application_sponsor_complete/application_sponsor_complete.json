@@ -15,13 +15,13 @@
   "column_break_identity",
   "income_section",
   "income_support_documents",
-  "itr_table_pointer_note",
-  "form_16_table_pointer_note",
+  "itr_manager_html",
+  "form16_manager_html",
   "family_id_upload",
   "occupation_section",
   "occupation_documents_needed",
   "occupation_reason",
-  "occupation_table_pointer_note",
+  "occupation_manager_html",
   "funds_section",
   "funds_type",
   "if_fundtype_gpf",
@@ -79,7 +79,7 @@
    "fieldname": "sponsor_name",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Sponsor Name",
+   "label": "Sponsor Full Name",
    "reqd": 1
   },
   {
@@ -91,13 +91,14 @@
    "default": "0",
    "fieldname": "dob_matched_pc_ac",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "DOB on Passport & A/C Matched"
   },
   {
    "default": "0",
    "fieldname": "name_matched_ac_pc",
    "fieldtype": "Check",
-   "label": "Name Matched on A/C & Passport"
+   "label": "Sponsor Name Matched on A/C & Student Passport"
   },
   {
    "depends_on": "eval:doc.name_matched_ac_pc == 1",
@@ -122,22 +123,16 @@
    "options": "\nITRs\nForm 16\nFamily ID"
   },
   {
-   "bold": 1,
-   "default": "Add this sponsor's ITRs in the \"Sponsor ITRs\" table further down the Financials tab, tagging each row with this sponsor. DOB / name match and verification are recorded per ITR.",
    "depends_on": "eval:doc.income_support_documents == 'ITRs'",
-   "fieldname": "itr_table_pointer_note",
-   "fieldtype": "Small Text",
-   "label": "Where to add ITRs",
-   "read_only": 1
+   "fieldname": "itr_manager_html",
+   "fieldtype": "HTML",
+   "label": "ITRs for this Sponsor"
   },
   {
-   "bold": 1,
-   "default": "Add this sponsor's Form 16 records in the \"Sponsor Form 16\" table further down the Financials tab, tagging each row with this sponsor.",
    "depends_on": "eval:doc.income_support_documents == 'Form 16'",
-   "fieldname": "form_16_table_pointer_note",
-   "fieldtype": "Small Text",
-   "label": "Where to add Form 16",
-   "read_only": 1
+   "fieldname": "form16_manager_html",
+   "fieldtype": "HTML",
+   "label": "Form 16 for this Sponsor"
   },
   {
    "depends_on": "eval:doc.income_support_documents == 'Family ID'",
@@ -152,7 +147,7 @@
   },
   {
    "default": "0",
-   "description": "Checked = Yes. Not checked = No. If No, write the reason below.",
+   "description": "Checked = Yes. Not checked = No. If No, write the reason below. Add one or more occupations below when Yes.",
    "fieldname": "occupation_documents_needed",
    "fieldtype": "Check",
    "label": "Occupation Documents Needed"
@@ -164,13 +159,10 @@
    "label": "Reason"
   },
   {
-   "bold": 1,
-   "default": "Add this sponsor's occupations in the \"Sponsor Occupation Documents\" table further down the Financials tab, tagging each row with this sponsor. Add one row per occupation if the sponsor has more than one.",
    "depends_on": "eval:doc.occupation_documents_needed == 1",
-   "fieldname": "occupation_table_pointer_note",
-   "fieldtype": "Small Text",
-   "label": "Where to add Occupation Documents",
-   "read_only": 1
+   "fieldname": "occupation_manager_html",
+   "fieldtype": "HTML",
+   "label": "Occupations for this Sponsor"
   },
   {
    "fieldname": "funds_section",

@@ -1,0 +1,41 @@
+{
+ "actions": [],
+ "creation": "2026-08-27 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "sponsor_type",
+  "sponsor_name",
+  "combined_docs_pdf"
+ ],
+ "fields": [
+  {
+   "fieldname": "sponsor_type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Sponsor",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sponsor_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Sponsor Full Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "combined_docs_pdf",
+   "fieldtype": "Attach",
+   "in_list_view": 1,
+   "label": "Documents PDF (AC+PC+ITR+Occupation Proof+Others)"
+  }
+ ],
+ "istable": 1,
+ "modified": "2026-08-27 18:20:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Application Sponsor Docs PDF",
+ "owner": "Administrator",
+ "permissions": []
+}

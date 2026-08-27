@@ -6,6 +6,112 @@ function is_uk_country(country) {
 	return ["united kingdom", "uk", "great britain", "britain", "england"].includes(c);
 }
 
+function user_is_agent_only() {
+	const roles = frappe.user_roles || [];
+	const agent = ["Agent", "B2B Agent", "B2C Agent", "agents"].some((r) => roles.includes(r));
+	const staff = [
+		"System Manager",
+		"Administrator",
+		"CRM Admin",
+		"Team Lead",
+		"Team Executive",
+		"Admission 1",
+		"Admission 2",
+		"CRO",
+		"CRO Head",
+		"Country Head",
+	].some((r) => roles.includes(r));
+	return agent && !staff;
+}
+
+function show_agent_new_application_dialog() {
+	const d = new frappe.ui.Dialog({
+		title: __("New Application"),
+		fields: [
+			{
+				fieldname: "student",
+				fieldtype: "Link",
+				options: "Student",
+				label: __("Student Name"),
+				reqd: 1,
+				onchange() {
+					const student = d.get_value("student");
+					if (!student) {
+						d.set_value("student_id", "");
+						return;
+					}
+					d.set_value("student_id", student);
+					frappe.db.get_value("Student", student, ["destination_country", "first_name", "last_name"], (r) => {
+						if (r && r.destination_country && !d.get_value("destination_country")) {
+							d.set_value("destination_country", r.destination_country);
+						}
+					});
+				},
+			},
+			{
+				fieldname: "student_id",
+				fieldtype: "Data",
+				label: __("Student ID"),
+				read_only: 1,
+			},
+			{
+				fieldname: "destination_country",
+				fieldtype: "Link",
+				options: "Country",
+				label: __("Destination Country"),
+				reqd: 1,
+				get_query: () => ({
+					filters: { name: ["in", ["Australia", "United Kingdom"]] },
+				}),
+			},
+			{
+				fieldname: "preferred_university",
+				fieldtype: "Link",
+				options: "University",
+				label: __("University Name"),
+				reqd: 1,
+				onchange() {
+					d.set_value("course", "");
+				},
+			},
+			{
+				fieldname: "course",
+				fieldtype: "Link",
+				options: "Course",
+				label: __("Course Name"),
+				reqd: 1,
+				get_query() {
+					const uni = d.get_value("preferred_university");
+					return uni ? { filters: { university: uni } } : {};
+				},
+			},
+			{
+				fieldname: "intake",
+				fieldtype: "Date",
+				label: __("Intake"),
+				reqd: 1,
+			},
+		],
+		primary_action_label: __("Create Application"),
+		primary_action(values) {
+			d.hide();
+			frappe.call({
+				method: "erpnext.crm.doctype.application.application.create_agent_application",
+				args: values,
+				freeze: true,
+				freeze_message: __("Creating application…"),
+				callback(r) {
+					if (!r.message) {
+						return;
+					}
+					frappe.set_route("Form", r.message.doctype, r.message.name);
+				},
+			});
+		},
+	});
+	d.show();
+}
+
 function show_new_application_country_dialog() {
 	const d = new frappe.ui.Dialog({
 		title: __("New Application — Select Country"),
@@ -52,7 +158,11 @@ function show_new_application_country_dialog() {
 
 function bind_new_application_action(listview) {
 	listview.page.set_primary_action(__("New Application"), () => {
-		show_new_application_country_dialog();
+		if (user_is_agent_only()) {
+			show_agent_new_application_dialog();
+		} else {
+			show_new_application_country_dialog();
+		}
 	});
 }
 

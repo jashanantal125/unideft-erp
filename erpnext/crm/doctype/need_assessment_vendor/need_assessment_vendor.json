@@ -11,6 +11,9 @@
   "options_provided_to_student",
   "student_confirmed_to_apply",
   "denial_reason",
+  "student_application_punched",
+  "application_when_can_apply",
+  "application_id",
   "university",
   "course",
   "assessment_status"
@@ -64,18 +67,43 @@
   },
   {
    "depends_on": "eval:doc.student_confirmed_to_apply == 'Yes'",
+   "fieldname": "student_application_punched",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Student Application Punched?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.student_confirmed_to_apply == 'Yes' && doc.student_application_punched == 'No'",
+   "fieldname": "application_when_can_apply",
+   "fieldtype": "Small Text",
+   "label": "Then When Can Apply?",
+   "mandatory_depends_on": "eval:doc.student_confirmed_to_apply == 'Yes' && doc.student_application_punched == 'No'"
+  },
+  {
+   "depends_on": "eval:doc.student_confirmed_to_apply == 'Yes' && doc.student_application_punched == 'Yes'",
+   "fieldname": "application_id",
+   "fieldtype": "Link",
+   "label": "Application ID",
+   "options": "Application",
+   "mandatory_depends_on": "eval:doc.student_confirmed_to_apply == 'Yes' && doc.student_application_punched == 'Yes'"
+  },
+  {
+   "depends_on": "eval:doc.student_confirmed_to_apply == 'Yes' && doc.student_application_punched == 'Yes'",
    "fieldname": "university",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "University Name",
-   "options": "University"
+   "options": "University",
+   "mandatory_depends_on": "eval:doc.student_confirmed_to_apply == 'Yes' && doc.student_application_punched == 'Yes'"
   },
   {
-   "depends_on": "eval:doc.student_confirmed_to_apply == 'Yes'",
+   "depends_on": "eval:doc.student_confirmed_to_apply == 'Yes' && doc.student_application_punched == 'Yes'",
    "fieldname": "course",
    "fieldtype": "Link",
    "label": "Course Name",
-   "options": "Course"
+   "options": "Course",
+   "mandatory_depends_on": "eval:doc.student_confirmed_to_apply == 'Yes' && doc.student_application_punched == 'Yes'"
   },
   {
    "default": "Open",
@@ -88,7 +116,7 @@
   }
  ],
  "istable": 1,
- "modified": "2026-07-31 12:00:00.000000",
+ "modified": "2026-08-27 18:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Need Assessment Vendor",
