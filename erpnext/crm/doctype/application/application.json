@@ -1038,7 +1038,7 @@
    "fieldname": "information_tab",
    "fieldtype": "Tab Break",
    "label": "Processing",
-   "depends_on": "eval:!doc.is_onshore_change && ((doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive')))"
+   "depends_on": "eval:!doc.is_onshore_change && ((doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head')))"
   },
   {
    "fieldname": "section_a_email",
@@ -1486,7 +1486,7 @@
    "fieldname": "offer_tab",
    "fieldtype": "Tab Break",
    "label": "Offer Letter",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive'))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head'))"
   },
   {
    "fieldname": "financial_started_section",
@@ -1999,7 +1999,7 @@
    "fieldname": "financials_tab",
    "fieldtype": "Tab Break",
    "label": "Financials",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive'))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head'))"
   },
   {
    "fieldname": "gs_submitted_section",
@@ -2497,7 +2497,7 @@
    "fieldname": "gs_tab",
    "fieldtype": "Tab Break",
    "label": "GS Submitted",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive'))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head'))"
   },
   {
    "fieldname": "gs_processing_section",
@@ -2655,7 +2655,7 @@
    "fieldname": "gs_approved_tab",
    "fieldtype": "Tab Break",
    "label": "GS Approved",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive'))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head'))"
   },
   {
    "fieldname": "gs_approved_section",
@@ -2891,7 +2891,7 @@
    "fieldname": "acceptance_tab",
    "fieldtype": "Tab Break",
    "label": "Acceptance",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive'))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head'))"
   },
   {
    "fieldname": "acceptance_before_coe_section",
@@ -3062,7 +3062,7 @@
    "fieldname": "coe_tab",
    "fieldtype": "Tab Break",
    "label": "eCOE",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive'))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head'))"
   },
   {
    "fieldname": "coe_section",
@@ -3297,7 +3297,7 @@
    "fieldname": "file_lodged_tab",
    "fieldtype": "Tab Break",
    "label": "File Lodged",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive'))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head'))"
   },
   {
    "fieldname": "file_lodged_section",
@@ -3417,7 +3417,7 @@
    "fieldname": "visa_tab",
    "fieldtype": "Tab Break",
    "label": "Visa",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_status == 'Visa Approved' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive')))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_status == 'Visa Approved' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head')))"
   },
   {
    "fieldname": "visa_section",
@@ -3462,7 +3462,7 @@
    "fieldname": "visa_refused_tab",
    "fieldtype": "Tab Break",
    "label": "Visa Refused",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_status == 'Visa Refused' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive')))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_status == 'Visa Refused' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head')))"
   },
   {
    "fieldname": "visa_refused_section",
@@ -3575,7 +3575,7 @@
    "fieldname": "enrollment_tab",
    "fieldtype": "Tab Break",
    "label": "Enrolled",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_status == 'Visa Approved' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive')))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_status == 'Visa Approved' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head')))"
   },
   {
    "fieldname": "enrolment_proof_upload",
@@ -3608,7 +3608,7 @@
    "fieldname": "on_shore_college_change_tab",
    "fieldtype": "Tab Break",
    "label": "On Shore College Change",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_status == 'Visa Approved' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive')))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_status == 'Visa Approved' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head')))"
   },
   {
    "fieldname": "on_shore_section",
@@ -3687,7 +3687,7 @@
    "fieldname": "refund_processing_tab",
    "fieldtype": "Tab Break",
    "label": "Refund Processing",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_status == 'Visa Refused' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive')))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_status == 'Visa Refused' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head')))"
   },
   {
    "fieldname": "refund_processing_section",
@@ -3746,7 +3746,7 @@
    "fieldname": "refunded_tab",
    "fieldtype": "Tab Break",
    "label": "Refunded",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_status == 'Visa Refused' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive')))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_status == 'Visa Refused' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head')))"
   },
   {
    "fieldname": "refunded_section",
@@ -3827,7 +3827,7 @@
    "fieldname": "closed_tab",
    "fieldtype": "Tab Break",
    "label": "Closed",
-   "depends_on": "eval:(doc.destination_country=='Australia') && ((doc.visa_status == 'Visa Refused' || doc.visa_status == 'Visa Approved') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive')))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && ((doc.visa_status == 'Visa Refused' || doc.visa_status == 'Visa Approved') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head')))"
   },
   {
    "fieldname": "application_closed",

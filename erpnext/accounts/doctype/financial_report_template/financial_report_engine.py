@@ -1775,20 +1775,54 @@ class GrowthViewTransformer:
 			if row_data.get("is_blank_line"):
 				continue
 
-			transformed_values = {}
-			for i in range(len(self.period_list)):
-				current_period = self.period_list[i]["key"]
+			# Horizontal / columnar templates nest period values per segment
+			# (e.g. segment_0_mar_2027) instead of top-level mar_2027.
+			if row_data.get("segment_values"):
+				self._transform_segmented_row(row_data)
+				continue
 
-				current_value = row_data[current_period]
-				previous_value = row_data[self.period_list[i - 1]["key"]] if i != 0 else 0
+			if not self._has_period_keys(row_data):
+				continue
 
-				if i == 0:
-					transformed_values[current_period] = current_value
-				else:
-					growth_percent = self._calculate_growth(previous_value, current_value)
-					transformed_values[current_period] = growth_percent
+			self._apply_growth(row_data, prefix="")
 
-			row_data.update(transformed_values)
+	def _has_period_keys(self, row_data: dict) -> bool:
+		return any(period["key"] in row_data for period in self.period_list)
+
+	def _transform_segmented_row(self, row_data: dict) -> None:
+		for segment_id, segment_values in (row_data.get("segment_values") or {}).items():
+			if not isinstance(segment_values, dict) or segment_values.get("is_blank_line"):
+				continue
+			self._apply_growth(segment_values, prefix=f"{segment_id}_")
+			# Keep flat segment-prefixed keys on the row in sync
+			for period in self.period_list:
+				key = period["key"]
+				flat_key = f"{segment_id}_{key}"
+				if key in segment_values:
+					row_data[flat_key] = segment_values[key]
+
+	def _apply_growth(self, values: dict, prefix: str = "") -> None:
+		transformed_values = {}
+		for i in range(len(self.period_list)):
+			current_period = self.period_list[i]["key"]
+			current_key = f"{prefix}{current_period}" if prefix else current_period
+
+			# Missing period columns (headers / blank / mismatched keys) — skip safely
+			if current_period not in values and current_key not in values:
+				continue
+
+			current_value = values.get(current_period, values.get(current_key, 0))
+			if i == 0:
+				transformed_values[current_period] = current_value
+			else:
+				prev_period = self.period_list[i - 1]["key"]
+				prev_key = f"{prefix}{prev_period}" if prefix else prev_period
+				previous_value = values.get(prev_period, values.get(prev_key, 0)) or 0
+				transformed_values[current_period] = self._calculate_growth(
+					previous_value, current_value
+				)
+
+		values.update(transformed_values)
 
 	def _calculate_growth(self, previous_value: float, current_value: float) -> float | None:
 		if current_value is None:

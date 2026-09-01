@@ -1779,6 +1779,7 @@ frappe.ui.form.on("Application", {
 		hide_accounts_connections_on_application(frm);
 		add_accounts_workflow_buttons(frm);
 		apply_agent_application_tabs(frm);
+		apply_admission_stage_tabs(frm);
 		apply_cro_only_fields(frm);
 		hide_legacy_sponsor_subtables(frm);
 		patch_form_view_tables(frm);
@@ -4857,6 +4858,68 @@ function user_is_cro_app() {
 	return (frappe.user_roles || []).some((r) =>
 		["CRO", "CRO Head", "System Manager", "Administrator", "CRM Admin"].includes(r)
 	);
+}
+
+function staff_can_see_stage_tabs() {
+	return (frappe.user_roles || []).some((r) =>
+		[
+			"System Manager",
+			"Administrator",
+			"CRM Admin",
+			"Team Lead",
+			"Team Executive",
+			"Admission 1",
+			"Admission 2",
+			"Country Head",
+			"CRO",
+			"CRO Head",
+		].includes(r)
+	);
+}
+
+/**
+ * Processing / later AU tabs were historically gated to Team Lead / Executive only.
+ * Admission 1 / Admission 2 must see them. Override depends_on so Custom Field cache
+ * cannot keep the old restriction.
+ */
+function apply_admission_stage_tabs(frm) {
+	if (user_is_agent_only_app() || !staff_can_see_stage_tabs()) {
+		return;
+	}
+	if (!is_au_destination(frm.doc.destination_country)) {
+		return;
+	}
+
+	// Drop the old Team Lead/Executive-only role gate; keep country / visa rules.
+	const tab_depends = {
+		information_tab: "eval:!doc.is_onshore_change && doc.destination_country=='Australia'",
+		submitted_tab: "eval:!doc.is_onshore_change && doc.destination_country=='Australia'",
+		offer_tab: "eval:doc.destination_country=='Australia'",
+		financials_tab: "eval:doc.destination_country=='Australia'",
+		gs_tab: "eval:doc.destination_country=='Australia'",
+		gs_approved_tab: "eval:doc.destination_country=='Australia'",
+		acceptance_tab: "eval:doc.destination_country=='Australia'",
+		coe_tab: "eval:doc.destination_country=='Australia'",
+		file_lodged_tab: "eval:doc.destination_country=='Australia'",
+		visa_tab: "eval:doc.destination_country=='Australia' && doc.visa_status == 'Visa Approved'",
+		enrollment_tab: "eval:doc.destination_country=='Australia' && doc.visa_status == 'Visa Approved'",
+		on_shore_college_change_tab:
+			"eval:doc.destination_country=='Australia' && doc.visa_status == 'Visa Approved'",
+		visa_refused_tab: "eval:doc.destination_country=='Australia' && doc.visa_status == 'Visa Refused'",
+		refund_processing_tab:
+			"eval:doc.destination_country=='Australia' && doc.visa_status == 'Visa Refused'",
+		refunded_tab: "eval:doc.destination_country=='Australia' && doc.visa_status == 'Visa Refused'",
+		closed_tab:
+			"eval:doc.destination_country=='Australia' && (doc.visa_status == 'Visa Refused' || doc.visa_status == 'Visa Approved')",
+	};
+
+	Object.keys(tab_depends).forEach((tab) => {
+		if (!frm.fields_dict[tab]) {
+			return;
+		}
+		frm.set_df_property(tab, "depends_on", tab_depends[tab]);
+		frm.set_df_property(tab, "hidden", 0);
+	});
 }
 
 /** Agents only see the Details tab after create. */
