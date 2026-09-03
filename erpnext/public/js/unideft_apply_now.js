@@ -46,48 +46,69 @@ unideft.apply.user_is_agent_only = function () {
  * each relevant change.
  */
 function toggle_conditional_fields(dialog) {
-	const v = dialog.get_values(true) || {};
-	const is_australia = v.destination_country === "Australia";
-
-	// Study Gap → duration, and the Accepted / Not Accepted note (Details tab:
-	// Below 1 Year and Below 2 Years are Accepted, Above 2 Years is not).
-	const gap_yes = v.study_gap === "Yes";
-	dialog.set_df_property("gap_duration", "hidden", gap_yes ? 0 : 1);
-	dialog.set_df_property("gap_duration", "reqd", gap_yes ? 1 : 0);
-	if (!gap_yes) {
-		dialog.set_value("gap_duration", "");
+	// Re-entrancy guard. Every field cleared below belongs to a field whose own
+	// onchange calls back into here, so an unguarded set_value() recurses until
+	// the tab locks up - which it did the moment the dialog opened, because
+	// Study Gap starts empty and immediately tried to clear the duration.
+	if (dialog.__toggling) {
+		return;
 	}
+	dialog.__toggling = true;
 
-	const status_field = dialog.get_field("gap_duration_status_html");
-	if (status_field) {
-		let html = "";
-		if (gap_yes && ["Below 1 Year", "Below 2 Years"].includes(v.gap_duration)) {
-			html = `<div class="text-muted" style="margin-bottom:10px;">
-				<b style="color:#2A7D34;">${__("Accepted")}</b></div>`;
-		} else if (gap_yes && v.gap_duration === "Above 2 Years") {
-			html = `<div class="text-muted" style="margin-bottom:10px;">
-				<b style="color:#B33;">${__("Not Accepted")}</b></div>`;
+	try {
+		const v = dialog.get_values(true) || {};
+		const is_australia = v.destination_country === "Australia";
+
+		// Only ever write when there is actually something to clear, so we do
+		// not fire change events for no reason.
+		const clear = (fieldname) => {
+			if (v[fieldname]) {
+				dialog.set_value(fieldname, "");
+			}
+		};
+
+		// Study Gap → duration, and the Accepted / Not Accepted note (Details
+		// tab: Below 1 Year and Below 2 Years are Accepted, Above 2 Years not).
+		const gap_yes = v.study_gap === "Yes";
+		dialog.set_df_property("gap_duration", "hidden", gap_yes ? 0 : 1);
+		dialog.set_df_property("gap_duration", "reqd", gap_yes ? 1 : 0);
+		if (!gap_yes) {
+			clear("gap_duration");
 		}
-		status_field.$wrapper.html(html);
-	}
 
-	// Visa refusal is an Australia-only question, with its own cascade.
-	dialog.set_df_property("any_visa_refused", "hidden", is_australia ? 0 : 1);
-	dialog.set_df_property("any_visa_refused", "reqd", is_australia ? 1 : 0);
-	if (!is_australia) {
-		dialog.set_value("any_visa_refused", "");
-	}
+		const status_field = dialog.get_field("gap_duration_status_html");
+		if (status_field && status_field.$wrapper) {
+			let html = "";
+			if (gap_yes && ["Below 1 Year", "Below 2 Years"].includes(v.gap_duration)) {
+				html = `<div class="text-muted" style="margin-bottom:10px;">
+					<b style="color:#2A7D34;">${__("Accepted")}</b></div>`;
+			} else if (gap_yes && v.gap_duration === "Above 2 Years") {
+				html = `<div class="text-muted" style="margin-bottom:10px;">
+					<b style="color:#B33;">${__("Not Accepted")}</b></div>`;
+			}
+			status_field.$wrapper.html(html);
+		}
 
-	const refused = is_australia && v.any_visa_refused === "Yes";
-	dialog.set_df_property("visa_refused_country", "hidden", refused ? 0 : 1);
-	if (!refused) {
-		dialog.set_value("visa_refused_country", "");
-	}
+		// Visa refusal is an Australia-only question, with its own cascade.
+		dialog.set_df_property("any_visa_refused", "hidden", is_australia ? 0 : 1);
+		dialog.set_df_property("any_visa_refused", "reqd", is_australia ? 1 : 0);
+		if (!is_australia) {
+			clear("any_visa_refused");
+		}
 
-	const show_type = refused && !!v.visa_refused_country;
-	dialog.set_df_property("visa_refused_type", "hidden", show_type ? 0 : 1);
-	if (!show_type) {
-		dialog.set_value("visa_refused_type", "");
+		const refused = is_australia && v.any_visa_refused === "Yes";
+		dialog.set_df_property("visa_refused_country", "hidden", refused ? 0 : 1);
+		if (!refused) {
+			clear("visa_refused_country");
+		}
+
+		const show_type = refused && !!v.visa_refused_country;
+		dialog.set_df_property("visa_refused_type", "hidden", show_type ? 0 : 1);
+		if (!show_type) {
+			clear("visa_refused_type");
+		}
+	} finally {
+		dialog.__toggling = false;
 	}
 }
 
