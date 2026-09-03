@@ -96,7 +96,9 @@ function maybe_redirect_agent_to_card_view(listview) {
 		opted_out = false;
 	}
 	if (opted_out) {
-		add_back_to_card_view_hint(listview);
+		// They chose List View - respect it. The "Card View" button in onload is
+		// already the way back (it clears this flag too), so there is nothing
+		// extra to add here.
 		return;
 	}
 
@@ -107,17 +109,6 @@ function maybe_redirect_agent_to_card_view(listview) {
 	}
 
 	frappe.set_route("applications_view");
-}
-
-function add_back_to_card_view_hint(listview) {
-	listview.page.add_inner_button(__("Always Open Card View"), function () {
-		try {
-			localStorage.removeItem(AGENT_LIST_VIEW_OPT_OUT);
-		} catch (e) {
-			// nothing to clear
-		}
-		frappe.set_route("applications_view");
-	});
 }
 
 // A2 - admissions only ever receive applications, they never open a new one.

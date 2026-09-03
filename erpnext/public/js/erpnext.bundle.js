@@ -37,5 +37,10 @@ import "./utils/demo.js";
 import "./financial_statements.js";
 import "./sales_trends_filters.js";
 import "./purchase_trends_filters.js";
+// Bundled rather than listed in app_include_js: only ".bundle." paths get a
+// version hash from frappe's bundled_asset(), so a plain /assets/... entry is
+// cached by the browser indefinitely and edits never reach an already-open
+// session.
+import "./unideft_apply_now.js";
 
 // import { sum } from 'frappe/public/utils/util.js'
