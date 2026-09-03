@@ -412,10 +412,8 @@ class Application(Document):
 		destination_country: DF.Link
 		dob: DF.Date
 		documents_10th_to_12th: DF.Table[ApplicationDocuments10thTo12th]
-		documents_not_accepted_alert: DF.Text | None
+		documents_combined_pdf: DF.Attach | None
 		documents_passport_application_form_sop: DF.Table[studentdocuments]
-		documents_verified: DF.Check
-		documents_verified_pdf: DF.Table[studentdocuments]
 		employee_code: DF.Text | None
 		employee_name: DF.Text | None
 		employee_position: DF.Text | None
@@ -1291,6 +1289,7 @@ def create_application_for_other_country(source_name, destination_country):
 
 APPLICATION_ATTACH_STAGE_MAP = {
 	"school_docs_pdf": "Processing — Academics",
+	"documents_combined_pdf": "Processing — Academics",
 	"passport_upload": "Processing — Passport",
 	"application_form_1_upload": "Processing — Applications",
 	"application_form_2_upload": "Processing — Applications",
@@ -1335,6 +1334,9 @@ APPLICATION_ATTACH_STAGE_MAP = {
 # becomes "upload_document" on parent — map by parentfield instead.
 APPLICATION_CHILD_TABLE_STAGE_MAP = {
 	"documents_10th_to_12th": "Processing — Academics",
+	# documents_verified_pdf is no longer on the form (D5 replaced it with the
+	# single documents_combined_pdf attach), but rows written before that change
+	# still need to resolve to a stage.
 	"documents_verified_pdf": "Processing — Academics",
 	"graduation_verification_documents": "Processing — Academics",
 	"study_gap_proof_list": "Processing — Study Gap",

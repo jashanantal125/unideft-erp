@@ -599,27 +599,50 @@ function createApplicationCard(app) {
 	return card;
 }
 
-function createTimelineContent(app) {
-	// All statuses from Application doctype status field in order
-	const allStatuses = [
-		'Pending',
-		'Processing',
-		'Offer Letter Received',
-		'Financial',
-		'GTE Processing',
-		'GTE Approved',
-		'Acceptance',
-		'COE',
-		'File Lodged',
-		'Visa',
-		'Enrollment',
-		'On Shore College change',
-		'Visa Refused',
-		'Closed'
-	];
+// The main progression, in the exact wording of the Application status field.
+// This list previously said "GTE Processing" / "GTE Approved" and omitted
+// Submitted and Completed, so indexOf() returned -1 for those real statuses and
+// the whole timeline rendered as untouched.
+const MAIN_STAGES = [
+	'Pending',
+	'Processing',
+	'Submitted',
+	'Offer Letter Received',
+	'Financial',
+	'GS Processing',
+	'GS Approved',
+	'Acceptance',
+	'COE',
+	'File Lodged',
+	'Visa',
+	'Enrollment',
+	'Completed'
+];
 
+// Statuses that sit off the main track still need to resolve to a point on it,
+// otherwise the card shows no progress at all.
+const STATUS_TRACK_ALIASES = {
+	'eCOE': 'COE',
+	'Visa Refused': 'File Lodged',
+	'On Shore College change': 'Enrollment',
+	'Refund': 'Enrollment',
+	'Refunded': 'Completed',
+	'Closed': 'Completed'
+};
+
+function resolveStageIndex(status) {
+	const direct = MAIN_STAGES.indexOf(status);
+	if (direct !== -1) {
+		return direct;
+	}
+	const alias = STATUS_TRACK_ALIASES[status];
+	return alias ? MAIN_STAGES.indexOf(alias) : -1;
+}
+
+function createTimelineContent(app) {
+	const allStatuses = MAIN_STAGES;
 	const currentStatus = app.status || 'Pending';
-	const currentStatusIndex = allStatuses.indexOf(currentStatus);
+	const currentStatusIndex = resolveStageIndex(currentStatus);
 
 	// Generate timeline stages from all statuses
 	const timelineStages = allStatuses.map((status, index) => {
@@ -657,14 +680,19 @@ function createTimelineContent(app) {
 	timelineStages.forEach((stage, index) => {
 		const isCompleted = stage.completed;
 		const isLast = index === timelineStages.length - 1;
-		// Force abbreviation - use code only, never label
+		const isCurrent = index === currentStatusIndex;
 		const abbreviation = stage.code ? String(stage.code) : getStatusCode(stage.label);
 
+		// D2 - an abbreviation on its own is unreadable. Every node carries the
+		// full stage name as a tooltip, and the stage the application is
+		// actually on is spelled out underneath so it reads at a glance.
 		timelineHTML += `
-			<div class="timeline-node-wrapper">
-				<div class="timeline-node ${isCompleted ? 'completed' : 'pending'}">
+			<div class="timeline-node-wrapper${isCurrent ? ' is-current' : ''}">
+				<div class="timeline-node ${isCompleted ? 'completed' : 'pending'}${isCurrent ? ' current' : ''}"
+					title="${escapeHtml(stage.label)}" aria-label="${escapeHtml(stage.label)}">
 					<span class="node-code">${escapeHtml(abbreviation)}</span>
 				</div>
+				${isCurrent ? `<div class="timeline-current-label">${escapeHtml(stage.label)}</div>` : ''}
 				<div class="timeline-actual-date">${stage.actualDate || '--'}</div>
 				${!isLast ? `<div class="timeline-connector ${isCompleted ? 'completed' : 'pending'}"></div>` : ''}
 			</div>
@@ -682,8 +710,13 @@ function getStatusCode(status) {
 		'Processing': 'PR',
 		'Offer Letter Received': 'OLR',
 		'Financial': 'F',
-		'GTE Processing': 'GTE',
-		'GTE Approved': 'GTEA',
+		'GS Processing': 'GSP',
+		'GS Approved': 'GSA',
+		'Submitted': 'SUB',
+		'Completed': 'DON',
+		'eCOE': 'COE',
+		'Refund': 'RFD',
+		'Refunded': 'RFN',
 		'Acceptance': 'A',
 		'COE': 'COE',
 		'File Lodged': 'FL',

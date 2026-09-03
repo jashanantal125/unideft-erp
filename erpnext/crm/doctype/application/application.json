@@ -93,9 +93,7 @@
   "login_contact_no",
   "section_b_documents",
   "documents_10th_to_12th",
-  "documents_verified",
-  "documents_verified_pdf",
-  "documents_not_accepted_alert",
+  "documents_combined_pdf",
   "graduation_verification_documents",
   "school_digi_locker_id",
   "school_digi_locker_password",
@@ -1118,27 +1116,11 @@
    "depends_on": "eval:doc.higher_education == '12th pass'"
   },
   {
-   "fieldname": "documents_verified",
-   "fieldtype": "Check",
-   "label": "Documents Verified",
-   "default": "0",
-   "depends_on": "eval:doc.higher_education == '12th pass'"
-  },
-  {
-   "fieldname": "documents_verified_pdf",
-   "fieldtype": "Table",
-   "label": "Upload in Single PDF",
-   "options": "student documents",
-   "depends_on": "eval:doc.documents_verified == 1 && doc.higher_education == '12th pass'"
-  },
-  {
-   "fieldname": "documents_not_accepted_alert",
-   "fieldtype": "Text",
-   "label": "Status",
-   "default": "\u26a0\ufe0f NOT ACCEPTED - Documents need to be verified",
-   "depends_on": "eval:doc.documents_verified == 0 && doc.higher_education == '12th pass'",
-   "read_only": 1,
-   "bold": 1
+   "fieldname": "documents_combined_pdf",
+   "fieldtype": "Attach",
+   "label": "Upload PDF",
+   "depends_on": "eval:doc.higher_education == '12th pass'",
+   "description": "One combined PDF for the whole document set. Verification is tracked per row in the table above."
   },
   {
    "fieldname": "graduation_verification_documents",

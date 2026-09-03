@@ -93,6 +93,13 @@ frappe.pages['applications_view'].on_page_load = function (wrapper) {
 
     // Add "Back to List View" button
     page.add_inner_button('Back to List View', () => {
+        // D2.1 - agents default into Card View. Choosing List View here is an
+        // explicit opt-out, so record it or the list would bounce straight back.
+        try {
+            localStorage.setItem('unideft:application_list_view_preferred', '1');
+        } catch (e) {
+            // storage unavailable - the list will simply redirect again
+        }
         frappe.set_route('List', 'Application');
     });
 
@@ -758,27 +765,50 @@ function createApplicationCard(app) {
     return card;
 }
 
-function createTimelineContent(app) {
-    // All statuses from Application doctype status field in order
-    const allStatuses = [
-        'Pending',
-        'Processing',
-        'Offer Letter Received',
-        'Financial',
-        'GTE Processing',
-        'GTE Approved',
-        'Acceptance',
-        'COE',
-        'File Lodged',
-        'Visa',
-        'Enrollment',
-        'On Shore College change',
-        'Visa Refused',
-        'Closed'
-    ];
+// The main progression, in the exact wording of the Application status field.
+// This list previously said "GTE Processing" / "GTE Approved" and omitted
+// Submitted and Completed, so indexOf() returned -1 for those real statuses and
+// the whole timeline rendered as untouched.
+const MAIN_STAGES = [
+    'Pending',
+    'Processing',
+    'Submitted',
+    'Offer Letter Received',
+    'Financial',
+    'GS Processing',
+    'GS Approved',
+    'Acceptance',
+    'COE',
+    'File Lodged',
+    'Visa',
+    'Enrollment',
+    'Completed'
+];
 
+// Statuses that sit off the main track still need to resolve to a point on it,
+// otherwise the card shows no progress at all.
+const STATUS_TRACK_ALIASES = {
+    'eCOE': 'COE',
+    'Visa Refused': 'File Lodged',
+    'On Shore College change': 'Enrollment',
+    'Refund': 'Enrollment',
+    'Refunded': 'Completed',
+    'Closed': 'Completed'
+};
+
+function resolveStageIndex(status) {
+    const direct = MAIN_STAGES.indexOf(status);
+    if (direct !== -1) {
+        return direct;
+    }
+    const alias = STATUS_TRACK_ALIASES[status];
+    return alias ? MAIN_STAGES.indexOf(alias) : -1;
+}
+
+function createTimelineContent(app) {
+    const allStatuses = MAIN_STAGES;
     const currentStatus = app.status || 'Pending';
-    const currentStatusIndex = allStatuses.indexOf(currentStatus);
+    const currentStatusIndex = resolveStageIndex(currentStatus);
 
     // Generate timeline stages from all statuses
     const timelineStages = allStatuses.map((status, index) => {
@@ -816,14 +846,19 @@ function createTimelineContent(app) {
     timelineStages.forEach((stage, index) => {
         const isCompleted = stage.completed;
         const isLast = index === timelineStages.length - 1;
-        // Force abbreviation - use code only, never label
+        const isCurrent = index === currentStatusIndex;
         const abbreviation = stage.code ? String(stage.code) : getStatusCode(stage.label);
 
+        // D2 - an abbreviation on its own is unreadable. Every node carries the
+        // full stage name as a tooltip, and the stage the application is
+        // actually on is spelled out underneath so it reads at a glance.
         timelineHTML += `
-			<div class="timeline-node-wrapper">
-				<div class="timeline-node ${isCompleted ? 'completed' : 'pending'}">
+			<div class="timeline-node-wrapper${isCurrent ? ' is-current' : ''}">
+				<div class="timeline-node ${isCompleted ? 'completed' : 'pending'}${isCurrent ? ' current' : ''}"
+					title="${escapeHtml(stage.label)}" aria-label="${escapeHtml(stage.label)}">
 					<span class="node-code">${escapeHtml(abbreviation)}</span>
 				</div>
+				${isCurrent ? `<div class="timeline-current-label">${escapeHtml(stage.label)}</div>` : ''}
 				<div class="timeline-actual-date">${stage.actualDate || '--'}</div>
 				${!isLast ? `<div class="timeline-connector ${isCompleted ? 'completed' : 'pending'}"></div>` : ''}
 			</div>
@@ -835,22 +870,28 @@ function createTimelineContent(app) {
 }
 
 function getStatusCode(status) {
-    // Generate short codes for statuses
+    // Short codes for the timeline nodes. Every one of these is paired with a
+    // title tooltip carrying the full stage name.
     const codeMap = {
-        'Pending': 'P',
-        'Processing': 'PR',
+        'Pending': 'PEN',
+        'Processing': 'PRO',
+        'Submitted': 'SUB',
         'Offer Letter Received': 'OLR',
-        'Financial': 'F',
-        'GTE Processing': 'GTE',
-        'GTE Approved': 'GTEA',
-        'Acceptance': 'A',
+        'Financial': 'FIN',
+        'GS Processing': 'GSP',
+        'GS Approved': 'GSA',
+        'Acceptance': 'ACC',
         'COE': 'COE',
+        'eCOE': 'COE',
         'File Lodged': 'FL',
-        'Visa': 'V',
-        'Enrollment': 'E',
+        'Visa': 'VIS',
+        'Enrollment': 'ENR',
+        'Completed': 'DON',
         'On Shore College change': 'OSC',
+        'Refund': 'RFD',
+        'Refunded': 'RFN',
         'Visa Refused': 'VR',
-        'Closed': 'C'
+        'Closed': 'CLO'
     };
 
     return codeMap[status] || status.substring(0, 3).toUpperCase();
