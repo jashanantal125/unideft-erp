@@ -475,3 +475,4 @@ erpnext.patches.v16_0.grant_student_access_for_cro_admission
 erpnext.patches.v16_0.retire_application_workflow_and_client_script
 erpnext.patches.v16_0.restrict_application_create_for_admissions
 erpnext.patches.v16_0.lock_application_status_field
+erpnext.patches.v16_0.backfill_student_id_field

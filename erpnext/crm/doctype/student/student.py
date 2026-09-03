@@ -230,11 +230,22 @@ class Student(Document):
 		if user_is_agent():
 			self._apply_agent_defaults()
 
+	def after_insert(self):
+		# `name` is only assigned once the row is written, so validate() cannot
+		# fill student_id on the very first save.
+		self.db_set("student_id", self.name, update_modified=False)
+
 	def validate(self):
 		if user_is_agent():
 			self._apply_agent_defaults()
 			if not self.destination_country:
 				frappe.throw(frappe._("Please select Home Country"))
+
+		# B1 - agents need the Student ID as a list column. The list view shows
+		# `title`, so the STU- id was never visible; mirroring it into a real
+		# field makes it a sortable, filterable column in list and report view.
+		if not self.is_new():
+			self.student_id = self.name
 
 		# Set title field for display in Link dropdowns
 		if self.first_name:

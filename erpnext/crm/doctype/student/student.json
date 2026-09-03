@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "profile_details_tab",
+  "student_id",
   "first_name",
   "email",
   "mobile",
@@ -55,6 +56,16 @@
    "fieldname": "profile_details_tab",
    "fieldtype": "Tab Break",
    "label": "Profile Details"
+  },
+  {
+   "fieldname": "student_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Student ID",
+   "read_only": 1,
+   "no_copy": 1,
+   "search_index": 1
   },
   {
    "fieldname": "first_name",
