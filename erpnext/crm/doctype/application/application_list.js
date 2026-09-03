@@ -156,7 +156,29 @@ function show_new_application_country_dialog() {
 	d.show();
 }
 
+// A2 - admissions only ever receive applications, they never open a new one.
+function user_is_admissions(roles) {
+	return ["Admission 1", "Admission 2"].some((r) => (roles || frappe.user_roles || []).includes(r));
+}
+
+function user_can_create_application() {
+	const roles = frappe.user_roles || [];
+	const privileged = ["System Manager", "Administrator", "CRM Admin"].some((r) =>
+		roles.includes(r)
+	);
+	if (privileged) {
+		return true;
+	}
+	return !user_is_admissions(roles);
+}
+
 function bind_new_application_action(listview) {
+	if (!user_can_create_application()) {
+		// Belt-and-braces with the Custom DocPerm change: clear the primary action
+		// so no "New Application" entry point is reachable from the list view.
+		listview.page.clear_primary_action();
+		return;
+	}
 	listview.page.set_primary_action(__("New Application"), () => {
 		if (user_is_agent_only()) {
 			show_agent_new_application_dialog();

@@ -13,6 +13,87 @@ def user_is_agent(user=None):
 	return bool(roles.intersection(AGENT_ROLES))
 
 
+# Roles that legitimately see every Student.
+UNRESTRICTED_ROLES = {
+	"System Manager",
+	"Administrator",
+	"CRM Admin",
+	"CRM Sales Staff",
+	"CRO",
+	"CRO Head",
+}
+
+
+def _agent_keys(user):
+	"""An agent may be identified by their User id or by their Agent record."""
+	keys = [user]
+	agent_name = frappe.db.get_value("Agent", {"user": user}, "name")
+	if agent_name:
+		keys.append(agent_name)
+	return keys
+
+
+def get_permission_query_conditions(user=None):
+	"""Restrict Student lists for agents (A1).
+
+	Student.get_list_query already scopes the desk list view, but that hook does
+	not cover report view, link-field lookups or the get_list API - an agent
+	could still reach another agent's student through those. This closes the
+	gap everywhere by mirroring the same rule.
+
+	Student has no dedicated `agent` link field, so the creator is identified by
+	`owner`, plus any student reachable through an Application carrying this
+	agent - which is what keeps students created *for* an agent by a CRO
+	visible to them.
+	"""
+	user = user or frappe.session.user
+	if user == "Administrator":
+		return ""
+
+	roles = set(frappe.get_roles(user))
+	if roles & UNRESTRICTED_ROLES:
+		return ""
+
+	if not user_is_agent(user):
+		return ""
+
+	keys = ", ".join(frappe.db.escape(key) for key in _agent_keys(user))
+	escaped_user = frappe.db.escape(user)
+
+	return f"""(
+		`tabStudent`.`owner` = {escaped_user}
+		or `tabStudent`.`name` in (
+			select `tabApplication`.`student` from `tabApplication`
+			where `tabApplication`.`agent` in ({keys})
+			and `tabApplication`.`student` is not null
+		)
+	)"""
+
+
+def has_permission(doc, ptype=None, user=None):
+	"""Block an agent from opening another agent's Student by direct URL."""
+	user = user or frappe.session.user
+	if user == "Administrator":
+		return True
+
+	roles = set(frappe.get_roles(user))
+	if roles & UNRESTRICTED_ROLES:
+		return True
+
+	if not user_is_agent(user):
+		return True
+
+	if doc.owner == user:
+		return True
+
+	return bool(
+		frappe.db.exists(
+			"Application",
+			{"student": doc.name, "agent": ["in", _agent_keys(user)]},
+		)
+	)
+
+
 class Student(Document):
 	@staticmethod
 	def get_list_query(query):

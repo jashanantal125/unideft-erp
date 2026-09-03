@@ -472,3 +472,6 @@ erpnext.patches.v16_0.cleanup_sponsor_complete_select_values
 erpnext.patches.v16_0.grant_accounts_read_on_application_student
 erpnext.patches.v16_0.grant_university_write_for_admissions
 erpnext.patches.v16_0.grant_student_access_for_cro_admission
+erpnext.patches.v16_0.retire_application_workflow_and_client_script
+erpnext.patches.v16_0.restrict_application_create_for_admissions
+erpnext.patches.v16_0.lock_application_status_field

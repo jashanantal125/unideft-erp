@@ -241,6 +241,36 @@ function advance_status_if_forward(frm, next_status) {
 	return Promise.resolve();
 }
 
+function save_application_if_needed(frm) {
+	if (!frm || frm.doc.__islocal || !frm.is_dirty()) {
+		return Promise.resolve();
+	}
+	return frm.save();
+}
+
+// Shared stage-gate transition. Every "Yes" stage gate does the same three things
+// in a strict order: advance status forward, persist, and only then move tabs.
+// Previously each gate switched tabs on a 250ms timer without ever saving, so the
+// stage was lost on reload and the incoming tab could render before the save
+// settled — which is what made the next tab's fields appear inside the current one.
+function complete_stage_and_advance(frm, { next_status, tab_fieldname, tab_label, message }) {
+	return advance_status_if_forward(frm, next_status)
+		.then(() => save_application_if_needed(frm))
+		.then(() => {
+			activate_application_tab(frm, tab_fieldname, tab_label);
+			if (message) {
+				frappe.show_alert({ message: __(message), indicator: "green" }, 4);
+			}
+		})
+		.catch((error) => {
+			frappe.show_alert(
+				{ message: __("Could not save — stage not advanced"), indicator: "red" },
+				5
+			);
+			throw error;
+		});
+}
+
 function setup_processing_agent_query(frm) {
 	frm.set_query("processing_agent_vendor", "processing_agent_details", () => ({
 		query: "erpnext.crm.doctype.application.application.get_processing_vendor_options",
@@ -2102,20 +2132,14 @@ frappe.ui.form.on("Application", {
 				frm.set_value("submitted_date", frappe.datetime.get_today());
 			}
 			frm.set_value("expected_application_submission_date", "");
-			if (["Pending", "Processing"].includes(frm.doc.status)) {
-				frm.set_value("status", "Submitted");
-			}
 			deactivate_reminders_matching(frm, "Application Submission", {
 				message: __("Application submission reminder deactivated"),
 			});
-			setTimeout(() => {
-				if (typeof activate_application_tab === "function") {
-					activate_application_tab(frm, "submitted_tab", "Submitted");
-				}
-			}, 250);
-			frappe.show_alert({
-				message: __("Application moved to Submitted stage"),
-				indicator: "green",
+			complete_stage_and_advance(frm, {
+				next_status: "Submitted",
+				tab_fieldname: "submitted_tab",
+				tab_label: "Submitted",
+				message: "Application moved to Submitted stage",
 			});
 		} else if (frm.doc.application_submitted === "No") {
 			if (["Pending", "Submitted"].includes(frm.doc.status)) {
@@ -2736,24 +2760,12 @@ frappe.ui.form.on("Application", {
 	financial_started(frm) {
 		if (frm.doc.financial_started === "Yes") {
 			frm.set_value("offer_letter_stage_completed", 1);
-			const move_to_financials = () => {
-				setTimeout(() => {
-					activate_application_tab(frm, "financials_tab", "Financials");
-				}, 250);
-			};
-			const early = ["Pending", "Processing", "Submitted", "Offer Letter Received", ""];
-			if (early.includes(frm.doc.status || "")) {
-				frm.set_value("status", "Financial").then(move_to_financials);
-			} else {
-				move_to_financials();
-			}
-			frappe.show_alert(
-				{
-					message: __("Offer Letter stage completed — moved to Financials"),
-					indicator: "green",
-				},
-				4
-			);
+			complete_stage_and_advance(frm, {
+				next_status: "Financial",
+				tab_fieldname: "financials_tab",
+				tab_label: "Financials",
+				message: "Offer Letter stage completed — moved to Financials",
+			});
 		} else if (frm.doc.financial_started === "No") {
 			frm.set_value("offer_letter_stage_completed", 0);
 			if (frm.doc.name && !frm.doc.__islocal) {
@@ -2773,27 +2785,12 @@ frappe.ui.form.on("Application", {
 		if (frm.doc.gs_submitted === "Yes") {
 			clear_gs_submitted_no_branch(frm);
 			frm.set_value("financial_stage_completed", "✓ Financial stage completed → Moved to GS Processing");
-			const move_to_gs_tab = () => {
-				setTimeout(() => {
-					activate_application_tab(frm, "gs_tab", "GS Submitted");
-				}, 250);
-			};
-			if (
-				["Financial", "Offer Letter Received", "Submitted", "Pending", "Processing"].includes(
-					frm.doc.status
-				)
-			) {
-				frm.set_value("status", "GS Processing").then(move_to_gs_tab);
-			} else {
-				move_to_gs_tab();
-			}
-			frappe.show_alert(
-				{
-					message: __("Financial stage completed — moved to GS Submitted"),
-					indicator: "green",
-				},
-				4
-			);
+			complete_stage_and_advance(frm, {
+				next_status: "GS Processing",
+				tab_fieldname: "gs_tab",
+				tab_label: "GS Submitted",
+				message: "Financial stage completed — moved to GS Submitted",
+			});
 		} else if (frm.doc.gs_submitted === "No") {
 			frm.set_value("financial_stage_completed", "");
 			// Reminder popup (date / time / remarks) — also keep "When will financials be completed?"
@@ -3707,8 +3704,11 @@ frappe.ui.form.on("Application", {
 			deactivate_reminders_matching(frm, COE_RECEIPT_REMINDERS, {
 				message: __("COE receipt reminders deactivated"),
 			});
-			advance_status_if_forward(frm, resolve_coe_status_option(frm)).then(() => {
-				activate_application_tab(frm, "coe_tab", "eCOE");
+			complete_stage_and_advance(frm, {
+				next_status: resolve_coe_status_option(frm),
+				tab_fieldname: "coe_tab",
+				tab_label: "eCOE",
+				message: "Moved to eCOE stage",
 			});
 			return;
 		}
@@ -3843,13 +3843,12 @@ frappe.ui.form.on("Application", {
 			frm.set_value("gs_any_requirement", "");
 			frm.set_value("requirement_details", "");
 			frm.set_value("requirements_completed", "");
-			if (["GS Processing", "Financial"].includes(frm.doc.status)) {
-				frm.set_value("status", "GS Approved");
-			}
-			frappe.show_alert(
-				{ message: __("Moved to GS Approved stage"), indicator: "green" },
-				4
-			);
+			complete_stage_and_advance(frm, {
+				next_status: "GS Approved",
+				tab_fieldname: "gs_approved_tab",
+				tab_label: "GS Approved",
+				message: "Moved to GS Approved stage",
+			});
 		} else if (frm.doc.gs_approved_check === "No") {
 			// keep requirement cascade available regardless of interview
 		}
@@ -4612,9 +4611,6 @@ frappe.ui.form.on("Application", {
 
 	acceptance_submitted(frm) {
 		if (frm.doc.acceptance_submitted === "Yes") {
-			advance_status_if_forward(frm, "Acceptance").then(() => {
-				activate_application_tab(frm, "acceptance_tab", "Acceptance");
-			});
 			[
 				"acceptance_pending_conditions",
 				"acceptance_condition_details",
@@ -4622,6 +4618,12 @@ frappe.ui.form.on("Application", {
 			].forEach((fieldname) => frm.set_value(fieldname, ""));
 			deactivate_reminders_matching(frm, ACCEPTANCE_SUBMISSION_REMINDERS, {
 				message: __("Acceptance submission reminders deactivated"),
+			});
+			complete_stage_and_advance(frm, {
+				next_status: "Acceptance",
+				tab_fieldname: "acceptance_tab",
+				tab_label: "Acceptance",
+				message: "Moved to Acceptance stage",
 			});
 		}
 	},
@@ -5016,11 +5018,13 @@ frappe.ui.form.on("Application", {
 
 	offer_letter_received(frm) {
 		if (frm.doc.offer_letter_received === "Yes") {
-			if (["Pending", "Processing", "Submitted"].includes(frm.doc.status || "")) {
-				frm.set_value("status", "Offer Letter Received");
-			}
 			deactivate_reminders_matching(frm, ["Offer Letter Received", "Follow up for Offer Letter"]);
-			activate_application_tab(frm, "offer_tab", "Offer Letter");
+			complete_stage_and_advance(frm, {
+				next_status: "Offer Letter Received",
+				tab_fieldname: "offer_tab",
+				tab_label: "Offer Letter",
+				message: "Moved to Offer Letter stage",
+			});
 		} else if (frm.doc.offer_letter_received === "No" && frm.doc.name && !frm.doc.__islocal) {
 			prompt_application_reminder(frm, {
 				title: __("Offer Letter Reminder"),
