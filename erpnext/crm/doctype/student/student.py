@@ -70,6 +70,85 @@ def get_permission_query_conditions(user=None):
 	)"""
 
 
+@frappe.whitelist()
+def get_students_with_applications(search=None, start=0, page_length=40):
+	"""B3 - students plus their applications, grouped by destination country.
+
+	Goes through frappe.get_list so the A1 scoping applies here too: an agent
+	sees only their own students on the card view, same as the list view.
+	"""
+	filters = {}
+	or_filters = {}
+	if search:
+		like = f"%{search}%"
+		or_filters = {
+			"name": ["like", like],
+			"first_name": ["like", like],
+			"last_name": ["like", like],
+			"email": ["like", like],
+			"mobile": ["like", like],
+		}
+
+	students = frappe.get_list(
+		"Student",
+		fields=[
+			"name",
+			"student_id",
+			"title",
+			"first_name",
+			"last_name",
+			"email",
+			"mobile",
+			"destination_country",
+			"country_code",
+			"creation",
+		],
+		filters=filters,
+		or_filters=or_filters,
+		start=int(start or 0),
+		page_length=int(page_length or 40),
+		order_by="creation desc",
+	)
+	if not students:
+		return []
+
+	names = [s.name for s in students]
+	applications = frappe.get_list(
+		"Application",
+		fields=[
+			"name",
+			"student",
+			"destination_country",
+			"status",
+			"preferred_university",
+			"course",
+			"intake",
+			"application_type",
+			"modified",
+		],
+		filters={"student": ["in", names]},
+		limit_page_length=0,
+		order_by="creation desc",
+	)
+
+	by_student = {}
+	for app in applications:
+		by_student.setdefault(app.student, []).append(app)
+
+	for student in students:
+		# Group by destination country so each card reads country-by-country.
+		grouped = {}
+		for app in by_student.get(student.name, []):
+			grouped.setdefault(app.destination_country or "Unspecified", []).append(app)
+		student["applications_by_country"] = [
+			{"country": country, "applications": apps}
+			for country, apps in sorted(grouped.items())
+		]
+		student["application_count"] = len(by_student.get(student.name, []))
+
+	return students
+
+
 def has_permission(doc, ptype=None, user=None):
 	"""Block an agent from opening another agent's Student by direct URL."""
 	user = user or frappe.session.user

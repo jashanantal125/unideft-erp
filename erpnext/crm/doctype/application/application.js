@@ -1809,6 +1809,7 @@ frappe.ui.form.on("Application", {
 		hide_accounts_connections_on_application(frm);
 		add_accounts_workflow_buttons(frm);
 		apply_agent_application_tabs(frm);
+		add_agent_submit_button(frm);
 		apply_admission_stage_tabs(frm);
 		apply_cro_only_fields(frm);
 		hide_legacy_sponsor_subtables(frm);
@@ -4937,6 +4938,67 @@ function apply_agent_application_tabs(frm) {
 				(df.label || "").toLowerCase() === "details";
 			frm.set_df_property(df.fieldname, "hidden", is_details ? 0 : 1);
 		});
+}
+
+// D1 - the agent's whole job on an Application is the short set of qualifying
+// answers on the Details tab. Everything past that is staff work, so the agent
+// gets one explicit hand-off action instead of being left on a Pending record.
+const AGENT_QUICK_FIELDS = ["study_gap", "martial_status", "higher_education"];
+
+function agent_quick_fields_missing(frm) {
+	const missing = AGENT_QUICK_FIELDS.filter((f) => !frm.doc[f]).map(
+		(f) => frm.fields_dict[f]?.df?.label || f
+	);
+
+	// "Refused from Aus/NZ" only applies where the form already shows it.
+	const country = frm.doc.destination_country || "";
+	const refusal_applies = ["Australia", "United Kingdom", "UK"].includes(country);
+	if (refusal_applies && !frm.doc.any_visa_refused) {
+		missing.push(frm.fields_dict.any_visa_refused?.df?.label || "Refused from Aus/NZ");
+	}
+	return missing;
+}
+
+function add_agent_submit_button(frm) {
+	if (!user_is_agent_only_app() || frm.is_new()) {
+		return;
+	}
+	// Once it is with admissions the agent has nothing further to submit.
+	if (frm.doc.status && frm.doc.status !== "Pending") {
+		return;
+	}
+
+	frm.page.set_primary_action(__("Submit to Admissions"), () => {
+		const missing = agent_quick_fields_missing(frm);
+		if (missing.length) {
+			frappe.msgprint({
+				title: __("Missing details"),
+				indicator: "orange",
+				message: __("Please fill in: {0}", [missing.join(", ")]),
+			});
+			return;
+		}
+
+		save_application_if_needed(frm)
+			.then(() => advance_status_if_forward(frm, "Processing"))
+			.then(() => save_application_if_needed(frm))
+			.then(() => {
+				const team = frm.doc.assigned_team;
+				frappe.show_alert(
+					{
+						message: team
+							? __("Submitted to {0}", [team])
+							: __("Submitted to the admissions team"),
+						indicator: "green",
+					},
+					6
+				);
+				frm.refresh();
+			})
+			.catch(() => {
+				// save_application_if_needed already surfaced the failure
+			});
+	});
 }
 
 /** CRO-only editable: fee GHA, OSHC arranged by, medical arranged by. */
