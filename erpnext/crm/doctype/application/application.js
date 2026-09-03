@@ -152,6 +152,25 @@ function save_application_reminder(frm, { remind_at, description }) {
 		});
 }
 
+// frappe's Layout.set_tab_as_active() gives the URL hash absolute priority:
+// it activates whatever tab the hash names and returns before looking at
+// anything else. That runs on every layout refresh, and pressing a workflow
+// Action calls frm.refresh() - so activating a tab without moving the hash
+// gets silently undone a moment later, snapping back to the tab the user was
+// already on. Moving the hash first means frappe's own restore agrees with us.
+function set_application_tab_hash(tab_fieldname) {
+	try {
+		const url = new URL(window.location.href);
+		if (url.hash === `#${tab_fieldname}`) {
+			return;
+		}
+		url.hash = tab_fieldname;
+		history.replaceState(null, null, url);
+	} catch (e) {
+		// hash is a nicety - never let it break the actual tab switch
+	}
+}
+
 function activate_application_tab(frm, tab_fieldname, tab_label) {
 	try {
 		const tab_field = frm.get_field(tab_fieldname);
@@ -177,6 +196,7 @@ function activate_application_tab(frm, tab_fieldname, tab_label) {
 			// of the active tab moved on, so the next render could show both
 			// panes together. That mismatch is the long-standing "tab doesn't
 			// move and the next tab's fields appear in this one" bug.
+			set_application_tab_hash(tab_fieldname);
 			tab.set_active();
 			return;
 		}
@@ -205,6 +225,7 @@ function activate_application_tab(frm, tab_fieldname, tab_label) {
 	// Same reasoning as above: clicking a hidden tab link leaves the current
 	// pane showing alongside the new one, so only click a link that is visible.
 	if ($link.length && !$link.closest("li").hasClass("hide") && !$link.hasClass("hide")) {
+		set_application_tab_hash(tab_fieldname);
 		$link.trigger("click");
 	} else if (!$link.length) {
 		frm.scroll_to_field(tab_fieldname);
@@ -1873,6 +1894,11 @@ frappe.ui.form.on("Application", {
 	// already in its final state by the time this runs - no timing guesswork.
 	after_workflow_action(frm) {
 		activate_tab_for_workflow_state(frm);
+		// core runs frm.refresh() immediately before firing this event, and
+		// parts of that refresh (grids, dependency re-evaluation, and the
+		// layout's own hash-based tab restore) settle a tick later. Re-assert
+		// once afterwards so a late refresh_tabs() cannot snap the user back.
+		setTimeout(() => activate_tab_for_workflow_state(frm), 300);
 	},
 
 	refresh(frm) {
