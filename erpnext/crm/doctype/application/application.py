@@ -881,16 +881,24 @@ class Application(Document):
 			return
 
 		# Offer letter in hand → Offer Letter Received
-		if self.get("offer_letter_upload"):
+		if self.get("offer_letter_upload") or self.offer_letter_received == "Yes":
 			self.advance_stage("Offer Letter Received")
 
 		# Offer Letter stage signed off → Financials
 		if self.financial_started == "Yes":
 			self.advance_stage("Financial")
 
+		# Financials → GS Submitted
+		if self.gs_submitted == "Yes":
+			self.advance_stage("GS Processing")
+
 		# GS Submitted → GS Approved
 		if self.gs_approved_check == "Yes":
 			self.advance_stage("GS Approved")
+
+		# GS Approved → Acceptance
+		if self.acceptance_submitted == "Yes":
+			self.advance_stage("Acceptance")
 
 		# eCOE → File Lodged, whoever lodged the file
 		lodged = any(

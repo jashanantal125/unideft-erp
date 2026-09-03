@@ -188,6 +188,41 @@ function activate_application_tab(frm, tab_fieldname, tab_label) {
 	}
 }
 
+// Every workflow state name maps 1:1 onto a real tab fieldname - confirmed
+// against production's Workflow Builder export. Pressing the workflow Action
+// button changes workflow_state; this moves the visible tab to match, the
+// same job the old DB-only Client Script did, but keyed to fieldnames that
+// actually exist (that script targeted "gte_tab" / "gte_approved_tab", which
+// were never real tabs, so two of its branches silently did nothing).
+const WORKFLOW_STATE_TAB_MAP = {
+	Details: ["details_tab", "Details"],
+	Processing: ["information_tab", "Processing"],
+	Submitted: ["submitted_tab", "Submitted"],
+	"Offer Letter": ["offer_tab", "Offer Letter"],
+	Financials: ["financials_tab", "Financials"],
+	"GS Submitted": ["gs_tab", "GS Submitted"],
+	"GS Approved": ["gs_approved_tab", "GS Approved"],
+	Acceptance: ["acceptance_tab", "Acceptance"],
+	COE: ["coe_tab", "eCOE"],
+	"File Lodged": ["file_lodged_tab", "File Lodged"],
+	Visa: ["visa_tab", "Visa"],
+	Enrolled: ["enrollment_tab", "Enrolled"],
+	"On shore college change": ["on_shore_college_change_tab", "On Shore College Change"],
+	Closed: ["closed_tab", "Closed"],
+	"Visa Refused": ["visa_refused_tab", "Visa Refused"],
+	"Refund Processing": ["refund_processing_tab", "Refund Processing"],
+	Refunded: ["refunded_tab", "Refunded"],
+};
+
+function activate_tab_for_workflow_state(frm) {
+	const mapping = WORKFLOW_STATE_TAB_MAP[frm.doc.workflow_state];
+	if (!mapping) {
+		return;
+	}
+	const [tab_fieldname, tab_label] = mapping;
+	activate_application_tab(frm, tab_fieldname, tab_label);
+}
+
 function get_status_rank(status) {
 	const ranks = {
 		Pending: 0,
@@ -210,17 +245,6 @@ function get_status_rank(status) {
 		Refunded: 12,
 	};
 	return ranks[status];
-}
-
-function resolve_coe_status_option(frm) {
-	const options = String(frm?.fields_dict?.status?.df?.options || "")
-		.split("\n")
-		.map((x) => x.trim())
-		.filter(Boolean);
-	if (options.includes("eCOE")) {
-		return "eCOE";
-	}
-	return "COE";
 }
 
 function advance_status_if_forward(frm, next_status) {
@@ -248,14 +272,22 @@ function save_application_if_needed(frm) {
 	return frm.save();
 }
 
-// Shared stage-gate transition. Every "Yes" stage gate does the same three things
-// in a strict order: advance status forward, persist, and only then move tabs.
+// Shared stage-gate transition. Every "Yes" stage gate does the same two things
+// in a strict order: persist, and only then move tabs.
 // Previously each gate switched tabs on a 250ms timer without ever saving, so the
 // stage was lost on reload and the incoming tab could render before the save
 // settled — which is what made the next tab's fields appear inside the current one.
-function complete_stage_and_advance(frm, { next_status, tab_fieldname, tab_label, message }) {
-	return advance_status_if_forward(frm, next_status)
-		.then(() => save_application_if_needed(frm))
+//
+// `status` is deliberately NOT set here. It is fully owned server-side by
+// Application.apply_stage_auto_advance() / apply_application_submission_workflow()
+// (application.py), which re-derive it from these same field answers on every
+// save, rank-guarded so it only ever moves forward. Setting it here too used to
+// race with that: this function would write a status, then the save's own
+// validate() would immediately recompute and could put a different value back
+// (proven live: a value set here was silently overwritten during the very save
+// that was supposed to persist it). One writer for `status` - the Python side.
+function complete_stage_and_advance(frm, { tab_fieldname, tab_label, message }) {
+	return save_application_if_needed(frm)
 		.then(() => {
 			activate_application_tab(frm, tab_fieldname, tab_label);
 			if (message) {
@@ -1805,7 +1837,12 @@ frappe.ui.form.on("Application", {
 		}
 	},
 
+	workflow_state(frm) {
+		activate_tab_for_workflow_state(frm);
+	},
+
 	refresh(frm) {
+		activate_tab_for_workflow_state(frm);
 		hide_accounts_connections_on_application(frm);
 		add_accounts_workflow_buttons(frm);
 		apply_agent_application_tabs(frm);
@@ -2137,7 +2174,6 @@ frappe.ui.form.on("Application", {
 				message: __("Application submission reminder deactivated"),
 			});
 			complete_stage_and_advance(frm, {
-				next_status: "Submitted",
 				tab_fieldname: "submitted_tab",
 				tab_label: "Submitted",
 				message: "Application moved to Submitted stage",
@@ -2762,7 +2798,6 @@ frappe.ui.form.on("Application", {
 		if (frm.doc.financial_started === "Yes") {
 			frm.set_value("offer_letter_stage_completed", 1);
 			complete_stage_and_advance(frm, {
-				next_status: "Financial",
 				tab_fieldname: "financials_tab",
 				tab_label: "Financials",
 				message: "Offer Letter stage completed — moved to Financials",
@@ -2787,7 +2822,6 @@ frappe.ui.form.on("Application", {
 			clear_gs_submitted_no_branch(frm);
 			frm.set_value("financial_stage_completed", "✓ Financial stage completed → Moved to GS Processing");
 			complete_stage_and_advance(frm, {
-				next_status: "GS Processing",
 				tab_fieldname: "gs_tab",
 				tab_label: "GS Submitted",
 				message: "Financial stage completed — moved to GS Submitted",
@@ -3706,7 +3740,6 @@ frappe.ui.form.on("Application", {
 				message: __("COE receipt reminders deactivated"),
 			});
 			complete_stage_and_advance(frm, {
-				next_status: resolve_coe_status_option(frm),
 				tab_fieldname: "coe_tab",
 				tab_label: "eCOE",
 				message: "Moved to eCOE stage",
@@ -3845,7 +3878,6 @@ frappe.ui.form.on("Application", {
 			frm.set_value("requirement_details", "");
 			frm.set_value("requirements_completed", "");
 			complete_stage_and_advance(frm, {
-				next_status: "GS Approved",
 				tab_fieldname: "gs_approved_tab",
 				tab_label: "GS Approved",
 				message: "Moved to GS Approved stage",
@@ -4621,7 +4653,6 @@ frappe.ui.form.on("Application", {
 				message: __("Acceptance submission reminders deactivated"),
 			});
 			complete_stage_and_advance(frm, {
-				next_status: "Acceptance",
 				tab_fieldname: "acceptance_tab",
 				tab_label: "Acceptance",
 				message: "Moved to Acceptance stage",
@@ -5082,7 +5113,6 @@ frappe.ui.form.on("Application", {
 		if (frm.doc.offer_letter_received === "Yes") {
 			deactivate_reminders_matching(frm, ["Offer Letter Received", "Follow up for Offer Letter"]);
 			complete_stage_and_advance(frm, {
-				next_status: "Offer Letter Received",
 				tab_fieldname: "offer_tab",
 				tab_label: "Offer Letter",
 				message: "Moved to Offer Letter stage",
