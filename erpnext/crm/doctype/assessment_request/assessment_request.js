@@ -7,17 +7,16 @@ frappe.ui.form.on("Assessment Request", {
 			frm.set_value("requested_by", frappe.session.user);
 		}
 		setup_student_query(frm);
+		setup_shortlisting_queries(frm);
 		toggle_assessment_workflow_for_agents(frm);
 		apply_assessment_role_visibility(frm);
+		apply_course_shortlisting_visibility(frm);
+		add_assessment_action_buttons(frm);
 	},
 
 	student_already_registered(frm) {
 		if (frm.doc.student_already_registered !== "Yes") {
 			frm.set_value("student", "");
-		}
-		if (frm.doc.student_already_registered !== "No") {
-			frm.set_value("cro_agent_name", "");
-			frm.set_value("cro_agency_name", "");
 		}
 		setup_student_query(frm);
 		apply_assessment_role_visibility(frm);
@@ -106,12 +105,14 @@ function apply_assessment_role_visibility(frm) {
 	const is_ch = user_is_country_head();
 	const is_adm = user_is_admission();
 
-	// Need Assessment? — CRO editable; others read-only (can still see Yes/No)
-	frm.set_df_property("need_assessment", "read_only", is_cro || is_ch ? 0 : 1);
+	// C4.1 - "Need Assessment?" is Admissions' call to make. CRO sees the answer
+	// but cannot set it; admins keep the override.
+	const is_super = has_any_role(["System Manager", "Administrator", "CRM Admin"]);
+	frm.set_df_property("need_assessment", "read_only", is_adm || is_super ? 0 : 1);
 
-	// CRO-only unregistered agent fields
-	const show_cro_unreg =
-		frm.doc.student_already_registered === "No" && (is_cro || is_ch);
+	// C5 - Agent / Agency is for CRO to record however the request came in, so it
+	// is no longer tied to the student being unregistered.
+	const show_cro_unreg = is_cro || is_ch;
 	["cro_unregistered_section", "cro_agent_name", "cro_agency_name"].forEach((f) => {
 		frm.set_df_property(f, "hidden", show_cro_unreg ? 0 : 1);
 	});
@@ -189,6 +190,109 @@ function apply_assessment_role_visibility(frm) {
 
 function setup_student_query(frm) {
 	frm.set_query("student", () => ({ filters: {} }));
+}
+
+function setup_shortlisting_queries(frm) {
+	// Only offer courses whose university actually sits in a country the student
+	// asked for; with no preference set, fall back to every course.
+	frm.set_query("course", "course_shortlisting", () => {
+		const countries = (frm.doc.preferred_countries || [])
+			.map((row) => row.country)
+			.filter(Boolean);
+		if (!countries.length) {
+			return {};
+		}
+		return {
+			query: "erpnext.crm.doctype.assessment_request.assessment_request.course_query_for_countries",
+			filters: { countries },
+		};
+	});
+
+	// C4 - the Application ID dropdown should only offer this student's applications.
+	frm.set_query("application_id", "assessment_vendors", () => ({
+		filters: frm.doc.student ? { student: frm.doc.student } : {},
+	}));
+}
+
+/**
+ * C3 - the shortlisting table belongs to Admissions/CRO while they build it, and
+ * becomes visible to the agent only once the response has been submitted.
+ */
+function apply_course_shortlisting_visibility(frm) {
+	const is_backend = !user_is_agent_only();
+	const submitted = !!frm.doc.response_submitted;
+	const visible = frm.doc.need_assessment === "Yes" && (is_backend || submitted);
+
+	["course_shortlisting_section", "course_shortlisting"].forEach((f) => {
+		frm.set_df_property(f, "hidden", visible ? 0 : 1);
+	});
+
+	// Agents read the response, they never author it.
+	frm.set_df_property("course_shortlisting", "read_only", is_backend && !submitted ? 0 : 1);
+
+	const grid = frm.fields_dict.course_shortlisting?.grid;
+	if (grid) {
+		// Apply Now is the agent's entry point, and only after submission.
+		grid.update_docfield_property("apply_now", "hidden", submitted ? 0 : 1);
+	}
+	frm.refresh_field("course_shortlisting");
+}
+
+function add_assessment_action_buttons(frm) {
+	if (frm.is_new()) {
+		return;
+	}
+
+	const is_backend = !user_is_agent_only();
+	const can_respond =
+		is_backend && has_any_role(["CRO", "CRO Head", "Admission 1", "Admission 2", "System Manager", "Administrator", "CRM Admin"]);
+
+	if (can_respond && !frm.doc.response_submitted && (frm.doc.course_shortlisting || []).length) {
+		frm.add_custom_button(__("Submit Assessment Request Response"), () => {
+			frappe.confirm(
+				__("Send these shortlisted courses to the agent? The table becomes read-only afterwards."),
+				() => {
+					frappe.call({
+						method: "erpnext.crm.doctype.assessment_request.assessment_request.submit_assessment_response",
+						args: { name: frm.doc.name },
+						freeze: true,
+						freeze_message: __("Submitting response…"),
+						callback(r) {
+							if (r.message) {
+								frappe.show_alert(
+									{ message: __("Response submitted to the agent"), indicator: "green" },
+									5
+								);
+								frm.reload_doc();
+							}
+						},
+					});
+				}
+			);
+		});
+	}
+
+	// C4.5 - Close sits with CRO at the end of their section.
+	if (user_is_cro() && frm.doc.status !== "Closed") {
+		frm.add_custom_button(__("Close"), () => {
+			frappe.confirm(__("Close this Assessment Request?"), () => {
+				frappe.call({
+					method: "erpnext.crm.doctype.assessment_request.assessment_request.close_assessment_request",
+					args: { name: frm.doc.name },
+					freeze: true,
+					callback(r) {
+						if (r.message) {
+							frappe.show_alert(
+								{ message: __("Assessment Request closed"), indicator: "orange" },
+								5
+							);
+							frm.reload_doc();
+						}
+					},
+				});
+			});
+		});
+	}
 }
 
 const ASR_REMINDER_SESSION = {};
@@ -395,3 +499,28 @@ function maybe_mark_converted(frm, cdt, cdn) {
 		frappe.model.set_value(cdt, cdn, "assessment_status", "Converted to Application");
 	}
 }
+
+// C3.4 - per-row Apply Now. Only meaningful once the response has been submitted,
+// and it reuses the shared helper so the Student button and the Application list
+// all open the identical dialog and hit the identical server method.
+frappe.ui.form.on("Assessment Course Shortlisting", {
+	apply_now(frm, cdt, cdn) {
+		if (!frm.doc.response_submitted) {
+			frappe.msgprint(__("The assessment response has not been submitted yet."));
+			return;
+		}
+		if (!frm.doc.student) {
+			frappe.msgprint(__("This Assessment Request is not linked to a Student yet."));
+			return;
+		}
+
+		const row = locals[cdt][cdn];
+		unideft.apply.new_application({
+			student: frm.doc.student,
+			destination_country: row.country || "",
+			preferred_university: row.university || "",
+			course: row.course || "",
+			intake: row.intake || "",
+		});
+	},
+});

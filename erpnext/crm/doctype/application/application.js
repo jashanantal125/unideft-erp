@@ -152,11 +152,52 @@ function save_application_reminder(frm, { remind_at, description }) {
 		});
 }
 
+// frappe's Layout.set_tab_as_active() gives the URL hash absolute priority:
+// it activates whatever tab the hash names and returns before looking at
+// anything else. That runs on every layout refresh, and pressing a workflow
+// Action calls frm.refresh() - so activating a tab without moving the hash
+// gets silently undone a moment later, snapping back to the tab the user was
+// already on. Moving the hash first means frappe's own restore agrees with us.
+function set_application_tab_hash(tab_fieldname) {
+	try {
+		const url = new URL(window.location.href);
+		if (url.hash === `#${tab_fieldname}`) {
+			return;
+		}
+		url.hash = tab_fieldname;
+		history.replaceState(null, null, url);
+	} catch (e) {
+		// hash is a nicety - never let it break the actual tab switch
+	}
+}
+
 function activate_application_tab(frm, tab_fieldname, tab_label) {
 	try {
 		const tab_field = frm.get_field(tab_fieldname);
-		if (tab_field && tab_field.tab && typeof frm.set_active_tab === "function") {
-			frm.set_active_tab(tab_field.tab);
+		const tab = tab_field && tab_field.tab;
+		if (tab && typeof tab.set_active === "function") {
+			// A tab hides itself when its own depends_on is false OR when every
+			// section inside it is hidden (see Tab.refresh() in frappe). Calling
+			// .tab("show") on a hidden nav-link does not deactivate the current
+			// pane, so both panes end up visible at once - which is what makes
+			// the incoming tab's fields appear stacked inside the tab the user
+			// is already looking at. Leave the user where they are instead.
+			if (typeof tab.is_hidden === "function" && tab.is_hidden()) {
+				return;
+			}
+			// Tab.set_active() is the method that actually switches tabs: it
+			// calls .tab("show") (which deactivates the sibling pane) and only
+			// then reports back via frm.set_active_tab().
+			//
+			// frm.set_active_tab() on its own does NOT switch anything - it is
+			// bookkeeping (active_tab_map, URL hash, on_tab_change) meant to be
+			// called *by* the Tab class. Calling it directly, as this function
+			// used to, left the DOM on the old tab while the form's own record
+			// of the active tab moved on, so the next render could show both
+			// panes together. That mismatch is the long-standing "tab doesn't
+			// move and the next tab's fields appear in this one" bug.
+			set_application_tab_hash(tab_fieldname);
+			tab.set_active();
 			return;
 		}
 	} catch (e) {
@@ -181,11 +222,49 @@ function activate_application_tab(frm, tab_fieldname, tab_label) {
 		})
 		.first();
 
-	if ($link.length) {
+	// Same reasoning as above: clicking a hidden tab link leaves the current
+	// pane showing alongside the new one, so only click a link that is visible.
+	if ($link.length && !$link.closest("li").hasClass("hide") && !$link.hasClass("hide")) {
+		set_application_tab_hash(tab_fieldname);
 		$link.trigger("click");
-	} else {
+	} else if (!$link.length) {
 		frm.scroll_to_field(tab_fieldname);
 	}
+}
+
+// Every workflow state name maps 1:1 onto a real tab fieldname - confirmed
+// against production's Workflow Builder export. Pressing the workflow Action
+// button changes workflow_state; this moves the visible tab to match, the
+// same job the old DB-only Client Script did, but keyed to fieldnames that
+// actually exist (that script targeted "gte_tab" / "gte_approved_tab", which
+// were never real tabs, so two of its branches silently did nothing).
+const WORKFLOW_STATE_TAB_MAP = {
+	Details: ["details_tab", "Details"],
+	Processing: ["information_tab", "Processing"],
+	Submitted: ["submitted_tab", "Submitted"],
+	"Offer Letter": ["offer_tab", "Offer Letter"],
+	Financials: ["financials_tab", "Financials"],
+	"GS Submitted": ["gs_tab", "GS Submitted"],
+	"GS Approved": ["gs_approved_tab", "GS Approved"],
+	Acceptance: ["acceptance_tab", "Acceptance"],
+	COE: ["coe_tab", "eCOE"],
+	"File Lodged": ["file_lodged_tab", "File Lodged"],
+	Visa: ["visa_tab", "Visa"],
+	Enrolled: ["enrollment_tab", "Enrolled"],
+	"On shore college change": ["on_shore_college_change_tab", "On Shore College Change"],
+	Closed: ["closed_tab", "Closed"],
+	"Visa Refused": ["visa_refused_tab", "Visa Refused"],
+	"Refund Processing": ["refund_processing_tab", "Refund Processing"],
+	Refunded: ["refunded_tab", "Refunded"],
+};
+
+function activate_tab_for_workflow_state(frm) {
+	const mapping = WORKFLOW_STATE_TAB_MAP[frm.doc.workflow_state];
+	if (!mapping) {
+		return;
+	}
+	const [tab_fieldname, tab_label] = mapping;
+	activate_application_tab(frm, tab_fieldname, tab_label);
 }
 
 function get_status_rank(status) {
@@ -212,17 +291,6 @@ function get_status_rank(status) {
 	return ranks[status];
 }
 
-function resolve_coe_status_option(frm) {
-	const options = String(frm?.fields_dict?.status?.df?.options || "")
-		.split("\n")
-		.map((x) => x.trim())
-		.filter(Boolean);
-	if (options.includes("eCOE")) {
-		return "eCOE";
-	}
-	return "COE";
-}
-
 function advance_status_if_forward(frm, next_status) {
 	if (!next_status || !frm || frm.doc.__islocal) {
 		return Promise.resolve();
@@ -239,6 +307,44 @@ function advance_status_if_forward(frm, next_status) {
 		return frm.set_value("status", next_status);
 	}
 	return Promise.resolve();
+}
+
+function save_application_if_needed(frm) {
+	if (!frm || frm.doc.__islocal || !frm.is_dirty()) {
+		return Promise.resolve();
+	}
+	return frm.save();
+}
+
+// Shared stage-gate transition. Every "Yes" stage gate does the same two things
+// in a strict order: persist, and only then move tabs.
+// Previously each gate switched tabs on a 250ms timer without ever saving, so the
+// stage was lost on reload and the incoming tab could render before the save
+// settled — which is what made the next tab's fields appear inside the current one.
+//
+// `status` is deliberately NOT set here. It is fully owned server-side by
+// Application.apply_stage_auto_advance() / apply_application_submission_workflow()
+// (application.py), which re-derive it from these same field answers on every
+// save, rank-guarded so it only ever moves forward. Setting it here too used to
+// race with that: this function would write a status, then the save's own
+// validate() would immediately recompute and could put a different value back
+// (proven live: a value set here was silently overwritten during the very save
+// that was supposed to persist it). One writer for `status` - the Python side.
+function complete_stage_and_advance(frm, { tab_fieldname, tab_label, message }) {
+	return save_application_if_needed(frm)
+		.then(() => {
+			activate_application_tab(frm, tab_fieldname, tab_label);
+			if (message) {
+				frappe.show_alert({ message: __(message), indicator: "green" }, 4);
+			}
+		})
+		.catch((error) => {
+			frappe.show_alert(
+				{ message: __("Could not save — stage not advanced"), indicator: "red" },
+				5
+			);
+			throw error;
+		});
 }
 
 function setup_processing_agent_query(frm) {
@@ -1775,10 +1881,32 @@ frappe.ui.form.on("Application", {
 		}
 	},
 
+	workflow_state(frm) {
+		activate_tab_for_workflow_state(frm);
+	},
+
+	// Pressing the workflow Action button doesn't set workflow_state through
+	// frm.set_value() - core's handle_workflow_action() applies it via
+	// frappe.model.sync(doc) then frm.refresh(), so the workflow_state(frm)
+	// trigger above never fires for it. after_workflow_action is the hook core
+	// fires for exactly this case, strictly after that refresh has finished
+	// (see frappe/public/js/frappe/form/workflow.js), so the tab bar is
+	// already in its final state by the time this runs - no timing guesswork.
+	after_workflow_action(frm) {
+		activate_tab_for_workflow_state(frm);
+		// core runs frm.refresh() immediately before firing this event, and
+		// parts of that refresh (grids, dependency re-evaluation, and the
+		// layout's own hash-based tab restore) settle a tick later. Re-assert
+		// once afterwards so a late refresh_tabs() cannot snap the user back.
+		setTimeout(() => activate_tab_for_workflow_state(frm), 300);
+	},
+
 	refresh(frm) {
+		activate_tab_for_workflow_state(frm);
 		hide_accounts_connections_on_application(frm);
 		add_accounts_workflow_buttons(frm);
 		apply_agent_application_tabs(frm);
+		add_agent_submit_button(frm);
 		apply_admission_stage_tabs(frm);
 		apply_cro_only_fields(frm);
 		hide_legacy_sponsor_subtables(frm);
@@ -2102,20 +2230,13 @@ frappe.ui.form.on("Application", {
 				frm.set_value("submitted_date", frappe.datetime.get_today());
 			}
 			frm.set_value("expected_application_submission_date", "");
-			if (["Pending", "Processing"].includes(frm.doc.status)) {
-				frm.set_value("status", "Submitted");
-			}
 			deactivate_reminders_matching(frm, "Application Submission", {
 				message: __("Application submission reminder deactivated"),
 			});
-			setTimeout(() => {
-				if (typeof activate_application_tab === "function") {
-					activate_application_tab(frm, "submitted_tab", "Submitted");
-				}
-			}, 250);
-			frappe.show_alert({
-				message: __("Application moved to Submitted stage"),
-				indicator: "green",
+			complete_stage_and_advance(frm, {
+				tab_fieldname: "submitted_tab",
+				tab_label: "Submitted",
+				message: "Application moved to Submitted stage",
 			});
 		} else if (frm.doc.application_submitted === "No") {
 			if (["Pending", "Submitted"].includes(frm.doc.status)) {
@@ -2736,24 +2857,11 @@ frappe.ui.form.on("Application", {
 	financial_started(frm) {
 		if (frm.doc.financial_started === "Yes") {
 			frm.set_value("offer_letter_stage_completed", 1);
-			const move_to_financials = () => {
-				setTimeout(() => {
-					activate_application_tab(frm, "financials_tab", "Financials");
-				}, 250);
-			};
-			const early = ["Pending", "Processing", "Submitted", "Offer Letter Received", ""];
-			if (early.includes(frm.doc.status || "")) {
-				frm.set_value("status", "Financial").then(move_to_financials);
-			} else {
-				move_to_financials();
-			}
-			frappe.show_alert(
-				{
-					message: __("Offer Letter stage completed — moved to Financials"),
-					indicator: "green",
-				},
-				4
-			);
+			complete_stage_and_advance(frm, {
+				tab_fieldname: "financials_tab",
+				tab_label: "Financials",
+				message: "Offer Letter stage completed — moved to Financials",
+			});
 		} else if (frm.doc.financial_started === "No") {
 			frm.set_value("offer_letter_stage_completed", 0);
 			if (frm.doc.name && !frm.doc.__islocal) {
@@ -2773,27 +2881,11 @@ frappe.ui.form.on("Application", {
 		if (frm.doc.gs_submitted === "Yes") {
 			clear_gs_submitted_no_branch(frm);
 			frm.set_value("financial_stage_completed", "✓ Financial stage completed → Moved to GS Processing");
-			const move_to_gs_tab = () => {
-				setTimeout(() => {
-					activate_application_tab(frm, "gs_tab", "GS Submitted");
-				}, 250);
-			};
-			if (
-				["Financial", "Offer Letter Received", "Submitted", "Pending", "Processing"].includes(
-					frm.doc.status
-				)
-			) {
-				frm.set_value("status", "GS Processing").then(move_to_gs_tab);
-			} else {
-				move_to_gs_tab();
-			}
-			frappe.show_alert(
-				{
-					message: __("Financial stage completed — moved to GS Submitted"),
-					indicator: "green",
-				},
-				4
-			);
+			complete_stage_and_advance(frm, {
+				tab_fieldname: "gs_tab",
+				tab_label: "GS Submitted",
+				message: "Financial stage completed — moved to GS Submitted",
+			});
 		} else if (frm.doc.gs_submitted === "No") {
 			frm.set_value("financial_stage_completed", "");
 			// Reminder popup (date / time / remarks) — also keep "When will financials be completed?"
@@ -3707,8 +3799,10 @@ frappe.ui.form.on("Application", {
 			deactivate_reminders_matching(frm, COE_RECEIPT_REMINDERS, {
 				message: __("COE receipt reminders deactivated"),
 			});
-			advance_status_if_forward(frm, resolve_coe_status_option(frm)).then(() => {
-				activate_application_tab(frm, "coe_tab", "eCOE");
+			complete_stage_and_advance(frm, {
+				tab_fieldname: "coe_tab",
+				tab_label: "eCOE",
+				message: "Moved to eCOE stage",
 			});
 			return;
 		}
@@ -3843,13 +3937,11 @@ frappe.ui.form.on("Application", {
 			frm.set_value("gs_any_requirement", "");
 			frm.set_value("requirement_details", "");
 			frm.set_value("requirements_completed", "");
-			if (["GS Processing", "Financial"].includes(frm.doc.status)) {
-				frm.set_value("status", "GS Approved");
-			}
-			frappe.show_alert(
-				{ message: __("Moved to GS Approved stage"), indicator: "green" },
-				4
-			);
+			complete_stage_and_advance(frm, {
+				tab_fieldname: "gs_approved_tab",
+				tab_label: "GS Approved",
+				message: "Moved to GS Approved stage",
+			});
 		} else if (frm.doc.gs_approved_check === "No") {
 			// keep requirement cascade available regardless of interview
 		}
@@ -4612,9 +4704,6 @@ frappe.ui.form.on("Application", {
 
 	acceptance_submitted(frm) {
 		if (frm.doc.acceptance_submitted === "Yes") {
-			advance_status_if_forward(frm, "Acceptance").then(() => {
-				activate_application_tab(frm, "acceptance_tab", "Acceptance");
-			});
 			[
 				"acceptance_pending_conditions",
 				"acceptance_condition_details",
@@ -4622,6 +4711,11 @@ frappe.ui.form.on("Application", {
 			].forEach((fieldname) => frm.set_value(fieldname, ""));
 			deactivate_reminders_matching(frm, ACCEPTANCE_SUBMISSION_REMINDERS, {
 				message: __("Acceptance submission reminders deactivated"),
+			});
+			complete_stage_and_advance(frm, {
+				tab_fieldname: "acceptance_tab",
+				tab_label: "Acceptance",
+				message: "Moved to Acceptance stage",
 			});
 		}
 	},
@@ -4937,6 +5031,67 @@ function apply_agent_application_tabs(frm) {
 		});
 }
 
+// D1 - the agent's whole job on an Application is the short set of qualifying
+// answers on the Details tab. Everything past that is staff work, so the agent
+// gets one explicit hand-off action instead of being left on a Pending record.
+const AGENT_QUICK_FIELDS = ["study_gap", "martial_status", "higher_education"];
+
+function agent_quick_fields_missing(frm) {
+	const missing = AGENT_QUICK_FIELDS.filter((f) => !frm.doc[f]).map(
+		(f) => frm.fields_dict[f]?.df?.label || f
+	);
+
+	// "Refused from Aus/NZ" only applies where the form already shows it.
+	const country = frm.doc.destination_country || "";
+	const refusal_applies = ["Australia", "United Kingdom", "UK"].includes(country);
+	if (refusal_applies && !frm.doc.any_visa_refused) {
+		missing.push(frm.fields_dict.any_visa_refused?.df?.label || "Refused from Aus/NZ");
+	}
+	return missing;
+}
+
+function add_agent_submit_button(frm) {
+	if (!user_is_agent_only_app() || frm.is_new()) {
+		return;
+	}
+	// Once it is with admissions the agent has nothing further to submit.
+	if (frm.doc.status && frm.doc.status !== "Pending") {
+		return;
+	}
+
+	frm.page.set_primary_action(__("Submit to Admissions"), () => {
+		const missing = agent_quick_fields_missing(frm);
+		if (missing.length) {
+			frappe.msgprint({
+				title: __("Missing details"),
+				indicator: "orange",
+				message: __("Please fill in: {0}", [missing.join(", ")]),
+			});
+			return;
+		}
+
+		save_application_if_needed(frm)
+			.then(() => advance_status_if_forward(frm, "Processing"))
+			.then(() => save_application_if_needed(frm))
+			.then(() => {
+				const team = frm.doc.assigned_team;
+				frappe.show_alert(
+					{
+						message: team
+							? __("Submitted to {0}", [team])
+							: __("Submitted to the admissions team"),
+						indicator: "green",
+					},
+					6
+				);
+				frm.refresh();
+			})
+			.catch(() => {
+				// save_application_if_needed already surfaced the failure
+			});
+	});
+}
+
 /** CRO-only editable: fee GHA, OSHC arranged by, medical arranged by. */
 function apply_cro_only_fields(frm) {
 	const cro = user_is_cro_app();
@@ -5016,11 +5171,12 @@ frappe.ui.form.on("Application", {
 
 	offer_letter_received(frm) {
 		if (frm.doc.offer_letter_received === "Yes") {
-			if (["Pending", "Processing", "Submitted"].includes(frm.doc.status || "")) {
-				frm.set_value("status", "Offer Letter Received");
-			}
 			deactivate_reminders_matching(frm, ["Offer Letter Received", "Follow up for Offer Letter"]);
-			activate_application_tab(frm, "offer_tab", "Offer Letter");
+			complete_stage_and_advance(frm, {
+				tab_fieldname: "offer_tab",
+				tab_label: "Offer Letter",
+				message: "Moved to Offer Letter stage",
+			});
 		} else if (frm.doc.offer_letter_received === "No" && frm.doc.name && !frm.doc.__islocal) {
 			prompt_application_reminder(frm, {
 				title: __("Offer Letter Reminder"),

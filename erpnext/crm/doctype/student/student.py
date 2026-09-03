@@ -13,6 +13,166 @@ def user_is_agent(user=None):
 	return bool(roles.intersection(AGENT_ROLES))
 
 
+# Roles that legitimately see every Student.
+UNRESTRICTED_ROLES = {
+	"System Manager",
+	"Administrator",
+	"CRM Admin",
+	"CRM Sales Staff",
+	"CRO",
+	"CRO Head",
+}
+
+
+def _agent_keys(user):
+	"""An agent may be identified by their User id or by their Agent record."""
+	keys = [user]
+	agent_name = frappe.db.get_value("Agent", {"user": user}, "name")
+	if agent_name:
+		keys.append(agent_name)
+	return keys
+
+
+def get_permission_query_conditions(user=None):
+	"""Restrict Student lists for agents (A1).
+
+	Student.get_list_query already scopes the desk list view, but that hook does
+	not cover report view, link-field lookups or the get_list API - an agent
+	could still reach another agent's student through those. This closes the
+	gap everywhere by mirroring the same rule.
+
+	Student has no dedicated `agent` link field, so the creator is identified by
+	`owner`, plus any student reachable through an Application carrying this
+	agent - which is what keeps students created *for* an agent by a CRO
+	visible to them.
+	"""
+	user = user or frappe.session.user
+	if user == "Administrator":
+		return ""
+
+	roles = set(frappe.get_roles(user))
+	if roles & UNRESTRICTED_ROLES:
+		return ""
+
+	if not user_is_agent(user):
+		return ""
+
+	keys = ", ".join(frappe.db.escape(key) for key in _agent_keys(user))
+	escaped_user = frappe.db.escape(user)
+
+	return f"""(
+		`tabStudent`.`owner` = {escaped_user}
+		or `tabStudent`.`name` in (
+			select `tabApplication`.`student` from `tabApplication`
+			where `tabApplication`.`agent` in ({keys})
+			and `tabApplication`.`student` is not null
+		)
+	)"""
+
+
+@frappe.whitelist()
+def get_students_with_applications(search=None, start=0, page_length=40):
+	"""B3 - students plus their applications, grouped by destination country.
+
+	Goes through frappe.get_list so the A1 scoping applies here too: an agent
+	sees only their own students on the card view, same as the list view.
+	"""
+	filters = {}
+	or_filters = {}
+	if search:
+		like = f"%{search}%"
+		or_filters = {
+			"name": ["like", like],
+			"first_name": ["like", like],
+			"last_name": ["like", like],
+			"email": ["like", like],
+			"mobile": ["like", like],
+		}
+
+	students = frappe.get_list(
+		"Student",
+		fields=[
+			"name",
+			"student_id",
+			"title",
+			"first_name",
+			"last_name",
+			"email",
+			"mobile",
+			"destination_country",
+			"country_code",
+			"creation",
+		],
+		filters=filters,
+		or_filters=or_filters,
+		start=int(start or 0),
+		page_length=int(page_length or 40),
+		order_by="creation desc",
+	)
+	if not students:
+		return []
+
+	names = [s.name for s in students]
+	applications = frappe.get_list(
+		"Application",
+		fields=[
+			"name",
+			"student",
+			"destination_country",
+			"status",
+			"preferred_university",
+			"course",
+			"intake",
+			"application_type",
+			"modified",
+		],
+		filters={"student": ["in", names]},
+		limit_page_length=0,
+		order_by="creation desc",
+	)
+
+	by_student = {}
+	for app in applications:
+		by_student.setdefault(app.student, []).append(app)
+
+	for student in students:
+		# Group by destination country so each card reads country-by-country.
+		grouped = {}
+		for app in by_student.get(student.name, []):
+			grouped.setdefault(app.destination_country or "Unspecified", []).append(app)
+		student["applications_by_country"] = [
+			{"country": country, "applications": apps}
+			for country, apps in sorted(grouped.items())
+		]
+		student["application_count"] = len(by_student.get(student.name, []))
+
+	return students
+
+
+def has_permission(doc, ptype=None, user=None):
+	"""Block an agent from opening another agent's Student by direct URL."""
+	user = user or frappe.session.user
+	if user == "Administrator":
+		return True
+
+	roles = set(frappe.get_roles(user))
+	if roles & UNRESTRICTED_ROLES:
+		return True
+
+	if not user_is_agent(user):
+		return True
+
+	if doc.owner == user:
+		return True
+
+	return bool(
+		frappe.db.exists(
+			"Application",
+			{"student": doc.name, "agent": ["in", _agent_keys(user)]},
+		)
+	)
+
+
 class Student(Document):
 	@staticmethod
 	def get_list_query(query):
@@ -149,11 +309,22 @@ class Student(Document):
 		if user_is_agent():
 			self._apply_agent_defaults()
 
+	def after_insert(self):
+		# `name` is only assigned once the row is written, so validate() cannot
+		# fill student_id on the very first save.
+		self.db_set("student_id", self.name, update_modified=False)
+
 	def validate(self):
 		if user_is_agent():
 			self._apply_agent_defaults()
 			if not self.destination_country:
 				frappe.throw(frappe._("Please select Home Country"))
+
+		# B1 - agents need the Student ID as a list column. The list view shows
+		# `title`, so the STU- id was never visible; mirroring it into a real
+		# field makes it a sortable, filterable column in list and report view.
+		if not self.is_new():
+			self.student_id = self.name
 
 		# Set title field for display in Link dropdowns
 		if self.first_name:

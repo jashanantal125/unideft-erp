@@ -1,0 +1,17 @@
+/* B3 - Student Card View.
+ *
+ * Deliberately has no independent design of its own: it imports
+ * applications_view.css and students_view.js builds its cards with that
+ * file's exact class names (.applications-container, .application-card,
+ * .card-header-section, .program-info-section, .tab-content-area,
+ * .program-item, .card-footer, .applications-grid, pagination, search and
+ * loading/empty/error states). That keeps colors and structure identical
+ * between the two card views by construction, rather than by two
+ * hand-matched stylesheets that can drift apart on the next edit.
+ *
+ * This file stays a real, page-scoped stylesheet (auto-bundled by Frappe with
+ * students_view.js for this page only) rather than a frappe.require() call,
+ * which is what caused applications_view.css to leak into the whole Desk when
+ * it was tried there - see the comment in students_view.js.
+ */
+@import url('/assets/erpnext/css/applications_view.css');

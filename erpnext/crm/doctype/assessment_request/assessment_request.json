@@ -21,18 +21,24 @@
   "last_name",
   "mobile_number",
   "email_address",
-  "preferences_section",
-  "preferred_countries",
-  "preferred_course_area",
-  "attachments_section",
-  "attachments",
   "cro_unregistered_section",
   "cro_agent_name",
   "cro_agency_name",
+  "preferences_section",
+  "preferred_countries",
+  "preferred_course_area",
+  "remarks",
+  "attachments_section",
+  "attachments",
   "assessment_workflow_tab",
   "need_assessment",
   "assessment_vendors_section",
-  "assessment_vendors"
+  "assessment_vendors",
+  "course_shortlisting_section",
+  "course_shortlisting",
+  "response_submitted",
+  "response_submitted_on",
+  "response_submitted_by"
  ],
  "fields": [
   {
@@ -142,16 +148,22 @@
   },
   {
    "fieldname": "preferred_countries",
-   "fieldtype": "Table",
+   "fieldtype": "Table MultiSelect",
    "label": "Preferred Countries",
    "options": "Assessment Request Country",
-   "reqd": 1
+   "reqd": 1,
+   "description": "Pick one or more destination countries."
   },
   {
    "fieldname": "preferred_course_area",
    "fieldtype": "Data",
    "label": "Preferred Course Area",
    "reqd": 1
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
   },
   {
    "depends_on": "eval:doc.student_already_registered == 'No'",
@@ -167,22 +179,27 @@
    "options": "Assessment Request Document"
   },
   {
-   "depends_on": "eval:doc.student_already_registered == 'No' && (in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head') || in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'CRM Admin'))",
+   "depends_on": "eval:in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head') || in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'CRM Admin')",
    "fieldname": "cro_unregistered_section",
    "fieldtype": "Section Break",
-   "label": "CRO — Unregistered Student"
+   "label": "Agent / Agency",
+   "description": "Optional. Lets a CRO record which agent and agency the request came in through. Hidden from agents, who are the source themselves."
   },
   {
-   "depends_on": "eval:doc.student_already_registered == 'No' && (in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head') || in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'CRM Admin'))",
+   "depends_on": "eval:in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head') || in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'CRM Admin')",
    "fieldname": "cro_agent_name",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
+   "options": "Agent",
    "label": "Agent Name"
   },
   {
-   "depends_on": "eval:doc.student_already_registered == 'No' && (in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head') || in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'CRM Admin'))",
+   "depends_on": "eval:in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head') || in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'CRM Admin')",
    "fieldname": "cro_agency_name",
    "fieldtype": "Data",
-   "label": "Agency Name"
+   "label": "Agency Name",
+   "fetch_from": "cro_agent_name.company_name",
+   "fetch_if_empty": 1,
+   "description": "Auto-filled from the selected agent's company; can be overridden."
   },
   {
    "fieldname": "assessment_workflow_tab",
@@ -209,6 +226,43 @@
    "fieldtype": "Table",
    "label": "Assessment Vendors",
    "options": "Need Assessment Vendor"
+  },
+  {
+   "depends_on": "eval:doc.need_assessment == 'Yes'",
+   "fieldname": "course_shortlisting_section",
+   "fieldtype": "Section Break",
+   "label": "Course Shortlisting"
+  },
+  {
+   "depends_on": "eval:doc.need_assessment == 'Yes'",
+   "description": "Admissions / CRO shortlist courses here. University, country and tuition fee fill in from the selected course; set the intake date manually. Once submitted, the agent sees this table and can apply from any row.",
+   "fieldname": "course_shortlisting",
+   "fieldtype": "Table",
+   "label": "Course Shortlisting (Assessment Request Responses)",
+   "options": "Assessment Course Shortlisting"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.need_assessment == 'Yes'",
+   "fieldname": "response_submitted",
+   "fieldtype": "Check",
+   "label": "Response Submitted",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.response_submitted",
+   "fieldname": "response_submitted_on",
+   "fieldtype": "Datetime",
+   "label": "Response Submitted On",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.response_submitted",
+   "fieldname": "response_submitted_by",
+   "fieldtype": "Link",
+   "label": "Response Submitted By",
+   "options": "User",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,

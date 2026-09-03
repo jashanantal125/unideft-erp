@@ -1,0 +1,31 @@
+{
+ "creation": "2026-09-03 00:00:00.000000",
+ "doctype": "Page",
+ "icon": "fa fa-th-large",
+ "idx": 0,
+ "modified": "2026-09-03 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "students_view",
+ "owner": "Administrator",
+ "page_name": "students_view",
+ "roles": [
+  {"role": "System Manager"},
+  {"role": "CRM Admin"},
+  {"role": "CRM Sales Staff"},
+  {"role": "Team Lead"},
+  {"role": "Team Executive"},
+  {"role": "Admission 1"},
+  {"role": "Admission 2"},
+  {"role": "CRO"},
+  {"role": "CRO Head"},
+  {"role": "Country Head"},
+  {"role": "Agent"},
+  {"role": "B2B Agent"},
+  {"role": "B2C Agent"},
+  {"role": "agents"}
+ ],
+ "standard": "Yes",
+ "system_page": 0,
+ "title": "Students View"
+}

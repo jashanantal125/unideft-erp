@@ -86,7 +86,8 @@
    "fieldtype": "Link",
    "label": "Application ID",
    "options": "Application",
-   "mandatory_depends_on": "eval:doc.student_confirmed_to_apply == 'Yes' && doc.student_application_punched == 'Yes'"
+   "mandatory_depends_on": "eval:doc.student_confirmed_to_apply == 'Yes' && doc.student_application_punched == 'Yes'",
+   "description": "Applications already created for this student."
   },
   {
    "depends_on": "eval:doc.student_confirmed_to_apply == 'Yes' && doc.student_application_punched == 'Yes'",
@@ -95,7 +96,10 @@
    "in_list_view": 1,
    "label": "University Name",
    "options": "University",
-   "mandatory_depends_on": "eval:doc.student_confirmed_to_apply == 'Yes' && doc.student_application_punched == 'Yes'"
+   "mandatory_depends_on": "eval:doc.student_confirmed_to_apply == 'Yes' && doc.student_application_punched == 'Yes'",
+   "fetch_from": "application_id.preferred_university",
+   "fetch_if_empty": 1,
+   "description": "Fills in from the selected Application; can be overridden."
   },
   {
    "depends_on": "eval:doc.student_confirmed_to_apply == 'Yes' && doc.student_application_punched == 'Yes'",
@@ -103,7 +107,10 @@
    "fieldtype": "Link",
    "label": "Course Name",
    "options": "Course",
-   "mandatory_depends_on": "eval:doc.student_confirmed_to_apply == 'Yes' && doc.student_application_punched == 'Yes'"
+   "mandatory_depends_on": "eval:doc.student_confirmed_to_apply == 'Yes' && doc.student_application_punched == 'Yes'",
+   "fetch_from": "application_id.course",
+   "fetch_if_empty": 1,
+   "description": "Fills in from the selected Application; can be overridden."
   },
   {
    "default": "Open",

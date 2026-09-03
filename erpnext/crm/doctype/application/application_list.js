@@ -156,7 +156,69 @@ function show_new_application_country_dialog() {
 	d.show();
 }
 
+// D2.1 - agents land on the Card View. List View stays one click away, and once
+// they choose it we stop redirecting so the choice actually sticks.
+const AGENT_LIST_VIEW_OPT_OUT = "unideft:application_list_view_preferred";
+
+function maybe_redirect_agent_to_card_view(listview) {
+	if (!user_is_agent_only()) {
+		return;
+	}
+
+	let opted_out = false;
+	try {
+		opted_out = localStorage.getItem(AGENT_LIST_VIEW_OPT_OUT) === "1";
+	} catch (e) {
+		opted_out = false;
+	}
+	if (opted_out) {
+		add_back_to_card_view_hint(listview);
+		return;
+	}
+
+	// A filter or search in the route means they navigated here deliberately.
+	const route_options = frappe.route_options || {};
+	if (Object.keys(route_options).length) {
+		return;
+	}
+
+	frappe.set_route("applications_view");
+}
+
+function add_back_to_card_view_hint(listview) {
+	listview.page.add_inner_button(__("Always Open Card View"), function () {
+		try {
+			localStorage.removeItem(AGENT_LIST_VIEW_OPT_OUT);
+		} catch (e) {
+			// nothing to clear
+		}
+		frappe.set_route("applications_view");
+	});
+}
+
+// A2 - admissions only ever receive applications, they never open a new one.
+function user_is_admissions(roles) {
+	return ["Admission 1", "Admission 2"].some((r) => (roles || frappe.user_roles || []).includes(r));
+}
+
+function user_can_create_application() {
+	const roles = frappe.user_roles || [];
+	const privileged = ["System Manager", "Administrator", "CRM Admin"].some((r) =>
+		roles.includes(r)
+	);
+	if (privileged) {
+		return true;
+	}
+	return !user_is_admissions(roles);
+}
+
 function bind_new_application_action(listview) {
+	if (!user_can_create_application()) {
+		// Belt-and-braces with the Custom DocPerm change: clear the primary action
+		// so no "New Application" entry point is reachable from the list view.
+		listview.page.clear_primary_action();
+		return;
+	}
 	listview.page.set_primary_action(__("New Application"), () => {
 		if (user_is_agent_only()) {
 			show_agent_new_application_dialog();
@@ -181,8 +243,15 @@ frappe.listview_settings["Application"] = {
 	onload: function (listview) {
 		bind_new_application_action(listview);
 		listview.page.add_inner_button(__("Card View"), function () {
+			// An explicit click is a deliberate choice, so remember it.
+			try {
+				localStorage.removeItem(AGENT_LIST_VIEW_OPT_OUT);
+			} catch (e) {
+				// storage unavailable - the redirect simply stays default-on
+			}
 			frappe.set_route("applications_view");
 		});
+		maybe_redirect_agent_to_card_view(listview);
 	},
 	refresh: function (listview) {
 		bind_new_application_action(listview);

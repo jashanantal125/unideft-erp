@@ -25,6 +25,7 @@ develop_version = "15.x.x-develop"
 app_include_js = [
 	"erpnext.bundle.js",
 	"/assets/erpnext/js/accounts_reminders.js",
+	"/assets/erpnext/js/unideft_apply_now.js",
 	# "/assets/erpnext/js/crm_logo_header.js",  # Disabled - Unideft logo removed from CRM workspace
 ]
 app_include_css = [
@@ -308,6 +309,14 @@ has_website_permission = {
 	"Issue": "erpnext.support.doctype.issue.issue.has_website_permission",
 	"Timesheet": "erpnext.controllers.website_list_for_contact.has_website_permission",
 	"Project": "erpnext.controllers.website_list_for_contact.has_website_permission",
+}
+
+permission_query_conditions = {
+	"Student": "erpnext.crm.doctype.student.student.get_permission_query_conditions",
+}
+
+has_permission = {
+	"Student": "erpnext.crm.doctype.student.student.has_permission",
 }
 
 before_tests = "erpnext.setup.utils.before_tests"

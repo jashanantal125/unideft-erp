@@ -53,6 +53,38 @@ function apply_agent_student_form(frm) {
 	frm.refresh_fields();
 }
 
+/**
+ * B2 - "Need Assessment" and "Apply Now" on the Student form.
+ *
+ * Both are agent entry points, and both delegate to the shared helpers in
+ * unideft_apply_now.js rather than re-implementing the flow, so the Student
+ * form, the Course Shortlisting rows and the Application list stay identical.
+ */
+function add_student_action_buttons(frm) {
+	if (!is_agent_user()) {
+		return;
+	}
+
+	frm.page.add_button(__("Need Assessment"), () => {
+		unideft.apply.new_assessment_request(frm);
+	});
+
+	frm.page.add_button(
+		__("Apply Now"),
+		() => {
+			if (frm.is_new()) {
+				frappe.msgprint(__("Please save the student first, then click Apply Now."));
+				return;
+			}
+			unideft.apply.new_application({
+				student: frm.doc.name,
+				destination_country: frm.doc.destination_country || "",
+			});
+		},
+		"primary"
+	);
+}
+
 frappe.ui.form.on("Student", {
 	onload(frm) {
 		apply_agent_student_form(frm);
@@ -61,6 +93,7 @@ frappe.ui.form.on("Student", {
 	refresh(frm) {
 		apply_agent_student_form(frm);
 		frm.set_df_property("destination_country", "label", __("Home Country"));
+		add_student_action_buttons(frm);
 	},
 
 	validate(frm) {

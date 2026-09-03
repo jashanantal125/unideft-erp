@@ -2327,3 +2327,23 @@ body.page-applications-view .applications-container .search-section {
 	border-bottom: none !important;
 	box-shadow: none !important;
 }
+
+/* D2 - make the stage the application is actually on readable at a glance.
+   Every node also carries a title tooltip with the full stage name. */
+.applications-container .timeline-node.current {
+	box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35);
+	border-color: #2563eb;
+	transform: scale(1.12);
+}
+
+.applications-container .timeline-current-label {
+	margin-top: 4px;
+	font-size: 10px;
+	font-weight: 700;
+	line-height: 1.2;
+	color: #2563eb;
+	text-align: center;
+	max-width: 78px;
+	white-space: normal;
+	word-break: break-word;
+}
