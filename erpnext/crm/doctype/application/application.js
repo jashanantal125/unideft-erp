@@ -155,8 +155,29 @@ function save_application_reminder(frm, { remind_at, description }) {
 function activate_application_tab(frm, tab_fieldname, tab_label) {
 	try {
 		const tab_field = frm.get_field(tab_fieldname);
-		if (tab_field && tab_field.tab && typeof frm.set_active_tab === "function") {
-			frm.set_active_tab(tab_field.tab);
+		const tab = tab_field && tab_field.tab;
+		if (tab && typeof tab.set_active === "function") {
+			// A tab hides itself when its own depends_on is false OR when every
+			// section inside it is hidden (see Tab.refresh() in frappe). Calling
+			// .tab("show") on a hidden nav-link does not deactivate the current
+			// pane, so both panes end up visible at once - which is what makes
+			// the incoming tab's fields appear stacked inside the tab the user
+			// is already looking at. Leave the user where they are instead.
+			if (typeof tab.is_hidden === "function" && tab.is_hidden()) {
+				return;
+			}
+			// Tab.set_active() is the method that actually switches tabs: it
+			// calls .tab("show") (which deactivates the sibling pane) and only
+			// then reports back via frm.set_active_tab().
+			//
+			// frm.set_active_tab() on its own does NOT switch anything - it is
+			// bookkeeping (active_tab_map, URL hash, on_tab_change) meant to be
+			// called *by* the Tab class. Calling it directly, as this function
+			// used to, left the DOM on the old tab while the form's own record
+			// of the active tab moved on, so the next render could show both
+			// panes together. That mismatch is the long-standing "tab doesn't
+			// move and the next tab's fields appear in this one" bug.
+			tab.set_active();
 			return;
 		}
 	} catch (e) {
@@ -181,9 +202,11 @@ function activate_application_tab(frm, tab_fieldname, tab_label) {
 		})
 		.first();
 
-	if ($link.length) {
+	// Same reasoning as above: clicking a hidden tab link leaves the current
+	// pane showing alongside the new one, so only click a link that is visible.
+	if ($link.length && !$link.closest("li").hasClass("hide") && !$link.hasClass("hide")) {
 		$link.trigger("click");
-	} else {
+	} else if (!$link.length) {
 		frm.scroll_to_field(tab_fieldname);
 	}
 }

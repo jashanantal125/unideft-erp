@@ -703,8 +703,16 @@ frappe.ui.form.on("Application UK", {
 			frm._landed_details_tab = true;
 			setTimeout(() => {
 				const tab_field = frm.get_field("details_tab");
-				if (tab_field && tab_field.tab && typeof frm.set_active_tab === "function") {
-					frm.set_active_tab(tab_field.tab);
+				const tab = tab_field && tab_field.tab;
+				// Tab.set_active() is what actually switches the tab.
+				// frm.set_active_tab() only records which tab is active
+				// (active_tab_map / URL hash), so on its own it left the form
+				// showing one tab while reporting another as active.
+				if (tab && typeof tab.set_active === "function") {
+					if (typeof tab.is_hidden === "function" && tab.is_hidden()) {
+						return;
+					}
+					tab.set_active();
 				}
 			}, 200);
 		}
