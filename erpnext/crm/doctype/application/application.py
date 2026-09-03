@@ -208,7 +208,13 @@ class Application(Document):
 				or ""
 			)
 		if not self.dob:
-			self.dob = getattr(stu, "dob", None) or getattr(stu, "date_of_birth", None)
+			# Student's date of birth field is named "birthday", not dob/date_of_birth -
+			# those two never matched anything, so this fallback silently never fired.
+			self.dob = (
+				getattr(stu, "birthday", None)
+				or getattr(stu, "dob", None)
+				or getattr(stu, "date_of_birth", None)
+			)
 
 	def compute_current_age(self):
 		"""Keep Age in sync with DOB on save."""
@@ -1745,6 +1751,10 @@ def create_agent_application(
 	preferred_university=None,
 	course=None,
 	intake=None,
+	study_gap=None,
+	martial_status=None,
+	higher_education=None,
+	any_visa_refused=None,
 ):
 	"""Create Application (or UK) from the agent short-form dialog and assign team."""
 	student = student or student_id
@@ -1805,6 +1815,10 @@ def create_agent_application(
 			"course": course,
 			"intake": intake,
 			"agent": agent_user,
+			"study_gap": study_gap,
+			"martial_status": martial_status,
+			"higher_education": higher_education,
+			"any_visa_refused": any_visa_refused,
 			"student_name": " ".join(
 				filter(None, [stu.first_name, getattr(stu, "last_name", None)])
 			)

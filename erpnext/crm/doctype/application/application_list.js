@@ -24,92 +24,16 @@ function user_is_agent_only() {
 	return agent && !staff;
 }
 
+// The agent's "New Application" dialog is unideft.apply.new_application()
+// (public/js/unideft_apply_now.js), loaded globally via app_include_js before
+// any per-doctype script - this file used to carry its own separate copy,
+// which meant a field added to one (e.g. the AU-only Study Gap / Martial
+// Status / Qualification / Refused from Aus-NZ fields) silently did not
+// apply to the other entry point. One dialog now, used everywhere an agent
+// starts a new Application: this list view, the Student form's Apply Now
+// button, and each Course Shortlisting row.
 function show_agent_new_application_dialog() {
-	const d = new frappe.ui.Dialog({
-		title: __("New Application"),
-		fields: [
-			{
-				fieldname: "student",
-				fieldtype: "Link",
-				options: "Student",
-				label: __("Student Name"),
-				reqd: 1,
-				onchange() {
-					const student = d.get_value("student");
-					if (!student) {
-						d.set_value("student_id", "");
-						return;
-					}
-					d.set_value("student_id", student);
-					frappe.db.get_value("Student", student, ["destination_country", "first_name", "last_name"], (r) => {
-						if (r && r.destination_country && !d.get_value("destination_country")) {
-							d.set_value("destination_country", r.destination_country);
-						}
-					});
-				},
-			},
-			{
-				fieldname: "student_id",
-				fieldtype: "Data",
-				label: __("Student ID"),
-				read_only: 1,
-			},
-			{
-				fieldname: "destination_country",
-				fieldtype: "Link",
-				options: "Country",
-				label: __("Destination Country"),
-				reqd: 1,
-				get_query: () => ({
-					filters: { name: ["in", ["Australia", "United Kingdom"]] },
-				}),
-			},
-			{
-				fieldname: "preferred_university",
-				fieldtype: "Link",
-				options: "University",
-				label: __("University Name"),
-				reqd: 1,
-				onchange() {
-					d.set_value("course", "");
-				},
-			},
-			{
-				fieldname: "course",
-				fieldtype: "Link",
-				options: "Course",
-				label: __("Course Name"),
-				reqd: 1,
-				get_query() {
-					const uni = d.get_value("preferred_university");
-					return uni ? { filters: { university: uni } } : {};
-				},
-			},
-			{
-				fieldname: "intake",
-				fieldtype: "Date",
-				label: __("Intake"),
-				reqd: 1,
-			},
-		],
-		primary_action_label: __("Create Application"),
-		primary_action(values) {
-			d.hide();
-			frappe.call({
-				method: "erpnext.crm.doctype.application.application.create_agent_application",
-				args: values,
-				freeze: true,
-				freeze_message: __("Creating application…"),
-				callback(r) {
-					if (!r.message) {
-						return;
-					}
-					frappe.set_route("Form", r.message.doctype, r.message.name);
-				},
-			});
-		},
-	});
-	d.show();
+	unideft.apply.new_application();
 }
 
 function show_new_application_country_dialog() {

@@ -118,6 +118,48 @@ unideft.apply.new_application = function (prefill = {}) {
 				reqd: 1,
 				default: prefill.intake || "",
 			},
+			// Same fields, same labels/options, and the same reqd condition as
+			// the Details tab on the real Application form (study_gap,
+			// martial_status, higher_education, any_visa_refused) - shown here
+			// too so an agent fills them once, upfront, instead of having to
+			// open the created record separately to answer them. Only for
+			// Australia: any_visa_refused only ever applied to AU/UK on the
+			// real form, and this quick dialog only ever creates a plain
+			// Application for AU (a United Kingdom pick here creates an
+			// Application UK record instead, which has its own full Details
+			// tab covering these same fields).
+			{
+				fieldname: "study_gap",
+				fieldtype: "Select",
+				label: __("Study Gap?"),
+				options: "\nYes\nNo",
+				depends_on: "eval:doc.destination_country=='Australia'",
+				mandatory_depends_on: "eval:doc.destination_country=='Australia'",
+			},
+			{
+				fieldname: "martial_status",
+				fieldtype: "Select",
+				label: __("Martial Status"),
+				options: "\nMarried\nSingle",
+				depends_on: "eval:doc.destination_country=='Australia'",
+				mandatory_depends_on: "eval:doc.destination_country=='Australia'",
+			},
+			{
+				fieldname: "higher_education",
+				fieldtype: "Select",
+				label: __("Qualification"),
+				options: "\n12th pass\nGraduation\nPost-graduation\nOthers",
+				depends_on: "eval:doc.destination_country=='Australia'",
+				mandatory_depends_on: "eval:doc.destination_country=='Australia'",
+			},
+			{
+				fieldname: "any_visa_refused",
+				fieldtype: "Select",
+				label: __("Refused from Aus/NZ"),
+				options: "\nYes\nNo",
+				depends_on: "eval:doc.destination_country=='Australia'",
+				mandatory_depends_on: "eval:doc.destination_country=='Australia'",
+			},
 		],
 		primary_action_label: __("Create Application"),
 		primary_action(values) {
