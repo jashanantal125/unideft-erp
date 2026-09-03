@@ -39,9 +39,62 @@ unideft.apply.user_is_agent_only = function () {
 };
 
 /**
+ * Mirror the Details tab's conditional logic inside the dialog.
+ *
+ * A frappe.ui.Dialog does not re-evaluate `depends_on` as the user types the
+ * way a Form does, so every conditional field here is toggled explicitly on
+ * each relevant change.
+ */
+function toggle_conditional_fields(dialog) {
+	const v = dialog.get_values(true) || {};
+	const is_australia = v.destination_country === "Australia";
+
+	// Study Gap → duration, and the Accepted / Not Accepted note (Details tab:
+	// Below 1 Year and Below 2 Years are Accepted, Above 2 Years is not).
+	const gap_yes = v.study_gap === "Yes";
+	dialog.set_df_property("gap_duration", "hidden", gap_yes ? 0 : 1);
+	dialog.set_df_property("gap_duration", "reqd", gap_yes ? 1 : 0);
+	if (!gap_yes) {
+		dialog.set_value("gap_duration", "");
+	}
+
+	const status_field = dialog.get_field("gap_duration_status_html");
+	if (status_field) {
+		let html = "";
+		if (gap_yes && ["Below 1 Year", "Below 2 Years"].includes(v.gap_duration)) {
+			html = `<div class="text-muted" style="margin-bottom:10px;">
+				<b style="color:#2A7D34;">${__("Accepted")}</b></div>`;
+		} else if (gap_yes && v.gap_duration === "Above 2 Years") {
+			html = `<div class="text-muted" style="margin-bottom:10px;">
+				<b style="color:#B33;">${__("Not Accepted")}</b></div>`;
+		}
+		status_field.$wrapper.html(html);
+	}
+
+	// Visa refusal is an Australia-only question, with its own cascade.
+	dialog.set_df_property("any_visa_refused", "hidden", is_australia ? 0 : 1);
+	dialog.set_df_property("any_visa_refused", "reqd", is_australia ? 1 : 0);
+	if (!is_australia) {
+		dialog.set_value("any_visa_refused", "");
+	}
+
+	const refused = is_australia && v.any_visa_refused === "Yes";
+	dialog.set_df_property("visa_refused_country", "hidden", refused ? 0 : 1);
+	if (!refused) {
+		dialog.set_value("visa_refused_country", "");
+	}
+
+	const show_type = refused && !!v.visa_refused_country;
+	dialog.set_df_property("visa_refused_type", "hidden", show_type ? 0 : 1);
+	if (!show_type) {
+		dialog.set_value("visa_refused_type", "");
+	}
+}
+
+/**
  * Open the New Application dialog, pre-filled with whatever the caller knows.
  *
- * @param {Object} prefill - any of student, destination_country,
+ * @param {Object} prefill - any of student, dob, destination_country,
  *   preferred_university, course, intake.
  */
 unideft.apply.new_application = function (prefill = {}) {
@@ -60,17 +113,26 @@ unideft.apply.new_application = function (prefill = {}) {
 					if (!student) {
 						return;
 					}
-					frappe.db.get_value(
-						"Student",
-						student,
-						["destination_country"],
-						(r) => {
-							if (r && r.destination_country && !dialog.get_value("destination_country")) {
-								dialog.set_value("destination_country", r.destination_country);
-							}
+					// Only the date of birth is worth carrying across. Student's
+					// `destination_country` is labelled "Home Country" - copying it
+					// here is what made every application default to India. The
+					// agent picks the destination themselves.
+					frappe.db.get_value("Student", student, ["birthday"], (r) => {
+						if (r && r.birthday && !dialog.get_value("dob")) {
+							dialog.set_value("dob", r.birthday);
 						}
-					);
+					});
 				},
+			},
+			{
+				// Application.dob is mandatory and is NOT reliably derivable from
+				// the Student record (many students have no birthday set), which is
+				// what produced "Value missing for Application: DOB" on save.
+				fieldname: "dob",
+				fieldtype: "Date",
+				label: __("DOB"),
+				reqd: 1,
+				default: prefill.dob || "",
 			},
 			{
 				fieldname: "destination_country",
@@ -82,6 +144,9 @@ unideft.apply.new_application = function (prefill = {}) {
 				get_query: () => ({
 					filters: { name: ["in", ["Australia", "United Kingdom"]] },
 				}),
+				onchange() {
+					toggle_conditional_fields(dialog);
+				},
 			},
 			{
 				fieldname: "preferred_university",
@@ -118,47 +183,78 @@ unideft.apply.new_application = function (prefill = {}) {
 				reqd: 1,
 				default: prefill.intake || "",
 			},
-			// Same fields, same labels/options, and the same reqd condition as
-			// the Details tab on the real Application form (study_gap,
-			// martial_status, higher_education, any_visa_refused) - shown here
-			// too so an agent fills them once, upfront, instead of having to
-			// open the created record separately to answer them. Only for
-			// Australia: any_visa_refused only ever applied to AU/UK on the
-			// real form, and this quick dialog only ever creates a plain
-			// Application for AU (a United Kingdom pick here creates an
-			// Application UK record instead, which has its own full Details
-			// tab covering these same fields).
-			{
-				fieldname: "study_gap",
-				fieldtype: "Select",
-				label: __("Study Gap?"),
-				options: "\nYes\nNo",
-				depends_on: "eval:doc.destination_country=='Australia'",
-				mandatory_depends_on: "eval:doc.destination_country=='Australia'",
-			},
+			// The same qualifying questions the Details tab asks, with the same
+			// labels, options and cascades - answered once here instead of the
+			// agent having to reopen the created record.
+			//
+			// Visibility is driven by toggle_conditional_fields() below rather
+			// than depends_on: a Dialog only re-evaluates depends_on when its
+			// own refresh cycle runs, so conditional fields would sit stale
+			// (or never appear) as the agent fills the form.
+			{ fieldtype: "Section Break", label: __("Qualifying Details") },
 			{
 				fieldname: "martial_status",
 				fieldtype: "Select",
 				label: __("Martial Status"),
 				options: "\nMarried\nSingle",
-				depends_on: "eval:doc.destination_country=='Australia'",
-				mandatory_depends_on: "eval:doc.destination_country=='Australia'",
 			},
 			{
 				fieldname: "higher_education",
 				fieldtype: "Select",
 				label: __("Qualification"),
 				options: "\n12th pass\nGraduation\nPost-graduation\nOthers",
-				depends_on: "eval:doc.destination_country=='Australia'",
-				mandatory_depends_on: "eval:doc.destination_country=='Australia'",
+			},
+			{ fieldtype: "Column Break" },
+			{
+				fieldname: "study_gap",
+				fieldtype: "Select",
+				label: __("Study Gap?"),
+				options: "\nYes\nNo",
+				onchange() {
+					toggle_conditional_fields(dialog);
+				},
 			},
 			{
+				// Details tab: shown only when Study Gap is Yes. Below 1 Year /
+				// Below 2 Years are Accepted, Above 2 Years is Not Accepted.
+				fieldname: "gap_duration",
+				fieldtype: "Select",
+				label: __("If study gap is"),
+				options: "\nBelow 1 Year\nBelow 2 Years\nAbove 2 Years",
+				onchange() {
+					toggle_conditional_fields(dialog);
+				},
+			},
+			{
+				fieldname: "gap_duration_status_html",
+				fieldtype: "HTML",
+			},
+			{
+				// Details tab gates this on Australia (or UK). This dialog only
+				// creates a plain Application for Australia - a United Kingdom
+				// pick routes to Application UK, which has its own Details tab.
 				fieldname: "any_visa_refused",
 				fieldtype: "Select",
 				label: __("Refused from Aus/NZ"),
 				options: "\nYes\nNo",
-				depends_on: "eval:doc.destination_country=='Australia'",
-				mandatory_depends_on: "eval:doc.destination_country=='Australia'",
+				onchange() {
+					toggle_conditional_fields(dialog);
+				},
+			},
+			{
+				fieldname: "visa_refused_country",
+				fieldtype: "Select",
+				label: __("Which Country?"),
+				options: "\nAustralia\nNew Zealand",
+				onchange() {
+					toggle_conditional_fields(dialog);
+				},
+			},
+			{
+				fieldname: "visa_refused_type",
+				fieldtype: "Select",
+				label: __("Which type of Visa refused?"),
+				options: "\nStudy Visa\nTourist Visa\nWork Visa\nOther Visa",
 			},
 		],
 		primary_action_label: __("Create Application"),
@@ -180,9 +276,13 @@ unideft.apply.new_application = function (prefill = {}) {
 
 	dialog.__prefilling = true;
 	dialog.show();
+	// Start with every conditional field in the right state rather than
+	// showing them all until the agent touches something.
+	toggle_conditional_fields(dialog);
 	// Let the default values settle before re-enabling the university onchange.
 	setTimeout(() => {
 		dialog.__prefilling = false;
+		toggle_conditional_fields(dialog);
 	}, 300);
 
 	return dialog;

@@ -1751,10 +1751,14 @@ def create_agent_application(
 	preferred_university=None,
 	course=None,
 	intake=None,
+	dob=None,
 	study_gap=None,
+	gap_duration=None,
 	martial_status=None,
 	higher_education=None,
 	any_visa_refused=None,
+	visa_refused_country=None,
+	visa_refused_type=None,
 ):
 	"""Create Application (or UK) from the agent short-form dialog and assign team."""
 	student = student or student_id
@@ -1794,6 +1798,11 @@ def create_agent_application(
 				"course": course,
 				"intake": intake,
 				"agent": agent_user,
+				"dob": dob,
+				"martial_status": martial_status,
+				"higher_education": higher_education,
+				"study_gap": study_gap,
+				"gap_duration": gap_duration,
 				"student_name": " ".join(
 					filter(None, [stu.first_name, getattr(stu, "last_name", None)])
 				)
@@ -1815,10 +1824,14 @@ def create_agent_application(
 			"course": course,
 			"intake": intake,
 			"agent": agent_user,
+			"dob": dob,
 			"study_gap": study_gap,
+			"gap_duration": gap_duration,
 			"martial_status": martial_status,
 			"higher_education": higher_education,
 			"any_visa_refused": any_visa_refused,
+			"visa_refused_country": visa_refused_country,
+			"visa_refused_type": visa_refused_type,
 			"student_name": " ".join(
 				filter(None, [stu.first_name, getattr(stu, "last_name", None)])
 			)
