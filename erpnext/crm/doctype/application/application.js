@@ -1841,6 +1841,17 @@ frappe.ui.form.on("Application", {
 		activate_tab_for_workflow_state(frm);
 	},
 
+	// Pressing the workflow Action button doesn't set workflow_state through
+	// frm.set_value() - core's handle_workflow_action() applies it via
+	// frappe.model.sync(doc) then frm.refresh(), so the workflow_state(frm)
+	// trigger above never fires for it. after_workflow_action is the hook core
+	// fires for exactly this case, strictly after that refresh has finished
+	// (see frappe/public/js/frappe/form/workflow.js), so the tab bar is
+	// already in its final state by the time this runs - no timing guesswork.
+	after_workflow_action(frm) {
+		activate_tab_for_workflow_state(frm);
+	},
+
 	refresh(frm) {
 		activate_tab_for_workflow_state(frm);
 		hide_accounts_connections_on_application(frm);
