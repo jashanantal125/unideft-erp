@@ -207,7 +207,7 @@
    "label": "Assessment Workflow"
   },
   {
-   "description": "Only CRO can set this. When Yes, the Assessment Vendors grid appears for admissions / staff.",
+   "description": "Only Admissions can set this. When Yes, the Assessment Vendors grid appears for CRO / staff.",
    "fieldname": "need_assessment",
    "fieldtype": "Select",
    "label": "Need Assessment?",
