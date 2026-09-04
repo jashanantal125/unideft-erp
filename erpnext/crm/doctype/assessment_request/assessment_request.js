@@ -515,12 +515,26 @@ frappe.ui.form.on("Assessment Course Shortlisting", {
 		}
 
 		const row = locals[cdt][cdn];
+		// The shortlisting row stores Intake as a Date, but Application.intake
+		// is a Select of month names - hand over the month, not the date.
+		let intake_month = "";
+		if (row.intake) {
+			const months = [
+				"January", "February", "March", "April", "May", "June",
+				"July", "August", "September", "October", "November", "December",
+			];
+			const d = frappe.datetime.str_to_obj(row.intake);
+			if (d && !isNaN(d.getMonth())) {
+				intake_month = months[d.getMonth()];
+			}
+		}
+
 		unideft.apply.new_application({
 			student: frm.doc.student,
 			destination_country: row.country || "",
 			preferred_university: row.university || "",
 			course: row.course || "",
-			intake: row.intake || "",
+			intake: intake_month,
 		});
 	},
 });

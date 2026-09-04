@@ -79,6 +79,27 @@ TRANSITIONS = [
 	("Enrolled", "Closed", "Closed"),
 ]
 
+# Workflow Transition.allowed is a single Role link, not a multi-select, so
+# covering several roles means one transition row per (transition, role) pair.
+#
+# Deliberately excludes agents. Production had every transition set to "All",
+# and "All" is a role every Frappe user carries - so agents could push an
+# application all the way to Closed themselves. Worse, frappe hides the Save
+# button as soon as any workflow action is available (Workflow.setup_btn), so
+# agents lost normal Save on the Details tab too. Agents fill in the Details
+# tab and save; moving stages is staff work.
+TRANSITION_ROLES = [
+	"System Manager",
+	"CRM Admin",
+	"Team Lead",
+	"Team Executive",
+	"Admission 1",
+	"Admission 2",
+	"CRO",
+	"CRO Head",
+	"Country Head",
+]
+
 
 def _ensure_master(doctype, name):
 	"""state/next_state/action are Link fields to master doctypes (Workflow
@@ -127,15 +148,18 @@ def execute():
 
 	doc.set("transitions", [])
 	for from_state, action, to_state in TRANSITIONS:
-		doc.append(
-			"transitions",
-			{
-				"state": from_state,
-				"action": action,
-				"next_state": to_state,
-				"allowed": "All",
-			},
-		)
+		for role in TRANSITION_ROLES:
+			if not frappe.db.exists("Role", role):
+				continue
+			doc.append(
+				"transitions",
+				{
+					"state": from_state,
+					"action": action,
+					"next_state": to_state,
+					"allowed": role,
+				},
+			)
 
 	doc.save(ignore_permissions=True)
 	frappe.clear_cache(doctype=DOCUMENT_TYPE)

@@ -198,10 +198,29 @@ unideft.apply.new_application = function (prefill = {}) {
 				},
 			},
 			{
+				// Application.intake is a Select of month names, not a Date.
+				// Sending a date here failed validation on save, and frappe
+				// surfaced the first problem it found instead - which is why
+				// this looked like a DOB error even with DOB filled in.
 				fieldname: "intake",
-				fieldtype: "Date",
+				fieldtype: "Select",
 				label: __("Intake"),
 				reqd: 1,
+				options: [
+					"",
+					"January",
+					"February",
+					"March",
+					"April",
+					"May",
+					"June",
+					"July",
+					"August",
+					"September",
+					"October",
+					"November",
+					"December",
+				].join("\n"),
 				default: prefill.intake || "",
 			},
 			// The same qualifying questions the Details tab asks, with the same
