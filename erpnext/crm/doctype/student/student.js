@@ -76,9 +76,13 @@ function add_student_action_buttons(frm) {
 				frappe.msgprint(__("Please save the student first, then click Apply Now."));
 				return;
 			}
+			// Deliberately not seeding destination_country: on Student that field
+			// is labelled "Home Country" (usually India), which is the student's
+			// origin, not where they are applying. Seeding it here is what made
+			// every new application default to India.
 			unideft.apply.new_application({
 				student: frm.doc.name,
-				destination_country: frm.doc.destination_country || "",
+				dob: frm.doc.birthday || "",
 			});
 		},
 		"primary"

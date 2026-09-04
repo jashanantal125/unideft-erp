@@ -86,7 +86,10 @@ frappe.pages['students_view'].on_page_load = function (wrapper) {
 
 	frappe.breadcrumbs.add('CRM');
 
-	page.set_primary_action('Refresh', () => loadStudents(), 'fa fa-refresh');
+	// New Student as the primary action, same as the Student list view - the
+	// card view previously had no way to create one.
+	page.set_primary_action('New Student', () => frappe.new_doc('Student'), 'fa fa-plus');
+	page.add_inner_button('Refresh', () => loadStudents());
 
 	page.add_inner_button('Back to List View', () => {
 		try {

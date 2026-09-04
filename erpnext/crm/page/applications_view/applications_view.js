@@ -88,8 +88,21 @@ frappe.pages['applications_view'].on_page_load = function (wrapper) {
     // Add breadcrumbs
     frappe.breadcrumbs.add('CRM');
 
-    // Add primary action
-    page.set_primary_action('Refresh', () => refreshApplications(), 'fa fa-refresh');
+    // New Application is the primary action here, same as on the list view -
+    // the card view had no way to start one at all. Admissions never create
+    // applications (A2), so they only get Refresh.
+    if (card_view_user_can_create_application()) {
+        page.set_primary_action('New Application', () => {
+            if (card_view_user_is_agent_only()) {
+                unideft.apply.new_application();
+            } else {
+                show_card_view_country_picker();
+            }
+        }, 'fa fa-plus');
+        page.add_inner_button('Refresh', () => refreshApplications());
+    } else {
+        page.set_primary_action('Refresh', () => refreshApplications(), 'fa fa-refresh');
+    }
 
     // Add "Back to List View" button
     page.add_inner_button('Back to List View', () => {
@@ -769,6 +782,69 @@ function createApplicationCard(app) {
 // This list previously said "GTE Processing" / "GTE Approved" and omitted
 // Submitted and Completed, so indexOf() returned -1 for those real statuses and
 // the whole timeline rendered as untouched.
+// Mirrors the role rules the Application list view applies to its own
+// "New Application" button, so the card view cannot become a way around them.
+function card_view_user_is_agent_only() {
+    const roles = frappe.user_roles || [];
+    const agent = ['Agent', 'B2B Agent', 'B2C Agent', 'agents'].some((r) => roles.includes(r));
+    const staff = [
+        'System Manager', 'Administrator', 'CRM Admin', 'Team Lead', 'Team Executive',
+        'Admission 1', 'Admission 2', 'CRO', 'CRO Head', 'Country Head',
+    ].some((r) => roles.includes(r));
+    return agent && !staff;
+}
+
+function card_view_user_can_create_application() {
+    const roles = frappe.user_roles || [];
+    if (['System Manager', 'Administrator', 'CRM Admin'].some((r) => roles.includes(r))) {
+        return true;
+    }
+    // A2 - admissions only ever receive applications.
+    return !['Admission 1', 'Admission 2'].some((r) => roles.includes(r));
+}
+
+// Staff pick a country first, because Australia and the United Kingdom are
+// two different doctypes (Application vs Application UK).
+function show_card_view_country_picker() {
+    const d = new frappe.ui.Dialog({
+        title: __('New Application — Select Country'),
+        fields: [
+            {
+                fieldname: 'destination_country',
+                fieldtype: 'Link',
+                options: 'Country',
+                label: __('Destination Country'),
+                reqd: 1,
+                description: __('Australia opens on Application. United Kingdom opens on Application UK.'),
+                get_query: () => ({ filters: { name: ['in', ['Australia', 'United Kingdom']] } }),
+            },
+        ],
+        primary_action_label: __('Continue'),
+        primary_action(values) {
+            d.hide();
+            const country = (values.destination_country || '').trim().toLowerCase();
+            const uk = ['united kingdom', 'uk', 'great britain', 'britain', 'england'].includes(country);
+            if (uk) {
+                frappe.new_doc('Application UK', {
+                    application_type: 'B2B',
+                    uk_current_stage: 'Details',
+                    country_flow_case: 'UK Case 2',
+                    offer_currency: 'GBP',
+                    status: 'Pending',
+                });
+                return;
+            }
+            frappe.new_doc('Application', {
+                destination_country: values.destination_country,
+                country_flow_case: 'AU Default',
+                application_type: 'B2B',
+                status: 'Pending',
+            });
+        },
+    });
+    d.show();
+}
+
 const MAIN_STAGES = [
     'Pending',
     'Processing',
