@@ -43,3 +43,65 @@ class Course(Document):
 	# end: auto-generated types
 
 	pass
+
+
+MONTHS = (
+	"January",
+	"February",
+	"March",
+	"April",
+	"May",
+	"June",
+	"July",
+	"August",
+	"September",
+	"October",
+	"November",
+	"December",
+)
+
+
+def _normalise_intake(value):
+	"""Map a stored intake string onto a month name.
+
+	The three intake fields are free-text Data, so they hold anything from
+	"January" to "Jan 2026" to "Feb/March". Application.intake is a Select of
+	month names, so an intake only makes it into the dropdown if a month can be
+	recognised in it; anything unrecognisable is dropped rather than offered as
+	an option that would fail Select validation on save.
+	"""
+	if not value:
+		return []
+
+	text = str(value).lower()
+	return [month for month in MONTHS if month.lower()[:3] in text]
+
+
+@frappe.whitelist()
+def get_course_intakes(course=None, university=None):
+	"""Intake months offered, for narrowing the Intake dropdown.
+
+	Falls back to the union across a university's courses when only the
+	university is known, so the dropdown is still scoped rather than showing all
+	twelve months.
+	"""
+	rows = []
+	if course:
+		row = frappe.db.get_value(
+			"Course", course, ["intake_months", "intake_2", "intake_3"], as_dict=True
+		)
+		if row:
+			rows = [row]
+	elif university:
+		rows = frappe.get_all(
+			"Course",
+			filters={"university": university},
+			fields=["intake_months", "intake_2", "intake_3"],
+		)
+
+	found = set()
+	for row in rows:
+		for field in ("intake_months", "intake_2", "intake_3"):
+			found.update(_normalise_intake(row.get(field)))
+
+	return [month for month in MONTHS if month in found]

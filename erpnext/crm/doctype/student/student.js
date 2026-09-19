@@ -65,28 +65,29 @@ function add_student_action_buttons(frm) {
 		return;
 	}
 
-	frm.page.add_button(__("Need Assessment"), () => {
+	// frm.page.add_button() appends into page.custom_actions, which frappe never
+	// clears between refreshes - so every refresh added another copy of both
+	// buttons. add_custom_button() lands in the inner toolbar, which frm.refresh()
+	// wipes via clear_custom_buttons() before handlers run, so it stays single.
+	frm.add_custom_button(__("Need Assessment"), () => {
 		unideft.apply.new_assessment_request(frm);
 	});
 
-	frm.page.add_button(
-		__("Apply Now"),
-		() => {
-			if (frm.is_new()) {
-				frappe.msgprint(__("Please save the student first, then click Apply Now."));
-				return;
-			}
-			// Deliberately not seeding destination_country: on Student that field
-			// is labelled "Home Country" (usually India), which is the student's
-			// origin, not where they are applying. Seeding it here is what made
-			// every new application default to India.
-			unideft.apply.new_application({
-				student: frm.doc.name,
-				dob: frm.doc.birthday || "",
-			});
-		},
-		"primary"
-	);
+	frm.add_custom_button(__("Apply Now"), () => {
+		if (frm.is_new()) {
+			frappe.msgprint(__("Please save the student first, then click Apply Now."));
+			return;
+		}
+		// Deliberately not seeding destination_country: on Student that field
+		// is labelled "Home Country" (usually India), which is the student's
+		// origin, not where they are applying. Seeding it here is what made
+		// every new application default to India.
+		unideft.apply.new_application({
+			student: frm.doc.name,
+			dob: frm.doc.birthday || "",
+		});
+	});
+	frm.change_custom_button_type(__("Apply Now"), null, "primary");
 }
 
 frappe.ui.form.on("Student", {

@@ -657,6 +657,7 @@ class Application(Document):
 		self.validate_acceptance_coe_branch()
 		self.validate_visa_decision_branch()
 		self.validate_onshore_branch()
+		self.validate_offer_letter_sent_before_financials()
 		self.apply_stage_auto_advance()
 		self.validate_refund_branch()
 		self.apply_enrolment_completion()
@@ -667,6 +668,15 @@ class Application(Document):
 			if unideft_user:
 				self.agent = unideft_user
 		# For B2B: counselor / agent can leave or pick any User.
+
+	def validate_offer_letter_sent_before_financials(self):
+		"""The student must have been sent their offer letter before Financials opens."""
+		if self.financial_started == "Yes" and self.send_offer_to_chat != "Yes":
+			frappe.throw(
+				frappe._(
+					"Set <b>Send Offer Letter to Student Chat</b> to Yes before starting Financials."
+				)
+			)
 
 	def normalize_legacy_yes_no_fields(self):
 		"""Map old Check 0/1 values onto Yes/No Select options."""

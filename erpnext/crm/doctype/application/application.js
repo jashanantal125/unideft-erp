@@ -171,33 +171,96 @@ function set_application_tab_hash(tab_fieldname) {
 	}
 }
 
+/**
+ * Force exactly one active tab pane.
+ *
+ * Tab.set_active() delegates to bootstrap's .tab("show"), which is not reliable
+ * here for two reasons:
+ *
+ *  1. It bails out at the top when the target nav-link already carries .active,
+ *     so the pane never gets activated even though the link looks selected.
+ *  2. When it does run, it clears .active off only the FIRST matching pane
+ *     ($(container).children('.active')[0]). Any second pane left carrying
+ *     .active - which happens whenever a tab was hidden while active, since
+ *     Tab.toggle() sets .hide/.show but never touches .active - simply stays
+ *     active.
+ *
+ * Either way two sibling panes end up with .active at once, and because the
+ * panes are siblings inside one .tab-content they then render stacked: the
+ * incoming tab's fields appear underneath the fields of the tab the user was
+ * just working on. That is the production bug. Writing the classes directly is
+ * the only way to guarantee a single active pane.
+ */
+function force_single_active_tab(frm, tab) {
+	const $pane = tab.wrapper;
+	const $link = tab.tab_link.find(".nav-link");
+
+	$pane.parent()
+		.children(".tab-pane")
+		.not($pane)
+		.removeClass("active show");
+	$link.closest(".nav")
+		.find(".nav-link")
+		.not($link)
+		.removeClass("active")
+		.attr("aria-selected", "false");
+
+	$pane.addClass("active show");
+	$link.addClass("active").attr("aria-selected", "true");
+
+	// Keep frappe's own bookkeeping (active_tab_map, on_tab_change) in step, so
+	// the next refresh_tabs() restores this tab instead of snapping back.
+	frm.set_active_tab?.(tab);
+}
+
+/**
+ * Safety net for the stacked-tabs bug.
+ *
+ * Anything that hides a tab while it is the active one (a depends_on flipping,
+ * a role rule, an emptied section) leaves that pane carrying .active, because
+ * Tab.toggle() only ever writes .hide/.show. The next switch then renders two
+ * panes at once. Collapsing back to a single active pane on every refresh means
+ * a stale one can never survive into the next render, whichever code path put
+ * it there.
+ */
+function normalize_active_tab(frm) {
+	try {
+		const $panes = frm.$wrapper.find(".form-tab-content > .tab-pane");
+		const $active = $panes.filter(".active");
+		if ($active.length < 2) {
+			return;
+		}
+
+		// Prefer the tab frappe itself believes is active; otherwise keep the
+		// first visible one and drop the rest.
+		const current = frm.get_active_tab?.();
+		let $keep = current && current.wrapper && $active.filter(current.wrapper).length
+			? current.wrapper
+			: $active.not(".hide").first();
+		if (!$keep || !$keep.length) {
+			$keep = $active.first();
+		}
+
+		$active.not($keep).removeClass("active show");
+	} catch (e) {
+		// never let a cosmetic guard break the form
+	}
+}
+
 function activate_application_tab(frm, tab_fieldname, tab_label) {
 	try {
 		const tab_field = frm.get_field(tab_fieldname);
 		const tab = tab_field && tab_field.tab;
-		if (tab && typeof tab.set_active === "function") {
+		if (tab && tab.wrapper && tab.tab_link) {
 			// A tab hides itself when its own depends_on is false OR when every
-			// section inside it is hidden (see Tab.refresh() in frappe). Calling
-			// .tab("show") on a hidden nav-link does not deactivate the current
-			// pane, so both panes end up visible at once - which is what makes
-			// the incoming tab's fields appear stacked inside the tab the user
-			// is already looking at. Leave the user where they are instead.
+			// section inside it is hidden (see Tab.refresh() in frappe). Moving
+			// onto a hidden tab would leave the form with no visible pane at all,
+			// so leave the user where they are instead.
 			if (typeof tab.is_hidden === "function" && tab.is_hidden()) {
 				return;
 			}
-			// Tab.set_active() is the method that actually switches tabs: it
-			// calls .tab("show") (which deactivates the sibling pane) and only
-			// then reports back via frm.set_active_tab().
-			//
-			// frm.set_active_tab() on its own does NOT switch anything - it is
-			// bookkeeping (active_tab_map, URL hash, on_tab_change) meant to be
-			// called *by* the Tab class. Calling it directly, as this function
-			// used to, left the DOM on the old tab while the form's own record
-			// of the active tab moved on, so the next render could show both
-			// panes together. That mismatch is the long-standing "tab doesn't
-			// move and the next tab's fields appear in this one" bug.
 			set_application_tab_hash(tab_fieldname);
-			tab.set_active();
+			force_single_active_tab(frm, tab);
 			return;
 		}
 	} catch (e) {
@@ -1902,6 +1965,7 @@ frappe.ui.form.on("Application", {
 	},
 
 	refresh(frm) {
+		normalize_active_tab(frm);
 		activate_tab_for_workflow_state(frm);
 		hide_accounts_connections_on_application(frm);
 		add_accounts_workflow_buttons(frm);
@@ -1909,6 +1973,10 @@ frappe.ui.form.on("Application", {
 		add_agent_submit_button(frm);
 		apply_admission_stage_tabs(frm);
 		apply_cro_only_fields(frm);
+		hide_workflow_actions_for_cro(frm);
+		// frappe's workflow.js repopulates the Action menu during its own pass of
+		// this refresh, which re-shows the group - re-hide once it has settled.
+		setTimeout(() => hide_workflow_actions_for_cro(frm), 300);
 		hide_legacy_sponsor_subtables(frm);
 		patch_form_view_tables(frm);
 		// Grids on later tabs may initialize after first paint
@@ -2856,6 +2924,19 @@ frappe.ui.form.on("Application", {
 
 	financial_started(frm) {
 		if (frm.doc.financial_started === "Yes") {
+			// The student has to have been sent their offer letter before the
+			// financials stage can open.
+			if (frm.doc.send_offer_to_chat !== "Yes") {
+				frappe.msgprint({
+					title: __("Send the offer letter first"),
+					indicator: "orange",
+					message: __(
+						"Set <b>Send Offer Letter to Student Chat</b> to Yes before starting Financials."
+					),
+				});
+				frm.set_value("financial_started", "");
+				return;
+			}
 			frm.set_value("offer_letter_stage_completed", 1);
 			complete_stage_and_advance(frm, {
 				tab_fieldname: "financials_tab",
@@ -5016,7 +5097,19 @@ function apply_admission_stage_tabs(frm) {
 	});
 }
 
-/** Agents only see the Details tab after create. */
+/**
+ * Agents do not work inside the Application form.
+ *
+ * They create applications through the quick-fill modal and read them in the
+ * Card View, so every tab is hidden from them - including Submitted, which
+ * carries staff-only information and was a privacy leak, and Details, which
+ * they no longer need now that the modal collects those answers up front.
+ *
+ * set_df_property() alone was not enough: Tab.refresh() recomputes visibility
+ * from the tab's own df on every refresh_tabs(), and a tab whose sections are
+ * visible could re-show itself between our call and the next render. Calling
+ * Tab.toggle(false) as well pins the nav link and pane hidden immediately.
+ */
 function apply_agent_application_tabs(frm) {
 	if (!user_is_agent_only_app()) {
 		return;
@@ -5024,11 +5117,34 @@ function apply_agent_application_tabs(frm) {
 	(frm.meta.fields || [])
 		.filter((df) => df.fieldtype === "Tab Break")
 		.forEach((df) => {
-			const is_details =
-				df.fieldname === "details_tab" ||
-				(df.label || "").toLowerCase() === "details";
-			frm.set_df_property(df.fieldname, "hidden", is_details ? 0 : 1);
+			frm.set_df_property(df.fieldname, "hidden", 1);
+			const tab = frm.get_field(df.fieldname)?.tab;
+			if (tab && typeof tab.toggle === "function") {
+				tab.toggle(false);
+			}
 		});
+}
+
+/** CRO holds the role without being an admin who legitimately needs the button. */
+function user_is_cro_strict_app() {
+	const roles = frappe.user_roles || [];
+	const is_cro = ["CRO", "CRO Head"].some((r) => roles.includes(r));
+	const is_admin = ["System Manager", "Administrator", "CRM Admin"].some((r) =>
+		roles.includes(r)
+	);
+	return is_cro && !is_admin;
+}
+
+/**
+ * The workflow Action button drives an application through its stages, which is
+ * not CRO's job. Tabs, field visibility and edit access are deliberately left
+ * exactly as they are - this hides the Action menu only.
+ */
+function hide_workflow_actions_for_cro(frm) {
+	if (!user_is_cro_strict_app()) {
+		return;
+	}
+	frm.page.hide_actions_menu();
 }
 
 // D1 - the agent's whole job on an Application is the short set of qualifying
@@ -5171,6 +5287,11 @@ frappe.ui.form.on("Application", {
 
 	offer_letter_received(frm) {
 		if (frm.doc.offer_letter_received === "Yes") {
+			// Stamp when the offer letter actually landed. Only fill a blank one -
+			// the field stays editable, so a correction must survive a re-answer.
+			if (!frm.doc.offer_letter_submitted_date) {
+				frm.set_value("offer_letter_submitted_date", frappe.datetime.get_today());
+			}
 			deactivate_reminders_matching(frm, ["Offer Letter Received", "Follow up for Offer Letter"]);
 			complete_stage_and_advance(frm, {
 				tab_fieldname: "offer_tab",

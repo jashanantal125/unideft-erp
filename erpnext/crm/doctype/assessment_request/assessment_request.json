@@ -2,11 +2,12 @@
  "actions": [],
  "allow_import": 1,
  "autoname": "naming_series:",
- "creation": "2026-07-31 00:00:00.000000",
+ "creation": "2026-07-31 00:00:00",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "naming_series",
+  "amended_from",
   "status",
   "assigned_team",
   "column_break_meta",
@@ -14,31 +15,41 @@
   "request_date",
   "student_section",
   "student_already_registered",
-  "student",
-  "column_break_student",
   "first_name",
-  "middle_name",
   "last_name",
-  "mobile_number",
   "email_address",
+  "column_break_student",
+  "student",
+  "middle_name",
+  "mobile_number",
   "cro_unregistered_section",
   "cro_agent_name",
   "cro_agency_name",
   "preferences_section",
   "preferred_countries",
+  "admissions_preferred_country",
   "preferred_course_area",
   "remarks",
   "attachments_section",
   "attachments",
-  "assessment_workflow_tab",
+  "course_shortlisting_tab",
   "need_assessment",
-  "assessment_vendors_section",
-  "assessment_vendors",
+  "admissions_assessment_section",
+  "assessment_channel",
+  "vendor",
   "course_shortlisting_section",
+  "course_shortlisting_cards",
   "course_shortlisting",
   "response_submitted",
   "response_submitted_on",
-  "response_submitted_by"
+  "response_submitted_by",
+  "croassessment",
+  "student_confirmed_to_apply",
+  "application_when_can_apply",
+  "denial_reason",
+  "other_university_course",
+  "university",
+  "course"
  ],
  "fields": [
   {
@@ -51,15 +62,26 @@
    "reqd": 1
   },
   {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Assessment Request",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
    "default": "Open",
    "fieldname": "status",
    "fieldtype": "Select",
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Status",
-   "options": "Open\nIn Progress\nClosed\nConverted to Application"
+   "options": "Open\nIn Progress\nPending\nProcessed\nReady for Application\nClosed\nConverted to Application"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "assigned_team",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -103,8 +125,8 @@
    "fieldname": "student",
    "fieldtype": "Link",
    "label": "Student ID / Student Name",
-   "options": "Student",
-   "mandatory_depends_on": "eval:doc.student_already_registered == 'Yes'"
+   "mandatory_depends_on": "eval:doc.student_already_registered == 'Yes'",
+   "options": "Student"
   },
   {
    "fieldname": "column_break_student",
@@ -147,12 +169,19 @@
    "label": "Additional Information"
   },
   {
+   "description": "Pick one or more destination countries.",
    "fieldname": "preferred_countries",
    "fieldtype": "Table MultiSelect",
    "label": "Preferred Countries",
    "options": "Assessment Request Country",
-   "reqd": 1,
-   "description": "Pick one or more destination countries."
+   "reqd": 1
+  },
+  {
+   "description": "Admissions see only the country their own team covers. The full list stays on Preferred Countries for CRO and Agents.",
+   "fieldname": "admissions_preferred_country",
+   "fieldtype": "HTML",
+   "hidden": 1,
+   "label": "Preferred Country"
   },
   {
    "fieldname": "preferred_course_area",
@@ -179,62 +208,88 @@
    "options": "Assessment Request Document"
   },
   {
+   "allow_on_submit": 1,
    "depends_on": "eval:in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head') || in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'CRM Admin')",
+   "description": "Optional. Lets a CRO record which agent and agency the request came in through. Hidden from agents, who are the source themselves.",
    "fieldname": "cro_unregistered_section",
    "fieldtype": "Section Break",
-   "label": "Agent / Agency",
-   "description": "Optional. Lets a CRO record which agent and agency the request came in through. Hidden from agents, who are the source themselves."
+   "label": "Agent / Agency"
   },
   {
+   "allow_on_submit": 1,
    "depends_on": "eval:in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head') || in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'CRM Admin')",
    "fieldname": "cro_agent_name",
    "fieldtype": "Link",
-   "options": "Agent",
-   "label": "Agent Name"
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Agent Name",
+   "options": "Agent"
   },
   {
+   "allow_on_submit": 1,
    "depends_on": "eval:in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head') || in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'CRM Admin')",
-   "fieldname": "cro_agency_name",
-   "fieldtype": "Data",
-   "label": "Agency Name",
+   "description": "Auto-filled from the selected agent's company; can be overridden.",
    "fetch_from": "cro_agent_name.company_name",
    "fetch_if_empty": 1,
-   "description": "Auto-filled from the selected agent's company; can be overridden."
+   "fieldname": "cro_agency_name",
+   "fieldtype": "Data",
+   "label": "Agency Name"
   },
   {
-   "fieldname": "assessment_workflow_tab",
-   "fieldtype": "Tab Break",
-   "label": "Assessment Workflow"
-  },
-  {
-   "description": "Only Admissions can set this. When Yes, the Assessment Vendors grid appears for CRO / staff.",
+   "allow_on_submit": 1,
+   "description": "Only Admissions can set this. When Yes, the assessment fields below appear.",
    "fieldname": "need_assessment",
    "fieldtype": "Select",
    "label": "Need Assessment?",
    "options": "\nYes\nNo"
   },
   {
+   "allow_on_submit": 1,
    "depends_on": "eval:doc.need_assessment == 'Yes'",
-   "fieldname": "assessment_vendors_section",
+   "fieldname": "admissions_assessment_section",
    "fieldtype": "Section Break",
-   "label": "Assessment Grid"
+   "label": "Assessment (Admissions)"
   },
   {
+   "allow_on_submit": 1,
    "depends_on": "eval:doc.need_assessment == 'Yes'",
-   "description": "Backend team tracks assessment receipt, student options, confirmation, and conversion here.",
-   "fieldname": "assessment_vendors",
-   "fieldtype": "Table",
-   "label": "Assessment Vendors",
-   "options": "Need Assessment Vendor"
+   "fieldname": "assessment_channel",
+   "fieldtype": "Select",
+   "label": "Vendor / Channel",
+   "mandatory_depends_on": "eval:doc.need_assessment == 'Yes'",
+   "options": "\nDirect\nVendor"
   },
   {
-   "depends_on": "eval:doc.need_assessment == 'Yes'",
+   "allow_on_submit": 1,
+   "depends_on": "eval:doc.need_assessment == 'Yes' && doc.assessment_channel == 'Vendor'",
+   "fieldname": "vendor",
+   "fieldtype": "Link",
+   "label": "Vendor",
+   "mandatory_depends_on": "eval:doc.need_assessment == 'Yes' && doc.assessment_channel == 'Vendor'",
+   "options": "vendor"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "course_shortlisting_tab",
+   "fieldtype": "Tab Break",
+   "label": "Course Shortlisting"
+  },
+  {
+   "allow_on_submit": 1,
    "fieldname": "course_shortlisting_section",
    "fieldtype": "Section Break",
    "label": "Course Shortlisting"
   },
   {
-   "depends_on": "eval:doc.need_assessment == 'Yes'",
+   "allow_on_submit": 1,
+   "description": "Agent-facing view of the submitted shortlisting, rendered client-side.",
+   "fieldname": "course_shortlisting_cards",
+   "fieldtype": "HTML",
+   "hidden": 1,
+   "label": "Shortlisted Courses"
+  },
+  {
+   "allow_on_submit": 1,
    "description": "Admissions / CRO shortlist courses here. University, country and tuition fee fill in from the selected course; set the intake date manually. Once submitted, the agent sees this table and can apply from any row.",
    "fieldname": "course_shortlisting",
    "fieldtype": "Table",
@@ -242,32 +297,93 @@
    "options": "Assessment Course Shortlisting"
   },
   {
+   "allow_on_submit": 1,
    "default": "0",
-   "depends_on": "eval:doc.need_assessment == 'Yes'",
    "fieldname": "response_submitted",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Response Submitted",
    "read_only": 1
   },
   {
-   "depends_on": "eval:doc.response_submitted",
+   "allow_on_submit": 1,
    "fieldname": "response_submitted_on",
    "fieldtype": "Datetime",
+   "hidden": 1,
    "label": "Response Submitted On",
    "read_only": 1
   },
   {
-   "depends_on": "eval:doc.response_submitted",
+   "allow_on_submit": 1,
    "fieldname": "response_submitted_by",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Response Submitted By",
    "options": "User",
    "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "depends_on": "eval:doc.need_assessment == 'Yes'",
+   "fieldname": "student_confirmed_to_apply",
+   "fieldtype": "Select",
+   "label": "Student Confirmation",
+   "options": "\nYes\nNo"
+  },
+  {
+   "allow_on_submit": 1,
+   "depends_on": "eval:doc.student_confirmed_to_apply == 'No'",
+   "fieldname": "denial_reason",
+   "fieldtype": "Small Text",
+   "label": "Reason for Closing / Student Denial",
+   "mandatory_depends_on": "eval:doc.student_confirmed_to_apply == 'No'"
+  },
+  {
+   "allow_on_submit": 1,
+   "depends_on": "eval:doc.student_confirmed_to_apply == 'Yes'",
+   "fieldname": "application_when_can_apply",
+   "fieldtype": "Small Text",
+   "label": "Then When Can Apply?"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "depends_on": "eval:doc.student_confirmed_to_apply == 'Yes'",
+   "description": "Tick to pick a University / Course outside the shortlisted list.",
+   "fieldname": "other_university_course",
+   "fieldtype": "Check",
+   "label": "Other University / Course"
+  },
+  {
+   "allow_on_submit": 1,
+   "depends_on": "eval:doc.student_confirmed_to_apply == 'Yes'",
+   "fieldname": "university",
+   "fieldtype": "Link",
+   "label": "University Name",
+   "mandatory_depends_on": "eval:doc.student_confirmed_to_apply == 'Yes'",
+   "options": "University"
+  },
+  {
+   "allow_on_submit": 1,
+   "depends_on": "eval:doc.student_confirmed_to_apply == 'Yes'",
+   "fieldname": "course",
+   "fieldtype": "Link",
+   "label": "Course Name",
+   "mandatory_depends_on": "eval:doc.student_confirmed_to_apply == 'Yes'",
+   "options": "Course"
+  },
+  {
+   "allow_on_submit": 1,
+   "depends_on": "eval:in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head') || in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'CRM Admin')",
+   "fieldname": "croassessment",
+   "fieldtype": "Tab Break",
+   "label": "CRO Assessment"
   }
  ],
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2026-07-31 00:00:00.000000",
+ "modified": "2026-09-18 16:31:18.604331",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Assessment Request",
@@ -275,6 +391,8 @@
  "owner": "Administrator",
  "permissions": [
   {
+   "amend": 1,
+   "cancel": 1,
    "create": 1,
    "delete": 1,
    "email": 1,
@@ -284,15 +402,19 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
+   "submit": 1,
    "write": 1
   },
   {
+   "amend": 1,
+   "cancel": 1,
    "create": 1,
    "email": 1,
    "print": 1,
    "read": 1,
    "report": 1,
    "role": "CRM Admin",
+   "submit": 1,
    "write": 1
   },
   {
@@ -301,6 +423,7 @@
    "print": 1,
    "read": 1,
    "role": "Agent",
+   "submit": 1,
    "write": 1
   },
   {
@@ -309,6 +432,7 @@
    "print": 1,
    "read": 1,
    "role": "B2B Agent",
+   "submit": 1,
    "write": 1
   },
   {
@@ -317,6 +441,7 @@
    "print": 1,
    "read": 1,
    "role": "B2C Agent",
+   "submit": 1,
    "write": 1
   },
   {
@@ -325,6 +450,7 @@
    "print": 1,
    "read": 1,
    "role": "CRO",
+   "submit": 1,
    "write": 1
   },
   {
@@ -332,6 +458,7 @@
    "print": 1,
    "read": 1,
    "role": "CRO Head",
+   "submit": 1,
    "write": 1
   },
   {
@@ -339,6 +466,7 @@
    "print": 1,
    "read": 1,
    "role": "Country Head",
+   "submit": 1,
    "write": 1
   },
   {
@@ -347,6 +475,7 @@
    "print": 1,
    "read": 1,
    "role": "Admission 1",
+   "submit": 1,
    "write": 1
   },
   {
@@ -354,6 +483,7 @@
    "print": 1,
    "read": 1,
    "role": "Admission 2",
+   "submit": 1,
    "write": 1
   },
   {
@@ -361,6 +491,7 @@
    "print": 1,
    "read": 1,
    "role": "Team Lead",
+   "submit": 1,
    "write": 1
   },
   {
@@ -368,9 +499,11 @@
    "print": 1,
    "read": 1,
    "role": "Team Executive",
+   "submit": 1,
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

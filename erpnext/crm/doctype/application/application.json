@@ -143,6 +143,7 @@
   "submitted_interview_completed",
   "offer_letter_received",
   "offer_tab",
+  "offer_letter_submitted_date",
   "financial_started_section",
   "financial_started",
   "offer_letter_stage_completed",
@@ -1250,6 +1251,7 @@
    "fieldname": "application_filled_by",
    "fieldtype": "Select",
    "label": "Application Filled By",
+   "mandatory_depends_on": "eval:doc.application_submitted == 'Yes'",
    "options": "\nApplication filled by us\nFilled on portal\nFilled by Vendor",
    "length": 44
   },
@@ -1354,6 +1356,7 @@
    "fieldtype": "Select",
    "label": "Any Further Requirement for offer letter?",
    "length": 10,
+   "mandatory_depends_on": "eval:doc.offer_letter_received == 'Yes'",
    "options": "\nYes\nNo"
   },
   {
@@ -1470,6 +1473,12 @@
    "fieldtype": "Tab Break",
    "label": "Offer Letter",
    "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head'))"
+  },
+  {
+   "description": "Set automatically when Offer Letter Received? is answered Yes. Editable afterwards.",
+   "fieldname": "offer_letter_submitted_date",
+   "fieldtype": "Date",
+   "label": "Offer Letter Submitted Date"
   },
   {
    "fieldname": "financial_started_section",
@@ -1690,7 +1699,8 @@
    "fieldtype": "Select",
    "label": "Send Offer Letter to Student Chat",
    "options": "\nYes\nNo",
-   "description": "Yes \u2192 the offer letter is posted to Comments automatically.",
+   "description": "Yes \u2192 the offer letter is posted to Comments automatically. Must be Yes before Financial Started can be set to Yes.",
+   "mandatory_depends_on": "eval:doc.financial_started == 'Yes'",
    "length": 23
   },
   {
@@ -2698,7 +2708,8 @@
    "fieldtype": "Select",
    "label": "OSHC Certificate Received?",
    "options": "\nYes\nNo",
-   "depends_on": "eval:doc.tuition_fee_paid == 'Yes' || doc.fee_processed_through_gha == 'No'"
+   "depends_on": "eval:doc.tuition_fee_paid == 'Yes' || doc.fee_processed_through_gha == 'No'",
+   "mandatory_depends_on": "eval:doc.acceptance_submitted == 'Yes' && (doc.tuition_fee_paid == 'Yes' || doc.fee_processed_through_gha == 'No')"
   },
   {
    "fieldname": "oshc_cert_not_received_notes",
@@ -2973,6 +2984,7 @@
    "fieldtype": "Select",
    "label": "Is There Any Requirement",
    "options": "\nYes\nNo",
+   "mandatory_depends_on": "eval:doc.coe_received == 'Yes'",
    "length": 23
   },
   {

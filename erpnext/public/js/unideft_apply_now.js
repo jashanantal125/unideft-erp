@@ -113,6 +113,60 @@ function toggle_conditional_fields(dialog) {
 }
 
 /**
+ * Narrow the Intake dropdown to the intakes the chosen course/university
+ * actually runs, instead of offering all twelve months.
+ */
+function refresh_intake_options(dialog) {
+	const course = dialog.get_value("course");
+	const university = dialog.get_value("preferred_university");
+	const field = dialog.get_field("intake");
+	if (!field) {
+		return;
+	}
+
+	if (!course && !university) {
+		field.df.options = ALL_MONTHS.join("\n");
+		field.refresh();
+		return;
+	}
+
+	frappe.call({
+		method: "erpnext.crm.doctype.course.course.get_course_intakes",
+		args: { course: course || null, university: university || null },
+		callback(r) {
+			const months = r.message || [];
+			// No intakes recorded against the course is not a reason to leave the
+			// agent with an unselectable dropdown - fall back to all months.
+			const options = months.length ? [""].concat(months) : ALL_MONTHS;
+			const current = dialog.get_value("intake");
+
+			field.df.options = options.join("\n");
+			field.refresh();
+
+			if (current && !options.includes(current)) {
+				dialog.set_value("intake", "");
+			}
+		},
+	});
+}
+
+const ALL_MONTHS = [
+	"",
+	"January",
+	"February",
+	"March",
+	"April",
+	"May",
+	"June",
+	"July",
+	"August",
+	"September",
+	"October",
+	"November",
+	"December",
+];
+
+/**
  * Open the New Application dialog, pre-filled with whatever the caller knows.
  *
  * @param {Object} prefill - any of student, dob, destination_country,
@@ -183,6 +237,7 @@ unideft.apply.new_application = function (prefill = {}) {
 						return;
 					}
 					dialog.set_value("course", "");
+					refresh_intake_options(dialog);
 				},
 			},
 			{
@@ -196,6 +251,9 @@ unideft.apply.new_application = function (prefill = {}) {
 					const uni = dialog.get_value("preferred_university");
 					return uni ? { filters: { university: uni } } : {};
 				},
+				onchange() {
+					refresh_intake_options(dialog);
+				},
 			},
 			{
 				// Application.intake is a Select of month names, not a Date.
@@ -206,21 +264,9 @@ unideft.apply.new_application = function (prefill = {}) {
 				fieldtype: "Select",
 				label: __("Intake"),
 				reqd: 1,
-				options: [
-					"",
-					"January",
-					"February",
-					"March",
-					"April",
-					"May",
-					"June",
-					"July",
-					"August",
-					"September",
-					"October",
-					"November",
-					"December",
-				].join("\n"),
+				// Narrowed to the course's own intakes by refresh_intake_options()
+				// as soon as a university/course is known.
+				options: ALL_MONTHS.join("\n"),
 				default: prefill.intake || "",
 			},
 			// The same qualifying questions the Details tab asks, with the same
@@ -306,7 +352,23 @@ unideft.apply.new_application = function (prefill = {}) {
 				freeze: true,
 				freeze_message: __("Creating application…"),
 				callback(r) {
-					if (r.message) {
+					if (!r.message) {
+						return;
+					}
+					// The application is already created and saved server-side.
+					// Agents go back to their Applications list (in whichever view
+					// they last used) rather than being dropped into the Details
+					// tab, which they are not meant to work in.
+					if (unideft.apply.user_is_agent_only()) {
+						frappe.show_alert(
+							{
+								message: __("Application {0} created", [r.message.name]),
+								indicator: "green",
+							},
+							5
+						);
+						frappe.set_route("List", r.message.doctype);
+					} else {
 						frappe.set_route("Form", r.message.doctype, r.message.name);
 					}
 				},
@@ -323,6 +385,9 @@ unideft.apply.new_application = function (prefill = {}) {
 	setTimeout(() => {
 		dialog.__prefilling = false;
 		toggle_conditional_fields(dialog);
+		// Scope the intake list to the prefilled course, keeping the prefilled
+		// intake if that course actually runs it.
+		refresh_intake_options(dialog);
 	}, 300);
 
 	return dialog;
