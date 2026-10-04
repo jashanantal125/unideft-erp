@@ -43,7 +43,7 @@
    "fieldtype": "Select",
    "label": "Series",
    "options": "STU-.YYYY.-",
-   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')"
+   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent')"
   },
   {
    "fieldname": "title",
@@ -78,7 +78,7 @@
    "fieldname": "last_name",
    "fieldtype": "Data",
    "label": "Last Name",
-   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')"
+   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent')"
   },
   {
    "fieldname": "email",
@@ -93,30 +93,30 @@
    "fieldtype": "Link",
    "label": "Country",
    "options": "Country",
-   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')"
+   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent')"
   },
   {
    "fieldname": "state",
    "fieldtype": "Data",
    "label": "State",
    "reqd": 0,
-   "mandatory_depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')",
-   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')"
+   "mandatory_depends_on": "eval:!in_list(frappe.user_roles, 'Agent')",
+   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent')"
   },
   {
    "fieldname": "city",
    "fieldtype": "Data",
    "label": "City",
-   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')"
+   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent')"
   },
   {
-   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')",
+   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent')",
    "fieldname": "country_code",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Country Code",
    "reqd": 0,
-   "mandatory_depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')"
+   "mandatory_depends_on": "eval:!in_list(frappe.user_roles, 'Agent')"
   },
   {
    "fieldname": "mobile",
@@ -134,7 +134,7 @@
    "reqd": 1
   },
   {
-   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')",
+   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent')",
    "fieldname": "birthday",
    "fieldtype": "Date",
    "label": "Birthday"
@@ -144,17 +144,17 @@
    "fieldtype": "Data",
    "label": "Area of Interest",
    "reqd": 0,
-   "mandatory_depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')",
-   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')"
+   "mandatory_depends_on": "eval:!in_list(frappe.user_roles, 'Agent')",
+   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent')"
   },
   {
    "fieldname": "highest_education",
    "fieldtype": "Data",
    "label": "Highest Education",
-   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')"
+   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent')"
   },
   {
-   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')",
+   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent')",
    "fieldname": "testscore",
    "fieldtype": "Data",
    "label": "Testscore"
@@ -165,30 +165,30 @@
    "label": "Gender",
    "options": "\nMale\nFemale\nOther",
    "reqd": 0,
-   "mandatory_depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')",
-   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')"
+   "mandatory_depends_on": "eval:!in_list(frappe.user_roles, 'Agent')",
+   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent')"
   },
   {
    "fieldname": "comment",
    "fieldtype": "Small Text",
    "label": "Comment",
-   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')"
+   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent')"
   },
   {
-   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')",
+   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent')",
    "fieldname": "preferred_study_level",
    "fieldtype": "Data",
    "label": "Preferred Study Level"
   },
   {
-   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')",
+   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent')",
    "fieldname": "assigned_to",
    "fieldtype": "Link",
    "label": "Assigned Staff",
    "options": "User"
   },
   {
-   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')",
+   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent')",
    "fieldname": "lead_link",
    "fieldtype": "Link",
    "label": "Lead",
@@ -199,55 +199,55 @@
    "fieldname": "documents_tab",
    "fieldtype": "Tab Break",
    "label": "Documents",
-   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')"
+   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent')"
   },
   {
    "fieldname": "shortlisted_program_tab",
    "fieldtype": "Tab Break",
    "label": "Shortlisted Program",
-   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')"
+   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent')"
   },
   {
    "fieldname": "shortlisted_programs",
    "fieldtype": "Table",
    "label": "Shortlisted Programs",
    "options": "University Course",
-   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')"
+   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent')"
   },
   {
    "fieldname": "counsellings_tab",
    "fieldtype": "Tab Break",
    "label": "Counsellings",
-   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')"
+   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent')"
   },
   {
    "fieldname": "counsellings",
    "fieldtype": "Table",
    "label": "Counsellings",
    "options": "Student Counselling",
-   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')"
+   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent')"
   },
   {
    "fieldname": "section_break_wmtu",
    "fieldtype": "Section Break",
-   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')"
+   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent')"
   },
   {
    "fieldname": "table_rnxy",
    "fieldtype": "Table",
    "options": "student documents",
-   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')"
+   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent')"
   },
   {
    "fieldname": "column_break_rnnn",
    "fieldtype": "Column Break",
-   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent') && !in_list(frappe.user_roles, 'B2B Agent') && !in_list(frappe.user_roles, 'B2C Agent') && !in_list(frappe.user_roles, 'agents')"
+   "depends_on": "eval:!in_list(frappe.user_roles, 'Agent')"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-20 18:59:11.645155",
+ "modified": "2026-10-04 13:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Student",
@@ -294,22 +294,6 @@
    "email": 1,
    "print": 1,
    "read": 1,
-   "role": "B2B Agent",
-   "write": 1
-  },
-  {
-   "create": 1,
-   "email": 1,
-   "print": 1,
-   "read": 1,
-   "role": "B2C Agent",
-   "write": 1
-  },
-  {
-   "create": 1,
-   "email": 1,
-   "print": 1,
-   "read": 1,
    "role": "Agent",
    "write": 1
   },
@@ -317,30 +301,6 @@
    "print": 1,
    "read": 1,
    "role": "Institution"
-  },
-  {
-   "create": 1,
-   "email": 1,
-   "print": 1,
-   "read": 1,
-   "role": "Team Lead",
-   "write": 1
-  },
-  {
-   "create": 1,
-   "email": 1,
-   "print": 1,
-   "read": 1,
-   "role": "Team Executive",
-   "write": 1
-  },
-  {
-   "create": 1,
-   "email": 1,
-   "print": 1,
-   "read": 1,
-   "role": "agents",
-   "write": 1
   },
   {
    "create": 1,
@@ -362,7 +322,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "CRO Head",
+   "role": "CRO Manager",
    "share": 1,
    "write": 1
   },
@@ -373,27 +333,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Admission 1",
-   "write": 1
-  },
-  {
-   "create": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Admission 2",
-   "write": 1
-  },
-  {
-   "create": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Country Head",
+   "role": "Application",
    "write": 1
   },
   {

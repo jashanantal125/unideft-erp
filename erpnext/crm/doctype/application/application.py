@@ -4,6 +4,7 @@
 from urllib.parse import quote_plus
 
 import frappe
+from erpnext.crm.team_utils import get_teams_for_user
 from frappe.model.document import Document
 
 
@@ -29,7 +30,28 @@ AU_STAGE_RANK = {
 	"Completed": 12,
 	"Refunded": 12,
 }
-AU_TERMINAL_STATUSES = ("Closed", "Completed")
+AU_TERMINAL_STATUSES = ("Closed", "Completed", "Cancelled")
+
+# Lifecycle around the stage flow: an agent's Draft is submitted into Details
+# (status Pending); only the Application Team / CRO move it on or cancel it.
+DRAFT = "Draft"
+CANCELLED = "Cancelled"
+INITIAL_STATE = "Details"
+INITIAL_STATUS = "Pending"
+LIFECYCLE_STAFF_ROLES = {
+	"System Manager",
+	"Administrator",
+	"CRM Admin", "Visa Admin",
+	"CRM Sales Staff",
+	"CRO",
+	"CRO Manager",
+	"Application",
+}
+
+
+def _is_agent_only(user=None):
+	roles = set(frappe.get_roles(user or frappe.session.user))
+	return "Agent" in roles and not roles & LIFECYCLE_STAFF_ROLES
 
 
 def _normalize_phone(value):
@@ -59,19 +81,13 @@ class Application(Document):
 		user = frappe.session.user
 		App = frappe.qb.DocType("Application")
 
-		if user_roles & {"System Manager", "Administrator", "CRM Admin"}:
+		if user_roles & {"System Manager", "Administrator", "CRM Admin", "Visa Admin"}:
 			return query
 
-		if "CRO Head" in user_roles:
+		if "CRO Manager" in user_roles:
 			agent_names = _agents_under_cro_head(user)
 			if agent_names:
 				return query.where(App.agent.isin(agent_names))
-			return query.where(App.name == "__no_match__")
-
-		if "Country Head" in user_roles:
-			teams = frappe.get_all("Team", filters={"country_head": user}, pluck="name")
-			if teams:
-				return query.where(App.assigned_team.isin(teams))
 			return query.where(App.name == "__no_match__")
 
 		if "CRO" in user_roles:
@@ -80,28 +96,13 @@ class Application(Document):
 				return query.where(App.agent.isin(agent_names))
 			return query.where(App.name == "__no_match__")
 
-		if "Admission 1" in user_roles:
-			teams = frappe.get_all("Team", filters={"admission_1": user}, pluck="name")
+		if "Application" in user_roles:
+			teams = get_teams_for_user(user, "application")
 			if teams:
 				return query.where(App.assigned_team.isin(teams))
 			return query.where(App.name == "__no_match__")
 
-		if "Admission 2" in user_roles:
-			teams = frappe.get_all("Team", filters={"admission_2": user}, pluck="name")
-			if teams:
-				return query.where(App.assigned_team.isin(teams))
-			return query.where(App.name == "__no_match__")
-
-		if "Team Lead" in user_roles:
-			teams = frappe.get_all("Team", filters={"team_leader": user}, pluck="name")
-			if teams:
-				return query.where(App.assigned_team.isin(teams))
-			return query.where(App.name == "__no_match__")
-
-		if "Team Executive" in user_roles:
-			return query.where(App.assigned_executive == user)
-
-		if user_roles & {"Agent", "B2B Agent", "B2C Agent"}:
+		if "Agent" in user_roles:
 			return query.where(App.agent == user)
 
 		if user_roles & {"Marketing Head", "Marketing Member", "Telecalling Head", "Telecalling Member"}:
@@ -116,6 +117,8 @@ class Application(Document):
 		"""Delete paired Application UK when this index row is removed."""
 		if self.flags.get("skip_paired_delete"):
 			return
+		self.validate_can_delete()
+		self.release_assessment_request()
 		uk_name = self.uk_data or frappe.db.get_value(
 			"Application UK", {"application": self.name}, "name"
 		)
@@ -229,6 +232,7 @@ class Application(Document):
 		self.current_age = age if age >= 0 else None
 
 	def after_insert(self):
+		self.start_outside_draft()
 		if not self.flags.get("skip_country_pack"):
 			self.link_uk_index()
 
@@ -236,6 +240,13 @@ class Application(Document):
 		if not self.flags.get("skip_country_pack"):
 			self.link_uk_index()
 		self.sync_accounts_workflow()
+		self.consume_edit_approval()
+
+	def consume_edit_approval(self):
+		approval = self.flags.get("consume_edit_approval")
+		if approval:
+			frappe.db.set_value("Application Edit Request", approval, "consumed", 1)
+			self.flags.consume_edit_approval = None
 
 	def sync_accounts_workflow(self):
 		"""Hand work to the Accounts Department when the counselor's answers require it.
@@ -243,7 +254,7 @@ class Application(Document):
 		Creating the Accounts records must never block the counselor's save, so a
 		failure here is logged rather than raised.
 		"""
-		if not self.is_australia():
+		if not self.is_australia() or self.status in (DRAFT, CANCELLED):
 			return
 		try:
 			from erpnext.crm.accounts_workflow import sync_application_triggers
@@ -643,6 +654,7 @@ class Application(Document):
 	# end: auto-generated types
 
 	def validate(self):
+		self.validate_agent_cannot_edit_after_submit()
 		# Course is required on Australia Details (single Course Link, not child table)
 		if not self.is_united_kingdom() and not self.flags.get("skip_preferred_course_validation"):
 			if not self.course:
@@ -661,6 +673,8 @@ class Application(Document):
 		self.apply_stage_auto_advance()
 		self.validate_refund_branch()
 		self.apply_enrolment_completion()
+		self.sync_lifecycle_status()
+		self.lock_status_for_agents()
 
 		# For B2C: auto-set the Unideft agent user. Agent is a Link to User.
 		if self.application_type == "B2C":
@@ -668,6 +682,103 @@ class Application(Document):
 			if unideft_user:
 				self.agent = unideft_user
 		# For B2B: counselor / agent can leave or pick any User.
+
+	# ------------------------------------------------------------------
+	# Draft -> Details -> ... / Cancelled lifecycle
+	# ------------------------------------------------------------------
+
+	def start_outside_draft(self):
+		"""Only an agent's new application starts as a Draft. Anything created
+		at a later status (UK index rows, re-applications raised by staff) is
+		moved straight to the first stage of the workflow."""
+		if self.status == DRAFT or self.get("workflow_state") != DRAFT:
+			return
+		self.db_set("workflow_state", INITIAL_STATE, update_modified=False)
+
+	def sync_lifecycle_status(self):
+		"""Keep `status` in step with the Draft / Details / Cancelled workflow states."""
+		state = self.get("workflow_state")
+		if state == DRAFT:
+			self.status = DRAFT
+		elif state == CANCELLED:
+			self.status = CANCELLED
+		elif state == INITIAL_STATE and self.status == DRAFT:
+			self.status = INITIAL_STATUS
+
+	def validate_agent_cannot_edit_after_submit(self):
+		"""An agent edits only their Draft. Once submitted it belongs to the
+		Application Team / CRO - the agent may still delete it at Details or
+		comment, but not change it."""
+		if self.is_new() or not _is_agent_only():
+			return
+		before = self.get_doc_before_save()
+		if not before or before.status == DRAFT:
+			return
+
+		from erpnext.crm.doctype.application_edit_request.application_edit_request import (
+			get_open_approval,
+		)
+
+		approval = get_open_approval(self.name)
+		if approval:
+			# One Visa Admin-approved save; used up in on_update.
+			self.flags.consume_edit_approval = approval
+			return
+
+		frappe.throw(
+			frappe._(
+				"Application {0} has been submitted and can no longer be changed. "
+				"Use Request Edit to ask a Visa Admin for edit access, or add a comment."
+			).format(frappe.bold(self.name)),
+			title=frappe._("Submitted"),
+		)
+
+	def lock_status_for_agents(self):
+		"""Agents never move the status themselves - apart from submitting their
+		Draft, which the workflow's Submit action does."""
+		if self.is_new() or not _is_agent_only():
+			return
+		before = self.get_doc_before_save()
+		if not before or before.status == self.status:
+			return
+		if before.status == DRAFT and self.status == INITIAL_STATUS:
+			return
+		self.status = before.status
+
+	def is_in_initial_stage(self):
+		return self.status in (DRAFT, INITIAL_STATUS) and (self.get("workflow_state") or DRAFT) in (
+			DRAFT,
+			INITIAL_STATE,
+		)
+
+	def validate_can_delete(self):
+		"""Deletable while still a Draft or at Details; after that only once the
+		Application Team or CRO has cancelled it."""
+		if frappe.session.user == "Administrator":
+			return
+		if self.is_in_initial_stage() or self.status == CANCELLED or self.get("workflow_state") == CANCELLED:
+			return
+		frappe.throw(
+			frappe._(
+				"Application {0} is already being processed ({1}). Only Draft applications or "
+				"those still at Details can be deleted - ask the Application Team or CRO to cancel it first."
+			).format(frappe.bold(self.name), self.get("workflow_state") or self.status),
+			title=frappe._("Cannot Delete"),
+		)
+
+	def release_assessment_request(self):
+		"""A deleted application hands its Assessment Request back (Accepted)."""
+		name = self.get("assessment_request")
+		if not name or not frappe.db.exists("Assessment Request", name):
+			return
+		ar = frappe.get_doc("Assessment Request", name)
+		if ar.application != self.name:
+			return
+		ar.application = None
+		ar.application_doctype = None
+		ar.flags.ignore_permissions = True
+		ar.flags.converting = True
+		ar.save()
 
 	def validate_offer_letter_sent_before_financials(self):
 		"""The student must have been sent their offer letter before Financials opens."""
@@ -699,7 +810,7 @@ class Application(Document):
 		directly, so a save can never drag an application backwards or resurrect
 		one that has already been closed.
 		"""
-		if self.status in AU_TERMINAL_STATUSES:
+		if self.status in AU_TERMINAL_STATUSES or self.status == DRAFT:
 			return
 		status = self._resolve_stage_alias(status)
 		target = AU_STAGE_RANK.get(status)
@@ -1062,31 +1173,28 @@ class Application(Document):
 
 
 
+def _agent_identities(filters):
+	"""Agent record names plus their Users - Application.agent stores the User."""
+	rows = frappe.get_all("Agent", filters=filters, fields=["name", "user"])
+	return [v for row in rows for v in (row.name, row.user) if v]
+
+
 def _agents_under_cro_head(user):
-	"""All agents whose CRO's cro_head is this user."""
-	cro_agents = frappe.get_all("Agent", filters={"cro_head": user}, pluck="name")
-	return cro_agents or []
+	"""All agents whose CRO Manager (Agent.cro_head) is this user."""
+	return _agent_identities({"cro_head": user})
 
 
 def _agents_under_cro(user):
-	"""All agents linked to teams where this user is the CRO."""
-	teams = frappe.get_all("Team", filters={"cro": user}, pluck="name")
+	"""All agents linked to teams where this user is a CRO."""
+	teams = get_teams_for_user(user, "cro")
 	if not teams:
 		return []
-	agents = frappe.get_all(
-		"Agent", filters={"sales_team": ["in", teams]}, pluck="name"
-	)
-	return agents or []
+	return _agent_identities({"sales_team": ["in", teams]})
 
 
 def _agents_under_cro_for_support(user):
 	"""Marketing/Telecalling see apps from agents under same CRO."""
-	cro_teams = frappe.get_all("Team", filters={"cro": user}, pluck="name")
-	if not cro_teams:
-		return []
-	return frappe.get_all(
-		"Agent", filters={"sales_team": ["in", cro_teams]}, pluck="name"
-	) or []
+	return _agents_under_cro(user)
 
 
 @frappe.whitelist()
@@ -1149,7 +1257,7 @@ def resolve_uk_case(uk_qualification=None, uk_marital_status=None):
 
 
 # Roles treated as "Concerned Manager / Higher Authority" for escalations.
-ESCALATION_ROLES = ("Team Lead", "Country Head", "CRO Head", "CRM Admin", "System Manager")
+ESCALATION_ROLES = ("CRO Manager", "CRM Admin", "Visa Admin", "System Manager")
 
 
 @frappe.whitelist()
@@ -1769,8 +1877,14 @@ def create_agent_application(
 	any_visa_refused=None,
 	visa_refused_country=None,
 	visa_refused_type=None,
+	assessment_request=None,
 ):
-	"""Create Application (or UK) from the agent short-form dialog and assign team."""
+	"""Create Application (or UK) from the agent short-form dialog and assign team.
+
+	With `assessment_request`, the university / course must be one of that
+	request's shortlisted options; the request is then linked to the new
+	Application and moves to Converted to Application.
+	"""
 	student = student or student_id
 	if not student:
 		frappe.throw(frappe._("Student is required"))
@@ -1785,6 +1899,20 @@ def create_agent_application(
 
 	stu = frappe.get_doc("Student", student)
 	agent_user = frappe.session.user
+
+	assessment = None
+	if assessment_request:
+		from erpnext.crm.doctype.assessment_request.assessment_request import (
+			validate_application_from_assessment,
+		)
+
+		assessment = validate_application_from_assessment(
+			assessment_request, student, preferred_university, course
+		)
+		# Staff applying on the agent's behalf still file it under that agent.
+		agent_users = assessment.get_agent_users()
+		if agent_users and agent_user not in agent_users:
+			agent_user = agent_users[0]
 
 	uk = (destination_country or "").strip().lower() in {
 		"united kingdom",
@@ -1819,7 +1947,10 @@ def create_agent_application(
 				or student,
 			}
 		)
+		if assessment:
+			doc.assessment_request = assessment.name
 		doc.insert(ignore_permissions=True)
+		_link_assessment(assessment, doc, preferred_university, course)
 		return {"doctype": "Application UK", "name": doc.name}
 
 	doc = frappe.get_doc(
@@ -1828,7 +1959,8 @@ def create_agent_application(
 			"destination_country": destination_country,
 			"country_flow_case": "AU Default",
 			"application_type": "B2B",
-			"status": "Pending",
+			"status": DRAFT,
+			"workflow_state": DRAFT,
 			"student": student,
 			"preferred_university": preferred_university,
 			"course": course,
@@ -1848,5 +1980,26 @@ def create_agent_application(
 			or student,
 		}
 	)
+	if assessment:
+		doc.assessment_request = assessment.name
 	doc.insert(ignore_permissions=True)
+	_link_assessment(assessment, doc, preferred_university, course)
 	return {"doctype": "Application", "name": doc.name}
+
+
+def _link_assessment(assessment, application, university, course):
+	if not assessment:
+		return
+	from erpnext.crm.doctype.assessment_request.assessment_request import mark_converted
+
+	mark_converted(assessment.name, application.doctype, application.name, university, course)
+
+
+@frappe.whitelist()
+def get_unideft_agent():
+	"""The in-house "Unideft" Agent used for B2C applications.
+
+	Read without a permission check: partner agents create B2C applications but
+	have no access to Agent records themselves.
+	"""
+	return frappe.db.get_value("Agent", {"company_name": "Unideft"}, ["name", "user"], as_dict=True) or {}

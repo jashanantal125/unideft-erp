@@ -12,18 +12,14 @@
 
 frappe.provide("unideft.apply");
 
-const APPLY_AGENT_ROLES = ["Agent", "B2B Agent", "B2C Agent", "agents"];
+const APPLY_AGENT_ROLES = ["Agent"];
 const APPLY_STAFF_ROLES = [
 	"System Manager",
 	"Administrator",
-	"CRM Admin",
-	"Team Lead",
-	"Team Executive",
-	"Admission 1",
-	"Admission 2",
+	"CRM Admin", "Visa Admin",
+	"Application",
 	"CRO",
-	"CRO Head",
-	"Country Head",
+	"CRO Manager",
 ];
 
 unideft.apply.user_is_agent = function () {
@@ -166,11 +162,124 @@ const ALL_MONTHS = [
 	"December",
 ];
 
+function clear_university_outside_country(dialog) {
+	const country = dialog.get_value("destination_country");
+	const university = dialog.get_value("preferred_university");
+	if (!country || !university) {
+		return;
+	}
+	frappe.db.get_value("University", university, "country").then((r) => {
+		const uni_country = ((r.message && r.message.country) || "").trim().toLowerCase();
+		if (uni_country && uni_country !== country.trim().toLowerCase()) {
+			dialog.set_value("preferred_university", "");
+			dialog.set_value("course", "");
+		}
+	});
+}
+
+/**
+ * Offer the student's shortlisted options (from any Assessment Request the
+ * user can see) as a "Pick from Shortlist" select.
+ */
+function load_shortlisted_options(dialog) {
+	const student = dialog.get_value("student");
+	const field = dialog.get_field("pick_from_shortlist");
+	dialog.__shortlist = [];
+	if (!student || !field) {
+		dialog.set_df_property("pick_from_shortlist", "hidden", 1);
+		return;
+	}
+
+	frappe.call({
+		method: "erpnext.crm.doctype.assessment_request.assessment_request.get_shortlisted_options",
+		args: { student },
+		callback(r) {
+			const options = r.message || [];
+			dialog.__shortlist = options;
+			field.df.options = [""].concat(options.map((o) => o.label)).join("\n");
+			field.refresh();
+			dialog.set_df_property("pick_from_shortlist", "hidden", options.length ? 0 : 1);
+
+			// Re-select the row we were opened from, if any.
+			const pick = dialog.__pick;
+			if (pick) {
+				const match = options.find(
+					(o) =>
+						o.assessment_request === pick.assessment_request &&
+						o.course === pick.course &&
+						o.university === pick.university
+				);
+				if (match) {
+					dialog.__suppress_pick = true;
+					dialog.set_value("pick_from_shortlist", match.label).then(() => {
+						dialog.__suppress_pick = false;
+					});
+				}
+			}
+		},
+	});
+}
+
+function apply_shortlist_pick(dialog) {
+	if (dialog.__suppress_pick) {
+		return;
+	}
+	const label = dialog.get_value("pick_from_shortlist");
+	const option = (dialog.__shortlist || []).find((o) => o.label === label);
+	if (!option) {
+		return;
+	}
+
+	dialog.__pick = option;
+	// Stop the university onchange from wiping the course we're about to set.
+	dialog.__prefilling = true;
+	const values = {
+		assessment_request: option.assessment_request,
+		preferred_university: option.university || "",
+		course: option.course || "",
+	};
+	if (option.country) {
+		values.destination_country = option.country;
+	}
+	if (option.intake) {
+		values.intake = option.intake;
+	}
+	dialog.set_values(values).then(() => {
+		dialog.set_df_property("assessment_request", "hidden", 0);
+		setTimeout(() => {
+			dialog.__prefilling = false;
+			toggle_conditional_fields(dialog);
+			refresh_intake_options(dialog);
+		}, 300);
+	});
+}
+
+/** Typing a different course or university means it's no longer a shortlist pick. */
+function release_shortlist_pick_if_changed(dialog) {
+	const pick = dialog.__pick;
+	if (!pick || dialog.__prefilling) {
+		return;
+	}
+	if (
+		dialog.get_value("course") === pick.course &&
+		dialog.get_value("preferred_university") === pick.university
+	) {
+		return;
+	}
+	dialog.__pick = null;
+	dialog.set_value("assessment_request", "");
+	dialog.set_df_property("assessment_request", "hidden", 1);
+	dialog.__suppress_pick = true;
+	dialog.set_value("pick_from_shortlist", "").then(() => {
+		dialog.__suppress_pick = false;
+	});
+}
+
 /**
  * Open the New Application dialog, pre-filled with whatever the caller knows.
  *
  * @param {Object} prefill - any of student, dob, destination_country,
- *   preferred_university, course, intake.
+ *   preferred_university, course, intake, assessment_request.
  */
 unideft.apply.new_application = function (prefill = {}) {
 	const dialog = new frappe.ui.Dialog({
@@ -197,7 +306,29 @@ unideft.apply.new_application = function (prefill = {}) {
 							dialog.set_value("dob", r.birthday);
 						}
 					});
+					load_shortlisted_options(dialog);
 				},
+			},
+			{
+				// Shortlisted university / course options from this student's
+				// Assessment Requests. Picking one fills the fields below and ties
+				// the Application back to its assessment.
+				fieldname: "pick_from_shortlist",
+				fieldtype: "Select",
+				label: __("Pick from Shortlist"),
+				hidden: 1,
+				onchange() {
+					apply_shortlist_pick(dialog);
+				},
+			},
+			{
+				fieldname: "assessment_request",
+				fieldtype: "Link",
+				options: "Assessment Request",
+				label: __("Assessment Request"),
+				read_only: 1,
+				hidden: 1,
+				default: prefill.assessment_request || "",
 			},
 			{
 				// Application.dob is mandatory and is NOT reliably derivable from
@@ -221,6 +352,10 @@ unideft.apply.new_application = function (prefill = {}) {
 				}),
 				onchange() {
 					toggle_conditional_fields(dialog);
+					// A university from another country no longer fits.
+					if (!dialog.__prefilling) {
+						clear_university_outside_country(dialog);
+					}
 				},
 			},
 			{
@@ -230,6 +365,11 @@ unideft.apply.new_application = function (prefill = {}) {
 				label: __("University Name"),
 				reqd: 1,
 				default: prefill.preferred_university || "",
+				// Only universities in the chosen Destination Country.
+				get_query() {
+					const country = dialog.get_value("destination_country");
+					return country ? { filters: { country } } : {};
+				},
 				onchange() {
 					// Only clear the course when the user actively changes university,
 					// never when we pre-filled both from a shortlisting row.
@@ -253,6 +393,7 @@ unideft.apply.new_application = function (prefill = {}) {
 				},
 				onchange() {
 					refresh_intake_options(dialog);
+					release_shortlist_pick_if_changed(dialog);
 				},
 			},
 			{
@@ -346,9 +487,11 @@ unideft.apply.new_application = function (prefill = {}) {
 		primary_action_label: __("Create Application"),
 		primary_action(values) {
 			dialog.hide();
+			const args = Object.assign({}, values);
+			delete args.pick_from_shortlist;
 			frappe.call({
 				method: "erpnext.crm.doctype.application.application.create_agent_application",
-				args: values,
+				args,
 				freeze: true,
 				freeze_message: __("Creating application…"),
 				callback(r) {
@@ -362,10 +505,13 @@ unideft.apply.new_application = function (prefill = {}) {
 					if (unideft.apply.user_is_agent_only()) {
 						frappe.show_alert(
 							{
-								message: __("Application {0} created", [r.message.name]),
+								message:
+									r.message.doctype === "Application"
+										? __("Application {0} saved as Draft - open it and choose Actions → Submit when ready.", [r.message.name])
+										: __("Application {0} created", [r.message.name]),
 								indicator: "green",
 							},
-							5
+							8
 						);
 						frappe.set_route("List", r.message.doctype);
 					} else {
@@ -377,7 +523,18 @@ unideft.apply.new_application = function (prefill = {}) {
 	});
 
 	dialog.__prefilling = true;
+	if (prefill.assessment_request) {
+		dialog.__pick = {
+			assessment_request: prefill.assessment_request,
+			course: prefill.course,
+			university: prefill.preferred_university,
+		};
+		dialog.set_df_property("assessment_request", "hidden", 0);
+	}
 	dialog.show();
+	if (prefill.student) {
+		load_shortlisted_options(dialog);
+	}
 	// Start with every conditional field in the right state rather than
 	// showing them all until the agent touches something.
 	toggle_conditional_fields(dialog);

@@ -13,7 +13,7 @@
  "is_hidden": 0,
  "label": "University",
  "links": [],
- "modified": "2025-11-30 00:00:00",
+ "modified": "2026-10-04 18:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "University",
@@ -31,7 +31,7 @@
  "restrict_to_domain": "",
  "roles": [
   {
-   "role": "Employee"
+   "role": "Visa Admin"
   }
  ],
  "sequence_id": 20.0,
@@ -58,5 +58,3 @@
  "title": "University",
  "type": "Workspace"
 }
-
-

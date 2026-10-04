@@ -10,9 +10,12 @@
   "amended_from",
   "status",
   "assigned_team",
+  "split_from",
   "column_break_meta",
   "requested_by",
   "request_date",
+  "application_doctype",
+  "application",
   "student_section",
   "student_already_registered",
   "first_name",
@@ -72,13 +75,16 @@
   },
   {
    "allow_on_submit": 1,
-   "default": "Open",
+   "default": "Draft",
    "fieldname": "status",
    "fieldtype": "Select",
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Status",
-   "options": "Open\nIn Progress\nPending\nProcessed\nReady for Application\nClosed\nConverted to Application"
+   "options": "Draft\nSubmitted\nIn Review\nShortlisted\nAccepted\nConverted to Application",
+   "read_only": 1,
+   "no_copy": 1,
+   "description": "Set automatically as the request moves through the process."
   },
   {
    "allow_on_submit": 1,
@@ -87,7 +93,17 @@
    "in_list_view": 1,
    "label": "Assigned Team",
    "options": "Team",
-   "read_only": 1
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "split_from",
+   "fieldtype": "Link",
+   "label": "Split From",
+   "options": "Assessment Request",
+   "read_only": 1,
+   "no_copy": 1,
+   "description": "The request this one was split off from, one request per preferred country."
   },
   {
    "fieldname": "column_break_meta",
@@ -106,6 +122,26 @@
    "fieldtype": "Date",
    "label": "Request Date",
    "read_only": 1
+  },
+  {
+   "fieldname": "application_doctype",
+   "fieldtype": "Link",
+   "label": "Application Type",
+   "options": "DocType",
+   "hidden": 1,
+   "read_only": 1,
+   "allow_on_submit": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "application",
+   "fieldtype": "Dynamic Link",
+   "label": "Application",
+   "options": "application_doctype",
+   "read_only": 1,
+   "allow_on_submit": 1,
+   "no_copy": 1,
+   "depends_on": "eval:doc.application"
   },
   {
    "fieldname": "student_section",
@@ -169,7 +205,7 @@
    "label": "Additional Information"
   },
   {
-   "description": "Pick one or more destination countries.",
+   "description": "Pick one or more destination countries. On submit, each country becomes its own request handled by that country's team.",
    "fieldname": "preferred_countries",
    "fieldtype": "Table MultiSelect",
    "label": "Preferred Countries",
@@ -209,7 +245,7 @@
   },
   {
    "allow_on_submit": 1,
-   "depends_on": "eval:in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head') || in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'CRM Admin')",
+   "depends_on": "eval:in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Manager') || in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Visa Admin')",
    "description": "Optional. Lets a CRO record which agent and agency the request came in through. Hidden from agents, who are the source themselves.",
    "fieldname": "cro_unregistered_section",
    "fieldtype": "Section Break",
@@ -217,27 +253,27 @@
   },
   {
    "allow_on_submit": 1,
-   "depends_on": "eval:in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head') || in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'CRM Admin')",
+   "depends_on": "eval:in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Manager') || in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Visa Admin')",
    "fieldname": "cro_agent_name",
    "fieldtype": "Link",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
    "label": "Agent Name",
    "options": "Agent"
   },
   {
    "allow_on_submit": 1,
-   "depends_on": "eval:in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head') || in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'CRM Admin')",
+   "depends_on": "eval:in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Manager') || in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Visa Admin')",
    "description": "Auto-filled from the selected agent's company; can be overridden.",
    "fetch_from": "cro_agent_name.company_name",
    "fetch_if_empty": 1,
    "fieldname": "cro_agency_name",
    "fieldtype": "Data",
-   "label": "Agency Name"
+   "label": "Agency Name",
+   "in_list_view": 1,
+   "in_standard_filter": 1
   },
   {
    "allow_on_submit": 1,
-   "description": "Only Admissions can set this. When Yes, the assessment fields below appear.",
+   "description": "Filled by the Application Team. When Yes, the assessment fields below appear.",
    "fieldname": "need_assessment",
    "fieldtype": "Select",
    "label": "Need Assessment?",
@@ -248,7 +284,7 @@
    "depends_on": "eval:doc.need_assessment == 'Yes'",
    "fieldname": "admissions_assessment_section",
    "fieldtype": "Section Break",
-   "label": "Assessment (Admissions)"
+   "label": "Assessment (Application Team)"
   },
   {
    "allow_on_submit": 1,
@@ -290,7 +326,7 @@
   },
   {
    "allow_on_submit": 1,
-   "description": "Admissions / CRO shortlist courses here. University, country and tuition fee fill in from the selected course; set the intake date manually. Once submitted, the agent sees this table and can apply from any row.",
+   "description": "The Application Team shortlists courses here and publishes them with Publish Shortlist. University, country and tuition fee fill in from the selected course; set the intake date manually. Once published, the agent sees this table and can apply from any row.",
    "fieldname": "course_shortlisting",
    "fieldtype": "Table",
    "label": "Course Shortlisting (Assessment Request Responses)",
@@ -303,7 +339,8 @@
    "fieldtype": "Check",
    "hidden": 1,
    "label": "Response Submitted",
-   "read_only": 1
+   "read_only": 1,
+   "no_copy": 1
   },
   {
    "allow_on_submit": 1,
@@ -311,7 +348,8 @@
    "fieldtype": "Datetime",
    "hidden": 1,
    "label": "Response Submitted On",
-   "read_only": 1
+   "read_only": 1,
+   "no_copy": 1
   },
   {
    "allow_on_submit": 1,
@@ -320,15 +358,17 @@
    "hidden": 1,
    "label": "Response Submitted By",
    "options": "User",
-   "read_only": 1
+   "read_only": 1,
+   "no_copy": 1
   },
   {
    "allow_on_submit": 1,
-   "depends_on": "eval:doc.need_assessment == 'Yes'",
+   "depends_on": "eval:doc.response_submitted && (doc.course_shortlisting || []).length",
    "fieldname": "student_confirmed_to_apply",
    "fieldtype": "Select",
    "label": "Student Confirmation",
-   "options": "\nYes\nNo"
+   "options": "\nYes\nNo",
+   "description": "Once the student picks a shortlisted course, set Yes and choose it below - the request becomes Accepted."
   },
   {
    "allow_on_submit": 1,
@@ -374,7 +414,7 @@
   },
   {
    "allow_on_submit": 1,
-   "depends_on": "eval:in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head') || in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'CRM Admin')",
+   "depends_on": "eval:in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Manager') || in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Visa Admin')",
    "fieldname": "croassessment",
    "fieldtype": "Tab Break",
    "label": "CRO Assessment"
@@ -383,7 +423,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-09-18 16:31:18.604331",
+ "modified": "2026-10-04 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Assessment Request",
@@ -431,24 +471,6 @@
    "email": 1,
    "print": 1,
    "read": 1,
-   "role": "B2B Agent",
-   "submit": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "email": 1,
-   "print": 1,
-   "read": 1,
-   "role": "B2C Agent",
-   "submit": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "email": 1,
-   "print": 1,
-   "read": 1,
    "role": "CRO",
    "submit": 1,
    "write": 1
@@ -457,48 +479,16 @@
    "email": 1,
    "print": 1,
    "read": 1,
-   "role": "CRO Head",
+   "role": "CRO Manager",
    "submit": 1,
    "write": 1
   },
   {
+   "create": 0,
    "email": 1,
    "print": 1,
    "read": 1,
-   "role": "Country Head",
-   "submit": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "email": 1,
-   "print": 1,
-   "read": 1,
-   "role": "Admission 1",
-   "submit": 1,
-   "write": 1
-  },
-  {
-   "email": 1,
-   "print": 1,
-   "read": 1,
-   "role": "Admission 2",
-   "submit": 1,
-   "write": 1
-  },
-  {
-   "email": 1,
-   "print": 1,
-   "read": 1,
-   "role": "Team Lead",
-   "submit": 1,
-   "write": 1
-  },
-  {
-   "email": 1,
-   "print": 1,
-   "read": 1,
-   "role": "Team Executive",
+   "role": "Application",
    "submit": 1,
    "write": 1
   }

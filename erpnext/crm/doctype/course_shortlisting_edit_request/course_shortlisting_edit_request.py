@@ -4,13 +4,12 @@
 import frappe
 from frappe.model.document import Document
 
-ADMIN_ROLES = ("System Manager", "Administrator", "CRM Admin")
+from erpnext.crm.roles import edit_approver_users, is_edit_approver
 
 
 def _is_administrator():
-	return frappe.session.user == "Administrator" or bool(
-		set(frappe.get_roles()).intersection(ADMIN_ROLES)
-	)
+	"""Approver of edit requests - the Visa Admin (or a System Manager)."""
+	return is_edit_approver()
 
 
 class CourseShortlistingEditRequest(Document):
@@ -22,19 +21,9 @@ class CourseShortlistingEditRequest(Document):
 
 
 def notify_administrators(doc, subject):
-	"""Desk notification to everyone who can action the request."""
-	users = set()
-	for role in ADMIN_ROLES:
-		users.update(
-			frappe.get_all(
-				"Has Role", filters={"role": role, "parenttype": "User"}, pluck="parent"
-			)
-		)
-
-	for user in users:
-		if not user or user == frappe.session.user:
-			continue
-		if not frappe.db.get_value("User", user, "enabled"):
+	"""Desk notification to the Visa Admins who review the request."""
+	for user in edit_approver_users():
+		if user == frappe.session.user:
 			continue
 		frappe.get_doc(
 			{
@@ -92,7 +81,7 @@ def request_edit_access(assessment_request, reason):
 
 def _review(name, status, remarks=None):
 	if not _is_administrator():
-		frappe.throw(frappe._("Only an Administrator can review Course Shortlisting edit requests"))
+		frappe.throw(frappe._("Only a Visa Admin can review Course Shortlisting edit requests"))
 
 	doc = frappe.get_doc("Course Shortlisting Edit Request", name)
 	if doc.status != "Pending":

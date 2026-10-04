@@ -83,13 +83,11 @@ class SalesPartner(WebsiteGenerator):
 			# Give desk access by default; adjust if you prefer website-only
 			user.user_type = "System User"
 
-			# Prefer using a Role Profile named "agents" if it exists
-			if frappe.db.exists("Role Profile", "agents"):
-				user.role_profile_name = "agents"
-
-			# Also ensure the "agents" role is assigned if it exists
-			if frappe.db.exists("Role", "agents"):
-				user.append("roles", {"role": "agents"})
+			# Partner agents get the "Agent" role (via its Role Profile when present)
+			if frappe.db.exists("Role Profile", "Agent"):
+				user.role_profile_name = "Agent"
+			if frappe.db.exists("Role", "Agent"):
+				user.append("roles", {"role": "Agent"})
 
 			# Bypass permission checks for system automation
 			user.flags.ignore_permissions = True

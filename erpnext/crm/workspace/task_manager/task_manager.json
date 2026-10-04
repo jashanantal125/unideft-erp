@@ -13,7 +13,7 @@
  "is_hidden": 0,
  "label": "Task Manager",
  "links": [],
- "modified": "2025-01-15 00:00:00.000000",
+ "modified": "2026-10-04 13:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Task Manager",
@@ -35,12 +35,6 @@
   },
   {
    "role": "CRM Sales Staff"
-  },
-  {
-   "role": "Team Lead"
-  },
-  {
-   "role": "Team Executive"
   }
  ],
  "sequence_id": 21.0,

@@ -1912,6 +1912,11 @@ frappe.ui.form.on("Application", {
 	onload(frm) {
 		patch_form_view_tables(frm);
 
+		// University picker shows only universities in the Destination Country.
+		frm.set_query("preferred_university", () =>
+			frm.doc.destination_country ? { filters: { country: frm.doc.destination_country } } : {}
+		);
+
 		// Country was chosen via list dialog → trust it; otherwise force country picker
 		if (frm.is_new()) {
 			if (frm.doc.destination_country && is_au_destination(frm.doc.destination_country)) {
@@ -1987,10 +1992,9 @@ frappe.ui.form.on("Application", {
 			apply_student_defaults_to_form(frm);
 		}
 
-		// Hide assigned fields for Agents (keep visible for System Manager, Team Lead, Executive)
-		if (frappe.user.has_role("Agent") || frappe.user.has_role("B2B Agent") || frappe.user.has_role("B2C Agent")) {
-			// Only hide if NOT a Team Lead or Executive (in case of multiple roles)
-			if (!frappe.user.has_role("Team Lead") && !frappe.user.has_role("Team Executive") && !frappe.user.has_role("System Manager")) {
+		// Hide assigned fields for Agents (keep visible for System Manager)
+		if (frappe.user.has_role("Agent")) {
+			if (!frappe.user.has_role("System Manager")) {
 				frm.set_df_property("assigned_team", "hidden", 1);
 				frm.set_df_property("assigned_executive", "hidden", 1);
 				// Hide standard Assign To sidebar
@@ -2128,6 +2132,13 @@ frappe.ui.form.on("Application", {
 		// Documents-by-stage UI lives on Card/List views; Details tab no longer shows it.
 		refresh_application_country_flag(frm);
 		apply_country_flow_ui(frm);
+		// After apply_country_flow_ui, which clears the headline area: the
+		// agent's lock / edit-request state and the Visa Admin's review button
+		// both load asynchronously from here.
+		if (user_is_agent_only_app() && !frm.is_new() && frm.doc.status !== "Draft") {
+			lock_submitted_application_for_agent(frm);
+		}
+		add_application_edit_review_button(frm);
 	},
 
 	destination_country(frm) {
@@ -5013,25 +5024,21 @@ function sync_sponsor_docs_pdf_rows(frm) {
 
 function user_is_agent_only_app() {
 	const roles = frappe.user_roles || [];
-	const agent = ["Agent", "B2B Agent", "B2C Agent", "agents"].some((r) => roles.includes(r));
+	const agent = ["Agent"].some((r) => roles.includes(r));
 	const staff = [
 		"System Manager",
 		"Administrator",
-		"CRM Admin",
-		"Team Lead",
-		"Team Executive",
-		"Admission 1",
-		"Admission 2",
+		"CRM Admin", "Visa Admin",
+		"Application",
 		"CRO",
-		"CRO Head",
-		"Country Head",
+		"CRO Manager",
 	].some((r) => roles.includes(r));
 	return agent && !staff;
 }
 
 function user_is_cro_app() {
 	return (frappe.user_roles || []).some((r) =>
-		["CRO", "CRO Head", "System Manager", "Administrator", "CRM Admin"].includes(r)
+		["CRO", "CRO Manager", "System Manager", "Administrator", "CRM Admin", "Visa Admin"].includes(r)
 	);
 }
 
@@ -5040,21 +5047,17 @@ function staff_can_see_stage_tabs() {
 		[
 			"System Manager",
 			"Administrator",
-			"CRM Admin",
-			"Team Lead",
-			"Team Executive",
-			"Admission 1",
-			"Admission 2",
-			"Country Head",
+			"CRM Admin", "Visa Admin",
+			"Application",
 			"CRO",
-			"CRO Head",
+			"CRO Manager",
 		].includes(r)
 	);
 }
 
 /**
- * Processing / later AU tabs were historically gated to Team Lead / Executive only.
- * Admission 1 / Admission 2 must see them. Override depends_on so Custom Field cache
+ * Processing / later AU tabs were historically gated to a narrower role set.
+ * The Application role must see them. Override depends_on so Custom Field cache
  * cannot keep the old restriction.
  */
 function apply_admission_stage_tabs(frm) {
@@ -5065,7 +5068,7 @@ function apply_admission_stage_tabs(frm) {
 		return;
 	}
 
-	// Drop the old Team Lead/Executive-only role gate; keep country / visa rules.
+	// Drop the old narrower role gate; keep country / visa rules.
 	const tab_depends = {
 		information_tab: "eval:!doc.is_onshore_change && doc.destination_country=='Australia'",
 		submitted_tab: "eval:!doc.is_onshore_change && doc.destination_country=='Australia'",
@@ -5128,8 +5131,8 @@ function apply_agent_application_tabs(frm) {
 /** CRO holds the role without being an admin who legitimately needs the button. */
 function user_is_cro_strict_app() {
 	const roles = frappe.user_roles || [];
-	const is_cro = ["CRO", "CRO Head"].some((r) => roles.includes(r));
-	const is_admin = ["System Manager", "Administrator", "CRM Admin"].some((r) =>
+	const is_cro = ["CRO", "CRO Manager"].some((r) => roles.includes(r));
+	const is_admin = ["System Manager", "Administrator", "CRM Admin", "Visa Admin"].some((r) =>
 		roles.includes(r)
 	);
 	return is_cro && !is_admin;
@@ -5170,12 +5173,12 @@ function add_agent_submit_button(frm) {
 	if (!user_is_agent_only_app() || frm.is_new()) {
 		return;
 	}
-	// Once it is with admissions the agent has nothing further to submit.
-	if (frm.doc.status && frm.doc.status !== "Pending") {
+	// The agent submits only their Draft; after that it's with the team.
+	if (frm.doc.status !== "Draft") {
 		return;
 	}
 
-	frm.page.set_primary_action(__("Submit to Admissions"), () => {
+	frm.page.set_primary_action(__("Submit"), () => {
 		const missing = agent_quick_fields_missing(frm);
 		if (missing.length) {
 			frappe.msgprint({
@@ -5185,26 +5188,118 @@ function add_agent_submit_button(frm) {
 			});
 			return;
 		}
+		frappe.confirm(
+			__("Submit this application? You won't be able to change it afterwards."),
+			() => {
+				frappe.dom.freeze(__("Submitting…"));
+				frappe
+					.xcall("frappe.model.workflow.apply_workflow", { doc: frm.doc, action: "Submit" })
+					.then((doc) => {
+						frappe.model.sync(doc);
+						frm.refresh();
+						frappe.show_alert(
+							{ message: __("Application {0} submitted", [frm.doc.name]), indicator: "green" },
+							6
+						);
+					})
+					.finally(() => frappe.dom.unfreeze());
+			}
+		);
+	});
+}
 
-		save_application_if_needed(frm)
-			.then(() => advance_status_if_forward(frm, "Processing"))
-			.then(() => save_application_if_needed(frm))
-			.then(() => {
-				const team = frm.doc.assigned_team;
-				frappe.show_alert(
-					{
-						message: team
-							? __("Submitted to {0}", [team])
-							: __("Submitted to the admissions team"),
-						indicator: "green",
-					},
-					6
-				);
-				frm.refresh();
-			})
-			.catch(() => {
-				// save_application_if_needed already surfaced the failure
+const APP_EDIT_REQUEST_API = "erpnext.crm.doctype.application_edit_request.application_edit_request";
+
+/**
+ * After Submit the agent can read, comment on, or (at Details) delete it - not
+ * edit it, unless a Visa Admin has approved an edit request (one save).
+ * Enforced server-side in Application.validate_agent_cannot_edit_after_submit().
+ */
+function lock_submitted_application_for_agent(frm) {
+	frappe.xcall(`${APP_EDIT_REQUEST_API}.get_edit_state`, { application: frm.doc.name }).then((state) => {
+		if (state.approved_request) {
+			frm.set_intro(
+				__("Edit access approved by the Visa Admin - your next save uses it up."),
+				"green"
+			);
+			return;
+		}
+		frm.disable_form();
+		if (state.pending_request) {
+			frm.set_intro(__("Your edit request is waiting for the Visa Admin."), "orange");
+			frm.add_custom_button(__("Edit Request Pending"), () =>
+				frappe.set_route("Form", "Application Edit Request", state.pending_request)
+			);
+			return;
+		}
+		frm.set_intro(
+			__("Submitted - this application can no longer be changed. Use Request Edit to ask the Visa Admin for edit access."),
+			"blue"
+		);
+		frm.add_custom_button(__("Request Edit"), () => {
+			const d = new frappe.ui.Dialog({
+				title: __("Request Edit Access"),
+				fields: [
+					{ fieldname: "reason", fieldtype: "Small Text", label: __("What needs changing?"), reqd: 1 },
+				],
+				primary_action_label: __("Send to Visa Admin"),
+				primary_action(values) {
+					frappe
+						.xcall(`${APP_EDIT_REQUEST_API}.request_edit_access`, {
+							application: frm.doc.name,
+							reason: values.reason,
+						})
+						.then(() => {
+							d.hide();
+							frappe.show_alert({ message: __("Sent to the Visa Admin"), indicator: "blue" }, 5);
+							frm.reload_doc();
+						});
+				},
 			});
+			d.show();
+		});
+	});
+}
+
+/** Visa Admin: approve or reject what's waiting on this application. */
+function add_application_edit_review_button(frm) {
+	if (frm.is_new() || user_is_agent_only_app()) {
+		return;
+	}
+	frappe.xcall(`${APP_EDIT_REQUEST_API}.get_edit_state`, { application: frm.doc.name }).then((state) => {
+		const waiting = state.pending_for_review || [];
+		if (!state.is_approver || !waiting.length) {
+			return;
+		}
+		frm.set_intro(__("{0} edit request(s) waiting for your review.", [waiting.length]), "orange");
+		frm.add_custom_button(__("Review Edit Requests ({0})", [waiting.length]), () => {
+			const esc = frappe.utils.escape_html;
+			const d = new frappe.ui.Dialog({
+				title: __("Application Edit Requests"),
+				fields: [{ fieldname: "list", fieldtype: "HTML" }],
+			});
+			d.fields_dict.list.$wrapper.html(`<table class="table table-bordered">
+				<thead><tr><th>${__("Requested By")}</th><th>${__("Reason")}</th><th>${__("Action")}</th></tr></thead>
+				<tbody>${waiting
+					.map(
+						(r) => `<tr><td>${esc(r.requested_by || "")}</td><td>${esc(r.reason || "")}</td>
+						<td><button class="btn btn-xs btn-success" data-approve="${esc(r.name)}">${__("Approve")}</button>
+						<button class="btn btn-xs btn-danger" data-reject="${esc(r.name)}">${__("Reject")}</button></td></tr>`
+					)
+					.join("")}</tbody></table>`);
+			const review = (name, method) =>
+				frappe.xcall(`${APP_EDIT_REQUEST_API}.${method}`, { name }).then(() => {
+					d.hide();
+					frm.reload_doc();
+				});
+			d.fields_dict.list.$wrapper.on("click", "[data-approve]", function () {
+				review($(this).attr("data-approve"), "approve_edit_request");
+			});
+			d.fields_dict.list.$wrapper.on("click", "[data-reject]", function () {
+				review($(this).attr("data-reject"), "reject_edit_request");
+			});
+			d.show();
+		});
 	});
 }
 
@@ -5423,7 +5518,7 @@ frappe.ui.form.on("Application", {
 });
 
 function set_unideft_agent_user(frm) {
-	frappe.db.get_value("Agent", { company_name: "Unideft" }, "user", (r) => {
+	frappe.xcall("erpnext.crm.doctype.application.application.get_unideft_agent").then((r) => {
 		if (r && r.user && frm.doc.agent !== r.user) {
 			frm.set_value("agent", r.user);
 		}

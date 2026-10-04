@@ -29,6 +29,7 @@
   "preferred_university",
   "column_break_details_program_1",
   "course",
+  "assessment_request",
   "column_break_details_program_2",
   "intake",
   "assigned_team",
@@ -570,6 +571,15 @@
    "label": "Course",
    "options": "Course",
    "reqd": 1
+  },
+  {
+   "fieldname": "assessment_request",
+   "fieldtype": "Link",
+   "label": "Assessment Request",
+   "options": "Assessment Request",
+   "read_only": 1,
+   "no_copy": 1,
+   "search_index": 1
   },
   {
    "fieldname": "column_break_details_program_2",
@@ -3248,7 +3258,7 @@
  "index_web_pages_for_search": 0,
  "is_submittable": 0,
  "links": [],
- "modified": "2026-07-28 12:00:00.000000",
+ "modified": "2026-10-04 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Application UK",
@@ -3278,24 +3288,6 @@
    "report": 1
   },
   {
-   "role": "Team Lead",
-   "create": 1,
-   "read": 1,
-   "write": 1,
-   "email": 1,
-   "print": 1,
-   "delete": 1
-  },
-  {
-   "role": "Team Executive",
-   "create": 1,
-   "read": 1,
-   "write": 1,
-   "email": 1,
-   "print": 1,
-   "delete": 1
-  },
-  {
    "role": "CRM Sales Staff",
    "create": 1,
    "read": 1,
@@ -3305,7 +3297,7 @@
    "delete": 1
   },
   {
-   "role": "CRO Head",
+   "role": "CRO Manager",
    "read": 1,
    "write": 1,
    "email": 1,
@@ -3323,29 +3315,13 @@
    "share": 1
   },
   {
-   "role": "Country Head",
-   "read": 1,
-   "write": 1,
-   "email": 1,
-   "print": 1,
-   "report": 1,
-   "share": 1
-  },
-  {
-   "role": "Admission 1",
+   "role": "Application",
    "create": 1,
    "read": 1,
    "write": 1,
    "email": 1,
    "print": 1,
    "delete": 1
-  },
-  {
-   "role": "Admission 2",
-   "read": 1,
-   "write": 1,
-   "email": 1,
-   "print": 1
   },
   {
    "role": "Marketing Head",
@@ -3368,7 +3344,7 @@
    "print": 1
   },
   {
-   "role": "B2B Agent",
+   "role": "Agent",
    "create": 1,
    "read": 1,
    "write": 1,
@@ -3377,20 +3353,15 @@
    "delete": 1
   },
   {
-   "role": "B2C Agent",
-   "create": 1,
+   "role": "Visa Admin",
    "read": 1,
    "write": 1,
+   "report": 1,
+   "share": 1,
+   "print": 1,
    "email": 1,
-   "print": 1
-  },
-  {
-   "role": "Agent",
    "create": 1,
-   "read": 1,
-   "write": 1,
-   "email": 1,
-   "print": 1
+   "delete": 1
   }
  ],
  "sort_field": "modified",

@@ -23,7 +23,7 @@ erpnext.LeadController = class LeadController extends frappe.ui.form.Controller 
 		});
 		
 		// Set lead_owner to current user if role is agents
-		if (this.frm.is_new() && (frappe.user.has_role("agents") || frappe.user.has_role("Agent"))) {
+		if (this.frm.is_new() && frappe.user.has_role("Agent")) {
 			this.frm.set_value("lead_owner", frappe.session.user);
 			// Make fields read-only for agents
 			this.frm.set_df_property("lead_owner", "read_only", 1);
@@ -31,7 +31,7 @@ erpnext.LeadController = class LeadController extends frappe.ui.form.Controller 
 		}
 		
 		// Make owner field read-only for agents on existing records too
-		if (!this.frm.is_new() && (frappe.user.has_role("agents") || frappe.user.has_role("Agent"))) {
+		if (!this.frm.is_new() && frappe.user.has_role("Agent")) {
 			this.frm.set_df_property("owner", "read_only", 1);
 		}
 		
@@ -45,7 +45,7 @@ erpnext.LeadController = class LeadController extends frappe.ui.form.Controller 
 		erpnext.toggle_naming_series();
 		
 		// Make lead_owner and owner read-only for agents
-		if (frappe.user.has_role("agents") || frappe.user.has_role("Agent")) {
+		if (frappe.user.has_role("Agent")) {
 			this.frm.set_df_property("lead_owner", "read_only", 1);
 			// Make owner field read-only for agents
 			this.frm.set_df_property("owner", "read_only", 1);

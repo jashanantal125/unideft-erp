@@ -13,6 +13,10 @@
   "column_break_team_1",
   "team_leader",
   "country",
+  "country_team_section",
+  "cro_members",
+  "column_break_country_team",
+  "application_team_members",
   "admission_section",
   "admission_1",
   "admission_2",
@@ -43,7 +47,8 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Type",
-   "options": "\nB2B\nB2C"
+   "options": "\nB2B\nB2C",
+   "description": "Informational only - requests are routed by country."
   },
   {
    "fieldname": "column_break_team_1",
@@ -53,7 +58,9 @@
    "fieldname": "team_leader",
    "fieldtype": "Link",
    "label": "Team Leader",
-   "options": "User"
+   "options": "User",
+   "hidden": 1,
+   "description": "No longer used."
   },
   {
    "fieldname": "country",
@@ -61,26 +68,53 @@
    "in_list_view": 1,
    "label": "Country",
    "options": "Country",
-   "description": "Destination country this admission group handles"
+   "description": "Destination country this team handles.",
+   "reqd": 1
+  },
+  {
+   "fieldname": "country_team_section",
+   "fieldtype": "Section Break",
+   "label": "Country Team"
+  },
+  {
+   "fieldname": "cro_members",
+   "fieldtype": "Table",
+   "label": "CROs",
+   "options": "Team Member",
+   "description": "Every CRO who monitors Assessment Requests and Applications for this country. All of them are assigned when a request is submitted."
+  },
+  {
+   "fieldname": "column_break_country_team",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "application_team_members",
+   "fieldtype": "Table",
+   "label": "Application Team",
+   "options": "Team Member",
+   "description": "Application Team members who shortlist courses and universities for this country. All of them are assigned when a request is submitted."
   },
   {
    "fieldname": "admission_section",
    "fieldtype": "Section Break",
-   "label": "Admission Group"
+   "label": "Legacy Assignment",
+   "collapsible": 1
   },
   {
    "fieldname": "admission_1",
    "fieldtype": "Link",
-   "label": "Admission 1",
+   "label": "Legacy Application Member 1",
    "options": "User",
-   "description": "Processes applications for this group"
+   "description": "Filled automatically from the tables above (kept for older reports).",
+   "read_only": 1
   },
   {
    "fieldname": "admission_2",
    "fieldtype": "Link",
-   "label": "Admission 2",
+   "label": "Legacy Application Member 2",
    "options": "User",
-   "description": "Reviews / verifies applications for this group"
+   "description": "Filled automatically from the tables above (kept for older reports).",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_admission_1",
@@ -91,14 +125,16 @@
    "fieldtype": "Link",
    "label": "Country Head",
    "options": "User",
-   "description": "Oversees all groups for the assigned country"
+   "description": "No longer used.",
+   "hidden": 1
   },
   {
    "fieldname": "cro",
    "fieldtype": "Link",
    "label": "CRO",
    "options": "User",
-   "description": "CRO / Branch Head associated with this group"
+   "description": "Filled automatically from the tables above (kept for older reports).",
+   "read_only": 1
   },
   {
    "fieldname": "territories_section",
@@ -125,7 +161,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-07-29 12:00:00.000000",
+ "modified": "2026-10-04 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Team",
@@ -156,20 +192,17 @@
   },
   {
    "read": 1,
-   "role": "Country Head"
-  },
-  {
-   "read": 1,
    "role": "CRO"
   },
   {
    "read": 1,
    "write": 1,
-   "role": "Admission 1"
+   "role": "Application"
   },
   {
+   "role": "Visa Admin",
    "read": 1,
-   "role": "Admission 2"
+   "write": 1
   }
  ],
  "sort_field": "creation",
@@ -177,4 +210,3 @@
  "states": [],
  "title_field": "team_name"
 }
-

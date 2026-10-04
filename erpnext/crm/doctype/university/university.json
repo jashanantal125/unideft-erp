@@ -530,7 +530,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-08-27 12:00:00.000000",
+ "modified": "2026-10-04 13:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "University",
@@ -566,12 +566,8 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Admission 1",
+   "role": "Application",
    "write": 1
-  },
-  {
-   "read": 1,
-   "role": "Admission 2"
   },
   {
    "read": 1,
@@ -579,31 +575,11 @@
   },
   {
    "read": 1,
-   "role": "CRO Head"
-  },
-  {
-   "read": 1,
-   "role": "Country Head"
-  },
-  {
-   "read": 1,
-   "role": "Team Lead"
-  },
-  {
-   "read": 1,
-   "role": "Team Executive"
+   "role": "CRO Manager"
   },
   {
    "read": 1,
    "role": "Agent"
-  },
-  {
-   "read": 1,
-   "role": "B2B Agent"
-  },
-  {
-   "read": 1,
-   "role": "B2C Agent"
   }
  ],
  "row_format": "Dynamic",

@@ -447,9 +447,9 @@ function maybe_uk_reminder(frm, field_value, expect, options) {
 
 function apply_b2c_agent(frm) {
 	if (frm.doc.application_type !== "B2C") return;
-	frappe.db.get_value("Agent", { company_name: "Unideft" }, "name").then((r) => {
-		if (r.message && r.message.name && frm.doc.agent !== r.message.name) {
-			frm.set_value("agent", r.message.name);
+	frappe.xcall("erpnext.crm.doctype.application.application.get_unideft_agent").then((r) => {
+		if (r && r.name && frm.doc.agent !== r.name) {
+			frm.set_value("agent", r.name);
 		}
 	});
 }

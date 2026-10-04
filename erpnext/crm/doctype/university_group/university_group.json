@@ -5,7 +5,9 @@
  "creation": "2026-08-27 00:00:00.000000",
  "doctype": "DocType",
  "engine": "InnoDB",
- "field_order": ["group_name"],
+ "field_order": [
+  "group_name"
+ ],
  "fields": [
   {
    "fieldname": "group_name",
@@ -18,7 +20,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-08-27 00:00:00.000000",
+ "modified": "2026-10-04 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "University Group",
@@ -48,17 +50,13 @@
    "create": 1,
    "read": 1,
    "select": 1,
-   "role": "Admission 1"
+   "role": "Application"
   },
   {
+   "role": "Visa Admin",
    "read": 1,
-   "select": 1,
-   "role": "Team Lead"
-  },
-  {
-   "read": 1,
-   "select": 1,
-   "role": "Team Executive"
+   "create": 1,
+   "select": 1
   }
  ],
  "sort_field": "modified",

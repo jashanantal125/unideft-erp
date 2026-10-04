@@ -30,6 +30,7 @@
   "preferred_university",
   "column_break_details_program_1",
   "course",
+  "assessment_request",
   "column_break_details_program_2",
   "intake",
   "column_break_details_program_3",
@@ -597,7 +598,7 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Pending\nProcessing\nSubmitted\nOffer Letter Received\nFinancial\nGS Processing\nGS Approved\nAcceptance\nCOE\nFile Lodged\nVisa\nEnrollment\nCompleted\nOn Shore College change\nVisa Refused\nRefunded\nRefund\nClosed",
+   "options": "Draft\nPending\nProcessing\nSubmitted\nOffer Letter Received\nFinancial\nGS Processing\nGS Approved\nAcceptance\nCOE\nFile Lodged\nVisa\nEnrollment\nCompleted\nOn Shore College change\nVisa Refused\nRefunded\nRefund\nClosed\nCancelled",
    "default": "Pending",
    "reqd": 1,
    "in_list_view": 1,
@@ -694,6 +695,15 @@
    "reqd": 1
   },
   {
+   "fieldname": "assessment_request",
+   "fieldtype": "Link",
+   "label": "Assessment Request",
+   "options": "Assessment Request",
+   "read_only": 1,
+   "no_copy": 1,
+   "search_index": 1
+  },
+  {
    "fieldname": "column_break_details_program_2",
    "fieldtype": "Column Break"
   },
@@ -745,7 +755,7 @@
    "fieldname": "visa_refused_ok",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 OK",
+   "default": "✓ OK",
    "depends_on": "eval:(doc.destination_country=='Australia') && (doc.any_visa_refused == 'No')",
    "read_only": 1,
    "bold": 1
@@ -791,7 +801,7 @@
    "fieldname": "visa_refused_go_ahead_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Go Ahead",
+   "default": "✓ Go Ahead",
    "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_refused_can_process == 'Yes')",
    "read_only": 1,
    "bold": 1
@@ -861,7 +871,7 @@
    "label": "If study gap is",
    "options": "\nBelow 1 Year\nBelow 2 Years\nAbove 2 Years",
    "depends_on": "eval:doc.study_gap == 'Yes'",
-   "description": "Below 1 Year / Below 2 Years \u2192 Accepted. Above 2 Years \u2192 Not Accepted.",
+   "description": "Below 1 Year / Below 2 Years → Accepted. Above 2 Years → Not Accepted.",
    "length": 20
   },
   {
@@ -890,7 +900,7 @@
    "fieldname": "study_gap_ok",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 OK",
+   "default": "✓ OK",
    "depends_on": "eval:doc.study_gap == 'No'",
    "read_only": 1,
    "bold": 1
@@ -899,7 +909,7 @@
    "fieldname": "study_gap_next_stage_note",
    "fieldtype": "HTML",
    "label": " ",
-   "options": "<p class=\"text-muted\">Study gap <b>Accepted</b>. Add Study Gap Proof in the <strong>Processing</strong> tab (proof table only \u2014 duration is already set here).</p>",
+   "options": "<p class=\"text-muted\">Study gap <b>Accepted</b>. Add Study Gap Proof in the <strong>Processing</strong> tab (proof table only — duration is already set here).</p>",
    "depends_on": "eval:doc.study_gap == 'Yes' && (doc.gap_duration == 'Below 1 Year' || doc.gap_duration == 'Below 2 Years')"
   },
   {
@@ -988,7 +998,7 @@
    "fieldname": "case_4_proceed_below_graduate",
    "fieldtype": "Select",
    "label": "Student wants to proceed (Below Graduate)",
-   "options": "\non single basis\nDon\u2019t want to procced",
+   "options": "\non single basis\nDon’t want to procced",
    "depends_on": "eval:(doc.destination_country=='Australia') && (doc.case_4_spouse_qualification == 'Below Graduate' && doc.higher_education == 'Graduation' && doc.martial_status == 'Married')",
    "length": 41
   },
@@ -1025,20 +1035,20 @@
    "fieldtype": "Small Text",
    "label": "Instruction",
    "default": "Convince to process on single basis otherwise Close case",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.case_4_proceed_below_graduate == 'Don\u2019t want to procced' && doc.higher_education == 'Graduation' && doc.martial_status == 'Married')",
+   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.case_4_proceed_below_graduate == 'Don’t want to procced' && doc.higher_education == 'Graduation' && doc.martial_status == 'Married')",
    "read_only": 1
   },
   {
    "fieldname": "case_4_close_reason",
    "fieldtype": "Small Text",
    "label": "Close Case Reason",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.case_4_proceed_below_graduate == 'Don\u2019t want to procced' && doc.higher_education == 'Graduation' && doc.martial_status == 'Married')"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.case_4_proceed_below_graduate == 'Don’t want to procced' && doc.higher_education == 'Graduation' && doc.martial_status == 'Married')"
   },
   {
    "fieldname": "information_tab",
    "fieldtype": "Tab Break",
    "label": "Processing",
-   "depends_on": "eval:!doc.is_onshore_change && ((doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head')))"
+   "depends_on": "eval:!doc.is_onshore_change && ((doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Visa Admin') || in_list(frappe.user_roles, 'Application') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Manager')))"
   },
   {
    "fieldname": "section_a_email",
@@ -1205,7 +1215,7 @@
    "label": "Study Gap Proof",
    "options": "Study Gap Proof",
    "depends_on": "eval:doc.study_gap == 'Yes' && (doc.gap_duration_status == 'Accepted' || doc.gap_duration == 'Below 1 Year' || doc.gap_duration == 'Below 2 Years')",
-   "description": "Gap duration was set on Details (Accepted). Add Educational / Work / Other proof rows here \u2014 do not re-enter duration."
+   "description": "Gap duration was set on Details (Accepted). Add Educational / Work / Other proof rows here — do not re-enter duration."
   },
   {
    "fieldname": "section_d_passport",
@@ -1314,7 +1324,7 @@
    "fieldname": "submitted_another_application_yes_note",
    "fieldtype": "Text",
    "label": "Note",
-   "default": "\u2713 The student will proceed with the Another Application process.",
+   "default": "✓ The student will proceed with the Another Application process.",
    "depends_on": "eval:doc.submitted_another_application == 'Yes'",
    "read_only": 1,
    "bold": 1
@@ -1339,7 +1349,7 @@
    "fieldname": "need_another_application_yes_note",
    "fieldtype": "Text",
    "label": "Note",
-   "default": "\u26a0 Set reminder when you will process another application",
+   "default": "⚠ Set reminder when you will process another application",
    "depends_on": "eval:doc.submitted_another_application == 'No' && doc.need_another_application == 'Yes'",
    "read_only": 1,
    "bold": 1
@@ -1363,7 +1373,7 @@
    "fieldname": "no_further_requirement_note",
    "fieldtype": "Text",
    "label": "Note",
-   "default": "If no \u2192 Set reminder: Follow up on Offer Letter",
+   "default": "If no → Set reminder: Follow up on Offer Letter",
    "depends_on": "eval:doc.any_further_requirement_offer_letter == 'No'",
    "read_only": 1,
    "bold": 1
@@ -1397,7 +1407,7 @@
    "fieldname": "pending_requirements_reminder_note",
    "fieldtype": "Text",
    "label": "Note",
-   "default": "\u2192 Set reminder: To Complete Pending requirements",
+   "default": "→ Set reminder: To Complete Pending requirements",
    "depends_on": "eval:doc.any_further_requirement_offer_letter == 'Yes' && doc.submitted_requirement_type == 'Other' && doc.pending_requirements_completed == 'No'",
    "read_only": 1,
    "bold": 1
@@ -1406,7 +1416,7 @@
    "fieldname": "pending_requirements_completed_yes_note",
    "fieldtype": "Text",
    "label": "Note",
-   "default": "\u2192 Set reminder: Follow up on Offer Letter",
+   "default": "→ Set reminder: Follow up on Offer Letter",
    "depends_on": "eval:doc.any_further_requirement_offer_letter == 'Yes' && doc.submitted_requirement_type == 'Other' && doc.pending_requirements_completed == 'Yes'",
    "read_only": 1,
    "bold": 1
@@ -1466,13 +1476,13 @@
    "fieldtype": "Select",
    "label": "Offer Letter Received?",
    "options": "\nYes\nNo",
-   "description": "Yes \u2192 move to Offer Letter stage. No \u2192 set a reminder."
+   "description": "Yes → move to Offer Letter stage. No → set a reminder."
   },
   {
    "fieldname": "offer_tab",
    "fieldtype": "Tab Break",
    "label": "Offer Letter",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head'))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Visa Admin') || in_list(frappe.user_roles, 'Application') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Manager'))"
   },
   {
    "description": "Set automatically when Offer Letter Received? is answered Yes. Editable afterwards.",
@@ -1491,7 +1501,7 @@
    "label": "Financial Started",
    "length": 10,
    "options": "\nYes\nNo",
-   "description": "Yes \u2192 complete Offer Letter stage and move to Financials. No \u2192 set a follow-up reminder."
+   "description": "Yes → complete Offer Letter stage and move to Financials. No → set a follow-up reminder."
   },
   {
    "fieldname": "offer_letter_stage_completed",
@@ -1505,7 +1515,7 @@
    "fieldname": "financial_started_completed_note",
    "fieldtype": "Text",
    "label": "Note",
-   "default": "\u2713 Offer Letter stage completed \u2192 Moved to Financial stage",
+   "default": "✓ Offer Letter stage completed → Moved to Financial stage",
    "depends_on": "eval:doc.financial_started == 'Yes'",
    "read_only": 1,
    "bold": 1
@@ -1514,7 +1524,7 @@
    "fieldname": "financial_started_no_note",
    "fieldtype": "Text",
    "label": "Note",
-   "default": "\u2192 Set reminder to follow up on starting Financials",
+   "default": "→ Set reminder to follow up on starting Financials",
    "depends_on": "eval:doc.financial_started == 'No'",
    "read_only": 1,
    "bold": 1
@@ -1699,7 +1709,7 @@
    "fieldtype": "Select",
    "label": "Send Offer Letter to Student Chat",
    "options": "\nYes\nNo",
-   "description": "Yes \u2192 the offer letter is posted to Comments automatically. Must be Yes before Financial Started can be set to Yes.",
+   "description": "Yes → the offer letter is posted to Comments automatically. Must be Yes before Financial Started can be set to Yes.",
    "mandatory_depends_on": "eval:doc.financial_started == 'Yes'",
    "length": 23
   },
@@ -1714,7 +1724,7 @@
    "fieldname": "defer_offer_ok",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 OK",
+   "default": "✓ OK",
    "depends_on": "eval:doc.defer_offer_required == 'No'",
    "read_only": 1,
    "bold": 1
@@ -1738,7 +1748,7 @@
    "fieldname": "defer_offer_received_no_note",
    "fieldtype": "Text",
    "label": "Note",
-   "default": "\u2192 Set reminder: Follow up when Defer Offer letter will be received",
+   "default": "→ Set reminder: Follow up when Defer Offer letter will be received",
    "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes' && doc.defer_offer_received == 'No'",
    "read_only": 1,
    "bold": 1
@@ -1761,7 +1771,7 @@
    "fieldname": "defer_no_further_requirement_note",
    "fieldtype": "Text",
    "label": "Note",
-   "default": "If no \u2192 Set reminder: Follow up on Defer Offer Letter",
+   "default": "If no → Set reminder: Follow up on Defer Offer Letter",
    "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes' && doc.defer_offer_received == 'Yes' && doc.defer_any_further_requirement == 'No'",
    "read_only": 1,
    "bold": 1
@@ -1784,7 +1794,7 @@
    "fieldname": "defer_pending_requirements_reminder_note",
    "fieldtype": "Text",
    "label": "Note",
-   "default": "\u2192 Set reminder: To Complete Pending requirements",
+   "default": "→ Set reminder: To Complete Pending requirements",
    "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes' && doc.defer_offer_received == 'Yes' && doc.defer_any_further_requirement == 'Yes' && doc.defer_pending_requirements_completed == 'No'",
    "read_only": 1,
    "bold": 1
@@ -1793,7 +1803,7 @@
    "fieldname": "defer_pending_requirements_completed_yes_note",
    "fieldtype": "Text",
    "label": "Note",
-   "default": "\u2192 Set reminder: Follow up on Offer Letter",
+   "default": "→ Set reminder: Follow up on Offer Letter",
    "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'Yes' && doc.defer_offer_received == 'Yes' && doc.defer_any_further_requirement == 'Yes' && doc.defer_pending_requirements_completed == 'Yes'",
    "read_only": 1,
    "bold": 1
@@ -1809,7 +1819,7 @@
    "fieldname": "applied_for_defer_offer_no_note",
    "fieldtype": "Text",
    "label": "Note",
-   "default": "\u2192 Set reminder: Follow up on Defer Offer Letter",
+   "default": "→ Set reminder: Follow up on Defer Offer Letter",
    "depends_on": "eval:doc.defer_offer_required == 'Yes' && doc.applied_for_defer_offer_letter == 'No'",
    "read_only": 1,
    "bold": 1
@@ -1992,7 +2002,7 @@
    "fieldname": "financials_tab",
    "fieldtype": "Tab Break",
    "label": "Financials",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head'))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Visa Admin') || in_list(frappe.user_roles, 'Application') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Manager'))"
   },
   {
    "fieldname": "gs_submitted_section",
@@ -2010,7 +2020,7 @@
    "fieldname": "financial_stage_completed",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Financial stage completed \u2192 Moved to GS Processing",
+   "default": "✓ Financial stage completed → Moved to GS Processing",
    "depends_on": "eval:doc.gs_submitted == 'Yes'",
    "read_only": 1,
    "bold": 1
@@ -2019,7 +2029,7 @@
    "fieldname": "gs_submitted_no_note",
    "fieldtype": "Text",
    "label": "Note",
-   "default": "\u2192 Set reminder when financials will be completed (date / time / remarks)",
+   "default": "→ Set reminder when financials will be completed (date / time / remarks)",
    "depends_on": "eval:doc.gs_submitted == 'No'",
    "read_only": 1,
    "bold": 1
@@ -2059,7 +2069,7 @@
    "fieldname": "gs_another_university_closed_note",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Process closed here \u2014 student processing GS in another university",
+   "default": "✓ Process closed here — student processing GS in another university",
    "depends_on": "eval:doc.gs_submitted == 'No' && doc.student_will_process_gs == 'No' && doc.will_process_gs_another_university == 'Yes' && doc.gs_another_university_application_id",
    "read_only": 1,
    "bold": 1
@@ -2094,7 +2104,7 @@
    "fieldname": "gs_another_country_closed_note",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Closed from here \u2014 student processing in another country",
+   "default": "✓ Closed from here — student processing in another country",
    "depends_on": "eval:doc.gs_submitted == 'No' && doc.student_will_process_gs == 'No' && doc.will_process_gs_another_university == 'No' && doc.will_process_another_country == 'Yes' && doc.gs_another_country_name && doc.gs_another_country_application_id",
    "read_only": 1,
    "bold": 1
@@ -2125,7 +2135,7 @@
    "fieldname": "gs_not_process_closed_note",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Case closed \u2014 student does not want to process",
+   "default": "✓ Case closed — student does not want to process",
    "depends_on": "eval:doc.gs_submitted == 'No' && doc.student_will_process_gs == 'No' && doc.will_process_gs_another_university == 'No' && doc.will_process_another_country == 'No' && (doc.gs_close_this_application == 'Yes' || doc.status == 'Closed')",
    "read_only": 1,
    "bold": 1
@@ -2162,7 +2172,7 @@
    "label": "Interview Timing",
    "options": "\nBefore GS Submitted\nBefore GS Approval\nBefore Acceptance\nBefore COE",
    "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; })",
-   "description": "Before GS Submitted \u2192 Financials tab. Before GS Approval \u2192 GS Submitted tab. Before Acceptance \u2192 GS Approved tab. Before COE \u2192 Acceptance tab.",
+   "description": "Before GS Submitted → Financials tab. Before GS Approval → GS Submitted tab. Before Acceptance → GS Approved tab. Before COE → Acceptance tab.",
    "mandatory_depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; })",
    "length": 38
   },
@@ -2183,7 +2193,7 @@
   },
   {
    "bold": 1,
-   "default": "\u2713 Schedule Interview (if not scheduled)",
+   "default": "✓ Schedule Interview (if not scheduled)",
    "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before GS Submitted' && doc.financials_student_prepare == 'Yes'",
    "fieldname": "financials_student_prepare_yes_status",
    "fieldtype": "Text",
@@ -2192,7 +2202,7 @@
   },
   {
    "bold": 1,
-   "default": "\u26a0 Prepare Student \u2014 Set Reminder to Prepare Student",
+   "default": "⚠ Prepare Student — Set Reminder to Prepare Student",
    "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before GS Submitted' && doc.financials_student_prepare == 'No'",
    "fieldname": "financials_student_prepare_no_status",
    "fieldtype": "Text",
@@ -2209,7 +2219,7 @@
   },
   {
    "bold": 1,
-   "default": "\u2713 Prepare Student Strongly \u2014 Reminder for Interview Date",
+   "default": "✓ Prepare Student Strongly — Reminder for Interview Date",
    "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before GS Submitted' && doc.financials_schedule_interview == 'Yes'",
    "fieldname": "financials_schedule_interview_yes_status",
    "fieldtype": "Text",
@@ -2218,7 +2228,7 @@
   },
   {
    "bold": 1,
-   "default": "\u26a0 Prepare Student \u2014 Set Reminder to Follow Up Interview Schedule",
+   "default": "⚠ Prepare Student — Set Reminder to Follow Up Interview Schedule",
    "depends_on": "eval:doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; }) && doc.interview_timing == 'Before GS Submitted' && doc.financials_schedule_interview == 'No'",
    "fieldname": "financials_schedule_interview_no_status",
    "fieldtype": "Text",
@@ -2231,7 +2241,7 @@
    "fieldtype": "Select",
    "label": "Interview Done Before Deadline?",
    "options": "\nYes\nNo",
-   "description": "Yes \u2192 auto-deactivate interview deadline reminder",
+   "description": "Yes → auto-deactivate interview deadline reminder",
    "length": 23
   },
   {
@@ -2265,13 +2275,13 @@
    "fieldtype": "Table",
    "label": "Sponsors (all documents in one form)",
    "options": "Application Sponsor Complete",
-   "description": "One row per sponsor. Open the row to add identity, income (ITRs / Form 16), occupations, and funds \u2014 all in one place."
+   "description": "One row per sponsor. Open the row to add identity, income (ITRs / Form 16), occupations, and funds — all in one place."
   },
   {
    "fieldname": "sponsor_occupations_section",
    "fieldtype": "Section Break",
    "label": "Sponsor Occupation Documents",
-   "description": "One row per occupation. Tag each row with the sponsor it belongs to; a sponsor can have several occupations. (Managed inside Sponsors row \u2014 do not edit here.)",
+   "description": "One row per occupation. Tag each row with the sponsor it belongs to; a sponsor can have several occupations. (Managed inside Sponsors row — do not edit here.)",
    "hidden": 1
   },
   {
@@ -2280,13 +2290,13 @@
    "label": "Sponsor Occupation Documents",
    "options": "Application Sponsor Occupation",
    "hidden": 1,
-   "description": " (Managed inside Sponsors row \u2014 do not edit here.)"
+   "description": " (Managed inside Sponsors row — do not edit here.)"
   },
   {
    "fieldname": "sponsor_itrs_section",
    "fieldtype": "Section Break",
    "label": "Sponsor ITRs",
-   "description": "One row per ITR. Tag each row with the sponsor it belongs to. (Managed inside Sponsors row \u2014 do not edit here.)",
+   "description": "One row per ITR. Tag each row with the sponsor it belongs to. (Managed inside Sponsors row — do not edit here.)",
    "hidden": 1
   },
   {
@@ -2295,13 +2305,13 @@
    "label": "Sponsor ITRs",
    "options": "Application Sponsor ITR",
    "hidden": 1,
-   "description": " (Managed inside Sponsors row \u2014 do not edit here.)"
+   "description": " (Managed inside Sponsors row — do not edit here.)"
   },
   {
    "fieldname": "sponsor_form_16_section",
    "fieldtype": "Section Break",
    "label": "Sponsor Form 16",
-   "description": "One row per Form 16. Tag each row with the sponsor it belongs to. (Managed inside Sponsors row \u2014 do not edit here.)",
+   "description": "One row per Form 16. Tag each row with the sponsor it belongs to. (Managed inside Sponsors row — do not edit here.)",
    "hidden": 1
   },
   {
@@ -2310,7 +2320,7 @@
    "label": "Sponsor Form 16",
    "options": "Application Sponsor Form 16",
    "hidden": 1,
-   "description": " (Managed inside Sponsors row \u2014 do not edit here.)"
+   "description": " (Managed inside Sponsors row — do not edit here.)"
   },
   {
    "fieldname": "gap_justification_section",
@@ -2437,7 +2447,7 @@
    "fieldtype": "Table",
    "label": "Sponsor Documents PDF (AC+PC+ITR+Occupation Proof+Others)",
    "options": "Application Sponsor Docs PDF",
-   "description": "One row per sponsor \u2014 synced from the Sponsors table."
+   "description": "One row per sponsor — synced from the Sponsors table."
   },
   {
    "fieldname": "sponsor_1_docs_pdf_upload",
@@ -2497,7 +2507,7 @@
    "fieldname": "gs_tab",
    "fieldtype": "Tab Break",
    "label": "GS Submitted",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head'))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Visa Admin') || in_list(frappe.user_roles, 'Application') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Manager'))"
   },
   {
    "fieldname": "gs_processing_section",
@@ -2523,7 +2533,7 @@
    "fieldname": "interview_not_available_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2139 These interview fields apply when Interview Timing = Before GS Approval in Financials",
+   "default": "ℹ These interview fields apply when Interview Timing = Before GS Approval in Financials",
    "depends_on": "eval:!doc.interview_stage_available && doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; })",
    "read_only": 1
   },
@@ -2545,7 +2555,7 @@
    "fieldname": "student_prepare_yes_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Schedule Interview (if not scheduled)",
+   "default": "✓ Schedule Interview (if not scheduled)",
    "depends_on": "eval:doc.interview_stage_available && doc.student_prepare == 'Yes'",
    "read_only": 1
   },
@@ -2553,7 +2563,7 @@
    "fieldname": "student_prepare_no_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Prepare Student - Set Reminder to Prepare Student",
+   "default": "⚠ Prepare Student - Set Reminder to Prepare Student",
    "depends_on": "eval:doc.interview_stage_available && doc.student_prepare == 'No'",
    "read_only": 1
   },
@@ -2569,7 +2579,7 @@
    "fieldname": "schedule_interview_yes_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Prepare Student Strongly - Reminder Set for Interview Date",
+   "default": "✓ Prepare Student Strongly - Reminder Set for Interview Date",
    "depends_on": "eval:doc.interview_stage_available && doc.schedule_interview == 'Yes'",
    "read_only": 1
   },
@@ -2577,7 +2587,7 @@
    "fieldname": "schedule_interview_no_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Prepare Student - Set Reminder for Follow Up Interview Schedule",
+   "default": "⚠ Prepare Student - Set Reminder for Follow Up Interview Schedule",
    "depends_on": "eval:doc.interview_stage_available && doc.schedule_interview == 'No'",
    "read_only": 1
   },
@@ -2587,7 +2597,7 @@
    "fieldtype": "Select",
    "label": "Interview Done Before Deadline?",
    "options": "\nYes\nNo",
-   "description": "Yes \u2192 auto-deactivate interview deadline reminder",
+   "description": "Yes → auto-deactivate interview deadline reminder",
    "length": 23
   },
   {
@@ -2601,7 +2611,7 @@
    "fieldname": "gs_approved_yes_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Go to GS Approved Stage",
+   "default": "✓ Go to GS Approved Stage",
    "depends_on": "eval:doc.gs_approved_check == 'Yes'",
    "read_only": 1
   },
@@ -2617,7 +2627,7 @@
    "fieldname": "no_requirement_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder When Expecting GS Approved",
+   "default": "⚠ Set Reminder When Expecting GS Approved",
    "depends_on": "eval:doc.gs_approved_check == 'No' && doc.gs_any_requirement == 'No'",
    "read_only": 1
   },
@@ -2639,7 +2649,7 @@
    "fieldname": "requirements_completed_yes_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Set Reminder When Expecting GS Approved",
+   "default": "✓ Set Reminder When Expecting GS Approved",
    "depends_on": "eval:doc.gs_approved_check == 'No' && doc.gs_any_requirement == 'Yes' && doc.requirements_completed == 'Yes'",
    "read_only": 1
   },
@@ -2647,7 +2657,7 @@
    "fieldname": "requirements_completed_no_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder When Requirement Will Be Completed",
+   "default": "⚠ Set Reminder When Requirement Will Be Completed",
    "depends_on": "eval:doc.gs_approved_check == 'No' && doc.gs_any_requirement == 'Yes' && doc.requirements_completed == 'No'",
    "read_only": 1
   },
@@ -2655,7 +2665,7 @@
    "fieldname": "gs_approved_tab",
    "fieldtype": "Tab Break",
    "label": "GS Approved",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head'))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Visa Admin') || in_list(frappe.user_roles, 'Application') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Manager'))"
   },
   {
    "fieldname": "gs_approved_section",
@@ -2684,7 +2694,7 @@
    "fieldname": "tuition_fee_paid_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Ok",
+   "default": "✓ Ok",
    "depends_on": "eval:doc.fee_processed_through_gha == 'Yes' && doc.tuition_fee_paid == 'Yes'",
    "read_only": 1
   },
@@ -2692,7 +2702,7 @@
    "fieldname": "tuition_fee_not_paid_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder for Fee Payment Follow Up",
+   "default": "⚠ Set Reminder for Fee Payment Follow Up",
    "depends_on": "eval:doc.fee_processed_through_gha == 'Yes' && doc.tuition_fee_paid == 'No'",
    "read_only": 1
   },
@@ -2771,7 +2781,7 @@
    "fieldname": "gha_policy_not_received_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder When Policy Will Be Received",
+   "default": "⚠ Set Reminder When Policy Will Be Received",
    "depends_on": "eval:(doc.oshc_cert_received == 'Yes') && doc.oshc_arranged_by_type == 'GHA' && doc.gha_policy_received == 'No'",
    "read_only": 1
   },
@@ -2816,7 +2826,7 @@
    "fieldname": "agent_policy_not_received_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder When Policy Will Be Received",
+   "default": "⚠ Set Reminder When Policy Will Be Received",
    "depends_on": "eval:(doc.oshc_cert_received == 'Yes') && doc.oshc_arranged_by_type == 'Agent' && doc.agent_policy_received == 'No'",
    "read_only": 1
   },
@@ -2861,7 +2871,7 @@
    "fieldname": "student_policy_not_received_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder When Policy Will Be Received",
+   "default": "⚠ Set Reminder When Policy Will Be Received",
    "depends_on": "eval:(doc.oshc_cert_received == 'Yes') && doc.oshc_arranged_by_type == 'Student' && doc.student_policy_received == 'No'",
    "read_only": 1
   },
@@ -2876,7 +2886,7 @@
    "fieldname": "acceptance_submitted_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Ok - Move to Acceptance Stage",
+   "default": "✓ Ok - Move to Acceptance Stage",
    "depends_on": "eval:(doc.acceptance_submitted == 'Yes')",
    "read_only": 1
   },
@@ -2884,7 +2894,7 @@
    "fieldname": "acceptance_not_submitted_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder to follow up for Acceptance Submission",
+   "default": "⚠ Set Reminder to follow up for Acceptance Submission",
    "depends_on": "eval:doc.acceptance_submitted == 'No'",
    "read_only": 1
   },
@@ -2892,7 +2902,7 @@
    "fieldname": "acceptance_tab",
    "fieldtype": "Tab Break",
    "label": "Acceptance",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head'))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Visa Admin') || in_list(frappe.user_roles, 'Application') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Manager'))"
   },
   {
    "fieldname": "acceptance_before_coe_section",
@@ -2912,7 +2922,7 @@
    "fieldname": "acceptance_not_available_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2139 These interview fields apply when Interview Timing = Before COE in Financials",
+   "default": "ℹ These interview fields apply when Interview Timing = Before COE in Financials",
    "depends_on": "eval:!doc.acceptance_before_coe_available && doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; })",
    "read_only": 1
   },
@@ -2934,7 +2944,7 @@
    "fieldname": "acceptance_student_prepare_yes_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Schedule Interview",
+   "default": "✓ Schedule Interview",
    "depends_on": "eval:doc.acceptance_before_coe_available && doc.acceptance_student_prepare == 'Yes'",
    "read_only": 1
   },
@@ -2942,7 +2952,7 @@
    "fieldname": "acceptance_student_prepare_no_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Prepare Student - Reminder Set",
+   "default": "⚠ Prepare Student - Reminder Set",
    "depends_on": "eval:doc.acceptance_before_coe_available && doc.acceptance_student_prepare == 'No'",
    "read_only": 1
   },
@@ -2958,7 +2968,7 @@
    "fieldname": "acceptance_schedule_interview_yes_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Prepare Student Strongly - Reminder Set for Interview Date",
+   "default": "✓ Prepare Student Strongly - Reminder Set for Interview Date",
    "depends_on": "eval:doc.acceptance_before_coe_available && doc.acceptance_schedule_interview == 'Yes'",
    "read_only": 1
   },
@@ -2966,7 +2976,7 @@
    "fieldname": "acceptance_schedule_interview_no_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Prepare Student - Set Reminder for Follow Up Interview Schedule",
+   "default": "⚠ Prepare Student - Set Reminder for Follow Up Interview Schedule",
    "depends_on": "eval:doc.acceptance_before_coe_available && doc.acceptance_schedule_interview == 'No'",
    "read_only": 1
   },
@@ -2976,7 +2986,7 @@
    "fieldtype": "Select",
    "label": "Interview Done Before Deadline?",
    "options": "\nYes\nNo",
-   "description": "Yes \u2192 auto-deactivate interview deadline reminder",
+   "description": "Yes → auto-deactivate interview deadline reminder",
    "length": 23
   },
   {
@@ -2991,7 +3001,7 @@
    "fieldname": "acceptance_no_requirement_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder to receive COE & proceed to next stage",
+   "default": "⚠ Set Reminder to receive COE & proceed to next stage",
    "depends_on": "eval:doc.acceptance_any_requirement == 'No'",
    "read_only": 1
   },
@@ -3013,7 +3023,7 @@
    "fieldname": "acceptance_requirements_completed_yes_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Set Reminder When Expecting COE Will Receive",
+   "default": "✓ Set Reminder When Expecting COE Will Receive",
    "depends_on": "eval:doc.acceptance_any_requirement == 'Yes' && doc.acceptance_requirements_completed == 'Yes'",
    "read_only": 1
   },
@@ -3021,7 +3031,7 @@
    "fieldname": "acceptance_requirements_completed_no_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder When Requirement Will Be Completed",
+   "default": "⚠ Set Reminder When Requirement Will Be Completed",
    "depends_on": "eval:doc.acceptance_any_requirement == 'Yes' && doc.acceptance_requirements_completed == 'No'",
    "read_only": 1
   },
@@ -3048,7 +3058,7 @@
    "fieldname": "coe_received_yes_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Acceptance stage completed \u2192 Moved to eCOE Stage",
+   "default": "✓ Acceptance stage completed → Moved to eCOE Stage",
    "depends_on": "eval:doc.coe_received == 'Yes'",
    "read_only": 1
   },
@@ -3056,7 +3066,7 @@
    "fieldname": "coe_received_no_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder to follow up for COE Receipt",
+   "default": "⚠ Set Reminder to follow up for COE Receipt",
    "depends_on": "eval:doc.coe_received == 'No'",
    "read_only": 1
   },
@@ -3064,7 +3074,7 @@
    "fieldname": "coe_tab",
    "fieldtype": "Tab Break",
    "label": "eCOE",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head'))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Visa Admin') || in_list(frappe.user_roles, 'Application') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Manager'))"
   },
   {
    "fieldname": "coe_section",
@@ -3103,7 +3113,7 @@
    "fieldname": "our_side_medical_scheduled_yes_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder for Medical to Receive",
+   "default": "⚠ Set Reminder for Medical to Receive",
    "depends_on": "eval:doc.medical_arranged_by == 'Our Side' && doc.our_side_medical_scheduled",
    "read_only": 1
   },
@@ -3111,7 +3121,7 @@
    "fieldname": "our_side_medical_scheduled_no_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder to Schedule Medical",
+   "default": "⚠ Set Reminder to Schedule Medical",
    "depends_on": "eval:doc.medical_arranged_by == 'Our Side' && !doc.our_side_medical_scheduled",
    "read_only": 1
   },
@@ -3137,7 +3147,7 @@
    "fieldname": "form_956a_filled_yes_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Ok",
+   "default": "✓ Ok",
    "depends_on": "eval:doc.form_956a_filled",
    "read_only": 1
   },
@@ -3145,7 +3155,7 @@
    "fieldname": "form_956a_filled_no_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder to Complete 956A Form",
+   "default": "⚠ Set Reminder to Complete 956A Form",
    "depends_on": "eval:!doc.form_956a_filled",
    "read_only": 1
   },
@@ -3214,7 +3224,7 @@
    "fieldname": "our_side_file_lodged_yes_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Move to File Lodged Stage",
+   "default": "✓ Move to File Lodged Stage",
    "depends_on": "eval:doc.file_lodged_by == 'Our Side' && doc.file_lodged_status",
    "read_only": 1
   },
@@ -3222,7 +3232,7 @@
    "fieldname": "our_side_file_lodged_no_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder to Submit File Lodgement",
+   "default": "⚠ Set Reminder to Submit File Lodgement",
    "depends_on": "eval:doc.file_lodged_by == 'Our Side' && !doc.file_lodged_status",
    "read_only": 1
   },
@@ -3237,7 +3247,7 @@
    "fieldname": "agent_file_lodged_yes_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Move to File Lodged Stage",
+   "default": "✓ Move to File Lodged Stage",
    "depends_on": "eval:doc.file_lodged_by == 'Agent' && doc.agent_file_lodged_status",
    "read_only": 1
   },
@@ -3245,7 +3255,7 @@
    "fieldname": "agent_file_lodged_no_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder to Submit File Lodgement",
+   "default": "⚠ Set Reminder to Submit File Lodgement",
    "depends_on": "eval:doc.file_lodged_by == 'Agent' && !doc.agent_file_lodged_status",
    "read_only": 1
   },
@@ -3260,7 +3270,7 @@
    "fieldname": "student_file_lodged_yes_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Move to File Lodged Stage",
+   "default": "✓ Move to File Lodged Stage",
    "depends_on": "eval:doc.file_lodged_by == 'Student' && doc.student_file_lodged_status",
    "read_only": 1
   },
@@ -3268,7 +3278,7 @@
    "fieldname": "student_file_lodged_no_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder to Submit File Lodgement",
+   "default": "⚠ Set Reminder to Submit File Lodgement",
    "depends_on": "eval:doc.file_lodged_by == 'Student' && !doc.student_file_lodged_status",
    "read_only": 1
   },
@@ -3283,7 +3293,7 @@
    "fieldname": "vendor_file_lodged_yes_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Move to File Lodged Stage",
+   "default": "✓ Move to File Lodged Stage",
    "depends_on": "eval:doc.file_lodged_by == 'Vendor' && doc.vendor_file_lodged_status",
    "read_only": 1
   },
@@ -3291,7 +3301,7 @@
    "fieldname": "vendor_file_lodged_no_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder to Submit File Lodgement",
+   "default": "⚠ Set Reminder to Submit File Lodgement",
    "depends_on": "eval:doc.file_lodged_by == 'Vendor' && !doc.vendor_file_lodged_status",
    "read_only": 1
   },
@@ -3299,7 +3309,7 @@
    "fieldname": "file_lodged_tab",
    "fieldtype": "Tab Break",
    "label": "File Lodged",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head'))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Visa Admin') || in_list(frappe.user_roles, 'Application') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Manager'))"
   },
   {
    "fieldname": "file_lodged_section",
@@ -3355,7 +3365,7 @@
    "fieldname": "visa_status_checked_reminder_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder to follow up for the Visa Decision",
+   "default": "⚠ Set Reminder to follow up for the Visa Decision",
    "depends_on": "eval:doc.decision_received == 'No' && doc.visa_status_checked == 'Yes'",
    "read_only": 1
   },
@@ -3370,7 +3380,7 @@
    "fieldname": "visa_status_manager_notified_status",
    "fieldtype": "Text",
    "label": "Notification",
-   "default": "\ud83d\udce7 Concerned Manager notified with Application ID, Student Name, Counselor Name and the reason entered",
+   "default": "📧 Concerned Manager notified with Application ID, Student Name, Counselor Name and the reason entered",
    "depends_on": "eval:doc.decision_received == 'No' && doc.visa_status_checked == 'No'",
    "read_only": 1
   },
@@ -3395,7 +3405,7 @@
    "fieldname": "visa_approved_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Move to Visa Stage - Notification Sent to Account Department",
+   "default": "✓ Move to Visa Stage - Notification Sent to Account Department",
    "depends_on": "eval:doc.visa_decision == 'Visa Approved'",
    "read_only": 1
   },
@@ -3403,7 +3413,7 @@
    "fieldname": "visa_approved_notification_status",
    "fieldtype": "Text",
    "label": "Notification",
-   "default": "\ud83d\udce7 Account Department notified with visa approval and documents",
+   "default": "📧 Account Department notified with visa approval and documents",
    "depends_on": "eval:doc.visa_decision == 'Visa Approved'",
    "read_only": 1
   },
@@ -3411,7 +3421,7 @@
    "fieldname": "visa_refused_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Move to Visa Refused Stage",
+   "default": "✓ Move to Visa Refused Stage",
    "depends_on": "eval:doc.visa_decision == 'Visa Refused'",
    "read_only": 1
   },
@@ -3419,7 +3429,7 @@
    "fieldname": "visa_tab",
    "fieldtype": "Tab Break",
    "label": "Visa",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_status == 'Visa Approved' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head')))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_status == 'Visa Approved' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Visa Admin') || in_list(frappe.user_roles, 'Application') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Manager')))"
   },
   {
    "fieldname": "visa_section",
@@ -3435,7 +3445,7 @@
   {
    "fieldname": "spouse_visa_upload",
    "fieldtype": "Attach",
-   "label": "With spouse \u2013 visa upload",
+   "label": "With spouse – visa upload",
    "depends_on": "eval:doc.martial_status == 'Married' && doc.case_4_proceed_above_1_year == 'with Spouse'"
   },
   {
@@ -3448,7 +3458,7 @@
    "fieldname": "student_enrolled_yes_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Move to Enrollment Stage",
+   "default": "✓ Move to Enrollment Stage",
    "depends_on": "eval:doc.student_enrolled",
    "read_only": 1
   },
@@ -3456,7 +3466,7 @@
    "fieldname": "student_enrolled_no_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder to Enroll Student",
+   "default": "⚠ Set Reminder to Enroll Student",
    "depends_on": "eval:!doc.student_enrolled",
    "read_only": 1
   },
@@ -3464,7 +3474,7 @@
    "fieldname": "visa_refused_tab",
    "fieldtype": "Tab Break",
    "label": "Visa Refused",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_status == 'Visa Refused' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head')))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_status == 'Visa Refused' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Visa Admin') || in_list(frappe.user_roles, 'Application') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Manager')))"
   },
   {
    "fieldname": "visa_refused_section",
@@ -3545,7 +3555,7 @@
    "fieldname": "refund_declaration",
    "fieldtype": "Text",
    "label": "Declaration",
-   "default": "\u26a0 Refund form not filled by you otherwise you will be responsible for refund issue if occurred",
+   "default": "⚠ Refund form not filled by you otherwise you will be responsible for refund issue if occurred",
    "depends_on": "eval:doc.refund_processed_by == 'Our Side'",
    "read_only": 1
   },
@@ -3577,7 +3587,7 @@
    "fieldname": "enrollment_tab",
    "fieldtype": "Tab Break",
    "label": "Enrolled",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_status == 'Visa Approved' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head')))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_status == 'Visa Approved' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Visa Admin') || in_list(frappe.user_roles, 'Application') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Manager')))"
   },
   {
    "fieldname": "enrolment_proof_upload",
@@ -3595,7 +3605,7 @@
    "fieldname": "enrollment_completed_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Enrolment stage completed \u2192 Application marked Completed",
+   "default": "✓ Enrolment stage completed → Application marked Completed",
    "depends_on": "eval:doc.enrolment_proof_upload",
    "read_only": 1
   },
@@ -3610,7 +3620,7 @@
    "fieldname": "on_shore_college_change_tab",
    "fieldtype": "Tab Break",
    "label": "On Shore College Change",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_status == 'Visa Approved' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head')))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_status == 'Visa Approved' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Visa Admin') || in_list(frappe.user_roles, 'Application') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Manager')))"
   },
   {
    "fieldname": "on_shore_section",
@@ -3630,7 +3640,7 @@
    "fieldname": "student_no_change_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Ok",
+   "default": "✓ Ok",
    "depends_on": "eval:doc.onshore_college_change_allowed == 'Yes' && doc.student_wants_college_change == 'No'",
    "read_only": 1
   },
@@ -3665,7 +3675,7 @@
    "fieldname": "close_case_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Case Closed",
+   "default": "✓ Case Closed",
    "depends_on": "eval:doc.onshore_college_change_allowed == 'Yes' && doc.student_wants_college_change == 'Yes' && doc.from_where_change == 'Others' && doc.close_case",
    "read_only": 1
   },
@@ -3673,7 +3683,7 @@
    "fieldname": "ganpati_new_app_status",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Create New Application for This Student",
+   "default": "✓ Create New Application for This Student",
    "depends_on": "eval:doc.onshore_college_change_allowed == 'Yes' && doc.student_wants_college_change == 'Yes' && doc.from_where_change == 'Ganpati House of Achievers'",
    "read_only": 1
   },
@@ -3689,7 +3699,7 @@
    "fieldname": "refund_processing_tab",
    "fieldtype": "Tab Break",
    "label": "Refund Processing",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_status == 'Visa Refused' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head')))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_status == 'Visa Refused' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Visa Admin') || in_list(frappe.user_roles, 'Application') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Manager')))"
   },
   {
    "fieldname": "refund_processing_section",
@@ -3709,7 +3719,7 @@
    "fieldname": "tuition_fee_refund_yes",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u2713 Tuition fee refund completed \u2192 Moved to Refund stage",
+   "default": "✓ Tuition fee refund completed → Moved to Refund stage",
    "depends_on": "eval:doc.tuition_fee_refund_received == 'Yes'",
    "read_only": 1
   },
@@ -3717,7 +3727,7 @@
    "fieldname": "tuition_fee_refund_no",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder When Refund Expected",
+   "default": "⚠ Set Reminder When Refund Expected",
    "depends_on": "eval:doc.tuition_fee_refund_received == 'No'",
    "read_only": 1
   },
@@ -3740,7 +3750,7 @@
    "fieldname": "oshc_refund_no",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder When OSHC Refund Expected",
+   "default": "⚠ Set Reminder When OSHC Refund Expected",
    "depends_on": "eval:doc.oshc_refund_received == 'No'",
    "read_only": 1
   },
@@ -3748,7 +3758,7 @@
    "fieldname": "refunded_tab",
    "fieldtype": "Tab Break",
    "label": "Refunded",
-   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_status == 'Visa Refused' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head')))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && (doc.visa_status == 'Visa Refused' && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Visa Admin') || in_list(frappe.user_roles, 'Application') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Manager')))"
   },
   {
    "fieldname": "refunded_section",
@@ -3786,7 +3796,7 @@
    "fieldname": "oshc_no_reminder_issue_resolved",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder When OSHC Refund Expected",
+   "default": "⚠ Set Reminder When OSHC Refund Expected",
    "depends_on": "eval:doc.tuition_fee_issue && doc.tuition_fee_issue_resolved && !doc.oshc_refund_received_issue_resolved",
    "read_only": 1
   },
@@ -3800,7 +3810,7 @@
    "fieldname": "issue_not_resolved_reminder",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder When Refund Issue Expected to Resolve",
+   "default": "⚠ Set Reminder When Refund Issue Expected to Resolve",
    "depends_on": "eval:doc.tuition_fee_issue && !doc.tuition_fee_issue_resolved",
    "read_only": 1
   },
@@ -3815,7 +3825,7 @@
    "fieldname": "oshc_no_reminder_no_issue",
    "fieldtype": "Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder When OSHC Refund Expected",
+   "default": "⚠ Set Reminder When OSHC Refund Expected",
    "depends_on": "eval:!doc.tuition_fee_issue && !doc.oshc_refund_no_issue",
    "read_only": 1
   },
@@ -3829,7 +3839,7 @@
    "fieldname": "closed_tab",
    "fieldtype": "Tab Break",
    "label": "Closed",
-   "depends_on": "eval:(doc.destination_country=='Australia') && ((doc.visa_status == 'Visa Refused' || doc.visa_status == 'Visa Approved') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Team Lead') || in_list(frappe.user_roles, 'Team Executive') || in_list(frappe.user_roles, 'Admission 1') || in_list(frappe.user_roles, 'Admission 2') || in_list(frappe.user_roles, 'Country Head') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Head')))"
+   "depends_on": "eval:(doc.destination_country=='Australia') && ((doc.visa_status == 'Visa Refused' || doc.visa_status == 'Visa Approved') && (in_list(frappe.user_roles, 'System Manager') || in_list(frappe.user_roles, 'Administrator') || in_list(frappe.user_roles, 'CRM Admin') || in_list(frappe.user_roles, 'Visa Admin') || in_list(frappe.user_roles, 'Application') || in_list(frappe.user_roles, 'CRO') || in_list(frappe.user_roles, 'CRO Manager')))"
   },
   {
    "fieldname": "application_closed",
@@ -3889,7 +3899,7 @@
   {
    "fieldname": "section_break_dkel",
    "fieldtype": "Section Break",
-   "label": "Study Gap Proof (legacy \u2014 unused)",
+   "label": "Study Gap Proof (legacy — unused)",
    "hidden": 1
   },
   {
@@ -3897,7 +3907,7 @@
    "fieldtype": "Table",
    "label": "Study Gap Proof",
    "options": "student documents",
-   "description": "Legacy Details upload \u2014 proofs go in Processing \u2192 Study Gap Proof List only",
+   "description": "Legacy Details upload — proofs go in Processing → Study Gap Proof List only",
    "hidden": 1
   },
   {
@@ -3919,7 +3929,7 @@
    "fieldname": "fee_gha_yes_status",
    "fieldtype": "Small Text",
    "label": "Status",
-   "default": "\u2713 OSHC workflow started \u2192 Accounts Department workflow triggered",
+   "default": "✓ OSHC workflow started → Accounts Department workflow triggered",
    "depends_on": "eval:doc.tuition_fee_paid == 'Yes' && doc.fee_processed_through_gha == 'Yes'",
    "read_only": 1,
    "bold": 1
@@ -3998,7 +4008,7 @@
    "fieldname": "acceptance_pending_no_status",
    "fieldtype": "Small Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder to follow up for Acceptance Submission",
+   "default": "⚠ Set Reminder to follow up for Acceptance Submission",
    "depends_on": "eval:doc.acceptance_submitted == 'No' && doc.acceptance_pending_conditions == 'No'",
    "read_only": 1,
    "bold": 1
@@ -4023,7 +4033,7 @@
    "fieldname": "acceptance_condition_completed_yes_status",
    "fieldtype": "Small Text",
    "label": "Status",
-   "default": "\u2713 Conditions completed \u2192 Set Reminder for Acceptance Submission",
+   "default": "✓ Conditions completed → Set Reminder for Acceptance Submission",
    "depends_on": "eval:doc.acceptance_submitted == 'No' && doc.acceptance_pending_conditions == 'Yes' && doc.acceptance_condition_completed == 'Yes'",
    "read_only": 1,
    "bold": 1
@@ -4032,7 +4042,7 @@
    "fieldname": "acceptance_condition_completed_no_status",
    "fieldtype": "Small Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder to complete the pending conditions",
+   "default": "⚠ Set Reminder to complete the pending conditions",
    "depends_on": "eval:doc.acceptance_submitted == 'No' && doc.acceptance_pending_conditions == 'Yes' && doc.acceptance_condition_completed == 'No'",
    "read_only": 1,
    "bold": 1
@@ -4055,7 +4065,7 @@
    "fieldname": "gsa_interview_not_available_status",
    "fieldtype": "Small Text",
    "label": "Status",
-   "default": "\u2139 These interview fields apply when Interview Timing = Before Acceptance in Financials",
+   "default": "ℹ These interview fields apply when Interview Timing = Before Acceptance in Financials",
    "depends_on": "eval:!doc.gsa_interview_available && doc.conditions_on_offer_letter && Array.isArray(doc.conditions_on_offer_letter) && doc.conditions_on_offer_letter.some(function(r){ return (r.condition || '').indexOf('Interview') !== -1; })",
    "read_only": 1,
    "bold": 1
@@ -4081,7 +4091,7 @@
    "fieldname": "gsa_student_prepare_yes_status",
    "fieldtype": "Small Text",
    "label": "Status",
-   "default": "\u2713 Schedule Interview (if not scheduled)",
+   "default": "✓ Schedule Interview (if not scheduled)",
    "depends_on": "eval:doc.gsa_interview_available && doc.gsa_student_prepare == 'Yes'",
    "read_only": 1,
    "bold": 1
@@ -4090,7 +4100,7 @@
    "fieldname": "gsa_student_prepare_no_status",
    "fieldtype": "Small Text",
    "label": "Status",
-   "default": "\u26a0 Prepare Student \u2014 Set Reminder to follow up on student preparation",
+   "default": "⚠ Prepare Student — Set Reminder to follow up on student preparation",
    "depends_on": "eval:doc.gsa_interview_available && doc.gsa_student_prepare == 'No'",
    "read_only": 1,
    "bold": 1
@@ -4108,7 +4118,7 @@
    "fieldname": "gsa_schedule_interview_yes_status",
    "fieldtype": "Small Text",
    "label": "Status",
-   "default": "\u2713 Prepare Student Strongly \u2014 Set Reminder for the Interview Date",
+   "default": "✓ Prepare Student Strongly — Set Reminder for the Interview Date",
    "depends_on": "eval:doc.gsa_interview_available && doc.gsa_schedule_interview == 'Yes'",
    "read_only": 1,
    "bold": 1
@@ -4117,7 +4127,7 @@
    "fieldname": "gsa_schedule_interview_no_status",
    "fieldtype": "Small Text",
    "label": "Status",
-   "default": "\u26a0 Set Reminder to follow up for interview scheduling",
+   "default": "⚠ Set Reminder to follow up for interview scheduling",
    "depends_on": "eval:doc.gsa_interview_available && doc.gsa_schedule_interview == 'No'",
    "read_only": 1,
    "bold": 1
@@ -4128,7 +4138,7 @@
    "label": "Interview Done Before Deadline?",
    "options": "\nYes\nNo",
    "depends_on": "eval:doc.gsa_interview_available",
-   "description": "Yes \u2192 auto-deactivate the interview reminders for this stage",
+   "description": "Yes → auto-deactivate the interview reminders for this stage",
    "length": 23
   },
   {
@@ -4159,14 +4169,14 @@
    "options": "\nYes\nNo",
    "depends_on": "eval:doc.coe_uploaded",
    "mandatory_depends_on": "eval:doc.coe_uploaded",
-   "description": "Yes \u2192 a note appears below reminding you to share the COE with the student in chat.",
+   "description": "Yes → a note appears below reminding you to share the COE with the student in chat.",
    "length": 23
   },
   {
    "fieldname": "coe_sent_to_chat_status",
    "fieldtype": "Small Text",
    "label": "Note",
-   "default": "\ud83d\udce4 Please share the COE with the student in the chat.",
+   "default": "📤 Please share the COE with the student in the chat.",
    "depends_on": "eval:doc.coe_uploaded && doc.send_coe_to_student_chat == 'Yes'",
    "read_only": 1,
    "bold": 1
@@ -4178,14 +4188,14 @@
    "options": "\nYes\nNo",
    "depends_on": "eval:doc.refused_letter_upload",
    "mandatory_depends_on": "eval:doc.refused_letter_upload",
-   "description": "Yes \u2192 a note appears below reminding you to share the refusal letter with the student in chat.",
+   "description": "Yes → a note appears below reminding you to share the refusal letter with the student in chat.",
    "length": 23
   },
   {
    "fieldname": "refusal_sent_to_chat_status",
    "fieldtype": "Small Text",
    "label": "Note",
-   "default": "\ud83d\udce4 Please share the refusal letter with the student in the chat.",
+   "default": "📤 Please share the refusal letter with the student in the chat.",
    "depends_on": "eval:doc.refused_letter_upload && doc.send_refusal_letter_to_chat == 'Yes'",
    "read_only": 1,
    "bold": 1
@@ -4201,7 +4211,7 @@
    "fieldname": "onshore_not_allowed_status",
    "fieldtype": "Small Text",
    "label": "Status",
-   "default": "\u2713 Onshore College Change case closed \u2014 no further action required.",
+   "default": "✓ Onshore College Change case closed — no further action required.",
    "depends_on": "eval:doc.onshore_college_change_allowed == 'No'",
    "read_only": 1,
    "bold": 1
@@ -4261,7 +4271,7 @@
    "fieldname": "offer_sent_to_chat_status",
    "fieldtype": "Small Text",
    "label": "Note",
-   "default": "\ud83d\udce4 Please share the offer letter with the student in the chat.",
+   "default": "📤 Please share the offer letter with the student in the chat.",
    "depends_on": "eval:doc.send_offer_to_chat == 'Yes'",
    "read_only": 1,
    "bold": 1
@@ -4294,7 +4304,7 @@
    "fieldname": "refund_issue_unresolved_status",
    "fieldtype": "Small Text",
    "label": "Status",
-   "default": "\u23f3 Application stays in the Refunded stage until the refund issue is resolved. A follow-up reminder has been requested.",
+   "default": "⏳ Application stays in the Refunded stage until the refund issue is resolved. A follow-up reminder has been requested.",
    "depends_on": "eval:doc.tuition_fee_refund_issue == 'Yes' && doc.refund_issue_resolved == 'No'",
    "read_only": 1,
    "bold": 1
@@ -4312,7 +4322,7 @@
    "fieldname": "refunded_oshc_not_received_status",
    "fieldtype": "Small Text",
    "label": "Status",
-   "default": "\u23f3 Follow-up reminder requested for the OSHC refund.",
+   "default": "⏳ Follow-up reminder requested for the OSHC refund.",
    "depends_on": "eval:(doc.tuition_fee_refund_issue == 'No' || (doc.tuition_fee_refund_issue == 'Yes' && doc.refund_issue_resolved == 'Yes')) && doc.refunded_oshc_received == 'No'",
    "read_only": 1,
    "bold": 1
@@ -4328,7 +4338,7 @@
    "fieldname": "refunded_completed_status",
    "fieldtype": "Small Text",
    "label": "Status",
-   "default": "\u2713 Refunded stage completed \u2192 Application closed",
+   "default": "✓ Refunded stage completed → Application closed",
    "depends_on": "eval:(doc.tuition_fee_refund_issue == 'No' || (doc.tuition_fee_refund_issue == 'Yes' && doc.refund_issue_resolved == 'Yes')) && doc.refunded_oshc_received == 'Yes' && doc.tuition_fee_refund_invoice_upload",
    "read_only": 1,
    "bold": 1
@@ -4338,7 +4348,7 @@
  "icon": "fa fa-file-text",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-08-27 18:30:00.000000",
+ "modified": "2026-10-04 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Application",
@@ -4386,24 +4396,6 @@
    "email": 1,
    "print": 1,
    "read": 1,
-   "role": "B2B Agent",
-   "write": 1,
-   "delete": 1
-  },
-  {
-   "create": 1,
-   "email": 1,
-   "print": 1,
-   "read": 1,
-   "role": "B2C Agent",
-   "write": 1,
-   "delete": 1
-  },
-  {
-   "create": 1,
-   "email": 1,
-   "print": 1,
-   "read": 1,
    "role": "Agent",
    "write": 1,
    "delete": 1
@@ -4417,25 +4409,8 @@
    "email": 1,
    "print": 1,
    "read": 1,
-   "role": "Team Lead",
-   "share": 1,
-   "write": 1,
-   "delete": 1
-  },
-  {
-   "email": 1,
-   "print": 1,
-   "read": 1,
-   "role": "Team Executive",
-   "write": 1,
-   "delete": 1
-  },
-  {
-   "email": 1,
-   "print": 1,
-   "read": 1,
    "report": 1,
-   "role": "CRO Head",
+   "role": "CRO Manager",
    "share": 1,
    "write": 1,
    "delete": 1
@@ -4451,29 +4426,11 @@
    "delete": 1
   },
   {
-   "email": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Country Head",
-   "share": 1,
-   "write": 1,
-   "delete": 1
-  },
-  {
    "create": 1,
    "email": 1,
    "print": 1,
    "read": 1,
-   "role": "Admission 1",
-   "write": 1,
-   "delete": 1
-  },
-  {
-   "email": 1,
-   "print": 1,
-   "read": 1,
-   "role": "Admission 2",
+   "role": "Application",
    "write": 1,
    "delete": 1
   },

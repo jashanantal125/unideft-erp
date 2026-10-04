@@ -2,6 +2,8 @@
 # For license information, please see license.txt
 
 import frappe
+from erpnext.crm.doctype.application.application import _agents_under_cro, _agents_under_cro_head
+from erpnext.crm.team_utils import get_teams_for_user
 from frappe.model.document import Document
 
 # Case 5 (Post-grad married) allows spouse track per Case 7&8 PDF.
@@ -72,60 +74,34 @@ class ApplicationUK(Document):
 		user = frappe.session.user
 		UK = frappe.qb.DocType("Application UK")
 
-		if user_roles & {"System Manager", "Administrator", "CRM Admin"}:
+		if user_roles & {"System Manager", "Administrator", "CRM Admin", "Visa Admin"}:
 			return query
 
-		if "CRO Head" in user_roles:
-			agents = frappe.get_all("Agent", filters={"cro_head": user}, pluck="name")
+		if "CRO Manager" in user_roles:
+			agents = _agents_under_cro_head(user)
 			if agents:
 				return query.where(UK.agent.isin(agents))
-			return query.where(UK.name == "__no_match__")
-
-		if "Country Head" in user_roles:
-			teams = frappe.get_all("Team", filters={"country_head": user}, pluck="name")
-			if teams:
-				return query.where(UK.assigned_team.isin(teams))
 			return query.where(UK.name == "__no_match__")
 
 		if "CRO" in user_roles:
-			teams = frappe.get_all("Team", filters={"cro": user}, pluck="name")
-			if not teams:
-				return query.where(UK.name == "__no_match__")
-			agents = frappe.get_all("Agent", filters={"sales_team": ["in", teams]}, pluck="name")
+			agents = _agents_under_cro(user)
 			if agents:
 				return query.where(UK.agent.isin(agents))
 			return query.where(UK.name == "__no_match__")
 
-		if "Admission 1" in user_roles:
-			teams = frappe.get_all("Team", filters={"admission_1": user}, pluck="name")
+		if "Application" in user_roles:
+			teams = get_teams_for_user(user, "application")
 			if teams:
 				return query.where(UK.assigned_team.isin(teams))
 			return query.where(UK.name == "__no_match__")
 
-		if "Admission 2" in user_roles:
-			teams = frappe.get_all("Team", filters={"admission_2": user}, pluck="name")
-			if teams:
-				return query.where(UK.assigned_team.isin(teams))
-			return query.where(UK.name == "__no_match__")
-
-		if "Team Lead" in user_roles:
-			teams = frappe.get_all("Team", filters={"team_leader": user}, pluck="name")
-			if teams:
-				return query.where(UK.assigned_team.isin(teams))
-			return query.where(UK.name == "__no_match__")
-
-		if "Team Executive" in user_roles:
-			return query.where(UK.assigned_executive == user)
-
-		if user_roles & {"Agent", "B2B Agent", "B2C Agent"}:
+		if "Agent" in user_roles:
 			return query.where(UK.agent == user)
 
 		if user_roles & {"Marketing Head", "Marketing Member", "Telecalling Head", "Telecalling Member"}:
-			cro_teams = frappe.get_all("Team", filters={"cro": user}, pluck="name")
-			if cro_teams:
-				agents = frappe.get_all("Agent", filters={"sales_team": ["in", cro_teams]}, pluck="name")
-				if agents:
-					return query.where(UK.agent.isin(agents))
+			agents = _agents_under_cro(user)
+			if agents:
+				return query.where(UK.agent.isin(agents))
 			return query.where(UK.name == "__no_match__")
 
 		return query.where(UK.name == "__no_match__")

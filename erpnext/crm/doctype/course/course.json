@@ -200,7 +200,7 @@
  "icon": "fa fa-graduation-cap",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-18 19:14:49.502865",
+ "modified": "2026-10-04 13:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Course",
@@ -218,14 +218,6 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
-  },
-  {
-   "read": 1,
-   "role": "Team Lead"
-  },
-  {
-   "read": 1,
-   "role": "Team Executive"
   },
   {
    "create": 1,

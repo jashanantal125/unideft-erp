@@ -42,5 +42,6 @@ import "./purchase_trends_filters.js";
 // cached by the browser indefinitely and edits never reach an already-open
 // session.
 import "./unideft_apply_now.js";
+import "./unideft_list_fixes.js";
 
 // import { sum } from 'frappe/public/utils/util.js'

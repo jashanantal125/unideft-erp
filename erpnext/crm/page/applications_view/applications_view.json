@@ -3,7 +3,7 @@
  "doctype": "Page",
  "icon": "fa fa-th-large",
  "idx": 0,
- "modified": "2026-02-06 00:00:00.000000",
+ "modified": "2026-10-04 13:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "applications_view",
@@ -14,22 +14,7 @@
    "role": "System Manager"
   },
   {
-   "role": "Team Lead"
-  },
-  {
-   "role": "Team Executive"
-  },
-  {
    "role": "Agent"
-  },
-  {
-   "role": "B2B Agent"
-  },
-  {
-   "role": "B2C Agent"
-  },
-  {
-   "role": "agents"
   }
  ],
  "standard": "Yes",

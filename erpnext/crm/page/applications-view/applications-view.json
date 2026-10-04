@@ -1,15 +1,15 @@
 {
- "creation": "2026-01-13 00:00:00.000000", 
- "docstatus": 0, 
- "doctype": "Page", 
- "icon": "fa fa-file-text", 
- "idx": 1, 
- "modified": "2026-01-13 00:00:00.000000", 
- "modified_by": "Administrator", 
- "module": "CRM", 
- "name": "applications-view", 
- "owner": "Administrator", 
- "page_name": "applications-view", 
+ "creation": "2026-01-13 00:00:00.000000",
+ "docstatus": 0,
+ "doctype": "Page",
+ "icon": "fa fa-file-text",
+ "idx": 1,
+ "modified": "2026-10-04 13:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "applications-view",
+ "owner": "Administrator",
+ "page_name": "applications-view",
  "roles": [
   {
    "role": "System Manager"
@@ -21,24 +21,9 @@
    "role": "Sales Manager"
   },
   {
-   "role": "Team Lead"
-  },
-  {
-   "role": "Team Executive"
-  },
-  {
    "role": "Agent"
-  },
-  {
-   "role": "B2B Agent"
-  },
-  {
-   "role": "B2C Agent"
-  },
-  {
-   "role": "agents"
   }
- ], 
- "standard": "Yes", 
+ ],
+ "standard": "Yes",
  "title": "Applications View"
 }

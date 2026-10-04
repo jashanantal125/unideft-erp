@@ -67,9 +67,9 @@
   {
    "fieldname": "cro_head",
    "fieldtype": "Link",
-   "label": "CRO Head",
+   "label": "CRO Manager",
    "options": "User",
-   "description": "CRO Head who manages this CRO / Agent"
+   "description": "CRO Manager responsible for this agent. They see this agent's assessments and applications."
   },
   {
    "fieldname": "no_of_employees",
@@ -171,7 +171,7 @@
  "icon": "fa fa-users",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-07-29 12:00:00.000000",
+ "modified": "2026-10-04 14:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Agent",
@@ -189,6 +189,22 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "role": "CRO",
+   "read": 1,
+   "select": 1,
+   "report": 1,
+   "print": 1,
+   "email": 1
+  },
+  {
+   "role": "CRO Manager",
+   "read": 1,
+   "select": 1,
+   "report": 1,
+   "print": 1,
+   "email": 1
   }
  ],
  "row_format": "Dynamic",

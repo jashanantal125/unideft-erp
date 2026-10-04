@@ -2,10 +2,11 @@
 # For license information, please see license.txt
 
 import frappe
+from erpnext.crm.team_utils import get_teams_for_user
 from frappe.model.document import Document
 from frappe.desk.form.assign_to import add as assign_to_user, clear as clear_assignments
 
-AGENT_ROLES = ("Agent", "B2B Agent", "B2C Agent", "agents")
+AGENT_ROLES = ("Agent",)
 
 
 def user_is_agent(user=None):
@@ -17,10 +18,10 @@ def user_is_agent(user=None):
 UNRESTRICTED_ROLES = {
 	"System Manager",
 	"Administrator",
-	"CRM Admin",
+	"CRM Admin", "Visa Admin",
 	"CRM Sales Staff",
 	"CRO",
-	"CRO Head",
+	"CRO Manager",
 }
 
 
@@ -66,6 +67,13 @@ def get_permission_query_conditions(user=None):
 			select `tabApplication`.`student` from `tabApplication`
 			where `tabApplication`.`agent` in ({keys})
 			and `tabApplication`.`student` is not null
+		)
+		or `tabStudent`.`name` in (
+			select `tabAssessment Request`.`student` from `tabAssessment Request`
+			where (`tabAssessment Request`.`owner` = {escaped_user}
+				or `tabAssessment Request`.`requested_by` = {escaped_user}
+				or `tabAssessment Request`.`cro_agent_name` in ({keys}))
+			and `tabAssessment Request`.`student` is not null
 		)
 	)"""
 
@@ -165,10 +173,21 @@ def has_permission(doc, ptype=None, user=None):
 	if doc.owner == user:
 		return True
 
+	keys = _agent_keys(user)
+	if frappe.db.exists("Application", {"student": doc.name, "agent": ["in", keys]}):
+		return True
+
+	# Students an agent raised an Assessment Request for - including ones a CRO
+	# created on the agent's behalf.
 	return bool(
-		frappe.db.exists(
-			"Application",
-			{"student": doc.name, "agent": ["in", _agent_keys(user)]},
+		frappe.db.sql(
+			"""
+			SELECT name FROM `tabAssessment Request`
+			WHERE student = %(student)s
+			AND (owner = %(user)s OR requested_by = %(user)s OR cro_agent_name IN %(keys)s)
+			LIMIT 1
+			""",
+			{"student": doc.name, "user": user, "keys": tuple(keys)},
 		)
 	)
 
@@ -178,72 +197,46 @@ class Student(Document):
 	def get_list_query(query):
 		"""Scope Student list by role.
 
-		- CRO / CRM Admin / System Manager: all students
-		- Admission / Country Head / Team: students whose Home Country is in their Team Territory
-		- Agents: own students + linked via applications
+		- CRO / CRO Manager / CRM Admin / System Manager: all students
+		- Application: students on their country team's assessments and
+		  applications (or whose country is in the team's territory)
+		- Agents: own students + linked via applications / assessments
 		"""
 		user_roles = set(frappe.get_roles())
 		user = frappe.session.user
 		Student = frappe.qb.DocType("Student")
 
-		if user_roles & {
-			"System Manager",
-			"Administrator",
-			"CRM Admin",
-			"CRM Sales Staff",
-			"CRO",
-			"CRO Head",
-		}:
+		if user_roles & UNRESTRICTED_ROLES:
 			return query
 
-		# Admission / Country Head / Team Lead — filter by assigned countries
-		teams = []
-		if "Country Head" in user_roles:
-			teams = frappe.get_all("Team", filters={"country_head": user}, pluck="name")
-		elif "Admission 1" in user_roles:
-			teams = frappe.get_all("Team", filters={"admission_1": user}, pluck="name")
-		elif "Admission 2" in user_roles:
-			teams = frappe.get_all("Team", filters={"admission_2": user}, pluck="name")
-		elif "Team Lead" in user_roles:
-			teams = frappe.get_all("Team", filters={"team_leader": user}, pluck="name")
-		elif "Team Executive" in user_roles:
-			# Executives are assigned per application; allow students for teams they appear on
-			teams = frappe.db.sql(
-				"""
-				SELECT DISTINCT parent FROM `tabTeam`
-				WHERE admission_1 = %(user)s OR admission_2 = %(user)s OR team_leader = %(user)s
-				""",
-				{"user": user},
-				pluck="parent",
-			) or []
-			# Also allow students linked to applications assigned to this executive
-			pass
-
-		if teams or ("Admission 1" in user_roles or "Admission 2" in user_roles or "Country Head" in user_roles or "Team Lead" in user_roles):
-			countries = []
-			if teams:
-				countries = frappe.get_all(
-					"Team Territory",
-					filters={"parent": ["in", teams]},
-					pluck="country",
-				)
-			countries = [c for c in countries if c]
-			if countries:
-				query = query.where(Student.destination_country.isin(countries))
-				return query
-			# No territory configured — fall through to no-match for admission roles
-			if user_roles & {"Admission 1", "Admission 2", "Country Head", "Team Lead"}:
+		if "Application" in user_roles:
+			teams = get_teams_for_user(user, "application")
+			if not teams:
 				return query.where(Student.name == "__no_match__")
 
-		if "Team Executive" in user_roles:
+			AssessmentRequest = frappe.qb.DocType("Assessment Request")
 			Application = frappe.qb.DocType("Application")
-			linked = (
+			assessed = (
+				frappe.qb.from_(AssessmentRequest)
+				.select(AssessmentRequest.student)
+				.where(AssessmentRequest.assigned_team.isin(teams))
+				.where(AssessmentRequest.student.isnotnull())
+			)
+			applied = (
 				frappe.qb.from_(Application)
 				.select(Application.student)
-				.where(Application.assigned_executive == user)
+				.where(Application.assigned_team.isin(teams))
 				.where(Application.student.isnotnull())
 			)
-			return query.where(Student.name.isin(linked))
+			condition = Student.name.isin(assessed) | Student.name.isin(applied)
+			countries = [
+				c
+				for c in frappe.get_all("Team Territory", filters={"parent": ["in", teams]}, pluck="country")
+				if c
+			]
+			if countries:
+				condition = condition | Student.destination_country.isin(countries)
+			return query.where(condition)
 
 		if not user_is_agent():
 			return query
@@ -261,8 +254,22 @@ class Student(Document):
 			.where(Application.student.isnotnull())
 		)
 
+		AssessmentRequest = frappe.qb.DocType("Assessment Request")
+		assessed_students = (
+			frappe.qb.from_(AssessmentRequest)
+			.select(AssessmentRequest.student)
+			.where(
+				(AssessmentRequest.owner == frappe.session.user)
+				| (AssessmentRequest.requested_by == frappe.session.user)
+				| (AssessmentRequest.cro_agent_name.isin(agent_keys))
+			)
+			.where(AssessmentRequest.student.isnotnull())
+		)
+
 		query = query.where(
-			(Student.owner == frappe.session.user) | (Student.name.isin(linked_students))
+			(Student.owner == frappe.session.user)
+			| (Student.name.isin(linked_students))
+			| (Student.name.isin(assessed_students))
 		)
 		return query
 

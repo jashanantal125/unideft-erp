@@ -1,0 +1,60 @@
+{
+ "app": "erpnext",
+ "charts": [],
+ "content": "[{\"id\": \"spacer1\", \"type\": \"spacer\", \"data\": {\"col\": 12}}, {\"id\": \"header1\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Quick Actions</b></span>\", \"col\": 12}}, {\"id\": \"shortcut1\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"View All Courses\", \"col\": 6}}, {\"id\": \"shortcut2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Create New Course\", \"col\": 6}}, {\"id\": \"spacer2\", \"type\": \"spacer\", \"data\": {\"col\": 12}}, {\"id\": \"header2\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Recently Added</b></span>\", \"col\": 12}}, {\"id\": \"quicklist1\", \"type\": \"quick_list\", \"data\": {\"quick_list_name\": \"Recently Added Courses\", \"col\": 12}}]",
+ "creation": "2026-10-04 18:00:00.000000",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "notebook-text",
+ "idx": 0,
+ "is_hidden": 0,
+ "label": "Course",
+ "links": [],
+ "modified": "2026-10-04 18:10:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Course",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [
+  {
+   "document_type": "Course",
+   "label": "Recently Added Courses",
+   "quick_list_filter": "[]"
+  }
+ ],
+ "restrict_to_domain": "",
+ "roles": [
+  {
+   "role": "Visa Admin"
+  }
+ ],
+ "sequence_id": 20.1,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "icon": "fa fa-book",
+   "label": "View All Courses",
+   "link_to": "Course",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "New",
+   "icon": "fa fa-plus",
+   "label": "Create New Course",
+   "link_to": "Course",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
+ "title": "Course",
+ "type": "Workspace"
+}

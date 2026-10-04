@@ -52,6 +52,7 @@ doctype_js = {
 	"Event": "public/js/event.js",
 	"Newsletter": "public/js/newsletter.js",
 	"Contact": "public/js/contact.js",
+	"User": "public/js/user.js",
 }
 doctype_list_js = {
 	"Code List": [
@@ -314,10 +315,12 @@ has_website_permission = {
 
 permission_query_conditions = {
 	"Student": "erpnext.crm.doctype.student.student.get_permission_query_conditions",
+	"Assessment Request": "erpnext.crm.doctype.assessment_request.assessment_request.get_permission_query_conditions",
 }
 
 has_permission = {
 	"Student": "erpnext.crm.doctype.student.student.has_permission",
+	"Assessment Request": "erpnext.crm.doctype.assessment_request.assessment_request.has_permission",
 }
 
 before_tests = "erpnext.setup.utils.before_tests"
@@ -345,6 +348,9 @@ period_closing_doctypes = [
 ]
 
 doc_events = {
+	"Comment": {
+		"after_insert": "erpnext.crm.doctype.assessment_request.assessment_request.notify_on_comment",
+	},
 	"*": {
 		"validate": [
 			"erpnext.support.doctype.service_level_agreement.service_level_agreement.apply",

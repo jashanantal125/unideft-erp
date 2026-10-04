@@ -3,12 +3,7 @@
 
 function is_agent_user() {
 	const roles = frappe.user_roles || [];
-	return (
-		roles.includes("Agent") ||
-		roles.includes("B2B Agent") ||
-		roles.includes("B2C Agent") ||
-		roles.includes("agents")
-	);
+	return roles.includes("Agent");
 }
 
 function apply_agent_student_form(frm) {

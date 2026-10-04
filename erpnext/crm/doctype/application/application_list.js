@@ -8,18 +8,14 @@ function is_uk_country(country) {
 
 function user_is_agent_only() {
 	const roles = frappe.user_roles || [];
-	const agent = ["Agent", "B2B Agent", "B2C Agent", "agents"].some((r) => roles.includes(r));
+	const agent = ["Agent"].some((r) => roles.includes(r));
 	const staff = [
 		"System Manager",
 		"Administrator",
-		"CRM Admin",
-		"Team Lead",
-		"Team Executive",
-		"Admission 1",
-		"Admission 2",
+		"CRM Admin", "Visa Admin",
+		"Application",
 		"CRO",
-		"CRO Head",
-		"Country Head",
+		"CRO Manager",
 	].some((r) => roles.includes(r));
 	return agent && !staff;
 }
@@ -113,12 +109,12 @@ function maybe_redirect_agent_to_card_view(listview) {
 
 // A2 - admissions only ever receive applications, they never open a new one.
 function user_is_admissions(roles) {
-	return ["Admission 1", "Admission 2"].some((r) => (roles || frappe.user_roles || []).includes(r));
+	return ["Application"].some((r) => (roles || frappe.user_roles || []).includes(r));
 }
 
 function user_can_create_application() {
 	const roles = frappe.user_roles || [];
-	const privileged = ["System Manager", "Administrator", "CRM Admin"].some((r) =>
+	const privileged = ["System Manager", "Administrator", "CRM Admin", "Visa Admin"].some((r) =>
 		roles.includes(r)
 	);
 	if (privileged) {
@@ -144,8 +140,15 @@ function bind_new_application_action(listview) {
 }
 
 frappe.listview_settings["Application"] = {
-	add_fields: ["application_type", "destination_country", "country_flow_case", "uk_data"],
+	add_fields: ["application_type", "destination_country", "country_flow_case", "uk_data", "status"],
+	has_indicator_for_draft: true,
 	get_indicator(doc) {
+		if (doc.status === "Draft") {
+			return [__("Draft"), "red", "status,=,Draft"];
+		}
+		if (doc.status === "Cancelled") {
+			return [__("Cancelled"), "darkgrey", "status,=,Cancelled"];
+		}
 		const case_label = doc.country_flow_case || "";
 		if (case_label.startsWith("UK")) {
 			return [__(case_label), "blue", "country_flow_case,=," + case_label];

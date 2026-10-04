@@ -115,7 +115,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-11 00:00:00.000000",
+ "modified": "2026-10-04 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Course Shortlisting Edit Request",
@@ -155,21 +155,22 @@
    "email": 1,
    "print": 1,
    "read": 1,
-   "role": "CRO Head"
+   "role": "CRO Manager"
   },
   {
    "create": 1,
    "email": 1,
    "print": 1,
    "read": 1,
-   "role": "Admission 1"
+   "role": "Application"
   },
   {
-   "create": 1,
-   "email": 1,
-   "print": 1,
+   "role": "Visa Admin",
    "read": 1,
-   "role": "Admission 2"
+   "create": 1,
+   "print": 1,
+   "email": 1,
+   "write": 1
   }
  ],
  "sort_field": "creation",

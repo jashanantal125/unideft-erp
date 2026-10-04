@@ -30,7 +30,7 @@ class Lead(SellingController, CRMNote):
 		user_roles = frappe.get_roles()
 		Lead = frappe.qb.DocType("Lead")
 		
-		if "agents" in user_roles or "Agent" in user_roles:
+		if "Agent" in user_roles:
 			# Agents can only see leads they created
 			query = query.where(Lead.owner == frappe.session.user)
 		elif "Sales Manager" in user_roles or "Sales User" in user_roles:
@@ -144,7 +144,7 @@ class Lead(SellingController, CRMNote):
 		user_roles = frappe.get_roles(user)
 		
 		# For agents, only allow access if they created the lead
-		if "agents" in user_roles or "Agent" in user_roles:
+		if "Agent" in user_roles:
 			if self.get("owner") == user:
 				return True
 			return False
@@ -267,7 +267,7 @@ class Lead(SellingController, CRMNote):
 		self.validate_email_id()
 		
 		# Auto-set sales_partner if current user is an agent and sales_partner is not set
-		if "agents" in frappe.get_roles() or "Agent" in frappe.get_roles():
+		if "Agent" in frappe.get_roles():
 			if not self.get("sales_partner") and self.is_new():
 				# Find Sales Partner linked to current user
 				sales_partner = frappe.db.get_value("Sales Partner", {"user": frappe.session.user}, "name")
@@ -279,7 +279,7 @@ class Lead(SellingController, CRMNote):
 			self.assign_to_sales_partner_team()
 		
 		# Set lead_owner to current user if role is agents (only if no team assignment)
-		if "agents" in frappe.get_roles() or "Agent" in frappe.get_roles():
+		if "Agent" in frappe.get_roles():
 			if not hasattr(self, '_sales_partner_team_assigned') or not self._sales_partner_team_assigned:
 				if not self.lead_owner or self.is_new():
 					self.lead_owner = frappe.session.user

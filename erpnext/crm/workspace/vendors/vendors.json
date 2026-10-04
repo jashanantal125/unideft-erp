@@ -15,7 +15,7 @@
  "link_to": "vendor",
  "link_type": "DocType",
  "links": [],
- "modified": "2026-08-08 14:16:07.953049",
+ "modified": "2026-10-04 13:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Vendors",
@@ -39,12 +39,6 @@
   },
   {
    "role": "CRM Sales Staff"
-  },
-  {
-   "role": "Team Lead"
-  },
-  {
-   "role": "Team Executive"
   }
  ],
  "sequence_id": 20.0,

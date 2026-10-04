@@ -704,7 +704,7 @@ function createApplicationCard(app) {
 					<div class="header-actions-row">
 						<span class="status-pill" data-status="${escapeHtml(app.status || 'Pending')}">
 							APP. STATUS: ${escapeHtml(app.status || 'Pending').toUpperCase()}
-							<i class="fa fa-pencil status-edit-icon" onclick="editStatus('${app.name}')"></i>
+							${card_view_user_is_agent_only() ? '' : `<i class="fa fa-pencil status-edit-icon" onclick="editStatus('${app.name}')"></i>`}
 						</span>
 						<button class="btn-chat" onclick="openChat('${app.name}')">
 							<i class="fa fa-comment-o"></i> CHAT
@@ -786,21 +786,25 @@ function createApplicationCard(app) {
 // "New Application" button, so the card view cannot become a way around them.
 function card_view_user_is_agent_only() {
     const roles = frappe.user_roles || [];
-    const agent = ['Agent', 'B2B Agent', 'B2C Agent', 'agents'].some((r) => roles.includes(r));
+    const agent = ['Agent'].some((r) => roles.includes(r));
     const staff = [
-        'System Manager', 'Administrator', 'CRM Admin', 'Team Lead', 'Team Executive',
-        'Admission 1', 'Admission 2', 'CRO', 'CRO Head', 'Country Head',
+        'System Manager',
+        'Administrator',
+        'CRM Admin', 'Visa Admin',
+        'Application',
+        'CRO',
+        'CRO Manager',
     ].some((r) => roles.includes(r));
     return agent && !staff;
 }
 
 function card_view_user_can_create_application() {
     const roles = frappe.user_roles || [];
-    if (['System Manager', 'Administrator', 'CRM Admin'].some((r) => roles.includes(r))) {
+    if (['System Manager', 'Administrator', 'CRM Admin', 'Visa Admin'].some((r) => roles.includes(r))) {
         return true;
     }
     // A2 - admissions only ever receive applications.
-    return !['Admission 1', 'Admission 2'].some((r) => roles.includes(r));
+    return !['Application'].some((r) => roles.includes(r));
 }
 
 // Staff pick a country first, because Australia and the United Kingdom are

@@ -20,7 +20,7 @@
  "label": "Commission",
  "link_type": "DocType",
  "links": [],
- "modified": "2026-08-11 15:29:49.194219",
+ "modified": "2026-10-04 13:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Commission",
@@ -43,22 +43,7 @@
    "role": "CRM Sales Staff"
   },
   {
-   "role": "Team Lead"
-  },
-  {
-   "role": "Team Executive"
-  },
-  {
    "role": "Agent"
-  },
-  {
-   "role": "agents"
-  },
-  {
-   "role": "B2B Agent"
-  },
-  {
-   "role": "B2C Agent"
   }
  ],
  "sequence_id": 25.0,
